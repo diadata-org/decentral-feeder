@@ -234,8 +234,6 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-
-
 replace github.com/diadata-org/decentral-feeder => /home/philipp/go/src/github.com/diadata-org/decentral-feeder
 
 replace github.com/diadata-org/diadata => /home/philipp/go/src/github.com/diadata-org/diadata

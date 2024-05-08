@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/diadata-org/decentral-feeder/pkg/onchain"
-	processing "github.com/diadata-org/decentral-feeder/pkg/processing"
+	"github.com/diadata-org/decentral-feeder/pkg/processing"
 	scrapers "github.com/diadata-org/decentral-feeder/pkg/scraper"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
@@ -23,12 +23,46 @@ import (
 )
 
 func main() {
-	exchanges := []models.Exchange{{Name: scrapers.BINANCE_EXCHANGE}}
-	pairs := []string{"BTC-USDT"}
+	exchangePairs := []models.ExchangePair{
+		{
+			Exchange:    scrapers.BINANCE_EXCHANGE,
+			Symbol:      "BTC",
+			ForeignName: "BTC-USDT",
+			UnderlyingPair: models.Pair{
+				QuoteToken: models.Asset{
+					Symbol:     "BTC",
+					Blockchain: "Bitcoin",
+					Address:    "0x0000000000000000000000000000000000000000",
+				},
+				BaseToken: models.Asset{
+					Symbol:     "USDT",
+					Blockchain: "Ethereum",
+					Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				},
+			},
+		},
+		{
+			Exchange:    scrapers.BINANCE_EXCHANGE,
+			Symbol:      "ETH",
+			ForeignName: "ETH-USDT",
+			UnderlyingPair: models.Pair{
+				QuoteToken: models.Asset{
+					Symbol:     "ETH",
+					Blockchain: "Ethereum",
+					Address:    "0x0000000000000000000000000000000000000000",
+				},
+				BaseToken: models.Asset{
+					Symbol:     "USDT",
+					Blockchain: "Ethereum",
+					Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+				},
+			},
+		},
+	}
 
 	wg := sync.WaitGroup{}
-	tradesblockChannel := make(chan []models.Trade)
-	filterChannel := make(chan models.FilterPoint)
+	tradesblockChannel := make(chan map[string]models.TradesBlock)
+	filtersChannel := make(chan []models.FilterPointExtended)
 	triggerChannel := make(chan time.Time)
 
 	// ----------------------------
@@ -36,7 +70,7 @@ func main() {
 	// ----------------------------
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "0x11A29B3cC367910352b3edaF6FDAf044Ba4D8ECc")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc2.sepolia.org")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.sepolia.ethpandaops.io")
 
@@ -79,11 +113,11 @@ func main() {
 	}()
 
 	// Run Processor and subsequent routines.
-	go Processor(exchanges, pairs, tradesblockChannel, filterChannel, triggerChannel, &wg)
+	go Processor(exchangePairs, tradesblockChannel, filtersChannel, triggerChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	// oracleUpdateExecutor(auth, contract, conn, chainId, filterChannel)
-	oracleUpdateExecutor(auth, contract, conn, chainId, filterChannel)
+	oracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
 
 }
 
@@ -96,13 +130,20 @@ func oracleUpdateExecutor(
 	conn *ethclient.Client,
 	chainId int64,
 	// compatibilityMode bool,
-	filterChannel <-chan models.FilterPoint,
+	filtersChannel <-chan []models.FilterPointExtended,
 ) {
 
 	timestamp := time.Now().Unix()
-	for filterPoint := range filterChannel {
-		log.Infof("%v -- filterPoint received: %v -- %v", time.Unix(timestamp, 0), filterPoint.Value, filterPoint.Time)
-		err := updateOracleMultiValues(conn, contract, auth, chainId, []string{"BTC/USD"}, []int64{int64(filterPoint.Value * 100000000)}, timestamp)
+	for filterPoints := range filtersChannel {
+
+		var keys []string
+		var values []int64
+		for _, fp := range filterPoints {
+			log.Infof("%v -- filterPoint received: %v -- %v", time.Unix(timestamp, 0), fp.Value, fp.Time)
+			keys = append(keys, fp.Pair.QuoteToken.Symbol+"/USD")
+			values = append(values, int64(fp.Value*100000000))
+		}
+		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, values, timestamp)
 		if err != nil {
 			log.Printf("Failed to update Oracle: %v", err)
 			return
@@ -111,64 +152,89 @@ func oracleUpdateExecutor(
 
 }
 
-func Processor(exchanges []models.Exchange,
-	pairs []string,
-	tradesblockChannel chan []models.Trade,
-	filterChannel chan models.FilterPoint,
+func Processor(exchangePairs []models.ExchangePair,
+	tradesblockChannel chan map[string]models.TradesBlock,
+	filtersChannel chan []models.FilterPointExtended,
 	triggerChannel chan time.Time,
 	wg *sync.WaitGroup,
 ) {
 
 	log.Info("Start Processor......")
 	// Collector starts collecting trades in the background.
-	go Collector(exchanges, pairs, tradesblockChannel, triggerChannel, wg)
+	go Collector(exchangePairs, tradesblockChannel, triggerChannel, wg)
 
 	// As soon as the trigger channel receives input a processing step is initiated.
-	for trades := range tradesblockChannel {
+	for tradesblocks := range tradesblockChannel {
 
-		log.Infof("received %v trades for further processing.", len(trades))
-		asset := models.Asset{Blockchain: "Bitcoin", Address: "0x0000000000000000000000000000000000000000"}
-		latestPrice, timestamp, err := processing.LastPrice(trades, asset, true)
-		if err != nil {
-			log.Error("GetLastPrice: ", err)
+		var filterPoints []models.FilterPointExtended
+
+		for exchangepairIdentifier, tb := range tradesblocks {
+			log.Info("length tradesblock: ", len(tb.Trades))
+			latestPrice, timestamp, err := processing.LastPrice(tb.Trades, true)
+			if err != nil {
+				log.Error("GetLastPrice: ", err)
+			}
+
+			// Identify Pair from tradesblock (there should be a better way)
+			var pair models.Pair
+			if len(tb.Trades) > 0 {
+				pair = models.Pair{QuoteToken: tb.Trades[0].QuoteToken, BaseToken: tb.Trades[0].BaseToken}
+			}
+
+			filterPoint := models.FilterPointExtended{
+				Pair:   pair,
+				Value:  latestPrice,
+				Time:   timestamp,
+				Source: strings.Split(exchangepairIdentifier, "-")[0],
+			}
+			filterPoints = append(filterPoints, filterPoint)
 		}
-		filterPoint := models.FilterPoint{
-			Asset: asset,
-			Value: latestPrice,
-			Time:  timestamp,
-		}
-		filterChannel <- filterPoint
+
+		filtersChannel <- filterPoints
 	}
 
 }
 
 // Collector starts a scraper for given @exchanges
 func Collector(
-	exchanges []models.Exchange,
-	pairs []string,
-	tradesblockChannel chan []models.Trade,
+	exchangePairs []models.ExchangePair,
+	tradesblockChannel chan map[string]models.TradesBlock,
 	triggerChannel chan time.Time,
 	wg *sync.WaitGroup,
 ) {
 
+	exchangepairMap := utils.MakeExchangepairMap(exchangePairs)
 	tradesChannelIn := make(chan models.Trade)
-	for _, exchange := range exchanges {
+	for exchange := range exchangepairMap {
 		wg.Add(1)
-		go scrapers.RunScraper(exchange.Name, pairs, tradesChannelIn, wg)
+		go scrapers.RunScraper(exchange, exchangepairMap[exchange], tradesChannelIn, wg)
 	}
 
-	var collectedTrades []models.Trade
+	// tradesblockMap maps an exchangpair identifier onto a TradesBlock.
+	// This also means that each value consists of trades of only one exchangepair.
+	tradesblockMap := make(map[string]models.TradesBlock)
 
 	go func() {
 		for {
 			select {
 			case trade := <-tradesChannelIn:
-				collectedTrades = append(collectedTrades, trade)
+				exchangepair := models.Pair{QuoteToken: trade.QuoteToken, BaseToken: trade.BaseToken}
+				exchangepairIdentifier := exchangepair.PairExchangeIdentifier(trade.Exchange.Name)
+				if _, ok := tradesblockMap[exchangepairIdentifier]; !ok {
+					tradesblockMap[exchangepairIdentifier] = models.TradesBlock{
+						Trades: []models.Trade{trade},
+					}
+				} else {
+					tradesblock := tradesblockMap[exchangepairIdentifier]
+					tradesblock.Trades = append(tradesblock.Trades, trade)
+					tradesblockMap[exchangepairIdentifier] = tradesblock
+				}
 
 			case timestamp := <-triggerChannel:
 				log.Info("triggered at : ", timestamp)
-				tradesblockChannel <- collectedTrades
-				collectedTrades = []models.Trade{}
+				tradesblockChannel <- tradesblockMap
+				log.Info("number of tradesblocks: ", len(tradesblockMap))
+				tradesblockMap = make(map[string]models.TradesBlock)
 
 			}
 		}

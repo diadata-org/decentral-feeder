@@ -9,18 +9,18 @@ import (
 )
 
 // LastPrice returns the price of the latest trade with quotetoken @asset.
-func LastPrice(trades []models.Trade, asset models.Asset, USDPrice bool) (lastPrice float64, timestamp time.Time, err error) {
+func LastPrice(trades []models.Trade, USDPrice bool) (lastPrice float64, timestamp time.Time, err error) {
 
 	var basetoken models.Asset
 
 	for _, trade := range trades {
-		if trade.QuoteToken.Address == asset.Address && trade.QuoteToken.Blockchain == asset.Blockchain {
-			if trade.Time.After(timestamp) {
-				timestamp = trade.Time
-				lastPrice = trade.Price
-				basetoken = trade.BaseToken
-			}
+
+		if trade.Time.After(timestamp) {
+			timestamp = trade.Time
+			lastPrice = trade.Price
+			basetoken = trade.BaseToken
 		}
+
 	}
 
 	// Fetch USD price of basetoken from DIA API.
