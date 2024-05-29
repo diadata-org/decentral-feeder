@@ -1,0 +1,39 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "BTC",
+            "Exchange": "Binance",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419",
+            "Decimals": 18
+        }
+    ]
+}

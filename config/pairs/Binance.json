@@ -1,0 +1,14 @@
+{
+    "Pairs": [
+      {
+        "ForeignName": "BTC-USDT",
+        "QuoteSymbol": "BTC",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "ETH-USDT",
+        "QuoteSymbol": "ETH",
+        "BaseSymbol": "USDT"
+      }
+    ]
+}

@@ -10,3 +10,11 @@ func MakeExchangepairMap(exchangePairs []models.ExchangePair) map[string][]model
 	}
 	return exchangepairMap
 }
+
+func MakePoolMap(pools []models.Pool) map[string][]models.Pool {
+	poolMap := make(map[string][]models.Pool)
+	for _, pool := range pools {
+		poolMap[pool.Exchange.Name] = append(poolMap[pool.Exchange.Name], pool)
+	}
+	return poolMap
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"io/ioutil"
 	"math/big"
 	"net/http"
@@ -22,43 +23,94 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func main() {
-	exchangePairs := []models.ExchangePair{
-		{
-			Exchange:    scrapers.BINANCE_EXCHANGE,
-			Symbol:      "BTC",
-			ForeignName: "BTC-USDT",
-			UnderlyingPair: models.Pair{
-				QuoteToken: models.Asset{
-					Symbol:     "BTC",
-					Blockchain: "Bitcoin",
-					Address:    "0x0000000000000000000000000000000000000000",
-				},
-				BaseToken: models.Asset{
-					Symbol:     "USDT",
-					Blockchain: "Ethereum",
-					Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-				},
-			},
-		},
-		{
-			Exchange:    scrapers.BINANCE_EXCHANGE,
-			Symbol:      "ETH",
-			ForeignName: "ETH-USDT",
-			UnderlyingPair: models.Pair{
-				QuoteToken: models.Asset{
-					Symbol:     "ETH",
-					Blockchain: "Ethereum",
-					Address:    "0x0000000000000000000000000000000000000000",
-				},
-				BaseToken: models.Asset{
-					Symbol:     "USDT",
-					Blockchain: "Ethereum",
-					Address:    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-				},
-			},
-		},
+const (
+	ENV_SEPARATOR           = ","
+	PAIR_TICKER_SEPARATOR   = "-"
+	EXCHANGE_PAIR_SEPARATOR = ":"
+)
+
+var (
+	env = flag.Bool("env", true, "Get pairs and pools from env variable if set to true.")
+	// Comma separated list of exchanges.
+	exchanges = utils.Getenv("EXCHANGES", "UniswapV2,Binance")
+	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
+	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Binance:ETH-USDT,Binance:BTC-USDT")
+	// Comma separated list of pools.
+	// The binary digit in the third position controls the order of the trades in the pool:
+	// TO DO: For 0 the original order is taken into consideration, while for 1 the order of all trades in the pool is reversed.
+	poolsEnv = utils.Getenv("POOLS", "UniswapV2:0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852:0,UniswapV2:0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c:0")
+
+	exchangePairs []models.ExchangePair
+	pools         []models.Pool
+)
+
+func init() {
+	flag.Parse()
+
+	if *env {
+		// Extract exchangepair map.
+		epMap := make(map[string][]string)
+		for _, ep := range strings.Split(exchangePairsEnv, ENV_SEPARATOR) {
+			exchange := strings.Split(ep, EXCHANGE_PAIR_SEPARATOR)[0]
+			pairSymbol := strings.Split(ep, EXCHANGE_PAIR_SEPARATOR)[1]
+			epMap[exchange] = append(epMap[exchange], pairSymbol)
+		}
+
+		// Assign assets to pair symbols.
+		for exchange := range epMap {
+			symbolIdentificationMap, err := utils.GetSymbolIdentificationMap(exchange)
+			if err != nil {
+				log.Fatal("GetSymbolIdentificationMap: ", err)
+			}
+			for _, pairSymbol := range epMap[exchange] {
+				symbols := strings.Split(pairSymbol, PAIR_TICKER_SEPARATOR)
+				var ep models.ExchangePair
+				ep.Exchange = exchange
+				ep.ForeignName = pairSymbol
+				ep.Symbol = symbols[0]
+				ep.UnderlyingPair.QuoteToken = symbolIdentificationMap[utils.ExchangeSymbolIdentifier(symbols[0], exchange)]
+				ep.UnderlyingPair.BaseToken = symbolIdentificationMap[utils.ExchangeSymbolIdentifier(symbols[1], exchange)]
+				exchangePairs = append(exchangePairs, ep)
+			}
+		}
+
+		// Extract pools from env var.
+		for _, p := range strings.Split(poolsEnv, ENV_SEPARATOR) {
+			var pool models.Pool
+			pool.Exchange = scrapers.Exchanges[strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[0]]
+			pool.Address = strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[1]
+			pool.Blockchain = models.Blockchain{Name: pool.Exchange.Blockchain}
+			pools = append(pools, pool)
+		}
+
+	} else {
+		// Collect all CEX pairs and DEX pools for subsequent scraping.
+		// CEX pairs are mapped onto the underlying assets as well.
+		// It's the responsability of the corresponding DEX scraper to fetch pool asset information.
+		for _, exchange := range strings.Split(exchanges, ",") {
+			if _, ok := scrapers.Exchanges[exchange]; !ok {
+				log.Fatalf("Scraper for %s not available.", exchange)
+			}
+			if scrapers.Exchanges[exchange].Centralized {
+				ep, err := utils.GetPairsFromConfig(exchange)
+				if err != nil {
+					log.Fatalf("GetPairsFromConfig for %s: %v", exchange, err)
+				}
+				exchangePairs = append(exchangePairs, ep...)
+				continue
+			}
+
+			p, err := utils.GetPoolsFromConfig(exchange)
+			if err != nil {
+				log.Fatalf("GetPoolsFromConfig for %s: %v", exchange, err)
+			}
+			pools = append(pools, p...)
+		}
 	}
+
+}
+
+func main() {
 
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
@@ -70,9 +122,9 @@ func main() {
 	// ----------------------------
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "0x11A29B3cC367910352b3edaF6FDAf044Ba4D8ECc")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc2.sepolia.org")
-	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.sepolia.ethpandaops.io")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	backupNode := utils.Getenv("BACKUP_NODE", "")
 
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
@@ -82,11 +134,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "11155111"), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", ""), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
-	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "60"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
@@ -113,7 +165,7 @@ func main() {
 	}()
 
 	// Run Processor and subsequent routines.
-	go Processor(exchangePairs, tradesblockChannel, filtersChannel, triggerChannel, &wg)
+	go Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	// oracleUpdateExecutor(auth, contract, conn, chainId, filterChannel)
@@ -133,13 +185,19 @@ func oracleUpdateExecutor(
 	filtersChannel <-chan []models.FilterPointExtended,
 ) {
 
-	timestamp := time.Now().Unix()
 	for filterPoints := range filtersChannel {
-
+		timestamp := time.Now().Unix()
 		var keys []string
 		var values []int64
 		for _, fp := range filterPoints {
-			log.Infof("%v -- filterPoint received: %v -- %v", time.Unix(timestamp, 0), fp.Value, fp.Time)
+			log.Infof(
+				"filterPoint received at %v: %v -- %v -- %v -- %v",
+				time.Unix(timestamp, 0),
+				fp.Source,
+				fp.Pair.QuoteToken.Symbol+"-"+fp.Pair.BaseToken.Symbol,
+				fp.Value,
+				fp.Time,
+			)
 			keys = append(keys, fp.Pair.QuoteToken.Symbol+"/USD")
 			values = append(values, int64(fp.Value*100000000))
 		}
@@ -152,7 +210,9 @@ func oracleUpdateExecutor(
 
 }
 
-func Processor(exchangePairs []models.ExchangePair,
+func Processor(
+	exchangePairs []models.ExchangePair,
+	pools []models.Pool,
 	tradesblockChannel chan map[string]models.TradesBlock,
 	filtersChannel chan []models.FilterPointExtended,
 	triggerChannel chan time.Time,
@@ -161,7 +221,7 @@ func Processor(exchangePairs []models.ExchangePair,
 
 	log.Info("Start Processor......")
 	// Collector starts collecting trades in the background.
-	go Collector(exchangePairs, tradesblockChannel, triggerChannel, wg)
+	go Collector(exchangePairs, pools, tradesblockChannel, triggerChannel, wg)
 
 	// As soon as the trigger channel receives input a processing step is initiated.
 	for tradesblocks := range tradesblockChannel {
@@ -198,16 +258,25 @@ func Processor(exchangePairs []models.ExchangePair,
 // Collector starts a scraper for given @exchanges
 func Collector(
 	exchangePairs []models.ExchangePair,
+	pools []models.Pool,
 	tradesblockChannel chan map[string]models.TradesBlock,
 	triggerChannel chan time.Time,
 	wg *sync.WaitGroup,
 ) {
 
+	// exchangepairMap maps a centralized exchange onto the given pairs.
 	exchangepairMap := utils.MakeExchangepairMap(exchangePairs)
+	// poolMap maps a decentralized exchange onto the given pools.
+	poolMap := utils.MakePoolMap(pools)
+
 	tradesChannelIn := make(chan models.Trade)
 	for exchange := range exchangepairMap {
 		wg.Add(1)
-		go scrapers.RunScraper(exchange, exchangepairMap[exchange], tradesChannelIn, wg)
+		go scrapers.RunScraper(exchange, exchangepairMap[exchange], pools, tradesChannelIn, wg)
+	}
+	for exchange := range poolMap {
+		wg.Add(1)
+		go scrapers.RunScraper(exchange, exchangepairMap[exchange], poolMap[exchange], tradesChannelIn, wg)
 	}
 
 	// tradesblockMap maps an exchangpair identifier onto a TradesBlock.

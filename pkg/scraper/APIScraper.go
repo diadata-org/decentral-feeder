@@ -6,11 +6,12 @@ import (
 	models "github.com/diadata-org/diaprotocol/pkg/models"
 )
 
-// RunScraper returns an API scraper for @exchange. If scrape==true it actually does
-// scraping. Otherwise can be used for pairdiscovery.
-func RunScraper(exchange string, pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
+// RunScraper starts a scraper for @exchange.
+func RunScraper(exchange string, pairs []models.ExchangePair, pools []models.Pool, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
 	switch exchange {
 	case BINANCE_EXCHANGE:
 		NewBinanceScraper(pairs, tradesChannel, wg)
+	case UNISWAPV2_EXCHANGE:
+		NewUniswapV2Scraper(pools, tradesChannel, wg)
 	}
 }

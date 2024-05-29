@@ -17,7 +17,7 @@ var (
 
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
 	defer wg.Done()
-	log.Info("Entered Binance handler")
+	log.Info("Started Binance scraper.")
 
 	wsAssetsString := ""
 	for _, pair := range pairs {
