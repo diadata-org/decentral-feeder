@@ -11,12 +11,12 @@ import (
 	"sync"
 	"time"
 
+	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/onchain"
 	"github.com/diadata-org/decentral-feeder/pkg/processing"
 	scrapers "github.com/diadata-org/decentral-feeder/pkg/scraper"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
-	models "github.com/diadata-org/diaprotocol/pkg/models"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
@@ -48,31 +48,7 @@ func init() {
 	flag.Parse()
 
 	if *env {
-		// Extract exchangepair map.
-		epMap := make(map[string][]string)
-		for _, ep := range strings.Split(exchangePairsEnv, ENV_SEPARATOR) {
-			exchange := strings.Split(ep, EXCHANGE_PAIR_SEPARATOR)[0]
-			pairSymbol := strings.Split(ep, EXCHANGE_PAIR_SEPARATOR)[1]
-			epMap[exchange] = append(epMap[exchange], pairSymbol)
-		}
-
-		// Assign assets to pair symbols.
-		for exchange := range epMap {
-			symbolIdentificationMap, err := utils.GetSymbolIdentificationMap(exchange)
-			if err != nil {
-				log.Fatal("GetSymbolIdentificationMap: ", err)
-			}
-			for _, pairSymbol := range epMap[exchange] {
-				symbols := strings.Split(pairSymbol, PAIR_TICKER_SEPARATOR)
-				var ep models.ExchangePair
-				ep.Exchange = exchange
-				ep.ForeignName = pairSymbol
-				ep.Symbol = symbols[0]
-				ep.UnderlyingPair.QuoteToken = symbolIdentificationMap[utils.ExchangeSymbolIdentifier(symbols[0], exchange)]
-				ep.UnderlyingPair.BaseToken = symbolIdentificationMap[utils.ExchangeSymbolIdentifier(symbols[1], exchange)]
-				exchangePairs = append(exchangePairs, ep)
-			}
-		}
+		exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR)
 
 		// Extract pools from env var.
 		for _, p := range strings.Split(poolsEnv, ENV_SEPARATOR) {
@@ -92,7 +68,7 @@ func init() {
 				log.Fatalf("Scraper for %s not available.", exchange)
 			}
 			if scrapers.Exchanges[exchange].Centralized {
-				ep, err := utils.GetPairsFromConfig(exchange)
+				ep, err := models.GetPairsFromConfig(exchange)
 				if err != nil {
 					log.Fatalf("GetPairsFromConfig for %s: %v", exchange, err)
 				}
@@ -100,7 +76,7 @@ func init() {
 				continue
 			}
 
-			p, err := utils.GetPoolsFromConfig(exchange)
+			p, err := models.GetPoolsFromConfig(exchange)
 			if err != nil {
 				log.Fatalf("GetPoolsFromConfig for %s: %v", exchange, err)
 			}
@@ -265,9 +241,9 @@ func Collector(
 ) {
 
 	// exchangepairMap maps a centralized exchange onto the given pairs.
-	exchangepairMap := utils.MakeExchangepairMap(exchangePairs)
+	exchangepairMap := models.MakeExchangepairMap(exchangePairs)
 	// poolMap maps a decentralized exchange onto the given pools.
-	poolMap := utils.MakePoolMap(pools)
+	poolMap := models.MakePoolMap(pools)
 
 	tradesChannelIn := make(chan models.Trade)
 	for exchange := range exchangepairMap {

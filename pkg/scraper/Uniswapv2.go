@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/diadata-org/decentral-feeder/pkg/contracts/uniswap"
-	"github.com/diadata-org/diaprotocol/pkg/models"
-	"github.com/diadata-org/diaprotocol/pkg/utils"
+	"github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"

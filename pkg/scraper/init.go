@@ -1,7 +1,7 @@
 package scrapers
 
 import (
-	models "github.com/diadata-org/diaprotocol/pkg/models"
+	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/sirupsen/logrus"
 )
 

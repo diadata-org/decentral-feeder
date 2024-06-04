@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	models "github.com/diadata-org/diaprotocol/pkg/models"
+	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	ws "github.com/gorilla/websocket"
 )
 

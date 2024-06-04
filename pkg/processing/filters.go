@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
-	models "github.com/diadata-org/diaprotocol/pkg/models"
 )
 
 // LastPrice returns the price of the latest trade with quotetoken @asset.
