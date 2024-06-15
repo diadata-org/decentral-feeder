@@ -1,0 +1,95 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "BTC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ENS",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MOVR",
+            "Exchange": "CoinBase",
+            "Blockchain": "Moonriver",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "OMG",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
+            "Decimals": 18
+        },        
+        {
+            "Symbol": "STG",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STORJ",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SUSHI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "840",
+            "Decimals": 2
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "WIF",
+            "Exchange": "CoinBase",
+            "Blockchain": "Solana",
+            "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+            "Decimals": 18
+        }
+    ]
+}

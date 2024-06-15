@@ -50,9 +50,9 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	defer wg.Done()
 	log.Info("Started KuCoin scraper.")
 
-	token, pingInterval, err := getPublicToken(kucoinTokenURL)
+	token, pingInterval, err := getPublicKuCoinToken(kucoinTokenURL)
 	if err != nil {
-		log.Fatal("getPublicToken: ", err)
+		log.Fatal("getPublicKuCoinToken: ", err)
 	}
 
 	var wsDialer ws.Dialer
@@ -66,9 +66,9 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 		a := &kuCoinWSSubscribeMessage{
 			Type:  "subscribe",
-			Topic: "/market/match:BTC-USDT",
+			Topic: "/market/match:" + pair.ForeignName,
 		}
-		log.Infof("Subscribed for Pair %v", pair.ForeignName)
+		log.Infof("Subscribed for Pair %s:%s", KUCOIN_EXCHANGE, pair.ForeignName)
 		if err := wsClient.WriteJSON(a); err != nil {
 			log.Error(err.Error())
 		}
@@ -89,10 +89,9 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		} else if message.Type == "pong" {
 			log.Info("Successful ping: received pong.")
 		} else if message.Type == "message" {
-			log.Infof("%s: %v", message.Type, message)
 
 			// Parse trade quantities.
-			price, volume, timestamp, foreignTradeID, err := parseTradeMessage(message)
+			price, volume, timestamp, foreignTradeID, err := parseKuCoinTradeMessage(message)
 			if err != nil {
 				log.Error("parseTradeMessage: ", err)
 			}
@@ -121,7 +120,7 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 }
 
-func parseTradeMessage(message kuCoinWSResponse) (price float64, volume float64, timestamp time.Time, foreignTradeID string, err error) {
+func parseKuCoinTradeMessage(message kuCoinWSResponse) (price float64, volume float64, timestamp time.Time, foreignTradeID string, err error) {
 	price, err = strconv.ParseFloat(message.Data.Price, 64)
 	if err != nil {
 		return
@@ -174,8 +173,8 @@ func ping(wsClient *ws.Conn, pingInterval int64) {
 	}
 }
 
-// getPublicToken returns a token for public market data along with the pingInterval in seconds.
-func getPublicToken(url string) (token string, pingInterval int64, err error) {
+// getPublicKuCoinToken returns a token for public market data along with the pingInterval in seconds.
+func getPublicKuCoinToken(url string) (token string, pingInterval int64, err error) {
 	postBody, _ := json.Marshal(map[string]string{})
 	responseBody := bytes.NewBuffer(postBody)
 	data, err := http.Post(url, "application/json", responseBody)

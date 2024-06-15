@@ -10,6 +10,7 @@ const (
 	CRYPTODOTCOM_EXCHANGE = "Crypto.com"
 	GATEIO_EXCHANGE       = "GateIO"
 	KUCOIN_EXCHANGE       = "KuCoin"
+	COINBASE_EXCHANGE     = "CoinBase"
 
 	UNISWAPV2_EXCHANGE = "UniswapV2"
 
@@ -27,6 +28,7 @@ func init() {
 	Exchanges[CRYPTODOTCOM_EXCHANGE] = models.Exchange{Name: CRYPTODOTCOM_EXCHANGE, Centralized: true}
 	Exchanges[GATEIO_EXCHANGE] = models.Exchange{Name: GATEIO_EXCHANGE, Centralized: true}
 	Exchanges[KUCOIN_EXCHANGE] = models.Exchange{Name: KUCOIN_EXCHANGE, Centralized: true}
+	Exchanges[COINBASE_EXCHANGE] = models.Exchange{Name: COINBASE_EXCHANGE, Centralized: true}
 
 	Exchanges[UNISWAPV2_EXCHANGE] = models.Exchange{Name: UNISWAPV2_EXCHANGE, Centralized: false, Blockchain: ETHEREUM}
 }

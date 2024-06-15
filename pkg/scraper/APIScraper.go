@@ -17,6 +17,8 @@ func RunScraper(exchange string, pairs []models.ExchangePair, pools []models.Poo
 		NewGateIOScraper(pairs, tradesChannel, wg)
 	case KUCOIN_EXCHANGE:
 		NewKuCoinScraper(pairs, tradesChannel, wg)
+	case COINBASE_EXCHANGE:
+		NewCoinBaseScraper(pairs, tradesChannel, wg)
 
 	case UNISWAPV2_EXCHANGE:
 		NewUniswapV2Scraper(pools, tradesChannel, wg)
