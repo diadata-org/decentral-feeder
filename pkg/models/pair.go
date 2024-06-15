@@ -31,6 +31,8 @@ func (p *Pair) Identifier() string {
 	return p.QuoteToken.Blockchain + "-" + p.QuoteToken.Address + "-" + p.BaseToken.Blockchain + "-" + p.BaseToken.Address
 }
 
+// ExchangePairsFromEnv parses the string @exchangePairsEnv including a number of pairs on a number of exchanges
+// and returns full asset information on the corresponding exchangepairs.
 func ExchangePairsFromEnv(
 	exchangePairsEnv string,
 	envSeparator string,
@@ -73,6 +75,19 @@ func MakeExchangepairMap(exchangePairs []ExchangePair) map[string][]ExchangePair
 		exchangepairMap[ep.Exchange] = append(exchangepairMap[ep.Exchange], ep)
 	}
 	return exchangepairMap
+}
+
+// MakeTickerPairMap returns a map that maps a pair ticker onto the underlying pair with full asset information.
+func MakeTickerPairMap(exchangePairs []ExchangePair) map[string]Pair {
+	tickerPairMap := make(map[string]Pair)
+	for _, ep := range exchangePairs {
+		symbols := strings.Split(ep.ForeignName, "-")
+		if len(symbols) < 2 {
+			continue
+		}
+		tickerPairMap[symbols[0]+symbols[1]] = ep.UnderlyingPair
+	}
+	return tickerPairMap
 }
 
 func GetPairsFromConfig(exchange string) ([]ExchangePair, error) {

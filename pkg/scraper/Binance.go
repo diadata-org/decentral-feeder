@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	wsBaseString = "wss://stream.binance.com:9443/ws/"
+	binanceWSBaseString = "wss://stream.binance.com:9443/ws/"
 )
 
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
@@ -25,11 +25,11 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	}
 
 	// Make tickerPairMap for identification of exchangepairs.
-	tickerPairMap := makeTickerPairMap(pairs)
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	// Remove trailing slash
 	wsAssetsString = wsAssetsString[:len(wsAssetsString)-1]
-	conn, _, err := ws.DefaultDialer.Dial(wsBaseString+wsAssetsString, nil)
+	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
 		log.Fatal("connect to Binance API.")
 	}
@@ -72,16 +72,4 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 		tradesChannel <- trade
 
 	}
-}
-
-func makeTickerPairMap(exchangePairs []models.ExchangePair) map[string]models.Pair {
-	tickerPairMap := make(map[string]models.Pair)
-	for _, ep := range exchangePairs {
-		symbols := strings.Split(ep.ForeignName, "-")
-		if len(symbols) < 2 {
-			continue
-		}
-		tickerPairMap[symbols[0]+symbols[1]] = ep.UnderlyingPair
-	}
-	return tickerPairMap
 }
