@@ -79,14 +79,13 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	// Read trades stream.
 	for {
 		var message kuCoinWSResponse
-		if err = wsClient.ReadJSON(&message); err != nil {
-			log.Error(err.Error())
-			break
-		}
-
+		err = wsClient.ReadJSON(&message)
 		if err != nil {
 			log.Errorf("ReadMessage: %v", err)
-		} else if message.Type == "pong" {
+			continue
+		}
+
+		if message.Type == "pong" {
 			log.Info("Successful ping: received pong.")
 		} else if message.Type == "message" {
 

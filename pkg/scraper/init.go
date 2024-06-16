@@ -7,10 +7,11 @@ import (
 
 const (
 	BINANCE_EXCHANGE      = "Binance"
+	COINBASE_EXCHANGE     = "CoinBase"
 	CRYPTODOTCOM_EXCHANGE = "Crypto.com"
 	GATEIO_EXCHANGE       = "GateIO"
+	KRAKEN_EXCHANGE       = "Kraken"
 	KUCOIN_EXCHANGE       = "KuCoin"
-	COINBASE_EXCHANGE     = "CoinBase"
 
 	UNISWAPV2_EXCHANGE = "UniswapV2"
 
@@ -25,10 +26,11 @@ var (
 func init() {
 	log = logrus.New()
 	Exchanges[BINANCE_EXCHANGE] = models.Exchange{Name: BINANCE_EXCHANGE, Centralized: true}
+	Exchanges[COINBASE_EXCHANGE] = models.Exchange{Name: COINBASE_EXCHANGE, Centralized: true}
 	Exchanges[CRYPTODOTCOM_EXCHANGE] = models.Exchange{Name: CRYPTODOTCOM_EXCHANGE, Centralized: true}
 	Exchanges[GATEIO_EXCHANGE] = models.Exchange{Name: GATEIO_EXCHANGE, Centralized: true}
+	Exchanges[KRAKEN_EXCHANGE] = models.Exchange{Name: KRAKEN_EXCHANGE, Centralized: true}
 	Exchanges[KUCOIN_EXCHANGE] = models.Exchange{Name: KUCOIN_EXCHANGE, Centralized: true}
-	Exchanges[COINBASE_EXCHANGE] = models.Exchange{Name: COINBASE_EXCHANGE, Centralized: true}
 
 	Exchanges[UNISWAPV2_EXCHANGE] = models.Exchange{Name: UNISWAPV2_EXCHANGE, Centralized: false, Blockchain: ETHEREUM}
 }

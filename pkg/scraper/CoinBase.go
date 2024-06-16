@@ -68,14 +68,13 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	// Read trades stream.
 	for {
 		var message coinBaseWSResponse
-		if err = wsClient.ReadJSON(&message); err != nil {
-			log.Error(err.Error())
-			break
-		}
-
+		err = wsClient.ReadJSON(&message)
 		if err != nil {
 			log.Errorf("ReadMessage: %v", err)
-		} else if message.Type == "match" {
+			continue
+		}
+
+		if message.Type == "match" {
 
 			// Parse trade quantities.
 			price, volume, timestamp, foreignTradeID, err := parseCoinBaseTradeMessage(message)
