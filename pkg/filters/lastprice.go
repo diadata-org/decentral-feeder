@@ -1,4 +1,4 @@
-package processing
+package filters
 
 import (
 	"encoding/json"

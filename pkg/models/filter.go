@@ -19,3 +19,33 @@ type FilterPointExtended struct {
 	Name   string
 	Time   time.Time
 }
+
+// GroupFilterByAsset returns @fpMap which maps an asset on all extended filter points contained in @filterPoints.
+func GroupFilterByAsset(filterPoints []FilterPointExtended) (fpMap map[Asset][]FilterPointExtended) {
+	fpMap = make(map[Asset][]FilterPointExtended)
+	for _, fp := range filterPoints {
+		fpMap[fp.Pair.QuoteToken] = append(fpMap[fp.Pair.QuoteToken], fp)
+	}
+	return
+}
+
+// GetValuesFromFilterPoints returns a slice containing just the values from @filterPoints.
+func GetValuesFromFilterPoints(filterPoints []FilterPointExtended) (filterValues []float64) {
+	for _, fp := range filterPoints {
+		filterValues = append(filterValues, fp.Value)
+	}
+	return
+}
+
+// RemoveOldFilters removes all filter points from @filterPoints whith timestamp more than
+// @toleranceSeconds before @timestamp.
+func RemoveOldFilters(filterPoints []FilterPointExtended, toleranceSeconds int64, timestamp time.Time) (cleanedFilterPoints []FilterPointExtended, removedFilters int) {
+	for _, fp := range filterPoints {
+		if fp.Time.After(timestamp.Add(-time.Duration(toleranceSeconds) * time.Second)) {
+			cleanedFilterPoints = append(cleanedFilterPoints, fp)
+		} else {
+			removedFilters++
+		}
+	}
+	return
+}

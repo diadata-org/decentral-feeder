@@ -11,9 +11,10 @@ import (
 	"sync"
 	"time"
 
+	filters "github.com/diadata-org/decentral-feeder/pkg/filters"
+	metafilters "github.com/diadata-org/decentral-feeder/pkg/metafilters"
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/onchain"
-	"github.com/diadata-org/decentral-feeder/pkg/processing"
 	scrapers "github.com/diadata-org/decentral-feeder/pkg/scraper"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
@@ -24,39 +25,55 @@ import (
 )
 
 const (
-	ENV_SEPARATOR           = ","
-	PAIR_TICKER_SEPARATOR   = "-"
+	// Separator for entries in the environment variables, i.e. Binance:BTC-USDT,KuCoin:BTC-USDT.
+	ENV_SEPARATOR = ","
+	// Separator for a pair ticker's assets, i.e. BTC-USDT.
+	PAIR_TICKER_SEPARATOR = "-"
+	// Separator for a pair on a given exchange, i.e. Binance:BTC-USDT.
 	EXCHANGE_PAIR_SEPARATOR = ":"
 )
 
 var (
-	env = flag.Bool("env", true, "Get pairs and pools from env variable if set to true.")
-	// Comma separated list of exchanges.
+	env = flag.Bool("env", true, "Get pairs and pools from env variable if set to true. Otherwise, pairs are read from config file.")
+
+	// Comma separated list of exchanges. Only used in case pairs are read from config files.
 	exchanges = utils.Getenv("EXCHANGES", "UniswapV2,Binance")
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
-	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Binance:ETH-USDT,Binance:BTC-USDT")
+	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
+	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
+	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "")
 	// Comma separated list of pools.
 	// The binary digit in the third position controls the order of the trades in the pool:
 	// TO DO: For 0 the original order is taken into consideration, while for 1 the order of all trades in the pool is reversed.
-	poolsEnv = utils.Getenv("POOLS", "UniswapV2:0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852:0,UniswapV2:0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c:0")
+	// Format should be as follows: UniswapV2:0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852:0,UniswapV2:0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c:0
+	poolsEnv = utils.Getenv("POOLS", "")
 
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
+	// For processing, all filters with timestamp older than time.Now()-toleranceSeconds are discarded.
+	toleranceSeconds int64
 )
 
 func init() {
 	flag.Parse()
+	var err error
+	toleranceSeconds, err = strconv.ParseInt(utils.Getenv("TOLERANCE_SECONDS", "20"), 10, 64)
+	if err != nil {
+		log.Error("Parse TOLERANCE_SECONDS environment variable: ", err)
+	}
 
 	if *env {
 		exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR)
 
 		// Extract pools from env var.
-		for _, p := range strings.Split(poolsEnv, ENV_SEPARATOR) {
-			var pool models.Pool
-			pool.Exchange = scrapers.Exchanges[strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[0]]
-			pool.Address = strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[1]
-			pool.Blockchain = models.Blockchain{Name: pool.Exchange.Blockchain}
-			pools = append(pools, pool)
+		if poolsEnv != "" {
+			for _, p := range strings.Split(poolsEnv, ENV_SEPARATOR) {
+				var pool models.Pool
+				pool.Exchange = scrapers.Exchanges[strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[0]]
+				pool.Address = strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[1]
+				pool.Blockchain = models.Blockchain{Name: pool.Exchange.Blockchain}
+				pools = append(pools, pool)
+			}
 		}
 
 	} else {
@@ -114,6 +131,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
+
+	// frequency for the trigger ticker initiating the computation of filter values.
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "60"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
@@ -131,7 +150,7 @@ func main() {
 	}
 
 	// Use a ticker for triggering the processing.
-	// This is for testing purposes for now.
+	// This is for testing purposes for now. Could also be request based or other trigger types.
 	triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
 	go func() {
 		for tick := range triggerTick.C {
@@ -144,9 +163,7 @@ func main() {
 	go Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
-	// oracleUpdateExecutor(auth, contract, conn, chainId, filterChannel)
 	oracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
-
 }
 
 func oracleUpdateExecutor(
@@ -186,6 +203,10 @@ func oracleUpdateExecutor(
 
 }
 
+// Processor handles blocks from @tradesblockChannel.
+// More precisley, it does so in a 2 step procedure:
+// 1. Aggregate trades for each (atomic) block.
+// 2. Aggregate filter values obtained in step 1.
 func Processor(
 	exchangePairs []models.ExchangePair,
 	pools []models.Pool,
@@ -196,7 +217,7 @@ func Processor(
 ) {
 
 	log.Info("Start Processor......")
-	// Collector starts collecting trades in the background.
+	// Collector starts collecting trades in the background and sends atomic tradesblocks to @tradesblockChannel.
 	go Collector(exchangePairs, pools, tradesblockChannel, triggerChannel, wg)
 
 	// As soon as the trigger channel receives input a processing step is initiated.
@@ -205,13 +226,18 @@ func Processor(
 		var filterPoints []models.FilterPointExtended
 
 		for exchangepairIdentifier, tb := range tradesblocks {
+
 			log.Info("length tradesblock: ", len(tb.Trades))
-			latestPrice, timestamp, err := processing.LastPrice(tb.Trades, true)
+
+			// TO DO: Set flag for trades' filter switch. For instance Median, Average, Minimum, etc.
+			atomicFilterValue, timestamp, err := filters.LastPrice(tb.Trades, true)
 			if err != nil {
 				log.Error("GetLastPrice: ", err)
 			}
 
-			// Identify Pair from tradesblock (there should be a better way)
+			// Identify Pair from tradesblock
+			// TO DO: There should be a better way. Maybe add as a field to tradesblock?
+			// Alternatively we could use a simple FilterPoint. As of now, the base asset is not needed in subsequent computations.
 			var pair models.Pair
 			if len(tb.Trades) > 0 {
 				pair = models.Pair{QuoteToken: tb.Trades[0].QuoteToken, BaseToken: tb.Trades[0].BaseToken}
@@ -219,19 +245,28 @@ func Processor(
 
 			filterPoint := models.FilterPointExtended{
 				Pair:   pair,
-				Value:  latestPrice,
+				Value:  atomicFilterValue,
 				Time:   timestamp,
 				Source: strings.Split(exchangepairIdentifier, "-")[0],
 			}
 			filterPoints = append(filterPoints, filterPoint)
+
 		}
 
-		filtersChannel <- filterPoints
+		var removedFilterPoints int
+		filterPoints, removedFilterPoints = models.RemoveOldFilters(filterPoints, toleranceSeconds, time.Now())
+		log.Warnf("Removed %v old filter points.", removedFilterPoints)
+
+		// TO DO: Set flag for metafilter switch. For instance Median, Average, Minimum, etc.
+		filterPointsMedianized := metafilters.Median(filterPoints)
+
+		filtersChannel <- filterPointsMedianized
 	}
 
 }
 
-// Collector starts a scraper for given @exchanges
+// Collector starts scrapers for all exchanges given by @exchangePairs.
+// Outlook: Collector starts a dedicated pod for each scraper.
 func Collector(
 	exchangePairs []models.ExchangePair,
 	pools []models.Pool,
@@ -242,17 +277,21 @@ func Collector(
 
 	// exchangepairMap maps a centralized exchange onto the given pairs.
 	exchangepairMap := models.MakeExchangepairMap(exchangePairs)
+	log.Info("exchangepairMap: ", exchangepairMap)
 	// poolMap maps a decentralized exchange onto the given pools.
 	poolMap := models.MakePoolMap(pools)
+	log.Info("poolMap: ", poolMap)
 
+	// Start all needed scrapers.
+	// @tradesChannelIn collects trades from the started scrapers.
 	tradesChannelIn := make(chan models.Trade)
 	for exchange := range exchangepairMap {
 		wg.Add(1)
-		go scrapers.RunScraper(exchange, exchangepairMap[exchange], pools, tradesChannelIn, wg)
+		go scrapers.RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, wg)
 	}
 	for exchange := range poolMap {
 		wg.Add(1)
-		go scrapers.RunScraper(exchange, exchangepairMap[exchange], poolMap[exchange], tradesChannelIn, wg)
+		go scrapers.RunScraper(exchange, []models.ExchangePair{}, poolMap[exchange], tradesChannelIn, wg)
 	}
 
 	// tradesblockMap maps an exchangpair identifier onto a TradesBlock.
@@ -263,8 +302,11 @@ func Collector(
 		for {
 			select {
 			case trade := <-tradesChannelIn:
+
+				// Determine exchangepair and the corresponding identifier in order to assign the tradesBlockMap.
 				exchangepair := models.Pair{QuoteToken: trade.QuoteToken, BaseToken: trade.BaseToken}
-				exchangepairIdentifier := exchangepair.PairExchangeIdentifier(trade.Exchange.Name)
+				exchangepairIdentifier := exchangepair.ExchangePairIdentifier(trade.Exchange.Name)
+
 				if _, ok := tradesblockMap[exchangepairIdentifier]; !ok {
 					tradesblockMap[exchangepairIdentifier] = models.TradesBlock{
 						Trades: []models.Trade{trade},
@@ -276,9 +318,12 @@ func Collector(
 				}
 
 			case timestamp := <-triggerChannel:
+
 				log.Info("triggered at : ", timestamp)
 				tradesblockChannel <- tradesblockMap
 				log.Info("number of tradesblocks: ", len(tradesblockMap))
+
+				// Make a new tradesblockMap for the next trigger period.
 				tradesblockMap = make(map[string]models.TradesBlock)
 
 			}

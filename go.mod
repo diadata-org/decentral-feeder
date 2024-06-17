@@ -9,9 +9,11 @@ require (
 	github.com/ethereum/go-ethereum v1.10.10
 	github.com/gorilla/websocket v1.5.1
 	github.com/sirupsen/logrus v1.9.3
+	go.uber.org/ratelimit v0.2.0
 )
 
 require (
+	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
@@ -44,8 +46,6 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
-
-// replace github.com/ipfs/boxo => github.com/ipfs/boxo v0.16.0
 
 replace github.com/prometheus/common => github.com/prometheus/common v0.45.0
 

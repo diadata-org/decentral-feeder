@@ -23,7 +23,7 @@ type Pair struct {
 	BaseToken  Asset `json:"BaseToken"`
 }
 
-func (p *Pair) PairExchangeIdentifier(exchange string) string {
+func (p *Pair) ExchangePairIdentifier(exchange string) string {
 	return exchange + "-" + p.Identifier()
 }
 
@@ -31,8 +31,8 @@ func (p *Pair) Identifier() string {
 	return p.QuoteToken.Blockchain + "-" + p.QuoteToken.Address + "-" + p.BaseToken.Blockchain + "-" + p.BaseToken.Address
 }
 
-// ExchangePairsFromEnv parses the string @exchangePairsEnv including a number of pairs on a number of exchanges
-// and returns full asset information on the corresponding exchangepairs.
+// ExchangePairsFromEnv parses the string @exchangePairsEnv consisting of pairs on exchanges
+// and returns full asset information for the corresponding exchangepairs.
 func ExchangePairsFromEnv(
 	exchangePairsEnv string,
 	envSeparator string,

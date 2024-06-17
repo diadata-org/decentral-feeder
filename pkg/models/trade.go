@@ -16,10 +16,14 @@ type Trade struct {
 }
 
 // Struct for decentralized scraper pools.
+// TO DO: Revisit fields.
 type TradesBlock struct {
+	// Add field for Asset? So far, we only consider atomic tradesblocks.
+	// Asset Asset
 	Trades    []Trade
 	StartTime time.Time
 	EndTime   time.Time
+	// Do we need this?
 	ScraperID ScraperID
 }
 
