@@ -46,6 +46,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 		if err != nil {
 			continue
 		}
+
 		var trade models.Trade
 
 		trade.Exchange = models.Exchange{Name: BINANCE_EXCHANGE}
@@ -65,7 +66,9 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 			trade.Volume -= 1
 		}
 
-		trade.ForeignTradeID = strconv.Itoa(int(messageMap["a"].(float64)))
+		if messageMap["t"] != nil {
+			trade.ForeignTradeID = strconv.Itoa(int(messageMap["t"].(float64)))
+		}
 
 		trade.QuoteToken = tickerPairMap[messageMap["s"].(string)].QuoteToken
 		trade.BaseToken = tickerPairMap[messageMap["s"].(string)].BaseToken
