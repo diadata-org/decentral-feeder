@@ -37,6 +37,16 @@ func GetValuesFromFilterPoints(filterPoints []FilterPointExtended) (filterValues
 	return
 }
 
+// GetLatestTimestampFromFilterPoints returns the latest timstamp among all @filterPoints.
+func GetLatestTimestampFromFilterPoints(filterPoints []FilterPointExtended) (timestamp time.Time) {
+	for _, fp := range filterPoints {
+		if fp.Time.After(timestamp) {
+			timestamp = fp.Time
+		}
+	}
+	return
+}
+
 // RemoveOldFilters removes all filter points from @filterPoints whith timestamp more than
 // @toleranceSeconds before @timestamp.
 func RemoveOldFilters(filterPoints []FilterPointExtended, toleranceSeconds int64, timestamp time.Time) (cleanedFilterPoints []FilterPointExtended, removedFilters int) {

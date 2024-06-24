@@ -112,7 +112,7 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 				Exchange:       models.Exchange{Name: KUCOIN_EXCHANGE},
 				ForeignTradeID: foreignTradeID,
 			}
-			log.Info("Got trade: ", trade)
+			// log.Info("Got trade: ", trade)
 			tradesChannel <- trade
 		}
 	}

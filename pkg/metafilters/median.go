@@ -17,6 +17,7 @@ func Median(filterPoints []models.FilterPointExtended) (medianizedFilterPoints [
 		fp.Value = filterValue
 		fp.Pair.QuoteToken = asset
 		fp.Name = medianFilterName
+		fp.Time = models.GetLatestTimestampFromFilterPoints(filters)
 		medianizedFilterPoints = append(medianizedFilterPoints, fp)
 	}
 	return

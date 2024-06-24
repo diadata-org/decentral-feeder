@@ -20,6 +20,7 @@ type Trade struct {
 type TradesBlock struct {
 	// Add field for Asset? So far, we only consider atomic tradesblocks.
 	// Asset Asset
+	Pair      Pair
 	Trades    []Trade
 	StartTime time.Time
 	EndTime   time.Time

@@ -133,7 +133,7 @@ func main() {
 	}
 
 	// frequency for the trigger ticker initiating the computation of filter values.
-	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "60"))
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
@@ -230,23 +230,16 @@ func Processor(
 			log.Info("length tradesblock: ", len(tb.Trades))
 
 			// TO DO: Set flag for trades' filter switch. For instance Median, Average, Minimum, etc.
-			atomicFilterValue, timestamp, err := filters.LastPrice(tb.Trades, true)
+			atomicFilterValue, _, err := filters.LastPrice(tb.Trades, true)
 			if err != nil {
 				log.Error("GetLastPrice: ", err)
 			}
 
 			// Identify Pair from tradesblock
-			// TO DO: There should be a better way. Maybe add as a field to tradesblock?
-			// Alternatively we could use a simple FilterPoint. As of now, the base asset is not needed in subsequent computations.
-			var pair models.Pair
-			if len(tb.Trades) > 0 {
-				pair = models.Pair{QuoteToken: tb.Trades[0].QuoteToken, BaseToken: tb.Trades[0].BaseToken}
-			}
-
 			filterPoint := models.FilterPointExtended{
-				Pair:   pair,
+				Pair:   tb.Pair,
 				Value:  atomicFilterValue,
-				Time:   timestamp,
+				Time:   tb.EndTime,
 				Source: strings.Split(exchangepairIdentifier, "-")[0],
 			}
 			filterPoints = append(filterPoints, filterPoint)
@@ -310,6 +303,7 @@ func Collector(
 				if _, ok := tradesblockMap[exchangepairIdentifier]; !ok {
 					tradesblockMap[exchangepairIdentifier] = models.TradesBlock{
 						Trades: []models.Trade{trade},
+						Pair:   exchangepair,
 					}
 				} else {
 					tradesblock := tradesblockMap[exchangepairIdentifier]
@@ -320,6 +314,12 @@ func Collector(
 			case timestamp := <-triggerChannel:
 
 				log.Info("triggered at : ", timestamp)
+				for id := range tradesblockMap {
+					tb := tradesblockMap[id]
+					tb.EndTime = timestamp
+					tradesblockMap[id] = tb
+				}
+
 				tradesblockChannel <- tradesblockMap
 				log.Info("number of tradesblocks: ", len(tradesblockMap))
 
