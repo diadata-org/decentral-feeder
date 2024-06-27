@@ -3,7 +3,7 @@
 This repository consists of a self-contained data collection, processing and publishing pipeline. More precisely, scrapers are collecting trades data from various centralized and decentralized exchanges.
 Thus obtained trades are then processed in a 2-step aggregation procedure in order to come up with a scalar value related to an asset that is subsequently published on-chain. In most cases, this value will be an asset's USD price.
 
-![embed]https://github.com/diadata-org/decentral-feeder/assets/Feeder_Architecture_Small.pdf[/embed]
+![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
 
 # Detailed Description of the Building Blocks
 In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
@@ -22,5 +22,8 @@ The collector gathers trades from all running scrapers. As soon as it receives a
 ## Processor
 The processor is a 2-step aggregation procedure similar to mapReduce.\
 1. Step: Aggregate trades from an atomic tradesblock. The type of aggregation can be selected through an environment variable (see Feeder/main). The only assumption on the aggregation implementation is that it returns a `float64`.
-2. Step: Aggregate filter values obtained in step 1. More precisely, all filter values obtained from atomic blocks with the same quote token are aggregated. 
+2. Step: Aggregate filter values obtained in step 1. The selection of aggregation method and assumptions are identical to Step 1.
+The obtained scalar value is sent to the Oracle feeder.
 
+## Feeder
+The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
