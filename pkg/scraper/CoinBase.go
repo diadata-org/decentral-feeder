@@ -45,7 +45,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(coinbaseWSBaseString, nil)
 	if err != nil {
-		log.Fatal("Dial CoinBase ws base string: ", err)
+		log.Error("Dial CoinBase ws base string: ", err)
 	}
 
 	// Subscribe to pairs.

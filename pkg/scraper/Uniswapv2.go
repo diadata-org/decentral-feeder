@@ -58,11 +58,11 @@ func NewUniswapV2Scraper(pools []models.Pool, tradesChannel chan models.Trade, w
 
 	scraper.restClient, err = ethclient.Dial(utils.Getenv(UNISWAPV2_EXCHANGE+"_URI_REST", restDial))
 	if err != nil {
-		log.Fatal("init rest client: ", err)
+		log.Error("init rest client: ", err)
 	}
 	scraper.wsClient, err = ethclient.Dial(utils.Getenv(UNISWAPV2_EXCHANGE+"_URI_WS", wsDial))
 	if err != nil {
-		log.Fatal("init ws client: ", err)
+		log.Error("init ws client: ", err)
 	}
 
 	// TO DO: Import through env var.
@@ -70,7 +70,7 @@ func NewUniswapV2Scraper(pools []models.Pool, tradesChannel chan models.Trade, w
 	// Fetch all pool with given liquidity threshold from database.
 	poolMap, err = scraper.makeUniPoolMap(pools)
 	if err != nil {
-		log.Fatal("build poolMap: ", err)
+		log.Error("build poolMap: ", err)
 	}
 
 	go scraper.mainLoop(pools, tradesChannel)
@@ -180,7 +180,7 @@ func (scraper *UniswapV2Scraper) GetSwapsChannel(pairAddress common.Address) (ch
 	var pairFiltererContract *uniswap.UniswapV2PairFilterer
 	pairFiltererContract, err := uniswap.NewUniswapV2PairFilterer(pairAddress, scraper.wsClient)
 	if err != nil {
-		log.Fatal(err)
+		log.Error("UniswapV2 pair filterer: ", err)
 	}
 
 	_, err = pairFiltererContract.WatchSwap(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{})

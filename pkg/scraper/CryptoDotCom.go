@@ -174,7 +174,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	// ----------------------------------------
 	err := s.subscribe(pairs)
 	if err != nil {
-		log.Fatal("send: ", err)
+		log.Error("send: ", err)
 	}
 
 	// ----------------------------------------

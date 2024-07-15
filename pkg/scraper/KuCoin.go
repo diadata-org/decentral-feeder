@@ -52,13 +52,13 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 	token, pingInterval, err := getPublicKuCoinToken(kucoinTokenURL)
 	if err != nil {
-		log.Fatal("getPublicKuCoinToken: ", err)
+		log.Error("getPublicKuCoinToken: ", err)
 	}
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(kucoinWSBaseString+"?token="+token, nil)
 	if err != nil {
-		log.Fatal("Dial KuCoin ws base string: ", err)
+		log.Error("Dial KuCoin ws base string: ", err)
 	}
 
 	// Subscribe to pairs.

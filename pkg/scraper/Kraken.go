@@ -48,7 +48,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
 	if err != nil {
-		log.Fatal("Dial Kraken ws base string: ", err)
+		log.Error("Dial Kraken ws base string: ", err)
 	}
 
 	// Subscribe to pairs.
