@@ -37,13 +37,12 @@ type ScraperID struct {
 	RegistrationTime time.Time
 }
 
+// GetLastTrade returns the latest trade from the slice @trades.
 func GetLastTrade(trades []Trade) (lastTrade Trade) {
 
 	for _, trade := range trades {
 		if trade.Time.After(lastTrade.Time) {
-			lastTrade.Time = trade.Time
-			lastTrade.Price = trade.Price
-			lastTrade.BaseToken = trade.BaseToken
+			lastTrade = trade
 		}
 	}
 
