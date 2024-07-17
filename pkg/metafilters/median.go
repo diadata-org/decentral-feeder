@@ -9,8 +9,10 @@ const (
 	medianFilterName = "median"
 )
 
+// Median returns the median value for all filter points that share the same quote asset.
 func Median(filterPoints []models.FilterPointExtended) (medianizedFilterPoints []models.FilterPointExtended) {
 	filterAssetMap := models.GroupFilterByAsset(filterPoints)
+
 	for asset, filters := range filterAssetMap {
 		filterValue := utils.Median(models.GetValuesFromFilterPoints(filters))
 		var fp models.FilterPointExtended
@@ -20,5 +22,6 @@ func Median(filterPoints []models.FilterPointExtended) (medianizedFilterPoints [
 		fp.Time = models.GetLatestTimestampFromFilterPoints(filters)
 		medianizedFilterPoints = append(medianizedFilterPoints, fp)
 	}
+
 	return
 }

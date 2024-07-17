@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,8 +15,6 @@ const (
 	KUCOIN_EXCHANGE       = "KuCoin"
 
 	UNISWAPV2_EXCHANGE = "UniswapV2"
-
-	ETHEREUM = "Ethereum"
 )
 
 var (
@@ -32,5 +31,5 @@ func init() {
 	Exchanges[KRAKEN_EXCHANGE] = models.Exchange{Name: KRAKEN_EXCHANGE, Centralized: true}
 	Exchanges[KUCOIN_EXCHANGE] = models.Exchange{Name: KUCOIN_EXCHANGE, Centralized: true}
 
-	Exchanges[UNISWAPV2_EXCHANGE] = models.Exchange{Name: UNISWAPV2_EXCHANGE, Centralized: false, Blockchain: ETHEREUM}
+	Exchanges[UNISWAPV2_EXCHANGE] = models.Exchange{Name: UNISWAPV2_EXCHANGE, Centralized: false, Blockchain: utils.ETHEREUM}
 }

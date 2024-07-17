@@ -36,3 +36,16 @@ type ScraperID struct {
 	Name             string
 	RegistrationTime time.Time
 }
+
+func GetLastTrade(trades []Trade) (lastTrade Trade) {
+
+	for _, trade := range trades {
+		if trade.Time.After(lastTrade.Time) {
+			lastTrade.Time = trade.Time
+			lastTrade.Price = trade.Price
+			lastTrade.BaseToken = trade.BaseToken
+		}
+	}
+
+	return
+}

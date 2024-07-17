@@ -137,14 +137,14 @@ func (scraper *UniswapV2Scraper) ListenToPair(address common.Address, tradesChan
 					Symbol:     pair.Token0.Symbol,
 					Name:       pair.Token0.Name,
 					Decimals:   pair.Token0.Decimals,
-					Blockchain: ETHEREUM,
+					Blockchain: utils.ETHEREUM,
 				}
 				token1 := models.Asset{
 					Address:    pair.Token1.Address.Hex(),
 					Symbol:     pair.Token1.Symbol,
 					Name:       pair.Token1.Name,
 					Decimals:   pair.Token1.Decimals,
-					Blockchain: ETHEREUM,
+					Blockchain: utils.ETHEREUM,
 				}
 				t := models.Trade{
 					Price:          price,
@@ -154,7 +154,7 @@ func (scraper *UniswapV2Scraper) ListenToPair(address common.Address, tradesChan
 					Time:           time.Unix(swap.Timestamp, 0),
 					PoolAddress:    rawSwap.Raw.Address.Hex(),
 					ForeignTradeID: swap.ID,
-					Exchange:       models.Exchange{Name: UNISWAPV2_EXCHANGE, Blockchain: ETHEREUM},
+					Exchange:       models.Exchange{Name: UNISWAPV2_EXCHANGE, Blockchain: utils.ETHEREUM},
 				}
 
 				// log.Info("tx hash: ", swap.ID)
