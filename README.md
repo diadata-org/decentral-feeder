@@ -9,7 +9,7 @@ Thus obtained trades are then processed in a 2-step aggregation procedure in ord
 In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
 
 ## Scrapers
-Each scraper is implemented in a dedicated file in the folder /pkg/scraper with the main function signature `func NewExchangeScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup)`, 
+Each scraper is implemented in a dedicated file in the folder /pkg/scrapers with the main function signature `func NewExchangeScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup)`, 
 resp. `pools` instead of `pairs` for decentralized exchanges.\
 Its function is to continuously fetch trades data from a given exchange and send them to the channel `tradesChannel`.\
 The expected input for a scraper is a set of pair tickers such as `BTC-USDT`. Tickers are always capitalized and symbols separated by a hyphen. It's the role of the scraper to format the pair ticker such that it can subscribe to
