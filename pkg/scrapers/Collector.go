@@ -14,6 +14,7 @@ func Collector(
 	pools []models.Pool,
 	tradesblockChannel chan map[string]models.TradesBlock,
 	triggerChannel chan time.Time,
+	failoverChannel chan string,
 	wg *sync.WaitGroup,
 ) {
 
@@ -29,12 +30,21 @@ func Collector(
 	tradesChannelIn := make(chan models.Trade)
 	for exchange := range exchangepairMap {
 		wg.Add(1)
-		go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, wg)
+		go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
 	}
 	for exchange := range poolMap {
 		wg.Add(1)
-		go RunScraper(exchange, []models.ExchangePair{}, poolMap[exchange], tradesChannelIn, wg)
+		go RunScraper(exchange, []models.ExchangePair{}, poolMap[exchange], tradesChannelIn, failoverChannel, wg)
 	}
+
+	// Restart scraper in case it failed.
+	go func() {
+		for exchange := range failoverChannel {
+			log.Info("Name: ", exchange)
+			wg.Add(1)
+			go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
+		}
+	}()
 
 	// tradesblockMap maps an exchangpair identifier onto a TradesBlock.
 	// This also means that each value consists of trades of only one exchangepair.

@@ -101,15 +101,16 @@ func main() {
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
 	filtersChannel := make(chan []models.FilterPointExtended)
 	triggerChannel := make(chan time.Time)
+	failoverChannel := make(chan string)
 
 	// ----------------------------
 	// Feeder mechanics
 	// ----------------------------
 	key := utils.Getenv("PRIVATE_KEY", "")
-	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
-	backupNode := utils.Getenv("BACKUP_NODE", "")
+	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "TojDvfRPR9XNaV")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "0xc46ec266269fa0b771da023d23123f8e340a95f9")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
+	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
 
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
@@ -119,7 +120,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", ""), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "23104"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
@@ -152,7 +153,7 @@ func main() {
 	}()
 
 	// Run Processor and subsequent routines.
-	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, &wg)
+	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	oracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
