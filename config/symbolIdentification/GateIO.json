@@ -8,6 +8,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ETH",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "DIA",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

@@ -9,6 +9,51 @@
         "ForeignName": "ETH-USDT",
         "QuoteSymbol": "ETH",
         "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "WIF-USDT",
+        "QuoteSymbol": "WIF",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "ENS-USDT",
+        "QuoteSymbol": "ENS",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "YFI-USDT",
+        "QuoteSymbol": "YFI",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "STORJ-USDT",
+        "QuoteSymbol": "STORJ",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "SUSHI-USDT",
+        "QuoteSymbol": "SUSHI",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "MOVR-USDT",
+        "QuoteSymbol": "MOVR",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "STG-USDT",
+        "QuoteSymbol": "STG",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "DIA-USDT",
+        "QuoteSymbol": "DIA",
+        "BaseSymbol": "USDT"
+      },
+      {
+        "ForeignName": "USDC-USDT",
+        "QuoteSymbol": "USDC",
+        "BaseSymbol": "USDT"
       }
     ]
 }

@@ -8,6 +8,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ETH",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "DIA",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
