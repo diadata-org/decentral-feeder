@@ -42,8 +42,9 @@ type kuCoinWSData struct {
 }
 
 var (
-	kucoinWSBaseString = "wss://ws-api-spot.kucoin.com/"
-	kucoinTokenURL     = "https://api.kucoin.com/api/v1/bullet-public"
+	kucoinWSBaseString    = "wss://ws-api-spot.kucoin.com/"
+	kucoinTokenURL        = "https://api.kucoin.com/api/v1/bullet-public"
+	kucoinPingIntervalFix = int64(10)
 )
 
 func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
@@ -162,7 +163,7 @@ type instanceServers struct {
 func ping(wsClient *ws.Conn, pingInterval int64) {
 	var ping kuCoinWSMessage
 	ping.Type = "ping"
-	tick := time.NewTicker(time.Duration(pingInterval/2) * time.Second)
+	tick := time.NewTicker(time.Duration(kucoinPingIntervalFix) * time.Second)
 
 	for range tick.C {
 		log.Infof("send ping.")

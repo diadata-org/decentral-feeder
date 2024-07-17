@@ -84,7 +84,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 		f64Volume, err = strconv.ParseFloat(message.Result.Amount, 64)
 		if err != nil {
-			log.Errorln("error parsing float Price", err)
+			log.Errorln("error parsing float Volume", err)
 			continue
 		}
 
