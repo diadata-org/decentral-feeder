@@ -1,4 +1,8 @@
 export_env_vars.sh
+<<<<<<< HEAD
 decentral-feeder
 decentral-feeder/build/docker-images.sh
 /build/docker-images.sh
+=======
+
+>>>>>>> 2663a90 (added neccesary changes for prometheus to monitor decentralized-feeder)
