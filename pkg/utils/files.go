@@ -11,5 +11,5 @@ func GetPath(configPath string, exchange string) string {
 	if dir == "/root" || dir == "/home" {
 		return "/config/" + configPath + exchange + ".json"
 	}
-	return os.Getenv("GOPATH") + "/home/shpookas/dia/git/decentralized-feeder/decentral-feeder/config/" + configPath + exchange + ".json"
+	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/decentral-feeder/config/" + configPath + exchange + ".json"
 }
