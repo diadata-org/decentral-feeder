@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"math/big"
+	"net/http"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -17,6 +19,9 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/shirou/gopsutil/cpu"
 )
 
 const (
@@ -46,6 +51,36 @@ var (
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
 )
+
+type metrics struct {
+	uptime      prometheus.Gauge
+	cpuUsage    prometheus.Gauge
+	memoryUsage prometheus.Gauge
+}
+
+func NewMetrics(reg prometheus.Registerer) *metrics {
+	m := &metrics{
+		uptime: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "uptime_seconds",
+			Help:      "Uptime of the application in seconds.",
+		}),
+		cpuUsage: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "cpu_usage_percent",
+			Help:      "CPU usage of the application in percent.",
+		}),
+		memoryUsage: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "memory_usage_megabytes",
+			Help:      "Memory usage of the application in megabytes.",
+		}),
+	}
+	reg.MustRegister(m.uptime)
+	reg.MustRegister(m.cpuUsage)
+	reg.MustRegister(m.memoryUsage)
+	return m
+}
 
 func init() {
 	flag.Parse()
@@ -88,10 +123,43 @@ func init() {
 			pools = append(pools, p...)
 		}
 	}
-
 }
 
 func main() {
+	reg := prometheus.NewRegistry()
+	m := NewMetrics(reg)
+
+	// Record start time for uptime calculation
+	startTime := time.Now()
+
+	pMux := http.NewServeMux()
+	promHandler := promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
+	pMux.Handle("/metrics", promHandler)
+
+	go func() {
+		log.Fatal(http.ListenAndServe(":8081", pMux))
+	}()
+
+	// Update metrics periodically
+	go func() {
+		for {
+			uptime := time.Since(startTime).Seconds()
+			m.uptime.Set(uptime)
+
+			// Update memory usage
+			var memStats runtime.MemStats
+			runtime.ReadMemStats(&memStats)
+			memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
+			m.memoryUsage.Set(memoryUsageMB)
+			// Update CPU usage using gopsutil
+			percent, _ := cpu.Percent(0, false)
+			if len(percent) > 0 {
+				m.cpuUsage.Set(percent[0])
+			}
+
+			time.Sleep(10 * time.Second) // update metrics every 10 seconds
+		}
+	}()
 
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
