@@ -24,6 +24,8 @@ func RunScraper(exchange string, pairs []models.ExchangePair, pools []models.Poo
 
 	case UNISWAPV2_EXCHANGE:
 		NewUniswapV2Scraper(pools, tradesChannel, wg)
+	case Simulation:
+		NewSimulationScraper(pools, tradesChannel, wg)
 
 	}
 }

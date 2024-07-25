@@ -32,7 +32,7 @@ var (
 	env = flag.Bool("env", true, "Get pairs and pools from env variable if set to true. Otherwise, pairs are read from config file.")
 
 	// Comma separated list of exchanges. Only used in case pairs are read from config files.
-	exchanges = utils.Getenv("EXCHANGES", "UniswapV2,Binance")
+	exchanges = utils.Getenv("EXCHANGES", "UniswapV2,Binance,Simulation")
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
