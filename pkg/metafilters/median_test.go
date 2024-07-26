@@ -39,6 +39,7 @@ func TestMedian(t *testing.T) {
 				{
 					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
 					Value: 3381.11,
+					Name:  "median",
 				},
 			},
 		},
@@ -66,10 +67,12 @@ func TestMedian(t *testing.T) {
 				{
 					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
 					Value: 3179.78,
+					Name:  "median",
 				},
 				{
 					Pair:  models.Pair{QuoteToken: BTC, BaseToken: USDC},
 					Value: 62344.9,
+					Name:  "median",
 				},
 			},
 		},
@@ -93,6 +96,7 @@ func TestMedian(t *testing.T) {
 				{
 					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
 					Value: 3179.78,
+					Name:  "median",
 				},
 			},
 		},
@@ -102,7 +106,7 @@ func TestMedian(t *testing.T) {
 		medianizedFilterPoints := Median(c.filterPoints)
 
 		if !reflect.DeepEqual(medianizedFilterPoints, c.medianizedFilterPoints) {
-			t.Errorf("Median was incorrect, got: %f, expected: %f for set:%d", medianizedFilterPoints, c.medianizedFilterPoints, i)
+			t.Errorf("Median was incorrect, got: %v, expected: %v for set:%d", medianizedFilterPoints, c.medianizedFilterPoints, i)
 		}
 
 	}

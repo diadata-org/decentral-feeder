@@ -37,7 +37,7 @@ func testGetLastTrade(t *testing.T) {
 	for i, c := range cases {
 		lastTrade := GetLastTrade(c.trades)
 		if lastTrade != c.lastTrade {
-			t.Errorf("Trade was incorrect, got: %f, expected: %f for set:%d", lastTrade, c.lastTrade, i)
+			t.Errorf("Trade was incorrect, got: %v, expected: %v for set:%d", lastTrade, c.lastTrade, i)
 		}
 	}
 }
