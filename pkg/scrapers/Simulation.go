@@ -54,7 +54,19 @@ func NewSimulationScraper(pools []models.Pool, tradesChannel chan models.Trade, 
 	scraper.initTokens()
 
 	log.Info("Started Simulation scraper.")
-	go scraper.mainLoop(pools, tradesChannel)
+
+	ticker := time.NewTicker(1 * time.Minute)
+	go func() {
+		for {
+			select {
+
+			case <-ticker.C:
+				log.Info("RUN Simulation scraper.")
+
+				go scraper.mainLoop(pools, tradesChannel)
+			}
+		}
+	}()
 
 }
 
