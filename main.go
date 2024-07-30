@@ -130,10 +130,12 @@ func init() {
 }
 
 func main() {
+	// get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
 	if err != nil {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
+	// get pushgatewayURL variable from kubernetes env variables, if not, the default is https://pushgateway.diadata.org
 	pushgatewayURL := utils.Getenv("PUSHGATEWAY_URL", "https://pushgateway.diadata.org")
 
 	reg := prometheus.NewRegistry()
