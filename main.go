@@ -4,7 +4,6 @@ import (
 	"os"
 	"flag"
 	"math/big"
-	"net/http"
 	"runtime"
 	"strconv"
 	"strings"
@@ -21,7 +20,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	//"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/shirou/gopsutil/cpu"
 )
 
@@ -57,9 +57,11 @@ type metrics struct {
 	uptime      prometheus.Gauge
 	cpuUsage    prometheus.Gauge
 	memoryUsage prometheus.Gauge
+	pushGatewayURL string
+	jobName     string
 }
 
-func NewMetrics(reg prometheus.Registerer) *metrics {
+func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName string) *metrics {
 	m := &metrics{
 		uptime: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
@@ -76,6 +78,8 @@ func NewMetrics(reg prometheus.Registerer) *metrics {
 			Name:      "memory_usage_megabytes",
 			Help:      "Memory usage of the application in megabytes.",
 		}),
+		pushGatewayURL: pushGatewayURL,
+		jobName:     jobName,
 	}
 	reg.MustRegister(m.uptime)
 	reg.MustRegister(m.cpuUsage)
@@ -127,19 +131,17 @@ func init() {
 }
 
 func main() {
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Fatalf("Failed to get hostname: %v", err)
+	}
+	pushgatewayURL := utils.Getenv("PUSHGATEWAY_URL", "https://pushgateway.diadata.org")
+
 	reg := prometheus.NewRegistry()
-	m := NewMetrics(reg)
+	m := NewMetrics(reg, pushgatewayURL, "df_"+hostname)
 
 	// Record start time for uptime calculation
 	startTime := time.Now()
-
-	pMux := http.NewServeMux()
-	promHandler := promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
-	pMux.Handle("/metrics", promHandler)
-
-	go func() {
-		log.Fatal(http.ListenAndServe(":8081", pMux))
-	}()
 
 	// Update metrics periodically
 	go func() {
@@ -152,10 +154,20 @@ func main() {
 			runtime.ReadMemStats(&memStats)
 			memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
 			m.memoryUsage.Set(memoryUsageMB)
+
 			// Update CPU usage using gopsutil
 			percent, _ := cpu.Percent(0, false)
 			if len(percent) > 0 {
 				m.cpuUsage.Set(percent[0])
+			}
+
+			// Push metrics to the Pushgateway
+			if err := push.New(m.pushGatewayURL, m.jobName).
+				Collector(m.uptime).
+				Collector(m.cpuUsage).
+				Collector(m.memoryUsage).
+				Push(); err != nil {
+				log.Errorf("Could not push metrics to Pushgateway: %v", err)
 			}
 
 			time.Sleep(10 * time.Second) // update metrics every 10 seconds
