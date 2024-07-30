@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"math/big"
+	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -17,6 +19,9 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/push"
+	"github.com/shirou/gopsutil/cpu"
 )
 
 const (
@@ -46,6 +51,40 @@ var (
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
 )
+
+type metrics struct {
+	uptime        prometheus.Gauge
+	cpuUsage      prometheus.Gauge
+	memoryUsage   prometheus.Gauge
+	pushGatewayURL string
+	jobName       string
+}
+
+func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName string) *metrics {
+	m := &metrics{
+		uptime: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "uptime_seconds",
+			Help:      "Uptime of the application in seconds.",
+		}),
+		cpuUsage: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "cpu_usage_percent",
+			Help:      "CPU usage of the application in percent.",
+		}),
+		memoryUsage: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "memory_usage_megabytes",
+			Help:      "Memory usage of the application in megabytes.",
+		}),
+		pushGatewayURL: pushGatewayURL,
+		jobName:        jobName,
+	}
+	reg.MustRegister(m.uptime)
+	reg.MustRegister(m.cpuUsage)
+	reg.MustRegister(m.memoryUsage)
+	return m
+}
 
 func init() {
 	flag.Parse()
@@ -88,19 +127,58 @@ func init() {
 			pools = append(pools, p...)
 		}
 	}
-
 }
 
 func main() {
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Fatalf("Failed to get hostname: %v", err)
+	}
+	pushgatewayURL := utils.Getenv("PUSHGATEWAY_URL", "https://pushgateway.diadata.org")
+
+	reg := prometheus.NewRegistry()
+	m := NewMetrics(reg, pushgatewayURL, "df_"+hostname)
+
+	// Record start time for uptime calculation
+	startTime := time.Now()
+
+	// Update metrics periodically
+	go func() {
+		for {
+			uptime := time.Since(startTime).Seconds()
+			m.uptime.Set(uptime)
+
+			// Update memory usage
+			var memStats runtime.MemStats
+			runtime.ReadMemStats(&memStats)
+			memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
+			m.memoryUsage.Set(memoryUsageMB)
+
+			// Update CPU usage using gopsutil
+			percent, _ := cpu.Percent(0, false)
+			if len(percent) > 0 {
+				m.cpuUsage.Set(percent[0])
+			}
+
+			// Push metrics to the Pushgateway
+			if err := push.New(m.pushGatewayURL, m.jobName).
+				Collector(m.uptime).
+				Collector(m.cpuUsage).
+				Collector(m.memoryUsage).
+				Push(); err != nil {
+				log.Errorf("Could not push metrics to Pushgateway: %v", err)
+			}
+
+			time.Sleep(10 * time.Second) // update metrics every 10 seconds
+		}
+	}()
 
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
 	filtersChannel := make(chan []models.FilterPointExtended)
 	triggerChannel := make(chan time.Time)
 
-	// ----------------------------
 	// Feeder mechanics
-	// ----------------------------
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
@@ -120,7 +198,7 @@ func main() {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
 
-	// frequency for the trigger ticker initiating the computation of filter values.
+	// Frequency for the trigger ticker initiating the computation of filter values.
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
@@ -153,4 +231,3 @@ func main() {
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
 }
-
