@@ -42,6 +42,9 @@ Steps:
         * PRIVATE_KEY
         * PRIVATE_KEY_PASSWORD
         * DEPLOYED_CONTRACT
+        * UniswapV2_URI_REST=
+        * UniswapV2_URI_WS=
+        * HTTPS_PROXY (only needed if deployed to infra hosted in states)
     * Also, if you want to deploy a specific tag, update this version under 
         *image: us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.XXX
 
