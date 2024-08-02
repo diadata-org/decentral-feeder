@@ -29,4 +29,10 @@ jobs:
     - name: Test
       run: go test -v ./...
 
+    # Install IBM Cloud CLI and Container Registry CLI
+    - name: Install IBM Cloud CLI
+      run: |
+        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+        ibmcloud plugin install container-registry -f
+
 
