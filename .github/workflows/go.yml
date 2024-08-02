@@ -61,15 +61,8 @@ jobs:
         run: |
           docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.23 .
 
-      # Tag the Docker image for IBM Cloud
-     # - name: Tag Docker image
-     #   run: docker tag myapp:latest us.icr.io/my-namespace/myapp:latest
-
       # Push the Docker image to IBM Cloud Container Registry
-      #- name: Push Docker image
-      #  env:
-       #   IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
-       # run: |
-        #  ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
-        #  ibmcloud cr login
-        #  docker push us.icr.io/my-namespace/myapp:latest
+      - name: Push Docker image
+        run: |
+          ibmcloud cr login
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.23
