@@ -56,13 +56,18 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Build the Docker image
-      - name: Build Docker image
+      # Get Unix Timestamp
+      - name: Get Unix Timestamp
+        id: get_timestamp
+        run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+
+      # Build and Tag the Docker image
+      - name: Build and Tag Docker image
         run: |
-          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.23 .
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.TIMESTAMP }} .
 
       # Push the Docker image to IBM Cloud Container Registry
       - name: Push Docker image
         run: |
           ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.23
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.TIMESTAMP }}
