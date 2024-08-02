@@ -55,11 +55,11 @@ jobs:
           ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
           ibmcloud target -r us-south
           ibmcloud target -g Default
-          echo "Using secret: $IBM_CLOUD_API_KEY"
 
       # Build the Docker image
-     # - name: Build Docker image
-     #   run: docker build -t myapp:latest .
+      - name: Build Docker image
+        run: |
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.23 .
 
       # Tag the Docker image for IBM Cloud
      # - name: Tag Docker image
