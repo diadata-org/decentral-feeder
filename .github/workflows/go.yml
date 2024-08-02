@@ -42,12 +42,12 @@ jobs:
       - uses: actions/checkout@v4
 
       # Log in to IBM Cloud
-     # - name: Log in to IBM Cloud
-     #   env:
-     #     IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
-     #   run: |
-     #     ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
-     #     ibmcloud target -r us-south
+      - name: Log in to IBM Cloud
+        env:
+          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
+        run: |
+          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
+          ibmcloud target -r us-south
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
