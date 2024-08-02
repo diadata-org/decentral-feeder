@@ -70,4 +70,4 @@ jobs:
       - name: Push Docker image
         run: |
           ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.TIMESTAMP }}
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }}
