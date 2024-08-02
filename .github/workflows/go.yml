@@ -64,7 +64,7 @@ jobs:
       # Build and Tag the Docker image
       - name: Build and Tag Docker image
         run: |
-          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.TIMESTAMP }} .
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }} .
 
       # Push the Docker image to IBM Cloud Container Registry
       - name: Push Docker image
