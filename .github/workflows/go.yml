@@ -54,6 +54,8 @@ jobs:
         run: |
           ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
           ibmcloud target -r us-south
+          ibmcloud target -g Default
+          echo "Using secret: $IBM_CLOUD_API_KEY"
 
       # Build the Docker image
      # - name: Build Docker image
