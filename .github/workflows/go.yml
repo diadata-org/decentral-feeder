@@ -41,6 +41,12 @@ jobs:
       # Checkout the repository
       - uses: actions/checkout@v4
 
+      # Install IBM Cloud CLI and Container Registry CLI
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud plugin install container-registry -f
+
       # Log in to IBM Cloud
       - name: Log in to IBM Cloud
         env:
@@ -48,12 +54,6 @@ jobs:
         run: |
           ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
           ibmcloud target -r us-south
-
-      # Install IBM Cloud CLI and Container Registry CLI
-      - name: Install IBM Cloud CLI
-        run: |
-          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-          ibmcloud plugin install container-registry -f
 
       # Build the Docker image
      # - name: Build Docker image
