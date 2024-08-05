@@ -90,8 +90,26 @@ jobs:
           CLUSTER_NAME: dia-k3s
           API_SERVER:  https://74.220.26.123:6443 # Example: https://your-api-server:6443
         run: |
-          kubectl config set-cluster $CLUSTER_NAME --server=$API_SERVER
-          kubectl config set-credentials github-actions-sa --token=$TOKEN
-          kubectl config set-context dia-k3s --cluster=$CLUSTER_NAME --user=github-actions-sa
+          set -e  # Exit immediately if a command exits with a non-zero status
+          set -u  # Treat unset variables as an error
+
+          # Debugging: Check environment variables
+          echo "Cluster Name: $CLUSTER_NAME"
+          echo "API Server: $API_SERVER"
+          echo "Token length: ${#TOKEN}"  # Check the token length for sanity
+
+          # Ensure token does not contain unexpected newline characters
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+
+          # Set cluster
+          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+
+          # Set credentials
+          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+
+          # Set context
+          kubectl config set-context dia-k3s --cluster="$CLUSTER_NAME" --user=github-actions-sa
+
+          # Use context
           kubectl config use-context dia-k3s
 
