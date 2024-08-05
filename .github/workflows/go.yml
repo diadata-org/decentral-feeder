@@ -97,20 +97,22 @@ jobs:
           echo "Cluster Name: $CLUSTER_NAME"
           echo "API Server: $API_SERVER"
           echo "Token length: ${#TOKEN}"  # Check the token length for sanity
-
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-
           # Set cluster
           kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
-
           # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
-
           # Set context
           kubectl config set-context dia-k3s --cluster="$CLUSTER_NAME" --user=github-actions-sa
-
           # Use context
           kubectl config use-context dia-k3s
-          
+
+      - name: Deploy to Kubernetes using Helm
+        env:
+          TIMESTAMP: ${{ env.TIMESTAMP }}
+        run: |
+          helm upgrade --install diadecentraloracleservice ./diadecentraloracleservice \
+            --set image.repository=us.icr.io/dia-registry/oracles/diadecentraloracleservice \
+            --set image.tag=unix-${{ env.TIMESTAMP }}
 
