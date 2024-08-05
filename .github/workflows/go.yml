@@ -112,6 +112,9 @@ jobs:
         env:
           TIMESTAMP: ${{ env.TIMESTAMP }}
         run: |
+          kubectl config view
+          kubectl get nodes
+          kubectl cluster-info
           helm upgrade --install diadecentraloracleservice ./diadecentraloracleservice \
             --set image.repository=us.icr.io/dia-registry/oracles/diadecentraloracleservice \
             --set image.tag=unix-${{ env.TIMESTAMP }}
