@@ -107,14 +107,12 @@ jobs:
           kubectl config set-context dia-k3s --cluster="$CLUSTER_NAME" --user=github-actions-sa
           # Use context
           kubectl config use-context dia-k3s
-          kubectl get nodes
-
+          
       - name: Deploy to Kubernetes using Helm
         env:
           TIMESTAMP: ${{ env.TIMESTAMP }}
         run: |
           kubectl config view
-          kubectl get nodes
           kubectl cluster-info
           helm upgrade --install diadecentraloracleservice ./diadecentraloracleservice \
             --set image.repository=us.icr.io/dia-registry/oracles/diadecentraloracleservice \
