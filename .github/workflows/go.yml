@@ -112,4 +112,5 @@ jobs:
 
           # Use context
           kubectl config use-context dia-k3s
+          
 
