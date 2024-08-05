@@ -1,0 +1,24 @@
+{{ if .Values.service.enabled | default false }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.Namespace }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Chart.Name }}
+    meta.helm.sh/release-namespace: TargetNamespace
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app: {{ .Chart.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: {{ .Chart.Name }}
+      port: {{ .Values.service.port }}
+  selector:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+{{ end }}

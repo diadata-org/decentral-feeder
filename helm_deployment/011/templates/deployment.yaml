@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  revisionHistoryLimit: {{ .Values.app.revisionHistory | default 3}}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{randAlphaNum 5 | quote }}
+      labels:
+        app: {{ .Chart.Name }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      {{ if .Values.app.podSecurityContext | default false}}
+      {{ if .Values.app.podSecurityContext.enabled | default false}}
+      securityContext: {{- omit .Values.app.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{ end }}
+      {{ end }}
+      {{ if .Values.persistence.enabled | default false }}
+      volumes:
+        - name: volume-{{ .Release.Name }}
+          persistentVolumeClaim:
+            claimName: pvc-{{ .Release.Name }}
+      {{ end }}
+      {{ if .Values.initContainer | default false}}
+      {{ if .Values.initContainer.enabled | default false}}
+      initContainers:
+        - name: init-{{ .Release.Name }}
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command: {{ .Values.initContainer.command }}
+          args: {{ .Values.initContainer.args }}
+          volumeMounts:
+            - name: volume-{{ .Release.Name }}
+              mountPath: {{ .Values.persistence.mountPath | default "/" }}
+      {{ end }}
+      {{ end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.repository.image }}:{{ .Values.repository.tag }}
+          imagePullPolicy: {{ .Values.repository.pullPolicy }}
+          {{ if .Values.persistence.enabled | default false }}
+          volumeMounts:
+            - mountPath: {{ .Values.persistence.mountPath | default "/" }}
+              name: volume-{{ .Release.Name }}
+          {{ end }}
+          {{ if .Values.app.liveness | default false }}
+          {{ if .Values.app.liveness.enabled | default false }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.app.liveness.path | default "/live" }}
+              port: {{ .Values.app.liveness.port | default  "2345" }}
+            initialDelaySeconds: {{ .Values.app.liveness.initialDelaySeconds | default  120 }}
+            periodSeconds: {{ .Values.app.liveness.periodSeconds | default  5 }}
+          {{ end }}
+          {{ end }}
+          {{ if .Values.app.readiness | default false }}
+          {{ if .Values.app.readiness.enabled | default false }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.app.readiness.path | default "/ready" }}
+              port: {{ .Values.app.readiness.port | default "2345" }}
+            initialDelaySeconds: {{ .Values.app.readiness.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.app.readiness.periodSeconds | default 5 }}
+          {{ end }}
+          {{ end }}
+          {{ if .Values.app.args| default false }}
+          args:
+{{ toYaml .Values.app.args | indent 12 }}
+          {{ end }}
+          resources:
+{{ toYaml .Values.app.resources | indent 12 }}
+          {{ if .Values.app.env | default false }}
+          env:
+{{ toYaml .Values.app.env | indent 12 }}
+          {{ end }}
+      imagePullSecrets:
+        {{ toYaml .Values.imagePullSecrets | indent 10 }}
+{{ if .Values.app.affinity.enabled | default false }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: ibm-cloud.kubernetes.io/worker-pool-name
+                    operator: In
+                    values:
+{{ toYaml .Values.app.affinity.workergroup | indent 22 }}
+{{ end }}
