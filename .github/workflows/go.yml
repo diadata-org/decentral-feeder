@@ -88,7 +88,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
           CLUSTER_NAME: dia-k3s
-          API_SERVER:  https://74.220.26.123:6443 # Example: https://your-api-server:6443
+          API_SERVER:  https://49.13.80.204:6443 # Example: https://your-api-server:6443
         run: |
           set -e  # Exit immediately if a command exits with a non-zero status
           set -u  # Treat unset variables as an error
