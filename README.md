@@ -59,6 +59,6 @@ Steps:
     * The Helm manifest files are located under the /helmcharts/oracles/conduit-test directory.
 
 Deploy Using Helm:
-    * Use Helm to deploy the containers to your Kubernetes cluster. Ensure you have Helm installed and configured to interact with your Kubernetes cluster.
-    * You can deploy the Helm chart by running the following command:
+* Use Helm to deploy the containers to your Kubernetes cluster. Ensure you have Helm installed and configured to interact with your Kubernetes cluster.
+* You can deploy the Helm chart by running the following command:
     `helm upgrade -n dia-oracles-prod --set repository.tag="v1.0.XX" diaoracleservice-conduit-XX .`
