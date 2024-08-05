@@ -1,9 +1,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
-  namespace: monitoring
-  name: github-actions-role
+  name: github-actions-clusterrole
 rules:
-- apiGroups: ["", "apps", "extensions"]
-  resources: ["deployments", "pods", "services"]
-  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["", "apps", "extensions"]
+    resources: ["deployments", "pods", "services", "namespaces", "configmaps", "secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
