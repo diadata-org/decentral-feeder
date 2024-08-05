@@ -107,6 +107,7 @@ jobs:
           kubectl config set-context dia-k3s --cluster="$CLUSTER_NAME" --user=github-actions-sa
           # Use context
           kubectl config use-context dia-k3s
+          kubectl get nodes
 
       - name: Deploy to Kubernetes using Helm
         env:
