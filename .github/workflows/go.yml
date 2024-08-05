@@ -83,4 +83,15 @@ jobs:
       - name: Install Helm
         run: |
           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      # kubectl config with service account 
+      - name: Configure kubectl with Service Account
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
+          CLUSTER_NAME: dia-k3s
+          API_SERVER:  https://74.220.26.123:6443 # Example: https://your-api-server:6443
+        run: |
+          kubectl config set-cluster $CLUSTER_NAME --server=$API_SERVER
+          kubectl config set-credentials github-actions-sa --token=$TOKEN
+          kubectl config set-context dia-k3s --cluster=$CLUSTER_NAME --user=github-actions-sa
+          kubectl config use-context dia-k3s
 
