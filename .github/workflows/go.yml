@@ -102,8 +102,6 @@ jobs:
       - name: Deploy to Kubernetes 
         env:
           IMAGE_TAG: unix-${{ env.TIMESTAMP }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
           DEPLOYED_CONTRACT: ${{ secrets.DEPLOYED_CONTRACT }}
           BLOCKCHAIN_NODE: ${{ secrets.BLOCKCHAIN_NODE }}
           BACKUP_NODE: ${{ secrets.BACKUP_NODE }}
@@ -112,6 +110,8 @@ jobs:
           UniswapV2_URI_WS: ${{ secrets.UniswapV2_URI_WS }}
           POOLS: ${{ secrets.POOLS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: |
           # Verify the deployment
           #kubectl rollout status deployment/nginx-deployment
@@ -126,5 +126,13 @@ jobs:
           # Verify the deployment
           kubectl rollout status -n monitoring deployment/diaoracleservice-conduit-011
 
-          #Cleanup 
+          # Remove temporary files for security
           rm kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml || true
+
+          # Confirm file removal
+          if [ ! -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml ]; then
+            echo "Temporary file successfully removed."
+          else
+            echo "Temporary file removal failed."
+            exit 1
+          fi
