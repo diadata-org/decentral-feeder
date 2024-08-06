@@ -79,24 +79,14 @@ jobs:
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
 
-      # Install Helm
-      - name: Install Helm
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
       # kubectl config with service account 
       - name: Configure kubectl with Service Account
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
           CLUSTER_NAME: dia-k3s
-          API_SERVER:  https://49.13.80.204:6443 # Example: https://your-api-server:6443
+          API_SERVER:  ${{ secrets.K8S_API_SERVER }} # Example: https://your-api-server:6443
         run: |
-          set -e  # Exit immediately if a command exits with a non-zero status
-          set -u  # Treat unset variables as an error
 
-          # Debugging: Check environment variables
-          echo "Cluster Name: $CLUSTER_NAME"
-          echo "API Server: $API_SERVER"
-          echo "Token length: ${#TOKEN}"  # Check the token length for sanity
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           # Set cluster
@@ -108,11 +98,12 @@ jobs:
           # Use context
           kubectl config use-context dia-k3s
 
-
       # Deploy to Kubernetes
       - name: Deploy to Kubernetes 
         env:
           IMAGE_TAG: unix-${{ env.TIMESTAMP }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
           DEPLOYED_CONTRACT: ${{ secrets.DEPLOYED_CONTRACT }}
           BLOCKCHAIN_NODE: ${{ secrets.BLOCKCHAIN_NODE }}
           BACKUP_NODE: ${{ secrets.BACKUP_NODE }}
@@ -134,3 +125,6 @@ jobs:
           kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
           # Verify the deployment
           kubectl rollout status -n monitoring deployment/diaoracleservice-conduit-011
+
+          #Cleanup 
+          rm kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml || true
