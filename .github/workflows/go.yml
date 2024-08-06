@@ -118,7 +118,7 @@ jobs:
           # Verify the deployment
           #kubectl rollout status deployment/nginx-deployment
           # Create a new deployment YAML with the replaced IMAGE_TAG
-          envsubst < kubernetes_deployment/diaoracleservice-conduit-011.template.yaml > kubernetes_deployment/diaoracleservice-conduit-011.yaml
+          envsubst < kubernetes_deployment/diaoracleservice-conduit-011.yaml > kubernetes_deployment/diaoracleservice-conduit-011.yaml
 
           # Apply the Kubernetes deployment manifest
           kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.yaml
