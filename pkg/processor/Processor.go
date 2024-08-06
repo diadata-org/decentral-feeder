@@ -22,12 +22,13 @@ func Processor(
 	tradesblockChannel chan map[string]models.TradesBlock,
 	filtersChannel chan []models.FilterPointExtended,
 	triggerChannel chan time.Time,
+	failoverChannel chan string,
 	wg *sync.WaitGroup,
 ) {
 
 	log.Info("Start Processor......")
 	// Collector starts collecting trades in the background and sends atomic tradesblocks to @tradesblockChannel.
-	go scrapers.Collector(exchangePairs, pools, tradesblockChannel, triggerChannel, wg)
+	go scrapers.Collector(exchangePairs, pools, tradesblockChannel, triggerChannel, failoverChannel, wg)
 
 	// As soon as the trigger channel receives input a processing step is initiated.
 	for tradesblocks := range tradesblockChannel {
