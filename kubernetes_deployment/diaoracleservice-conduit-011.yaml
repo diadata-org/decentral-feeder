@@ -51,8 +51,8 @@ spec:
               value: "${UniswapV2_URI_WS}"
             - name: POOLS
               value: "${POOLS}"
-            - name: HTTPS_PROXY
-              value: "${HTTPS_PROXY}"
+#            - name: HTTPS_PROXY
+#              value: "${HTTPS_PROXY}"
             - name: FREQUENCY_SECONDS
               value: "30"
             - name: EXCHANGEPAIRS
@@ -113,13 +113,3 @@ spec:
               CoinBase:STG-USDT,
               CoinBase:DIA-USDT
               "
- #     affinity:
- #       nodeAffinity:
- #         requiredDuringSchedulingIgnoredDuringExecution:
- #           nodeSelectorTerms:
- #             - matchExpressions:
- #                 - key: workergroup
- #                   operator: In
- #                   values:
- #                     - default
- #                     - default-alternative
