@@ -125,13 +125,13 @@ spec:
               CoinBase:STG-USDT,
               CoinBase:DIA-USDT
               "
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: workergroup
-                    operator: In
-                    values:
-                      - default
-                      - default-alternative
+ #     affinity:
+ #       nodeAffinity:
+ #         requiredDuringSchedulingIgnoredDuringExecution:
+ #           nodeSelectorTerms:
+ #             - matchExpressions:
+ #                 - key: workergroup
+ #                   operator: In
+ #                   values:
+ #                     - default
+ #                     - default-alternative
