@@ -36,11 +36,11 @@ spec:
              #   secretKeyRef:
              #     name: diaoracleservice-conduit-011
              #     key: .privatekey
-            #- name: PRIVATE_KEY_PASSWORD
-            #  valueFrom:
-             #   secretKeyRef:
-             #     name: diaoracleservice-conduit-011
-             #     key: .password
+            - name: PRIVATE_KEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: diaoracleservice-conduit-011
+                  key: .password
             - name: DEPLOYED_CONTRACT
               value: "${DEPLOYED_CONTRACT}"
             - name: BLOCKCHAIN_NODE

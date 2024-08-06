@@ -111,7 +111,7 @@ jobs:
           POOLS: ${{ secrets.POOLS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+          #PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: |
           # Verify the deployment
           #kubectl rollout status deployment/nginx-deployment
