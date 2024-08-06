@@ -122,7 +122,6 @@ jobs:
           POOLS: ${{ secrets.POOLS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
         run: |
-
           # Verify the deployment
           #kubectl rollout status deployment/nginx-deployment
           # Create a new deployment YAML with the replaced IMAGE_TAG
