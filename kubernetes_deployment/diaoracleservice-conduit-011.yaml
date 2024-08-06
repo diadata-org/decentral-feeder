@@ -38,21 +38,21 @@ spec:
                   name: diaoracleservice-conduit-011
                   key: .password
             - name: DEPLOYED_CONTRACT
-              value: "${{ env.DEPLOYED_CONTRACT }}"
+              value: "${DEPLOYED_CONTRACT}"
             - name: BLOCKCHAIN_NODE
-              value: "${{ env.BLOCKCHAIN_NODE }}"
+              value: "${BLOCKCHAIN_NODE}"
             - name: BACKUP_NODE
-              value: "${{ env.BACKUP_NODE }}"
+              value: "${BACKUP_NODE}"
             - name: CHAIN_ID
-              value: "${{ env.CHAIN_ID }}"
+              value: "${CHAIN_ID}"
             - name: UniswapV2_URI_REST
-              value: "${{ env.UniswapV2_URI_REST }}"
+              value: "${UniswapV2_URI_REST}"
             - name: UniswapV2_URI_WS
-              value: "${{ env.UniswapV2_URI_WS }}"
+              value: "${UniswapV2_URI_WS}"
             - name: POOLS
-              value: "${{ env.POOLS }}"
+              value: "${POOLS}"
             - name: HTTPS_PROXY
-              value: "${{ env.HTTPS_PROXY }}"
+              value: "${HTTPS_PROXY}"
             - name: FREQUENCY_SECONDS
               value: "30"
             - name: EXCHANGEPAIRS
