@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diaoracleservice-conduit-011
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: diaoracleservice-conduit-011
+  template:
+    metadata:
+      labels:
+        app: diaoracleservice-conduit-011
+    spec:
+      imagePullSecrets:
+        - name: all-icr-io
+      containers:
+        - name: diadecentraloracleservice
+          image: us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${TIMESTAMP}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 250Mi
+              cpu: "0.1"
+            limits:
+              memory: 300Mi
+              cpu: "0.15"
+          env:
+            - name: PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: diaoracleservice-conduit-011
+                  key: .privatekey
+            - name: PRIVATE_KEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: diaoracleservice-conduit-011
+                  key: .password
+            - name: DEPLOYED_CONTRACT
+              value: "${{ env.DEPLOYED_CONTRACT }}"
+            - name: BLOCKCHAIN_NODE
+              value: "${{ env.BLOCKCHAIN_NODE }}"
+            - name: BACKUP_NODE
+              value: "${{ env.BACKUP_NODE }}"
+            - name: CHAIN_ID
+              value: "${{ env.CHAIN_ID }}"
+            - name: FREQUENCY_SECONDS
+              value: "${{ env.FREQUENCY_SECONDS }}"
+            - name: EXCHANGEPAIRS
+              value: "${{ env.EXCHANGEPAIRS }}"
+            - name: UniswapV2_URI_REST
+              value: "${{ env.UniswapV2_URI_REST }}"
+            - name: UniswapV2_URI_WS
+              value: "${{ env.UniswapV2_URI_WS }}"
+            - name: POOLS
+              value: "${{ env.POOLS }}"
+            - name: HTTPS_PROXY
+              value: "${{ env.HTTPS_PROXY }}"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: workergroup
+                    operator: In
+                    values:
+                      - default
+                      - default-alternative

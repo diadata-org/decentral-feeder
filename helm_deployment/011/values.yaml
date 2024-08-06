@@ -1,10 +1,10 @@
 name: diaoracleservice-conduit-011
 version: "v1.0.0"
-namespace: dia-oracles-prod
+namespace: monitoring
 replicaCount: 1
 repository:
   image: "us.icr.io/dia-registry/oracles/diadecentraloracleservice"
-  tag:
+  tag: 
   pullPolicy: "Always"
 imagePullSecrets:
   - name: all-icr-io
