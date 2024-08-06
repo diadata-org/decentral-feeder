@@ -115,7 +115,7 @@ jobs:
           TIMESTAMP: ${{ env.TIMESTAMP }}
         run: |
           # Apply the simple Nginx deployment manifest
-          kubectl apply -f kubernetes_deployment/simple-nginx-deployment.yaml
+          kubectl apply -f kubernetes_deployment/test-deployment.yaml
 
           # Verify the deployment
           kubectl rollout status deployment/nginx-deployment
