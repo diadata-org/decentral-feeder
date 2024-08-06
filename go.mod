@@ -42,7 +42,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/prometheus/client_golang v1.19.1
 	github.com/rjeczalik/notify v0.9.2 // indirect
-	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
+	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible
 	github.com/tidwall/gjson v1.17.1
 	github.com/tkanos/gonfig v0.0.0-20210106201359-53e13348de2f
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
