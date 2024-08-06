@@ -45,10 +45,6 @@ spec:
               value: "${{ env.BACKUP_NODE }}"
             - name: CHAIN_ID
               value: "${{ env.CHAIN_ID }}"
-            - name: FREQUENCY_SECONDS
-              value: "${{ env.FREQUENCY_SECONDS }}"
-            - name: EXCHANGEPAIRS
-              value: "${{ env.EXCHANGEPAIRS }}"
             - name: UniswapV2_URI_REST
               value: "${{ env.UniswapV2_URI_REST }}"
             - name: UniswapV2_URI_WS
@@ -57,6 +53,78 @@ spec:
               value: "${{ env.POOLS }}"
             - name: HTTPS_PROXY
               value: "${{ env.HTTPS_PROXY }}"
+            - name: FREQUENCY_SECONDS
+              value: "30"
+            - name: EXCHANGEPAIRS
+              value: "
+              Binance:BTC-USDT,
+              Binance:ETH-USDT,
+              Binance:WIF-USDT,
+              Binance:ENS-USDT,
+              Binance:YFI-USDT,
+              Binance:STORJ-USDT,
+              Binance:SUSHI-USDT,
+              Binance:MOVR-USDT,
+              Binance:STG-USDT,
+              Binance:DIA-USDT,
+              Binance:OMG-USDT,
+              Binance:USDC-USDT,
+              GateIO:BTC-USDT,
+              GateIO:ETH-USDT,
+              GateIO:WIF-USDT,
+              GateIO:ENS-USDT,
+              GateIO:YFI-USDT,
+              GateIO:STORJ-USDT,
+              GateIO:SUSHI-USDT,
+              GateIO:MOVR-USDT,
+              GateIO:STG-USDT,
+              GateIO:DIA-USDT,
+              GateIO:OMG-USDT,
+              GateIO:USDC-USDT,
+              KuCoin:BTC-USDT,
+              KuCoin:ETH-USDT,
+              KuCoin:WIF-USDT,
+              KuCoin:ENS-USDT,
+              KuCoin:YFI-USDT,
+              KuCoin:STORJ-USDT,
+              KuCoin:SUSHI-USDT,
+              KuCoin:MOVR-USDT,
+              KuCoin:STG-USDT,
+              KuCoin:DIA-USDT,
+              KuCoin:OMG-USDT,
+              KuCoin:USDC-USDT,
+              Crypto.com:BTC-USDT,
+              Crypto.com:ETH-USDT,
+              Crypto.com:WIF-USDT,
+              Crypto.com:ENS-USDT,
+              Crypto.com:YFI-USDT,
+              Crypto.com:STORJ-USDT,
+              Crypto.com:SUSHI-USDT,
+              Crypto.com:MOVR-USDT,
+              Crypto.com:STG-USDT,
+              Crypto.com:DIA-USDT,
+              Crypto.com:OMG-USDT,
+              Crypto.com:USDC-USDT,
+              Kraken:BTC-USDT,
+              Kraken:ETH-USDT,
+              Kraken:WIF-USDT,
+              Kraken:ENS-USDT,
+              Kraken:YFI-USDT,
+              Kraken:STORJ-USDT,
+              Kraken:SUSHI-USDT,
+              Kraken:MOVR-USDT,
+              Kraken:STG-USDT,
+              Kraken:OMG-USDT,
+              Kraken:USDC-USDT,
+              CoinBase:BTC-USDT,
+              CoinBase:ETH-USDT,
+              CoinBase:ENS-USDT,
+              CoinBase:YFI-USDT,
+              CoinBase:STORJ-USDT,
+              CoinBase:SUSHI-USDT,
+              CoinBase:STG-USDT,
+              CoinBase:DIA-USDT
+              "
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

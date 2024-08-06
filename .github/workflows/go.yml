@@ -115,12 +115,14 @@ jobs:
           TIMESTAMP: ${{ env.TIMESTAMP }}
         run: |
           # Apply the simple Nginx deployment manifest
-          kubectl apply -f kubernetes_deployment/test-deployment.yaml
+          # kubectl apply -f kubernetes_deployment/test-deployment.yaml
 
           # Verify the deployment
-          kubectl rollout status deployment/nginx-deployment
+          #kubectl rollout status deployment/nginx-deployment
           # Use the timestamped Docker image in the deployment
-          # sed -i "s#us.icr.io/dia-registry/oracles/diadecentraloracleservice:latest#us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${TIMESTAMP}#" k8s-deployment.yaml
+          sed -i "s#us.icr.io/dia-registry/oracles/diadecentraloracleservice:latest#us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${TIMESTAMP}#" kubernetes_deployment/diaoracleservice-conduit-011.yaml
 
           # Apply the Kubernetes deployment manifest
-          # kubectl apply -f k8s-deployment.yaml
+          kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.yaml
+          # Verify the deployment
+          kubectl rollout status -n monitoring deployment/diaoracleservice-conduit-011
