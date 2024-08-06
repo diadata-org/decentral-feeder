@@ -17,7 +17,7 @@ spec:
         - name: all-icr-io
       containers:
         - name: diadecentraloracleservice
-          image: us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${TIMESTAMP}
+          image: us.icr.io/dia-registry/oracles/diadecentraloracleservice:${IMAGE_TAG}
           imagePullPolicy: Always
           resources:
             requests:
