@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: github-actions-binding
+subjects:
+  - kind: ServiceAccount
+    name: github-actions-sa
+    namespace: monitoring
+roleRef:
+  kind: ClusterRole
+  name: github-actions-clusterrole
+  apiGroup: rbac.authorization.k8s.io

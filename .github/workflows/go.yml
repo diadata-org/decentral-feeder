@@ -1,28 +1,141 @@
-name: Go
+name: decentralized-feeder-pipeline
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
+
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - master
 
 jobs:
-
-  build:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      # Checkout the repository
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22'
+      # Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
 
-    - name: Get dependencies
-      run: go mod tidy
-      
-    - name: Build
-      run: go build -v ./...
+      # Get dependencies
+      - name: Get dependencies
+        run: go mod tidy
 
-    - name: Test
-      run: go test -v ./...
+      # Build the Go application
+      - name: Build
+        run: go build -v ./...
+
+      # Test the Go application
+      - name: Test
+        run: go test -v ./...
+
+  push_image:
+    runs-on: ubuntu-latest
+    needs: build_and_test
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v4
+
+      # Install IBM Cloud CLI and Container Registry CLI
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud plugin install container-registry -f
+
+      # Log in to IBM Cloud
+      - name: Log in to IBM Cloud
+        env:
+          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
+        run: |
+          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
+          ibmcloud target -r us-south
+          ibmcloud target -g Default
+
+      # Get Unix Timestamp
+      - name: Get Unix Timestamp
+        id: get_timestamp
+        run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+
+      # Build and Tag the Docker image
+      - name: Build and Tag Docker image
+        run: |
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }} .
+
+      # Push the Docker image to IBM Cloud Container Registry
+      - name: Push Docker image
+        run: |
+          ibmcloud cr login
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }}
+
+      # Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      # kubectl config with service account 
+      - name: Configure kubectl with Service Account
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
+          CLUSTER_NAME: dia-k3s
+          API_SERVER:  ${{ secrets.K8S_API_SERVER }} # Example: https://your-api-server:6443
+        run: |
+
+          # Ensure token does not contain unexpected newline characters
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          # Set cluster
+          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          # Set credentials
+          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+          # Set context
+          kubectl config set-context dia-k3s --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          # Use context
+          kubectl config use-context dia-k3s
+
+      # Deploy to Kubernetes
+      - name: Deploy to Kubernetes 
+        env:
+          IMAGE_TAG: unix-${{ env.TIMESTAMP }}
+          DEPLOYED_CONTRACT: ${{ secrets.DEPLOYED_CONTRACT }}
+          BLOCKCHAIN_NODE: ${{ secrets.BLOCKCHAIN_NODE }}
+          BACKUP_NODE: ${{ secrets.BACKUP_NODE }}
+          CHAIN_ID: ${{ secrets.CHAIN_ID }}
+          UniswapV2_URI_REST: ${{ secrets.UniswapV2_URI_REST }}
+          UniswapV2_URI_WS: ${{ secrets.UniswapV2_URI_WS }}
+          POOLS: ${{ secrets.POOLS }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+          #PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          #PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+
+        run: |
+          # Verify the deployment
+          #kubectl rollout status deployment/nginx-deployment
+          # Create a new deployment YAML with the replaced IMAGE_TAG
+          envsubst < kubernetes_deployment/diaoracleservice-conduit-011.yaml > kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
+
+          # Apply the Kubernetes deployment manifest
+          kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
+
+          # Wait for 20 seconds before verifying the deployment
+          sleep 20
+
+          # Verify the deployment
+          kubectl rollout status -n monitoring deployment/diaoracleservice-conduit-011
+
+          # Remove temporary files for security
+          rm kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml || true
+
+          # Confirm file removal
+          if [ ! -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml ]; then
+            echo "Temporary file successfully removed."
+          else
+            echo "Temporary file removal failed."
+            exit 1
+          fi
+
