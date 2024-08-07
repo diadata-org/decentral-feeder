@@ -1,4 +1,4 @@
-name: Go CI/CD
+name: decentralized-feeder-pipeline
 
 on:
   push:
