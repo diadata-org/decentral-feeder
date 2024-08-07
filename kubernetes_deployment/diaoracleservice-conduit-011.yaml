@@ -28,10 +28,6 @@ spec:
               cpu: "0.15"
           env:
             - name: PRIVATE_KEY
-              value: "${PRIVATE_KEY}"
-            - name: PRIVATE_KEY_PASSWORD
-              value: "${PRIVATE_KEY_PASSWORD}"
-            - name: PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
                   name: diaoracleservice-conduit-011
