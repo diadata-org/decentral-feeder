@@ -31,11 +31,11 @@ spec:
               value: "${PRIVATE_KEY}"
             - name: PRIVATE_KEY_PASSWORD
               value: "${PRIVATE_KEY_PASSWORD}"
-            #- name: PRIVATE_KEY
-            #  valueFrom:
-             #   secretKeyRef:
-             #     name: diaoracleservice-conduit-011
-             #     key: .privatekey
+            - name: PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: diaoracleservice-conduit-011
+                  key: .privatekey
             - name: PRIVATE_KEY_PASSWORD
               valueFrom:
                 secretKeyRef:
