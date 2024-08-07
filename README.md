@@ -62,3 +62,22 @@ Deploy Using Helm:
 * Use Helm to deploy the containers to your Kubernetes cluster. Ensure you have Helm installed and configured to interact with your Kubernetes cluster.
 * You can deploy the Helm chart by running the following command:
     `helm upgrade -n dia-oracles-prod --set repository.tag="v1.0.XX" diaoracleservice-conduit-XX .`
+
+    
+## Accessing Decentralized-feeder on hetzner cluster.
+1. Navigate to 1password dashboard and choose hetzner-tofu-cluster-1 vault 
+https://my.1password.com/vaults
+2. Copy the contents of `hetzner-kubeconfig.yaml` to a file located on your computer
+3. Export the file to your local ENV variable KUBECONFIG with command `export KUBECONFIG=$(pwd)/hetzner-kubeconfig.yaml`
+4. Verify that you can see the nodes hosted on hetzner with command `kubectl get nodes`
+
+The decentralized-feeder nodes are deployed to monitoring namespace.
+`kubectl get pods -n monitoring`
+
+To keep two or more kubernetes clusters in your kubernetes config issue the following commands:
+1. `export KUBECONFIG=$(pwd)/hetzner-kubeconfig.yaml`
+2. `kubectl config view --merge --flatten > ~/.kube/merged-config`
+in this command, --merge combines the configurations, and --flatten removes any duplicate entries.
+3. Replace your default config file with the newly merged one. `mv ~/.kube/merged-config ~/.kube/config`
+4. Verify that both contexts are available `kubectl config get-contexts`
+
