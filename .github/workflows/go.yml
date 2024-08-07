@@ -110,7 +110,7 @@ jobs:
           UniswapV2_URI_WS: ${{ secrets.UniswapV2_URI_WS }}
           POOLS: ${{ secrets.POOLS }}
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          #PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           #PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: |
           # Verify the deployment
