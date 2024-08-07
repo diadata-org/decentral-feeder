@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - cr_automation
+
   pull_request:
     branches:
       - master
@@ -36,7 +36,7 @@ jobs:
 
   push_image:
     runs-on: ubuntu-latest
-#    needs: build_and_test
+    needs: build_and_test
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
