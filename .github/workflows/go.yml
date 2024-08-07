@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - cr_automation
 
   pull_request:
     branches:
