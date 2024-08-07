@@ -18,10 +18,10 @@ import (
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
-	log "github.com/sirupsen/logrus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/shirou/gopsutil/cpu"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -53,11 +53,11 @@ var (
 )
 
 type metrics struct {
-	uptime        prometheus.Gauge
-	cpuUsage      prometheus.Gauge
-	memoryUsage   prometheus.Gauge
+	uptime         prometheus.Gauge
+	cpuUsage       prometheus.Gauge
+	memoryUsage    prometheus.Gauge
 	pushGatewayURL string
-	jobName       string
+	jobName        string
 }
 
 func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName string) *metrics {
@@ -179,6 +179,7 @@ func main() {
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
 	filtersChannel := make(chan []models.FilterPointExtended)
 	triggerChannel := make(chan time.Time)
+	failoverChannel := make(chan string)
 
 	// Feeder mechanics
 	key := utils.Getenv("PRIVATE_KEY", "")
@@ -222,13 +223,13 @@ func main() {
 	triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
 	go func() {
 		for tick := range triggerTick.C {
-			log.Warn("tick at: ", tick)
+			// log.Info("Trigger - tick at: ", tick)
 			triggerChannel <- tick
 		}
 	}()
 
 	// Run Processor and subsequent routines.
-	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, &wg)
+	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
