@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - cr_automation
 
   pull_request:
     branches:
@@ -112,6 +113,7 @@ jobs:
           HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
           #PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           #PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+
         run: |
           # Verify the deployment
           #kubectl rollout status deployment/nginx-deployment
@@ -137,7 +139,4 @@ jobs:
             echo "Temporary file removal failed."
             exit 1
           fi
-
-
-
 
