@@ -10,30 +10,30 @@ on:
       - master
 
 jobs:
-
-#   build_and_test:
-#    runs-on: ubuntu-latest
-#    steps:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
       # Checkout the repository
-#      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       # Set up Go
-#      - name: Set up Go
-#        uses: actions/setup-go@v4
-#        with:
-#          go-version: '1.22'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
 
       # Get dependencies
-#      - name: Get dependencies
-#        run: go mod tidy
+      - name: Get dependencies
+        run: go mod tidy
 
       # Build the Go application
-#      - name: Build
-#        run: go build -v ./...
+      - name: Build
+        run: go build -v ./...
 
       # Test the Go application
-#      - name: Test
-#        run: go test -v ./...
+      - name: Test
+        run: go test -v ./...
+
   push_image:
     runs-on: ubuntu-latest
 #    needs: build_and_test
@@ -118,11 +118,12 @@ jobs:
           # Create a new deployment YAML with the replaced IMAGE_TAG
           envsubst < kubernetes_deployment/diaoracleservice-conduit-011.yaml > kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
 
-          #show updated yaml file
-          cat kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
-
           # Apply the Kubernetes deployment manifest
           kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
+
+          # Wait for 20 seconds before verifying the deployment
+          sleep 20
+
           # Verify the deployment
           kubectl rollout status -n monitoring deployment/diaoracleservice-conduit-011
 
