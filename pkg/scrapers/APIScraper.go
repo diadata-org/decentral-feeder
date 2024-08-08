@@ -61,7 +61,7 @@ func watchdog(
 		log.Info("lastTradeTime: ", lastTradeTime)
 		log.Info("timeNow: ", time.Now())
 		duration := time.Since(lastTradeTime)
-		if duration > time.Duration(watchdogDelayBinance)*time.Second {
+		if duration > time.Duration(binanceWatchdogDelay)*time.Second {
 			log.Error("failover")
 			*run = false
 			break
