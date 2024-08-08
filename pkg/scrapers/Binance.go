@@ -13,7 +13,7 @@ import (
 
 var (
 	binanceWSBaseString  = "wss://stream.binance.com:9443/ws/"
-	watchdogDelayBinance = 60
+	binanceWatchdogDelay = 60
 	lastTradeTime        time.Time
 	binanceRun           bool
 )
@@ -41,7 +41,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 	lastTradeTime = time.Now()
 	log.Info("Binance - Initialize lastTradeTime after failover: ", lastTradeTime)
-	watchdogTicker := time.NewTicker(time.Duration(watchdogDelayBinance) * time.Second)
+	watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
 
 	// Check for liveliness of the scraper.
 	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
@@ -51,7 +51,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 			log.Info("Binance - watchdogTicker - lastTradeTime: ", lastTradeTime)
 			log.Info("Binance - watchdogTicker - timeNow: ", time.Now())
 			duration := time.Since(lastTradeTime)
-			if duration > time.Duration(watchdogDelayBinance)*time.Second {
+			if duration > time.Duration(binanceWatchdogDelay)*time.Second {
 				log.Error("Binance - watchdogTicker failover")
 				binanceRun = false
 				break

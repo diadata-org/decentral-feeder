@@ -46,10 +46,14 @@ var (
 	kucoinTokenURL        = "https://api.kucoin.com/api/v1/bullet-public"
 	kucoinPingIntervalFix = int64(10)
 	kucoinMaxErrCount     = 20
+	kucoinRun             bool
+	kucoinWatchdogDelay   = 60
+	kucoinRestartWaitTime = 5
 )
 
-func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
+func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
+	kucoinRun = true
 	log.Info("Started KuCoin scraper.")
 
 	token, pingInterval, err := getPublicKuCoinToken(kucoinTokenURL)
@@ -78,11 +82,39 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 	go ping(wsClient, pingInterval)
 
+	lastTradeTime = time.Now()
+	log.Info("KuCoin - Initialize lastTradeTime after failover: ", lastTradeTime)
+	watchdogTicker := time.NewTicker(time.Duration(kucoinWatchdogDelay) * time.Second)
+
+	// Check for liveliness of the scraper.
+	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
+	// and the exchange name is sent to the failover channel.
+	go func() {
+		for range watchdogTicker.C {
+			duration := time.Since(lastTradeTime)
+			if duration > time.Duration(kucoinWatchdogDelay)*time.Second {
+				log.Error("KuCoin - watchdogTicker failover")
+				kucoinRun = false
+				break
+			}
+		}
+	}()
+
 	// Read trades stream.
-	for {
+	var errCount int
+	for kucoinRun {
+
 		var message kuCoinWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
+			log.Errorf("KuCoin - ReadMessage: %v", err)
+			errCount++
+			if errCount > kucoinMaxErrCount {
+				log.Warnf("too many errors. wait for %v seconds and restart scraper.", kucoinRestartWaitTime)
+				time.Sleep(time.Duration(kucoinRestartWaitTime) * time.Second)
+				kucoinRun = false
+				break
+			}
 			continue
 		}
 
@@ -117,6 +149,10 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 			tradesChannel <- trade
 		}
 	}
+
+	log.Warn("Close KuCoin scraper.")
+	failoverChannel <- string(KUCOIN_EXCHANGE)
+	return "closed"
 
 }
 

@@ -39,7 +39,10 @@ func RunScraper(
 	case KRAKEN_EXCHANGE:
 		NewKrakenScraper(pairs, tradesChannel, wg)
 	case KUCOIN_EXCHANGE:
-		NewKuCoinScraper(pairs, tradesChannel, wg)
+		status := NewKuCoinScraper(pairs, tradesChannel, failoverChannel, wg)
+		if status == "closed" {
+			return
+		}
 
 	case UNISWAPV2_EXCHANGE:
 		NewUniswapV2Scraper(pools, tradesChannel, wg)
