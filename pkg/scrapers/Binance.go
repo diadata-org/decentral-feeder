@@ -15,11 +15,11 @@ var (
 	binanceWSBaseString  = "wss://stream.binance.com:9443/ws/"
 	watchdogDelayBinance = 60
 	lastTradeTime        time.Time
-	run                  bool
+	binanceRun           bool
 )
 
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
-	run = true
+	binanceRun = true
 	defer wg.Done()
 	log.Info("Started Binance scraper at: ", time.Now())
 
@@ -40,7 +40,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	defer conn.Close()
 
 	lastTradeTime = time.Now()
-	log.Info("Initialize lastTradeTime after failover: ", lastTradeTime)
+	log.Info("Binance - Initialize lastTradeTime after failover: ", lastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(watchdogDelayBinance) * time.Second)
 
 	// Check for liveliness of the scraper.
@@ -48,22 +48,22 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	// and the exchange name is sent to the failover channel.
 	go func() {
 		for range watchdogTicker.C {
-			log.Info("watchdogTicker - lastTradeTime: ", lastTradeTime)
-			log.Info("watchdogTicker - timeNow: ", time.Now())
+			log.Info("Binance - watchdogTicker - lastTradeTime: ", lastTradeTime)
+			log.Info("Binance - watchdogTicker - timeNow: ", time.Now())
 			duration := time.Since(lastTradeTime)
 			if duration > time.Duration(watchdogDelayBinance)*time.Second {
-				log.Error("watchdogTicker - failover")
-				run = false
+				log.Error("Binance - watchdogTicker failover")
+				binanceRun = false
 				break
 			}
 		}
 	}()
 
-	for run {
+	for binanceRun {
 
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Errorln("read:", err)
+			log.Errorln("Binance - ReadMessage:", err)
 		}
 
 		messageMap := make(map[string]interface{})
@@ -80,12 +80,12 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 		trade.Price, err = strconv.ParseFloat(messageMap["p"].(string), 64)
 		if err != nil {
-			log.Error("Parse price: ", err)
+			log.Error("Binance - Parse price: ", err)
 		}
 
 		trade.Volume, err = strconv.ParseFloat(messageMap["q"].(string), 64)
 		if err != nil {
-			log.Error("Parse volume: ", err)
+			log.Error("Binance - Parse volume: ", err)
 		}
 		if !messageMap["m"].(bool) {
 			trade.Volume -= 1
@@ -101,7 +101,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 		lastTradeTime = trade.Time
 
 		// Send message to @failoverChannel in case there is no trades for at least @watchdogDelayBinance seconds.
-		log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
+		// log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
 
 		tradesChannel <- trade
 

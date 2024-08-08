@@ -59,7 +59,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 				},
 			},
 		}
-		log.Infof("Subscribed for Pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+		log.Infof("CoinBase - Subscribed for Pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
 		if err := wsClient.WriteJSON(a); err != nil {
 			log.Error(err.Error())
 		}
@@ -70,7 +70,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 		var message coinBaseWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("ReadMessage: %v", err)
+			log.Errorf("CoinBase - ReadMessage: %v", err)
 			continue
 		}
 
@@ -79,7 +79,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 			// Parse trade quantities.
 			price, volume, timestamp, foreignTradeID, err := parseCoinBaseTradeMessage(message)
 			if err != nil {
-				log.Error("parseTradeMessage: ", err)
+				log.Error("CoinBase - parseTradeMessage: ", err)
 			}
 
 			// Identify ticker symbols with underlying assets.
@@ -99,7 +99,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 				Exchange:       models.Exchange{Name: COINBASE_EXCHANGE},
 				ForeignTradeID: foreignTradeID,
 			}
-			log.Info("Got trade: ", trade)
+			// log.Info("Got trade: ", trade)
 			tradesChannel <- trade
 		}
 	}
