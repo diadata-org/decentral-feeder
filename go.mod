@@ -18,16 +18,23 @@ require (
 
 require (
 	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
-	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
+ 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
+	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
+	github.com/prometheus/client_model v0.5.0 // indirect
+	github.com/prometheus/common v0.48.0 // indirect
+	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/time v0.5.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
@@ -42,6 +49,7 @@ require (
 	github.com/holiman/uint256 v1.2.4 // indirect
 	github.com/huin/goupnp v1.3.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/prometheus/client_golang v1.19.1
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/tidwall/gjson v1.17.1
@@ -54,8 +62,6 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
-
-replace github.com/prometheus/common => github.com/prometheus/common v0.45.0
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 

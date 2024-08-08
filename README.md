@@ -27,3 +27,57 @@ The obtained scalar value is sent to the Oracle feeder.
 
 ## Feeder
 The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
+
+
+## Deployment Methods
+1. Deploying via Docker Compose
+
+You can deploy the node using Docker Compose, allowing you to run it on your machine or any infrastructure that supports Docker Compose.
+Steps:
+* In this repository, locate the docker-compose folder.
+* Inside, you will find a file named docker-compose.yaml.
+
+* Update Placeholder Values:
+     * Before deploying, you need to update the following placeholder values in the docker-compose.yaml file:
+        * PRIVATE_KEY
+        * PRIVATE_KEY_PASSWORD
+        * DEPLOYED_CONTRACT
+        * UniswapV2_URI_REST=
+        * UniswapV2_URI_WS=
+        * HTTPS_PROXY (only needed if deployed to infra hosted in states)
+    * Also, if you want to deploy a specific tag, update this version under 
+        *image: us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.XXX
+
+* After updating the placeholder values, you can deploy the node by running the following command in the terminal:
+`docker-compose up -d`
+
+2. Deploying via Helm on Kubernetes
+
+You can also deploy the containers to a Kubernetes cluster using Helm manifest files.
+Steps:
+* Navigate to the Helm Charts Directory:
+    * The Helm manifest files are located under the /helmcharts/oracles/conduit-test directory.
+
+Deploy Using Helm:
+* Use Helm to deploy the containers to your Kubernetes cluster. Ensure you have Helm installed and configured to interact with your Kubernetes cluster.
+* You can deploy the Helm chart by running the following command:
+    `helm upgrade -n dia-oracles-prod --set repository.tag="v1.0.XX" diaoracleservice-conduit-XX .`
+
+    
+## Accessing Decentralized-feeder on hetzner cluster.
+1. Navigate to 1password dashboard and choose hetzner-tofu-cluster-1 vault 
+https://my.1password.com/vaults
+2. Copy the contents of `hetzner-kubeconfig.yaml` to a file located on your computer
+3. Export the file to your local ENV variable KUBECONFIG with command `export KUBECONFIG=$(pwd)/hetzner-kubeconfig.yaml`
+4. Verify that you can see the nodes hosted on hetzner with command `kubectl get nodes`
+
+The decentralized-feeder nodes are deployed to monitoring namespace.
+`kubectl get pods -n monitoring`
+
+To keep two or more kubernetes clusters in your kubernetes config issue the following commands:
+1. `export KUBECONFIG=$(pwd)/hetzner-kubeconfig.yaml`
+2. `kubectl config view --merge --flatten > ~/.kube/merged-config`
+in this command, --merge combines the configurations, and --flatten removes any duplicate entries.
+3. Replace your default config file with the newly merged one. `mv ~/.kube/merged-config ~/.kube/config`
+4. Verify that both contexts are available `kubectl config get-contexts`
+

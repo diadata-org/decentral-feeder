@@ -12,12 +12,16 @@ import (
 )
 
 var (
-	binanceWSBaseString = "wss://stream.binance.com:9443/ws/"
+	binanceWSBaseString  = "wss://stream.binance.com:9443/ws/"
+	watchdogDelayBinance = 60
+	lastTradeTime        time.Time
+	run                  bool
 )
 
-func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
+func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
+	run = true
 	defer wg.Done()
-	log.Info("Started Binance scraper.")
+	log.Info("Started Binance scraper at: ", time.Now())
 
 	wsAssetsString := ""
 	for _, pair := range pairs {
@@ -31,16 +35,37 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	wsAssetsString = wsAssetsString[:len(wsAssetsString)-1]
 	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
-		log.Fatal("connect to Binance API.")
+		log.Error("connect to Binance API.")
 	}
 	defer conn.Close()
 
-	for {
+	lastTradeTime = time.Now()
+	log.Info("Initialize lastTradeTime after failover: ", lastTradeTime)
+	watchdogTicker := time.NewTicker(time.Duration(watchdogDelayBinance) * time.Second)
+
+	// Check for liveliness of the scraper.
+	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
+	// and the exchange name is sent to the failover channel.
+	go func() {
+		for range watchdogTicker.C {
+			log.Info("watchdogTicker - lastTradeTime: ", lastTradeTime)
+			log.Info("watchdogTicker - timeNow: ", time.Now())
+			duration := time.Since(lastTradeTime)
+			if duration > time.Duration(watchdogDelayBinance)*time.Second {
+				log.Error("watchdogTicker - failover")
+				run = false
+				break
+			}
+		}
+	}()
+
+	for run {
+
 		_, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Errorln("read:", err)
 		}
-		//log.Printf("recv Binance: %s", message)
+
 		messageMap := make(map[string]interface{})
 		err = json.Unmarshal(message, &messageMap)
 		if err != nil {
@@ -51,7 +76,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 		trade.Exchange = models.Exchange{Name: BINANCE_EXCHANGE}
 		trade.Time = time.Unix(int64(messageMap["T"].(float64))/1000, 0)
-		// TO DO: Correct parsing of timestamp
+		// TO DO: Improve parsing of timestamp
 
 		trade.Price, err = strconv.ParseFloat(messageMap["p"].(string), 64)
 		if err != nil {
@@ -72,7 +97,18 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 		trade.QuoteToken = tickerPairMap[messageMap["s"].(string)].QuoteToken
 		trade.BaseToken = tickerPairMap[messageMap["s"].(string)].BaseToken
+
+		lastTradeTime = trade.Time
+
+		// Send message to @failoverChannel in case there is no trades for at least @watchdogDelayBinance seconds.
+		log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
+
 		tradesChannel <- trade
 
 	}
+
+	log.Warn("Close Binance scraper.")
+	failoverChannel <- string(BINANCE_EXCHANGE)
+	return "closed"
+
 }

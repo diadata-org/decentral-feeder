@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  my_service:
+    image: us.icr.io/dia-registry/oracles/diadecentraloracleservice:v1.0.22
+    environment:
+      - PRIVATE_KEY=
+      - PRIVATE_KEY_PASSWORD=
+      - DEPLOYED_CONTRACT=
+      - BLOCKCHAIN_NODE=https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz
+      - BACKUP_NODE=https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz
+      - CHAIN_ID=23104
+      - FREQUENCY_SECONDS=30
+      - EXCHANGEPAIRS=Binance:BTC-USDT,Binance:ETH-USDT,Binance:WIF-USDT,Binance:ENS-USDT,Binance:YFI-USDT,Binance:STORJ-USDT,Binance:SUSHI-USDT,Binance:MOVR-USDT,Binance:STG-USDT,Binance:DIA-USDT,Binance:OMG-USDT,Binance:USDC-USDT,GateIO:BTC-USDT,GateIO:ETH-USDT,GateIO:WIF-USDT,GateIO:ENS-USDT,GateIO:YFI-USDT,GateIO:STORJ-USDT,GateIO:SUSHI-USDT,GateIO:MOVR-USDT,GateIO:STG-USDT,GateIO:DIA-USDT,GateIO:OMG-USDT,GateIO:USDC-USDT,KuCoin:BTC-USDT,KuCoin:ETH-USDT,KuCoin:WIF-USDT,KuCoin:ENS-USDT,KuCoin:YFI-USDT,KuCoin:STORJ-USDT,KuCoin:SUSHI-USDT,KuCoin:MOVR-USDT,KuCoin:STG-USDT,KuCoin:DIA-USDT,KuCoin:OMG-USDT,KuCoin:USDC-USDT,Crypto.com:BTC-USDT,Crypto.com:ETH-USDT,Crypto.com:WIF-USDT,Crypto.com:ENS-USDT,Crypto.com:YFI-USDT,Crypto.com:STORJ-USDT,Crypto.com:SUSHI-USDT,Crypto.com:MOVR-USDT,Crypto.com:STG-USDT,Crypto.com:DIA-USDT,Crypto.com:OMG-USDT,Crypto.com:USDC-USDT,Kraken:BTC-USDT,Kraken:ETH-USDT,Kraken:WIF-USDT,Kraken:ENS-USDT,Kraken:YFI-USDT,Kraken:STORJ-USDT,Kraken:SUSHI-USDT,Kraken:MOVR-USDT,Kraken:STG-USDT,Kraken:OMG-USDT,Kraken:USDC-USDT,CoinBase:BTC-USDT,CoinBase:ETH-USDT,CoinBase:ENS-USDT,CoinBase:YFI-USDT,CoinBase:STORJ-USDT,CoinBase:SUSHI-USDT,CoinBase:STG-USDT,CoinBase:DIA-USDT
+      - UniswapV2_URI_REST=
+      - UniswapV2_URI_WS=
+      - POOLS=UniswapV2:0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852:0,UniswapV2:0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c:0
+      - HTTPS_PROXY=
+    restart: always

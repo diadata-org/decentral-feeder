@@ -63,7 +63,7 @@ func testGroupFilterByAsset(t *testing.T) {
 	for i, c := range cases {
 		filterPointMap := GroupFilterByAsset(c.filterPoints)
 		if !reflect.DeepEqual(filterPointMap, c.fpMap) {
-			t.Errorf("Map was incorrect, got: %f, expected: %f for set:%d", filterPointMap, c.fpMap, i)
+			t.Errorf("Map was incorrect, got: %v, expected: %v for set:%d", filterPointMap, c.fpMap, i)
 		}
 
 	}
@@ -92,7 +92,7 @@ func testGetValuesFromFilterPoints(t *testing.T) {
 	for i, c := range cases {
 		filterValues := GetValuesFromFilterPoints(c.filterPoints)
 		if !reflect.DeepEqual(filterValues, c.filterValues) {
-			t.Errorf("Values slice was incorrect, got: %f, expected: %f for set:%d", filterValues, c.filterValues, i)
+			t.Errorf("Values slice was incorrect, got: %v, expected: %v for set:%d", filterValues, c.filterValues, i)
 		}
 	}
 
@@ -116,7 +116,7 @@ func testGetLatestTimestampFromFilterPoints(t *testing.T) {
 	for i, c := range cases {
 		latestTimestamp := GetLatestTimestampFromFilterPoints(c.filterPoints)
 		if latestTimestamp.Unix() != c.timestamp.Unix() {
-			t.Errorf("Timestamp was incorrect, got: %f, expected: %f for set:%d", latestTimestamp, c.timestamp, i)
+			t.Errorf("Timestamp was incorrect, got: %v, expected: %v for set:%d", latestTimestamp, c.timestamp, i)
 		}
 	}
 }
@@ -160,10 +160,10 @@ func testRemoveOldFilters(t *testing.T) {
 
 		cleanedFilterPoints, removedFilters := RemoveOldFilters(c.filterPoints, c.toleranceSeconds, c.timestamp)
 		if !reflect.DeepEqual(cleanedFilterPoints, c.cleanedFilterPoints) {
-			t.Errorf("Cleaned filters was incorrect, got: %f, expected: %f for set:%d", cleanedFilterPoints, c.cleanedFilterPoints, i)
+			t.Errorf("Cleaned filters was incorrect, got: %v, expected: %v for set:%d", cleanedFilterPoints, c.cleanedFilterPoints, i)
 		}
 		if removedFilters != c.removedFilters {
-			t.Errorf("Number of removed filters was incorrect, got: %f, expected: %f for set:%d", removedFilters, c.removedFilters, i)
+			t.Errorf("Number of removed filters was incorrect, got: %v, expected: %v for set:%d", removedFilters, c.removedFilters, i)
 		}
 	}
 }

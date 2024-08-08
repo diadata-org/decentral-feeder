@@ -1,0 +1,5 @@
+export_env_vars.sh
+decentral-feeder
+decentral-feeder/build/docker-images.sh
+/build/docker-images.sh
+.env

@@ -14,6 +14,7 @@ func Collector(
 	pools []models.Pool,
 	tradesblockChannel chan map[string]models.TradesBlock,
 	triggerChannel chan time.Time,
+	failoverChannel chan string,
 	wg *sync.WaitGroup,
 ) {
 
@@ -29,11 +30,11 @@ func Collector(
 	tradesChannelIn := make(chan models.Trade)
 	for exchange := range exchangepairMap {
 		wg.Add(1)
-		go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, wg)
+		go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
 	}
 	for exchange := range poolMap {
 		wg.Add(1)
-		go RunScraper(exchange, []models.ExchangePair{}, poolMap[exchange], tradesChannelIn, wg)
+		go RunScraper(exchange, []models.ExchangePair{}, poolMap[exchange], tradesChannelIn, failoverChannel, wg)
 	}
 
 	// tradesblockMap maps an exchangpair identifier onto a TradesBlock.
@@ -62,7 +63,7 @@ func Collector(
 
 			case timestamp := <-triggerChannel:
 
-				log.Info("triggered at : ", timestamp)
+				// log.Info("triggered at : ", timestamp)
 				for id := range tradesblockMap {
 					tb := tradesblockMap[id]
 					tb.EndTime = timestamp
@@ -75,6 +76,10 @@ func Collector(
 				// Make a new tradesblockMap for the next trigger period.
 				tradesblockMap = make(map[string]models.TradesBlock)
 
+			case exchange := <-failoverChannel:
+				log.Info("Restart scraper for ", exchange)
+				wg.Add(1)
+				go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
 			}
 		}
 	}()
