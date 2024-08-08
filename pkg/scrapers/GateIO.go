@@ -41,7 +41,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
 	if err != nil {
-		println(err.Error())
+		log.Error("GateIO - " + err.Error())
 	}
 
 	// In case this is the same for all exchanges we can put it to APIScraper.go.
@@ -56,9 +56,9 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 			Channel: "spot.trades",
 			Payload: []string{gateioPairTicker},
 		}
-		log.Infof("Subscribed for Pair %v", pair.ForeignName)
+		log.Infof("GateIO - Subscribed for Pair %v", pair.ForeignName)
 		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error(err.Error())
+			log.Error("GateIO - " + err.Error())
 		}
 	}
 
@@ -66,7 +66,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 		var message GateIOResponseTrade
 		if err = wsClient.ReadJSON(&message); err != nil {
-			log.Error(err.Error())
+			log.Error("GateIO - " + err.Error())
 			break
 		}
 
@@ -78,13 +78,13 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 		f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
 		if err != nil {
-			log.Errorf("error parsing float Price %v: %v", message.Result.Price, err)
+			log.Errorf("GateIO - error parsing float Price %v: %v", message.Result.Price, err)
 			continue
 		}
 
 		f64Volume, err = strconv.ParseFloat(message.Result.Amount, 64)
 		if err != nil {
-			log.Errorln("error parsing float Volume", err)
+			log.Errorln("GateIO - error parsing float Volume", err)
 			continue
 		}
 
@@ -103,7 +103,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 			ForeignTradeID: strconv.FormatInt(int64(message.Result.ID), 16),
 		}
 
-		log.Info("Got trade: ", t)
+		// log.Info("Got trade: ", t)
 		tradesChannel <- t
 
 	}

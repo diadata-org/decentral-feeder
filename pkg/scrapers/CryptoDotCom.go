@@ -174,7 +174,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	// ----------------------------------------
 	err := s.subscribe(pairs)
 	if err != nil {
-		log.Error("send: ", err)
+		log.Error("Crypto.com - send: ", err)
 	}
 
 	// ----------------------------------------
@@ -185,37 +185,37 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	for {
 		select {
 		case <-s.shutdown:
-			log.Println("CryptoDotComScraper: Shutting down main loop")
+			log.Println("Crypto.com - Shutting down main loop")
 		default:
 		}
 
 		var res cryptoDotComWSResponse
 		if err := s.wsConn().ReadJSON(&res); err != nil {
-			log.Warnf("CryptoDotComScraper: Creating a new connection caused by err=%s", err.Error())
+			log.Warnf("Crypto.com - Creating a new connection caused by err=%s", err.Error())
 
 			if retryErr := s.retryConnection(); retryErr != nil {
 				s.setError(retryErr)
-				log.Errorf("CryptoDotComScraper: Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
+				log.Errorf("Crypto.com - Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
 			}
 
-			log.Info("CryptoDotComScraper: Successfully created a new connection")
+			log.Info("Crypto.com - Successfully created a new connection")
 		}
 		if res.Code == cryptoDotComRateLimitError {
 			time.Sleep(time.Duration(cryptoDotComBackoffSeconds) * time.Second)
 			if err := s.retryTask(res.ID); err != nil {
 				s.setError(err)
-				log.Errorf("CryptoDotComScraper: Shutting down main loop due to failing to retry a task, err=%s", err.Error())
+				log.Errorf("Crypto.com - Shutting down main loop due to failing to retry a task, err=%s", err.Error())
 			}
 		}
 		if res.Code != 0 {
-			log.Errorf("CryptoDotComScraper: Shutting down main loop due to non-retryable response code %d", res.Code)
+			log.Errorf("Crypto.com - Shutting down main loop due to non-retryable response code %d", res.Code)
 		}
 
 		switch res.Method {
 		case "public/heartbeat":
 			if err := s.ping(res.ID); err != nil {
 				s.setError(err)
-				log.Errorf("CryptoDotComScraper: Shutting down main loop due to heartbeat failure, err=%s", err.Error())
+				log.Errorf("Crypto.com - Shutting down main loop due to heartbeat failure, err=%s", err.Error())
 			}
 		case "subscribe":
 			if len(res.Result) == 0 {
@@ -225,7 +225,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 			var subscription cryptoDotComWSSubscriptionResult
 			if err := json.Unmarshal(res.Result, &subscription); err != nil {
 				s.setError(err)
-				log.Errorf("CryptoDotComScraper: Shutting down main loop due to response unmarshaling failure, err=%s", err.Error())
+				log.Errorf("Crypto.com - Shutting down main loop due to response unmarshaling failure, err=%s", err.Error())
 			}
 			if subscription.Channel != "trade" {
 				continue
@@ -240,12 +240,12 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 				var i cryptoDotComWSInstrument
 				if err := json.Unmarshal(data, &i); err != nil {
 					s.setError(err)
-					log.Errorf("CryptoDotComScraper: Shutting down main loop due to instrument unmarshaling failure, err=%s", err.Error())
+					log.Errorf("Crypto.com - Shutting down main loop due to instrument unmarshaling failure, err=%s", err.Error())
 				}
 
 				volume, err := strconv.ParseFloat(i.Quantity, 64)
 				if err != nil {
-					log.Error("parse volume: ", err)
+					log.Error("Crypto.com - parse volume: ", err)
 					continue
 				}
 				if i.Side != cryptoDotComSpotTradingBuy {
@@ -254,7 +254,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 
 				price, err := strconv.ParseFloat(i.Price, 64)
 				if err != nil {
-					log.Error("parse price: ", err)
+					log.Error("Crypto.com - parse price: ", err)
 					continue
 				}
 
@@ -271,7 +271,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 				select {
 				case <-s.shutdown:
 				case tradesChannel <- trade:
-					log.Info("Got trade: ", trade)
+					// log.Info("Got trade: ", trade)
 				}
 			}
 		}
@@ -357,7 +357,7 @@ func (s *CryptoDotComScraper) subscribe(pairs []models.ExchangePair) error {
 
 	channels := make([]string, len(pairs))
 	for idx, pair := range pairs {
-		log.Info("subscribe to pair ", pair.ForeignName)
+		log.Info("Crypto.com - subscribe to pair ", pair.ForeignName)
 		channels[idx] = "trade." + strings.Split(pair.ForeignName, "-")[0] + "_" + strings.Split(pair.ForeignName, "-")[1]
 		s.pairScrapers.Store(pair.ForeignName, pair)
 	}
@@ -399,7 +399,7 @@ func (s *CryptoDotComScraper) unsubscribe(pairs []models.ExchangePair) error {
 func (s *CryptoDotComScraper) retryConnection() error {
 	s.connRetryCount += 1
 	if s.connRetryCount > cryptoDotComConnMaxRetry {
-		return errors.New("CryptoDotComPairScraper: Reached max retry connection")
+		return errors.New("Crypto.com - Reached max retry connection")
 	}
 	if err := s.wsConn().Close(); err != nil {
 		return err
@@ -424,16 +424,16 @@ func (s *CryptoDotComScraper) retryConnection() error {
 func (s *CryptoDotComScraper) retryTask(taskID int) error {
 	val, ok := s.tasks.Load(taskID)
 	if !ok {
-		return fmt.Errorf("CryptoDotComScraper: Facing unknown task id, taskId=%d", taskID)
+		return fmt.Errorf("Crypto.com - Facing unknown task id, taskId=%d", taskID)
 	}
 
 	task := val.(cryptoDotComWSTask)
 	task.RetryCount += 1
 	if task.RetryCount > cryptoDotComTaskMaxRetry {
-		return fmt.Errorf("CryptoDotComScraper: Exeeding max retry, taskId=%d, %s", taskID, task.toString())
+		return fmt.Errorf("CCrypto.com - Exeeding max retry, taskId=%d, %s", taskID, task.toString())
 	}
 
-	log.Warnf("CryptoDotComScraper: Retrying a task, taskId=%d, %s", taskID, task.toString())
+	log.Warnf("Crypto.com - Retrying a task, taskId=%d, %s", taskID, task.toString())
 	s.tasks.Store(taskID, task)
 
 	return s.send(taskID, task)
@@ -453,7 +453,7 @@ func (s *CryptoDotComScraper) send(taskID int, task cryptoDotComWSTask) error {
 // Close unsubscribes data and closes any existing WebSocket connections, as well as channels of CryptoDotComScraper
 func (s *CryptoDotComScraper) Close() error {
 	if s.isClosed() {
-		return errors.New("CryptoDotComScraper: Already closed")
+		return errors.New("Crypto.com - Already closed")
 	}
 
 	s.signalShutdown.Do(func() {

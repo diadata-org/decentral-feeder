@@ -58,11 +58,11 @@ func NewUniswapV2Scraper(pools []models.Pool, tradesChannel chan models.Trade, w
 
 	scraper.restClient, err = ethclient.Dial(utils.Getenv(UNISWAPV2_EXCHANGE+"_URI_REST", restDial))
 	if err != nil {
-		log.Error("init rest client: ", err)
+		log.Error("UniswapV2 - init rest client: ", err)
 	}
 	scraper.wsClient, err = ethclient.Dial(utils.Getenv(UNISWAPV2_EXCHANGE+"_URI_WS", wsDial))
 	if err != nil {
-		log.Error("init ws client: ", err)
+		log.Error("UniswapV2 - init ws client: ", err)
 	}
 
 	// TO DO: Import through env var.
@@ -70,7 +70,7 @@ func NewUniswapV2Scraper(pools []models.Pool, tradesChannel chan models.Trade, w
 	// Fetch all pool with given liquidity threshold from database.
 	poolMap, err = scraper.makeUniPoolMap(pools)
 	if err != nil {
-		log.Error("build poolMap: ", err)
+		log.Error("UniswapV2 - build poolMap: ", err)
 	}
 
 	go scraper.mainLoop(pools, tradesChannel)
@@ -103,7 +103,7 @@ func (scraper *UniswapV2Scraper) makeUniPoolMap(pools []models.Pool) (map[string
 	for _, p := range pools {
 		pm[p.Address], err = scraper.GetPairByAddress(common.HexToAddress(p.Address))
 		if err != nil {
-			log.Error("GetPairByAddress for ", p.Address)
+			log.Error("UniswapV2 - GetPairByAddress for ", p.Address)
 			return pm, err
 		}
 	}
@@ -120,7 +120,7 @@ func (scraper *UniswapV2Scraper) ListenToPair(address common.Address, tradesChan
 
 	sink, err := scraper.GetSwapsChannel(address)
 	if err != nil {
-		log.Error("error fetching swaps channel: ", err)
+		log.Error("UniswapV2 - error fetching swaps channel: ", err)
 	}
 
 	go func() {
@@ -129,7 +129,7 @@ func (scraper *UniswapV2Scraper) ListenToPair(address common.Address, tradesChan
 			if ok {
 				swap, err := scraper.normalizeUniswapSwap(*rawSwap, pair)
 				if err != nil {
-					log.Error("error normalizing swap: ", err)
+					log.Error("UniswapV2 - error normalizing swap: ", err)
 				}
 				price, volume := getSwapData(swap)
 				token0 := models.Asset{
@@ -180,12 +180,12 @@ func (scraper *UniswapV2Scraper) GetSwapsChannel(pairAddress common.Address) (ch
 	var pairFiltererContract *uniswap.UniswapV2PairFilterer
 	pairFiltererContract, err := uniswap.NewUniswapV2PairFilterer(pairAddress, scraper.wsClient)
 	if err != nil {
-		log.Error("UniswapV2 pair filterer: ", err)
+		log.Error("UniswapV2 - pair filterer: ", err)
 	}
 
 	_, err = pairFiltererContract.WatchSwap(&bind.WatchOpts{}, sink, []common.Address{}, []common.Address{})
 	if err != nil {
-		log.Error("error in get swaps channel: ", err)
+		log.Error("UniswapV2 - error in get swaps channel: ", err)
 	}
 
 	return sink, nil
@@ -197,7 +197,7 @@ func (scraper *UniswapV2Scraper) GetPairByAddress(pairAddress common.Address) (p
 	var pairContract *uniswap.IUniswapV2PairCaller
 	pairContract, err = uniswap.NewIUniswapV2PairCaller(pairAddress, connection)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 		return UniswapPair{}, err
 	}
 
@@ -208,39 +208,39 @@ func (scraper *UniswapV2Scraper) GetPairByAddress(pairAddress common.Address) (p
 	var token1Contract *uniswap.IERC20Caller
 	token0Contract, err = uniswap.NewIERC20Caller(address0, connection)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 	}
 	token1Contract, err = uniswap.NewIERC20Caller(address1, connection)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 	}
 	symbol0, err := token0Contract.Symbol(&bind.CallOpts{})
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 	}
 	symbol1, err := token1Contract.Symbol(&bind.CallOpts{})
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 	}
 	decimals0, err := scraper.GetDecimals(address0)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 		return UniswapPair{}, err
 	}
 	decimals1, err := scraper.GetDecimals(address1)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 		return UniswapPair{}, err
 	}
 
 	name0, err := scraper.GetName(address0)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 		return UniswapPair{}, err
 	}
 	name1, err := scraper.GetName(address1)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 		return UniswapPair{}, err
 	}
 	token0 := UniswapToken{
@@ -271,7 +271,7 @@ func (scraper *UniswapV2Scraper) GetDecimals(tokenAddress common.Address) (decim
 	var contract *uniswap.IERC20Caller
 	contract, err = uniswap.NewIERC20Caller(tokenAddress, scraper.restClient)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 		return
 	}
 	decimals, err = contract.Decimals(&bind.CallOpts{})
@@ -284,7 +284,7 @@ func (scraper *UniswapV2Scraper) GetName(tokenAddress common.Address) (name stri
 	var contract *uniswap.IERC20Caller
 	contract, err = uniswap.NewIERC20Caller(tokenAddress, scraper.restClient)
 	if err != nil {
-		log.Error(err)
+		log.Error("UniswapV2 - " + err.Error())
 		return
 	}
 	name, err = contract.Name(&bind.CallOpts{})

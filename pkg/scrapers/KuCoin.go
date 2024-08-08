@@ -45,6 +45,7 @@ var (
 	kucoinWSBaseString    = "wss://ws-api-spot.kucoin.com/"
 	kucoinTokenURL        = "https://api.kucoin.com/api/v1/bullet-public"
 	kucoinPingIntervalFix = int64(10)
+	kucoinMaxErrCount     = 20
 )
 
 func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
@@ -71,7 +72,7 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 		log.Infof("Subscribed for Pair %s:%s", KUCOIN_EXCHANGE, pair.ForeignName)
 		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error(err.Error())
+			log.Error("KuCoin - " + err.Error())
 		}
 	}
 
@@ -82,18 +83,17 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message kuCoinWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("ReadMessage: %v", err)
 			continue
 		}
 
 		if message.Type == "pong" {
-			log.Info("Successful ping: received pong.")
+			log.Info("KuCoin - Successful ping: received pong.")
 		} else if message.Type == "message" {
 
 			// Parse trade quantities.
 			price, volume, timestamp, foreignTradeID, err := parseKuCoinTradeMessage(message)
 			if err != nil {
-				log.Error("parseTradeMessage: ", err)
+				log.Error("KuCoin - parseTradeMessage: ", err)
 			}
 
 			// Identify ticker symbols with underlying assets.
@@ -168,7 +168,7 @@ func ping(wsClient *ws.Conn, pingInterval int64) {
 	for range tick.C {
 		log.Infof("send ping.")
 		if err := wsClient.WriteJSON(ping); err != nil {
-			log.Error(err.Error())
+			log.Error("KuCoin - " + err.Error())
 		}
 	}
 }

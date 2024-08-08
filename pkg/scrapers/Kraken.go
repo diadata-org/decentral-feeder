@@ -71,7 +71,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message krakenWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("ReadMessage: %v", err)
+			log.Errorf("Kraken - ReadMessage: %v", err)
 			continue
 		}
 
@@ -81,7 +81,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 				// Parse trade quantities.
 				price, volume, timestamp, foreignTradeID, err := parseKrakenTradeMessage(data)
 				if err != nil {
-					log.Error("parseTradeMessage: ", err)
+					log.Error("Kraken - parseTradeMessage: ", err)
 				}
 
 				// Identify ticker symbols with underlying assets.
@@ -101,7 +101,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 					Exchange:       models.Exchange{Name: KRAKEN_EXCHANGE},
 					ForeignTradeID: foreignTradeID,
 				}
-				log.Info("Got trade: ", trade)
+				// log.Info("Got trade: ", trade)
 				tradesChannel <- trade
 			}
 		}
