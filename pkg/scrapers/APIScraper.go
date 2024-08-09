@@ -39,7 +39,10 @@ func RunScraper(
 	case KRAKEN_EXCHANGE:
 		NewKrakenScraper(pairs, tradesChannel, wg)
 	case KUCOIN_EXCHANGE:
-		NewKuCoinScraper(pairs, tradesChannel, wg)
+		status := NewKuCoinScraper(pairs, tradesChannel, failoverChannel, wg)
+		if status == "closed" {
+			return
+		}
 
 	case UNISWAPV2_EXCHANGE:
 		NewUniswapV2Scraper(pools, tradesChannel, wg)
@@ -58,7 +61,7 @@ func watchdog(
 		log.Info("lastTradeTime: ", lastTradeTime)
 		log.Info("timeNow: ", time.Now())
 		duration := time.Since(lastTradeTime)
-		if duration > time.Duration(watchdogDelayBinance)*time.Second {
+		if duration > time.Duration(binanceWatchdogDelay)*time.Second {
 			log.Error("failover")
 			*run = false
 			break
