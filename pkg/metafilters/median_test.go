@@ -37,7 +37,7 @@ func TestMedian(t *testing.T) {
 			},
 			[]models.FilterPointExtended{
 				{
-					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
+					Pair:  models.Pair{QuoteToken: ETH},
 					Value: 3381.11,
 					Name:  "median",
 				},
@@ -65,12 +65,12 @@ func TestMedian(t *testing.T) {
 			},
 			[]models.FilterPointExtended{
 				{
-					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
+					Pair:  models.Pair{QuoteToken: ETH},
 					Value: 3179.78,
 					Name:  "median",
 				},
 				{
-					Pair:  models.Pair{QuoteToken: BTC, BaseToken: USDC},
+					Pair:  models.Pair{QuoteToken: BTC},
 					Value: 62344.9,
 					Name:  "median",
 				},
@@ -94,7 +94,7 @@ func TestMedian(t *testing.T) {
 			},
 			[]models.FilterPointExtended{
 				{
-					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
+					Pair:  models.Pair{QuoteToken: ETH},
 					Value: 3179.78,
 					Name:  "median",
 				},
@@ -105,7 +105,8 @@ func TestMedian(t *testing.T) {
 	for i, c := range cases {
 		medianizedFilterPoints := Median(c.filterPoints)
 
-		if !reflect.DeepEqual(medianizedFilterPoints, c.medianizedFilterPoints) {
+		// Make maps from slices in order to deep compare.
+		if !reflect.DeepEqual(models.GroupFilterByAsset(medianizedFilterPoints), models.GroupFilterByAsset(c.medianizedFilterPoints)) {
 			t.Errorf("Median was incorrect, got: %v, expected: %v for set:%d", medianizedFilterPoints, c.medianizedFilterPoints, i)
 		}
 
