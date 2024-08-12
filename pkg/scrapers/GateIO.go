@@ -10,7 +10,13 @@ import (
 	ws "github.com/gorilla/websocket"
 )
 
-var _GateIOsocketurl string = "wss://api.gateio.ws/ws/v4/"
+var (
+	_GateIOsocketurl      string = "wss://api.gateio.ws/ws/v4/"
+	gateIOMaxErrCount            = 20
+	gateIORun             bool
+	gateIOWatchdogDelay   = 60
+	gateIORestartWaitTime = 5
+)
 
 type SubscribeGate struct {
 	Time    int64    `json:"time"`
@@ -34,14 +40,17 @@ type GateIOResponseTrade struct {
 	} `json:"result"`
 }
 
-func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
+func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started GateIO scraper.")
+	gateIORun = true
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
 	if err != nil {
 		log.Error("GateIO - " + err.Error())
+		failoverChannel <- string(GATEIO_EXCHANGE)
+		return "closed"
 	}
 
 	// In case this is the same for all exchanges we can put it to APIScraper.go.
@@ -62,12 +71,19 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 	}
 
-	for {
+	var errCount int
+	for gateIORun {
 
 		var message GateIOResponseTrade
 		if err = wsClient.ReadJSON(&message); err != nil {
 			log.Error("GateIO - " + err.Error())
-			break
+			if errCount > gateIOMaxErrCount {
+				log.Warnf("too many errors. wait for %v seconds and restart scraper.", gateIORestartWaitTime)
+				time.Sleep(time.Duration(gateIORestartWaitTime) * time.Second)
+				gateIORun = false
+				break
+			}
+			continue
 		}
 
 		var (
@@ -107,5 +123,9 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		tradesChannel <- t
 
 	}
+
+	log.Warn("Close GateIO scraper.")
+	failoverChannel <- string(GATEIO_EXCHANGE)
+	return "closed"
 
 }

@@ -14,10 +14,10 @@ type FilterPoint struct {
 
 type FilterPointExtended struct {
 	Pair   Pair
-	Source string
 	Value  float64
 	Name   string
 	Time   time.Time
+	Source string
 }
 
 // GroupFilterByAsset returns @fpMap which maps an asset on all extended filter points contained in @filterPoints.

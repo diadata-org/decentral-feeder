@@ -31,13 +31,26 @@ func RunScraper(
 			return
 		}
 	case COINBASE_EXCHANGE:
-		NewCoinBaseScraper(pairs, tradesChannel, wg)
+		NewCoinBaseScraper(pairs, tradesChannel, failoverChannel, wg)
+		status := NewCoinBaseScraper(pairs, tradesChannel, failoverChannel, wg)
+		if status == "closed" {
+			return
+		}
 	case CRYPTODOTCOM_EXCHANGE:
-		NewCryptoDotComScraper(pairs, tradesChannel, wg)
+		status := NewCryptoDotComScraper(pairs, tradesChannel, failoverChannel, wg)
+		if status == "closed" {
+			return
+		}
 	case GATEIO_EXCHANGE:
-		NewGateIOScraper(pairs, tradesChannel, wg)
+		status := NewGateIOScraper(pairs, tradesChannel, failoverChannel, wg)
+		if status == "closed" {
+			return
+		}
 	case KRAKEN_EXCHANGE:
-		NewKrakenScraper(pairs, tradesChannel, wg)
+		status := NewKrakenScraper(pairs, tradesChannel, failoverChannel, wg)
+		if status == "closed" {
+			return
+		}
 	case KUCOIN_EXCHANGE:
 		status := NewKuCoinScraper(pairs, tradesChannel, failoverChannel, wg)
 		if status == "closed" {

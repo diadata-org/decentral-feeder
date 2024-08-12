@@ -35,17 +35,24 @@ type coinBaseWSResponse struct {
 }
 
 var (
-	coinbaseWSBaseString = "wss://ws-feed.exchange.coinbase.com"
+	coinbaseWSBaseString    = "wss://ws-feed.exchange.coinbase.com"
+	coinbaseMaxErrCount     = 20
+	coinbaseRun             bool
+	coinbaseWatchdogDelay   = 60
+	coinbaseRestartWaitTime = 5
 )
 
-func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
+func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started CoinBase scraper.")
+	coinbaseRun = true
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(coinbaseWSBaseString, nil)
 	if err != nil {
 		log.Error("Dial CoinBase ws base string: ", err)
+		failoverChannel <- string(COINBASE_EXCHANGE)
+		return "closed"
 	}
 
 	// Subscribe to pairs.
@@ -66,11 +73,19 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	}
 
 	// Read trades stream.
-	for {
+	var errCount int
+	for coinbaseRun {
 		var message coinBaseWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
 			log.Errorf("CoinBase - ReadMessage: %v", err)
+			errCount++
+			if errCount > coinbaseMaxErrCount {
+				log.Warnf("too many errors. wait for %v seconds and restart scraper.", coinbaseRestartWaitTime)
+				time.Sleep(time.Duration(coinbaseRestartWaitTime) * time.Second)
+				coinbaseRun = false
+				break
+			}
 			continue
 		}
 
@@ -103,6 +118,10 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 			tradesChannel <- trade
 		}
 	}
+
+	log.Warn("Close CoinBase scraper.")
+	failoverChannel <- string(KUCOIN_EXCHANGE)
+	return "closed"
 
 }
 

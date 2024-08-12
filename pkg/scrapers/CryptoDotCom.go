@@ -38,6 +38,11 @@ const (
 	cryptoDotComBackoffSeconds = 5
 )
 
+var (
+	cryptoDotComRun           bool
+	cryptoDotComWatchdogDelay = 60
+)
+
 type nothing struct{}
 
 // cryptoDotComWSTask is a websocket task tracking subscription/unsubscription
@@ -155,8 +160,9 @@ type CryptoDotComScraper struct {
 }
 
 // NewCryptoDotComScraper returns a new Crypto.com scraper
-func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
+func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
+	cryptoDotComRun = true
 
 	s := &CryptoDotComScraper{
 		shutdown:     make(chan nothing),
@@ -164,7 +170,10 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 		err:          nil,
 	}
 	if err := s.newConn(); err != nil {
-		log.Error(err)
+		log.Error("Crypto.com - " + err.Error())
+		log.Warn("Close Crypto.com scraper.")
+		failoverChannel <- string(CRYPTODOTCOM_EXCHANGE)
+		return "closed"
 	}
 
 	s.rl = ratelimit.New(cryptoDotComWSRateLimitPerSec)
@@ -178,14 +187,34 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	}
 
 	// ----------------------------------------
+	//  Check for liveliness of the scraper.
+	// ----------------------------------------
+	lastTradeTime = time.Now()
+	log.Info("Crypto.com - Initialize lastTradeTime after failover: ", lastTradeTime)
+	watchdogTicker := time.NewTicker(time.Duration(cryptoDotComWatchdogDelay) * time.Second)
+	go func() {
+		for range watchdogTicker.C {
+			duration := time.Since(lastTradeTime)
+			if duration > time.Duration(cryptoDotComWatchdogDelay)*time.Second {
+				log.Error("Crypto.com - watchdogTicker failover")
+				kucoinRun = false
+				break
+			}
+		}
+	}()
+
+	// ----------------------------------------
 	// Fetch trades
 	// ----------------------------------------
 	defer s.cleanup()
 
-	for {
+	for cryptoDotComRun {
 		select {
 		case <-s.shutdown:
 			log.Println("Crypto.com - Shutting down main loop")
+			log.Warn("Close Crypto.com scraper.")
+			failoverChannel <- string(CRYPTODOTCOM_EXCHANGE)
+			return "closed"
 		default:
 		}
 
@@ -196,6 +225,8 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 			if retryErr := s.retryConnection(); retryErr != nil {
 				s.setError(retryErr)
 				log.Errorf("Crypto.com - Shutting down main loop after retrying to create a new connection, err=%s", retryErr.Error())
+				failoverChannel <- string(CRYPTODOTCOM_EXCHANGE)
+				return "closed"
 			}
 
 			log.Info("Crypto.com - Successfully created a new connection")
@@ -276,6 +307,10 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 			}
 		}
 	}
+
+	log.Warn("Close Crypto.com scraper.")
+	failoverChannel <- string(CRYPTODOTCOM_EXCHANGE)
+	return "closed"
 
 }
 
