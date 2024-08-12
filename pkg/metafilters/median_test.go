@@ -65,13 +65,13 @@ func TestMedian(t *testing.T) {
 			},
 			[]models.FilterPointExtended{
 				{
-					Pair:  models.Pair{QuoteToken: BTC, BaseToken: USDC},
-					Value: 62344.9,
+					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
+					Value: 3179.78,
 					Name:  "median",
 				},
 				{
-					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
-					Value: 3179.78,
+					Pair:  models.Pair{QuoteToken: BTC, BaseToken: USDC},
+					Value: 62344.9,
 					Name:  "median",
 				},
 			},
