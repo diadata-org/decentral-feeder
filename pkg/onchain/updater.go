@@ -121,7 +121,7 @@ func updateOracleMultiValues(
 	}
 
 	log.Printf("Gas price: %d\n", tx.GasPrice())
-	log.Printf("Data: %x\n", tx.Data())
+	// log.Printf("Data: %x\n", tx.Data())
 	log.Printf("Nonce: %d\n", tx.Nonce())
 	log.Printf("Tx To: %s\n", tx.To().String())
 	log.Printf("Tx Hash: 0x%x\n", tx.Hash())

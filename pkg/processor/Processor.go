@@ -35,9 +35,18 @@ func Processor(
 
 		var filterPoints []models.FilterPointExtended
 
+		// --------------------------------------------------------------------------------------------
+		// 1. Compute an aggregated value for each pair on a given exchange using all collected trades.
+		// --------------------------------------------------------------------------------------------
 		for exchangepairIdentifier, tb := range tradesblocks {
 
-			log.Info("length tradesblock: ", len(tb.Trades))
+			if len(tb.Trades) > 0 {
+				log.Infof("length of tradesblock for %s: %v", tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol, len(tb.Trades))
+			} else {
+				if len(strings.Split(exchangepairIdentifier, "-")) > 0 {
+					log.Infof("length of tradesblock for %s: %v", strings.Split(exchangepairIdentifier, "-")[0], len(tb.Trades))
+				}
+			}
 
 			// TO DO: Set flag for trades' filter switch. For instance Median, Average, Minimum, etc.
 			atomicFilterValue, _, err := filters.LastPrice(tb.Trades, true)
@@ -60,6 +69,10 @@ func Processor(
 		filterPoints, removedFilterPoints = models.RemoveOldFilters(filterPoints, toleranceSeconds, time.Now())
 		log.Warnf("Removed %v old filter points.", removedFilterPoints)
 
+		// --------------------------------------------------------------------------------------------
+		// 2. Compute an aggregated value across exchanges for each asset obtained from the aggregated
+		// filter values in Step 1.
+		// --------------------------------------------------------------------------------------------
 		// TO DO: Set flag for metafilter switch. For instance Median, Average, Minimum, etc.
 		filterPointsMedianized := metafilters.Median(filterPoints)
 

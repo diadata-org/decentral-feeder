@@ -38,17 +38,24 @@ type krakenWSResponseData struct {
 }
 
 var (
-	krakenWSBaseString = "wss://ws.kraken.com/v2"
+	krakenWSBaseString    = "wss://ws.kraken.com/v2"
+	krakenMaxErrCount     = 20
+	krakenRun             bool
+	krakenWatchdogDelay   = 60
+	krakenRestartWaitTime = 5
 )
 
-func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, wg *sync.WaitGroup) {
+func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started Kraken scraper.")
+	krakenRun = true
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
 	if err != nil {
 		log.Error("Dial Kraken ws base string: ", err)
+		failoverChannel <- string(KRAKEN_EXCHANGE)
+		return "closed"
 	}
 
 	// Subscribe to pairs.
@@ -62,16 +69,24 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 		log.Infof("Subscribed for Pair %s:%s", KRAKEN_EXCHANGE, pair.ForeignName)
 		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error(err.Error())
+			log.Error("Kraken - " + err.Error())
 		}
 	}
 
 	// Read trades stream.
-	for {
+	var errCount int
+	for krakenRun {
+
 		var message krakenWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
 			log.Errorf("Kraken - ReadMessage: %v", err)
+			if errCount > krakenMaxErrCount {
+				log.Warnf("too many errors. wait for %v seconds and restart scraper.", krakenRestartWaitTime)
+				time.Sleep(time.Duration(krakenRestartWaitTime) * time.Second)
+				krakenRun = false
+				break
+			}
 			continue
 		}
 
@@ -106,6 +121,10 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 			}
 		}
 	}
+
+	log.Warn("Close Kraken scraper.")
+	failoverChannel <- string(KRAKEN_EXCHANGE)
+	return "closed"
 
 }
 
