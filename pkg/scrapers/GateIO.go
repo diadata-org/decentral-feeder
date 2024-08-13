@@ -16,6 +16,7 @@ var (
 	gateIORun             bool
 	gateIOWatchdogDelay   = 60
 	gateIORestartWaitTime = 5
+	gateIOLastTradeTime   time.Time
 )
 
 type SubscribeGate struct {
@@ -70,6 +71,23 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 			log.Error("GateIO - " + err.Error())
 		}
 	}
+
+	gateIOLastTradeTime = time.Now()
+	log.Info("GateIO - Initialize lastTradeTime after failover: ", gateIOLastTradeTime)
+	watchdogTicker := time.NewTicker(time.Duration(gateIOWatchdogDelay) * time.Second)
+
+	go func() {
+		for range watchdogTicker.C {
+			log.Info("GateIO - watchdogTicker - lastTradeTime: ", gateIOLastTradeTime)
+			log.Info("GateIO - watchdogTicker - timeNow: ", time.Now())
+			duration := time.Since(gateIOLastTradeTime)
+			if duration > time.Duration(gateIOWatchdogDelay)*time.Second {
+				log.Error("GateIO - watchdogTicker failover")
+				gateIORun = false
+				break
+			}
+		}
+	}()
 
 	var errCount int
 	for gateIORun {

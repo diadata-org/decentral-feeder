@@ -41,6 +41,7 @@ const (
 var (
 	cryptoDotComRun           bool
 	cryptoDotComWatchdogDelay = 60
+	cryptoDotComLastTradeTime time.Time
 )
 
 type nothing struct{}
@@ -189,12 +190,12 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	// ----------------------------------------
 	//  Check for liveliness of the scraper.
 	// ----------------------------------------
-	lastTradeTime = time.Now()
-	log.Info("Crypto.com - Initialize lastTradeTime after failover: ", lastTradeTime)
+	cryptoDotComLastTradeTime = time.Now()
+	log.Info("Crypto.com - Initialize cryptoDotComLastTradeTime after failover: ", cryptoDotComLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(cryptoDotComWatchdogDelay) * time.Second)
 	go func() {
 		for range watchdogTicker.C {
-			duration := time.Since(lastTradeTime)
+			duration := time.Since(cryptoDotComLastTradeTime)
 			if duration > time.Duration(cryptoDotComWatchdogDelay)*time.Second {
 				log.Error("Crypto.com - watchdogTicker failover")
 				kucoinRun = false
@@ -302,6 +303,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 				select {
 				case <-s.shutdown:
 				case tradesChannel <- trade:
+					cryptoDotComLastTradeTime = trade.Time
 					// log.Info("Got trade: ", trade)
 				}
 			}
