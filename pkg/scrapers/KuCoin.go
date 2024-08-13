@@ -81,7 +81,8 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 	}
 
-	go ping(wsClient, pingInterval)
+	closePingChannel := make(chan bool)
+	go ping(wsClient, pingInterval, time.Now(), closePingChannel)
 
 	kucoinLastTradeTime = time.Now()
 	log.Info("KuCoin - Initialize kucoinLastTradeTime after failover: ", kucoinLastTradeTime)
@@ -152,6 +153,7 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	}
 
 	log.Warn("Close KuCoin scraper.")
+	closePingChannel <- true
 	failoverChannel <- string(KUCOIN_EXCHANGE)
 	return "closed"
 
@@ -197,15 +199,21 @@ type instanceServers struct {
 }
 
 // Send ping to server.
-func ping(wsClient *ws.Conn, pingInterval int64) {
+func ping(wsClient *ws.Conn, pingInterval int64, starttime time.Time, closeChannel chan bool) {
 	var ping kuCoinWSMessage
 	ping.Type = "ping"
 	tick := time.NewTicker(time.Duration(kucoinPingIntervalFix) * time.Second)
 
-	for range tick.C {
-		// log.Infof("KuCoin - send ping.")
-		if err := wsClient.WriteJSON(ping); err != nil {
-			log.Error("KuCoin - " + err.Error())
+	for {
+		select {
+		case <-tick.C:
+			// log.Infof("KuCoin - send ping.")
+			if err := wsClient.WriteJSON(ping); err != nil {
+				log.Error("KuCoin - send ping: " + err.Error())
+				return
+			}
+		case <-closeChannel:
+			log.Warn("close ping.")
 			return
 		}
 	}
