@@ -131,6 +131,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 				ForeignTradeID: foreignTradeID,
 			}
 			// log.Info("Got trade: ", trade)
+			coinbaseLastTradeTime = trade.Time
 			tradesChannel <- trade
 		}
 	}

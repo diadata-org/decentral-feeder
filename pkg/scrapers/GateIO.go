@@ -138,6 +138,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 
 		// log.Info("Got trade: ", t)
+		gateIOLastTradeTime = t.Time
 		tradesChannel <- t
 
 	}

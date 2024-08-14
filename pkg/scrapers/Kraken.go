@@ -135,6 +135,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 					ForeignTradeID: foreignTradeID,
 				}
 				// log.Info("Got trade: ", trade)
+				krakenLastTradeTime = trade.Time
 				tradesChannel <- trade
 			}
 		}
