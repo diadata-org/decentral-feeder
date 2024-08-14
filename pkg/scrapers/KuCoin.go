@@ -66,6 +66,8 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	wsClient, _, err := wsDialer.Dial(kucoinWSBaseString+"?token="+token, nil)
 	if err != nil {
 		log.Error("Dial KuCoin ws base string: ", err)
+		failoverChannel <- string(KUCOIN_EXCHANGE)
+		return "closed"
 	}
 
 	// Subscribe to pairs.

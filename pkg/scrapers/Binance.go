@@ -36,6 +36,8 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
 		log.Error("connect to Binance API.")
+		failoverChannel <- string(BINANCE_EXCHANGE)
+		return "closed"
 	}
 	defer conn.Close()
 
