@@ -49,7 +49,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
 	if err != nil {
-		log.Error("GateIO - " + err.Error())
+		log.Error("Dial GateIO ws base string: " + err.Error())
 		failoverChannel <- string(GATEIO_EXCHANGE)
 		return "closed"
 	}
@@ -68,7 +68,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 		log.Infof("GateIO - Subscribed for Pair %v", pair.ForeignName)
 		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error("GateIO - " + err.Error())
+			log.Error("GateIO - WriteJSON: " + err.Error())
 		}
 	}
 
@@ -94,7 +94,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 		var message GateIOResponseTrade
 		if err = wsClient.ReadJSON(&message); err != nil {
-			log.Error("GateIO - " + err.Error())
+			log.Error("GateIO - readJSON: " + err.Error())
 			if errCount > gateIOMaxErrCount {
 				log.Warnf("too many errors. wait for %v seconds and restart scraper.", gateIORestartWaitTime)
 				time.Sleep(time.Duration(gateIORestartWaitTime) * time.Second)
