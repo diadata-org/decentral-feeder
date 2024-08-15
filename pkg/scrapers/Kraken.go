@@ -99,6 +99,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
 			log.Errorf("Kraken - ReadMessage: %v", err)
+			errCount++
 			if errCount > krakenMaxErrCount {
 				log.Warnf("too many errors. wait for %v seconds and restart scraper.", krakenRestartWaitTime)
 				time.Sleep(time.Duration(krakenRestartWaitTime) * time.Second)

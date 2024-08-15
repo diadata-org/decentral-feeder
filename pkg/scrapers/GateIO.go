@@ -95,6 +95,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message GateIOResponseTrade
 		if err = wsClient.ReadJSON(&message); err != nil {
 			log.Error("GateIO - readJSON: " + err.Error())
+			errCount++
 			if errCount > gateIOMaxErrCount {
 				log.Warnf("too many errors. wait for %v seconds and restart scraper.", gateIORestartWaitTime)
 				time.Sleep(time.Duration(gateIORestartWaitTime) * time.Second)
