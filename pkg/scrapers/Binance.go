@@ -2,12 +2,15 @@ package scrapers
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -33,19 +36,42 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	// Make tickerPairMap for identification of exchangepairs.
 	tickerPairMap := models.MakeTickerPairMap(pairs)
 
-	// Remove trailing slash
-	wsAssetsString = wsAssetsString[:len(wsAssetsString)-1]
-	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
+	// Set up websocket dialer with proxy.
+	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
+	if err != nil {
+		log.Error("Binance - parse proxy url: %v", err)
+	}
+	var d = ws.Dialer{
+		Proxy: http.ProxyURL(&url.URL{
+			Scheme: "http", // or "https" depending on your proxy
+			User:   proxyURL.User,
+			Host:   proxyURL.Host,
+			Path:   "/",
+		}),
+	}
+
+	// pw, _ := u.User.Password()
+	// log.Infof("user -- password: %s -- %s", u.User.Username(), pw)
+	// conn1, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
+	// if err != nil {
+	// 	log.Error("DefaultDialer: ", err)
+	// }
+	// log.Info("conn1: ", conn1)
+
+	// Connect to Binance API.
+	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
 		log.Errorf("Connect to Binance API: %s.", err.Error())
 		failoverChannel <- string(BINANCE_EXCHANGE)
 		return "closed"
 	}
+
 	defer conn.Close()
 
 	binanceLastTradeTime = time.Now()
 	log.Info("Binance - Initialize lastTradeTime after failover: ", binanceLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
+	log.Info("watchdogDelay: ", time.Duration(binanceWatchdogDelay)*time.Second)
 
 	// Check for liveliness of the scraper.
 	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
@@ -112,7 +138,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 		binanceLastTradeTime = trade.Time
 
-		// log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
+		log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
 		tradesChannel <- trade
 
 	}
