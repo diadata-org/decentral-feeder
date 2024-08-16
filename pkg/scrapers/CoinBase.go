@@ -38,7 +38,7 @@ var (
 	coinbaseWSBaseString    = "wss://ws-feed.exchange.coinbase.com"
 	coinbaseMaxErrCount     = 20
 	coinbaseRun             bool
-	coinbaseWatchdogDelay   = 60
+	coinbaseWatchdogDelay   int64
 	coinbaseRestartWaitTime = 5
 	coinbaseLastTradeTime   time.Time
 )

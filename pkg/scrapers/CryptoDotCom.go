@@ -40,7 +40,7 @@ const (
 
 var (
 	cryptoDotComRun           bool
-	cryptoDotComWatchdogDelay = 60
+	cryptoDotComWatchdogDelay int64
 	cryptoDotComLastTradeTime time.Time
 )
 

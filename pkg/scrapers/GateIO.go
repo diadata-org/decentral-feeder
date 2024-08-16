@@ -14,7 +14,7 @@ var (
 	_GateIOsocketurl      string = "wss://api.gateio.ws/ws/v4/"
 	gateIOMaxErrCount            = 20
 	gateIORun             bool
-	gateIOWatchdogDelay   = 60
+	gateIOWatchdogDelay   int64
 	gateIORestartWaitTime = 5
 	gateIOLastTradeTime   time.Time
 )

@@ -47,7 +47,7 @@ var (
 	kucoinPingIntervalFix = int64(10)
 	kucoinMaxErrCount     = 20
 	kucoinRun             bool
-	kucoinWatchdogDelay   = 60
+	kucoinWatchdogDelay   int64
 	kucoinRestartWaitTime = 5
 	kucoinLastTradeTime   time.Time
 )

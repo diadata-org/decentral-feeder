@@ -41,7 +41,7 @@ var (
 	krakenWSBaseString    = "wss://ws.kraken.com/v2"
 	krakenMaxErrCount     = 20
 	krakenRun             bool
-	krakenWatchdogDelay   = 60
+	krakenWatchdogDelay   int64
 	krakenRestartWaitTime = 5
 	krakenLastTradeTime   time.Time
 )
