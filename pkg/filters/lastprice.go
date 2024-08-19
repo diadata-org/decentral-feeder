@@ -13,6 +13,10 @@ func LastPrice(trades []models.Trade, USDPrice bool) (lastPrice float64, timesta
 
 	lastTrade := models.GetLastTrade(trades)
 	timestamp = lastTrade.Time
+	if lastTrade.BaseToken.Blockchain == "Fiat" && lastTrade.BaseToken.Address == "840" {
+		lastPrice = lastTrade.Price
+		return
+	}
 
 	// Fetch USD price of basetoken from DIA API.
 	if USDPrice {
