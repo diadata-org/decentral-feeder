@@ -120,28 +120,12 @@ jobs:
           envsubst < kubernetes_deployment/diaoracleservice-conduit-011.yaml > kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
 
           # Apply the Kubernetes deployment manifest
-          timeout 120s kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml --v=8
+          timeout 120s kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
 
           # Wait for 20 seconds before verifying the deployment
           sleep 20
 
-          # Verify the deployment with a timeout of 2 minutes
-          TIMEOUT=120  # Timeout in seconds (2 minutes)
-          INTERVAL=5   # Interval between checks in seconds
-          ELAPSED=0
-
-          until kubectl rollout status -n dia-testspace deployment/diaoracleservice-conduit-011 || [ $ELAPSED -ge $TIMEOUT ]; do
-            echo "Waiting for deployment to complete... ($ELAPSED/$TIMEOUT)"
-            sleep $INTERVAL
-            ELAPSED=$((ELAPSED + INTERVAL))
-          done
-
-          if [ $ELAPSED -ge $TIMEOUT ]; then
-            echo "Error: Deployment verification timed out after $TIMEOUT seconds"
-            exit 1
-          else
-            echo "Deployment successfully rolled out."
-          fi
+          timeout 120s kubectl rollout status -n dia-testspace deployment/diaoracleservice-conduit-011
 
           # Remove temporary files for security
           rm kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml || true
