@@ -78,5 +78,16 @@ func globalWatchdog(ticker *time.Ticker, lastTradeTime *time.Time, watchdogDelay
 }
 
 func watchdog(pair models.ExchangePair, ticker *time.Ticker, lastTradeTime *time.Time, watchdogDelay int64, run *bool) {
+	// TO DO: watchdog per pair.
+}
 
+func readJSONError(exchange string, err error, errCount *int, run *bool, restartWaitTime int, maxErrCount int) {
+	log.Errorf("%s - ReadMessage: %v", exchange, err)
+	*errCount++
+	if *errCount > maxErrCount {
+		log.Warnf("too many errors. wait for %v seconds and restart scraper.", restartWaitTime)
+		time.Sleep(time.Duration(restartWaitTime) * time.Second)
+		*run = false
+	}
+	return
 }

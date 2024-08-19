@@ -84,14 +84,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Errorln("Binance - ReadMessage:", err)
-			errCount++
-			if errCount > binanceMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", binanceRestartWaitTime)
-				time.Sleep(time.Duration(binanceRestartWaitTime) * time.Second)
-				binanceRun = false
-				break
-			}
+			readJSONError(BINANCE_EXCHANGE, err, &errCount, &binanceRun, binanceRestartWaitTime, binanceMaxErrCount)
 			continue
 		}
 

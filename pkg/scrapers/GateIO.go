@@ -82,10 +82,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 		var message GateIOResponseTrade
 		if err = wsClient.ReadJSON(&message); err != nil {
-			errCount, gateIORun = readJSONError(_GateIOsocketurl, err, errCount, gateIORestartWaitTime, gateIOMaxErrCount)
-			if !gateIORun {
-				break
-			}
+			readJSONError(_GateIOsocketurl, err, &errCount, &gateIORun, gateIORestartWaitTime, gateIOMaxErrCount)
 			continue
 		}
 

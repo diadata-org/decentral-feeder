@@ -74,10 +74,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 		var message coinBaseWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			errCount, coinbaseRun = readJSONError(COINBASE_EXCHANGE, err, errCount, coinbaseRestartWaitTime, coinbaseMaxErrCount)
-			if !coinbaseRun {
-				break
-			}
+			readJSONError(COINBASE_EXCHANGE, err, &errCount, &coinbaseRun, coinbaseRestartWaitTime, coinbaseMaxErrCount)
 			continue
 		}
 

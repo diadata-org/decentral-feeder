@@ -86,10 +86,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message krakenWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			errCount, krakenRun = readJSONError(KRAKEN_EXCHANGE, err, errCount, krakenRestartWaitTime, krakenMaxErrCount)
-			if !krakenRun {
-				break
-			}
+			readJSONError(KRAKEN_EXCHANGE, err, &errCount, &krakenRun, krakenRestartWaitTime, krakenMaxErrCount)
 			continue
 		}
 
