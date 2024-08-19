@@ -83,8 +83,8 @@ jobs:
       - name: Configure kubectl with Service Account
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
-          CLUSTER_NAME: dia-k3s
-          API_SERVER:  ${{ secrets.K8S_API_SERVER }} # Example: https://your-api-server:6443
+          CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
         run: |
 
           # Ensure token does not contain unexpected newline characters
@@ -94,9 +94,9 @@ jobs:
           # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
           # Set context
-          kubectl config set-context dia-k3s --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa
           # Use context
-          kubectl config use-context dia-k3s
+          kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
 
       # Deploy to Kubernetes
       - name: Deploy to Kubernetes 
@@ -126,7 +126,7 @@ jobs:
           sleep 20
 
           # Verify the deployment
-          kubectl rollout status -n monitoring deployment/diaoracleservice-conduit-011
+          kubectl rollout status -n dia-testspace deployment/diaoracleservice-conduit-011
 
           # Remove temporary files for security
           rm kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml || true
