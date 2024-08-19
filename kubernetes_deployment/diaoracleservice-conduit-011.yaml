@@ -51,10 +51,20 @@ spec:
               value: "${UniswapV2_URI_WS}"
             - name: POOLS
               value: "${POOLS}"
-#            - name: HTTPS_PROXY
-#              value: "${HTTPS_PROXY}"
             - name: FREQUENCY_SECONDS
               value: "30"
+            - name: BINANCE_WATCHDOGDELAY
+              value: "120"
+            - name: COINBASE_WATCHDOGDELAY
+              value: "240"
+            - name: CRYPTODOTOCOM_WATCHDOGDELAY
+              value: "120"    
+            - name: GATEIO_WATCHDOGDELAY
+              value: "120"
+            - name: KRAKEN_WATCHDOGDELAY
+              value: "240"
+            - name: KUCOIN_WATCHDOGDELAY
+              value: "120"
             - name: EXCHANGEPAIRS
               value: "
               GateIO:BTC-USDT,
@@ -69,6 +79,18 @@ spec:
               GateIO:DIA-USDT,
               GateIO:OMG-USDT,
               GateIO:USDC-USDT,
+              KuCoin:BTC-USDT,
+              KuCoin:ETH-USDT,
+              KuCoin:WIF-USDT,
+              KuCoin:ENS-USDT,
+              KuCoin:YFI-USDT,
+              KuCoin:STORJ-USDT,
+              KuCoin:SUSHI-USDT,
+              KuCoin:MOVR-USDT,
+              KuCoin:STG-USDT,
+              KuCoin:DIA-USDT,
+              KuCoin:OMG-USDT,
+              KuCoin:USDC-USDT,
               Crypto.com:BTC-USDT,
               Crypto.com:ETH-USDT,
               Crypto.com:WIF-USDT,
