@@ -120,7 +120,7 @@ jobs:
           envsubst < kubernetes_deployment/diaoracleservice-conduit-011.yaml > kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
 
           # Apply the Kubernetes deployment manifest
-          kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
+          timeout 120s kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml --v=8
 
           # Wait for 20 seconds before verifying the deployment
           sleep 20
