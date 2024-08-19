@@ -77,19 +77,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	krakenLastTradeTime = time.Now()
 	log.Info("Kraken - Initialize lastTradeTime after failover: ", krakenLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(krakenWatchdogDelay) * time.Second)
-
-	go func() {
-		for range watchdogTicker.C {
-			log.Info("Kraken - watchdogTicker - lastTradeTime: ", krakenLastTradeTime)
-			log.Info("Kraken - watchdogTicker - timeNow: ", time.Now())
-			duration := time.Since(krakenLastTradeTime)
-			if duration > time.Duration(krakenWatchdogDelay)*time.Second {
-				log.Error("Kraken - watchdogTicker failover")
-				krakenRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &krakenLastTradeTime, krakenWatchdogDelay, &krakenRun)
 
 	// Read trades stream.
 	var errCount int

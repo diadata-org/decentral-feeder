@@ -40,7 +40,7 @@ func init() {
 	if err != nil {
 		log.Error("Parse BINANCE_WATCHDOGDELAY: ", err)
 	}
-	coinbaseWatchdogDelay, err = strconv.ParseInt(utils.Getenv("COINBASE_WATCHDOGDELAY", "60"), 10, 64)
+	coinbaseWatchdogDelay, err = strconv.ParseInt(utils.Getenv("COINBASE_WATCHDOGDELAY", "240"), 10, 64)
 	if err != nil {
 		log.Error("Parse COINBASE_WATCHDOGDELAY: ", err)
 	}

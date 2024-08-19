@@ -193,16 +193,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	cryptoDotComLastTradeTime = time.Now()
 	log.Info("Crypto.com - Initialize cryptoDotComLastTradeTime after failover: ", cryptoDotComLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(cryptoDotComWatchdogDelay) * time.Second)
-	go func() {
-		for range watchdogTicker.C {
-			duration := time.Since(cryptoDotComLastTradeTime)
-			if duration > time.Duration(cryptoDotComWatchdogDelay)*time.Second {
-				log.Error("Crypto.com - watchdogTicker failover")
-				kucoinRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &cryptoDotComLastTradeTime, cryptoDotComWatchdogDelay, &cryptoDotComRun)
 
 	// ----------------------------------------
 	// Fetch trades

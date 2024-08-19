@@ -63,22 +63,20 @@ func RunScraper(
 	}
 }
 
-func watchdog(
-	lastTradeTime time.Time,
-	watchdogDelay int,
-	watchdogTicker *time.Ticker,
-	run *bool,
-) {
-
-	for range watchdogTicker.C {
-		log.Info("lastTradeTime: ", lastTradeTime)
-		log.Info("timeNow: ", time.Now())
-		duration := time.Since(lastTradeTime)
-		if duration > time.Duration(binanceWatchdogDelay)*time.Second {
-			log.Error("failover")
+// globalWatchdog checks for liveliness of a scraper.
+// More precisely, if there is no trades for a period longer than @watchdogDelay the scraper is stopped
+// by setting run=false.
+func globalWatchdog(ticker *time.Ticker, lastTradeTime *time.Time, watchdogDelay int64, run *bool) {
+	for range ticker.C {
+		duration := time.Since(*lastTradeTime)
+		if duration > time.Duration(watchdogDelay)*time.Second {
+			log.Error("CoinBase - watchdogTicker failover")
 			*run = false
 			break
 		}
 	}
+}
+
+func watchdog(pair models.ExchangePair, ticker *time.Ticker, lastTradeTime *time.Time, watchdogDelay int64, run *bool) {
 
 }
