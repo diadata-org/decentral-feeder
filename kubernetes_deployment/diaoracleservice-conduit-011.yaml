@@ -67,18 +67,6 @@ spec:
               value: "120"
             - name: EXCHANGEPAIRS
               value: "
-              Binance:BTC-USDT,
-              Binance:ETH-USDT,
-              Binance:WIF-USDT,
-              Binance:ENS-USDT,
-              Binance:YFI-USDT,
-              Binance:STORJ-USDT,
-              Binance:SUSHI-USDT,
-              Binance:MOVR-USDT,
-              Binance:STG-USDT,
-              Binance:DIA-USDT,
-              Binance:OMG-USDT,
-              Binance:USDC-USDT,
               GateIO:BTC-USDT,
               GateIO:ETH-USDT,
               GateIO:WIF-USDT,
