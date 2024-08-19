@@ -74,12 +74,8 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 		var message coinBaseWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("CoinBase - ReadMessage: %v", err)
-			errCount++
-			if errCount > coinbaseMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", coinbaseRestartWaitTime)
-				time.Sleep(time.Duration(coinbaseRestartWaitTime) * time.Second)
-				coinbaseRun = false
+			errCount, coinbaseRun = readJSONError(COINBASE_EXCHANGE, err, errCount, coinbaseRestartWaitTime, coinbaseMaxErrCount)
+			if !coinbaseRun {
 				break
 			}
 			continue

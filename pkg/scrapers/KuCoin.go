@@ -93,12 +93,8 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message kuCoinWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("KuCoin - ReadMessage: %v", err)
-			errCount++
-			if errCount > kucoinMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", kucoinRestartWaitTime)
-				time.Sleep(time.Duration(kucoinRestartWaitTime) * time.Second)
-				kucoinRun = false
+			errCount, kucoinRun = readJSONError(KUCOIN_EXCHANGE, err, errCount, kucoinRestartWaitTime, kucoinMaxErrCount)
+			if !kucoinRun {
 				break
 			}
 			continue

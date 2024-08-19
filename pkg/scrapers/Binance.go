@@ -92,6 +92,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 				binanceRun = false
 				break
 			}
+			continue
 		}
 
 		messageMap := make(map[string]interface{})
