@@ -47,8 +47,9 @@ var (
 	kucoinPingIntervalFix = int64(10)
 	kucoinMaxErrCount     = 20
 	kucoinRun             bool
-	kucoinWatchdogDelay   = 60
+	kucoinWatchdogDelay   int64
 	kucoinRestartWaitTime = 5
+	kucoinLastTradeTime   time.Time
 )
 
 func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
@@ -65,6 +66,8 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	wsClient, _, err := wsDialer.Dial(kucoinWSBaseString+"?token="+token, nil)
 	if err != nil {
 		log.Error("Dial KuCoin ws base string: ", err)
+		failoverChannel <- string(KUCOIN_EXCHANGE)
+		return "closed"
 	}
 
 	// Subscribe to pairs.
@@ -80,10 +83,11 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 	}
 
-	go ping(wsClient, pingInterval)
+	closePingChannel := make(chan bool)
+	go ping(wsClient, pingInterval, time.Now(), closePingChannel)
 
-	lastTradeTime = time.Now()
-	log.Info("KuCoin - Initialize lastTradeTime after failover: ", lastTradeTime)
+	kucoinLastTradeTime = time.Now()
+	log.Info("KuCoin - Initialize kucoinLastTradeTime after failover: ", kucoinLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(kucoinWatchdogDelay) * time.Second)
 
 	// Check for liveliness of the scraper.
@@ -91,7 +95,7 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	// and the exchange name is sent to the failover channel.
 	go func() {
 		for range watchdogTicker.C {
-			duration := time.Since(lastTradeTime)
+			duration := time.Since(kucoinLastTradeTime)
 			if duration > time.Duration(kucoinWatchdogDelay)*time.Second {
 				log.Error("KuCoin - watchdogTicker failover")
 				kucoinRun = false
@@ -145,12 +149,13 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 				Exchange:       models.Exchange{Name: KUCOIN_EXCHANGE},
 				ForeignTradeID: foreignTradeID,
 			}
-			// log.Info("Got trade: ", trade)
+			kucoinLastTradeTime = trade.Time
 			tradesChannel <- trade
 		}
 	}
 
 	log.Warn("Close KuCoin scraper.")
+	closePingChannel <- true
 	failoverChannel <- string(KUCOIN_EXCHANGE)
 	return "closed"
 
@@ -196,15 +201,22 @@ type instanceServers struct {
 }
 
 // Send ping to server.
-func ping(wsClient *ws.Conn, pingInterval int64) {
+func ping(wsClient *ws.Conn, pingInterval int64, starttime time.Time, closeChannel chan bool) {
 	var ping kuCoinWSMessage
 	ping.Type = "ping"
 	tick := time.NewTicker(time.Duration(kucoinPingIntervalFix) * time.Second)
 
-	for range tick.C {
-		log.Infof("send ping.")
-		if err := wsClient.WriteJSON(ping); err != nil {
-			log.Error("KuCoin - " + err.Error())
+	for {
+		select {
+		case <-tick.C:
+			// log.Infof("KuCoin - send ping.")
+			if err := wsClient.WriteJSON(ping); err != nil {
+				log.Error("KuCoin - send ping: " + err.Error())
+				return
+			}
+		case <-closeChannel:
+			log.Warn("close ping.")
+			return
 		}
 	}
 }

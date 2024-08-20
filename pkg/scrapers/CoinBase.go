@@ -38,8 +38,9 @@ var (
 	coinbaseWSBaseString    = "wss://ws-feed.exchange.coinbase.com"
 	coinbaseMaxErrCount     = 20
 	coinbaseRun             bool
-	coinbaseWatchdogDelay   = 60
+	coinbaseWatchdogDelay   int64
 	coinbaseRestartWaitTime = 5
+	coinbaseLastTradeTime   time.Time
 )
 
 func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
@@ -71,6 +72,21 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 			log.Error(err.Error())
 		}
 	}
+
+	coinbaseLastTradeTime = time.Now()
+	log.Info("CoinBase - Initialize coinbaseLastTradeTime after failover: ", coinbaseLastTradeTime)
+	watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
+
+	go func() {
+		for range watchdogTicker.C {
+			duration := time.Since(coinbaseLastTradeTime)
+			if duration > time.Duration(coinbaseWatchdogDelay)*time.Second {
+				log.Error("CoinBase - watchdogTicker failover")
+				coinbaseRun = false
+				break
+			}
+		}
+	}()
 
 	// Read trades stream.
 	var errCount int
@@ -115,12 +131,13 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 				ForeignTradeID: foreignTradeID,
 			}
 			// log.Info("Got trade: ", trade)
+			coinbaseLastTradeTime = trade.Time
 			tradesChannel <- trade
 		}
 	}
 
 	log.Warn("Close CoinBase scraper.")
-	failoverChannel <- string(KUCOIN_EXCHANGE)
+	failoverChannel <- string(COINBASE_EXCHANGE)
 	return "closed"
 
 }

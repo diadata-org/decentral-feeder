@@ -14,8 +14,9 @@ var (
 	_GateIOsocketurl      string = "wss://api.gateio.ws/ws/v4/"
 	gateIOMaxErrCount            = 20
 	gateIORun             bool
-	gateIOWatchdogDelay   = 60
+	gateIOWatchdogDelay   int64
 	gateIORestartWaitTime = 5
+	gateIOLastTradeTime   time.Time
 )
 
 type SubscribeGate struct {
@@ -48,7 +49,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
 	if err != nil {
-		log.Error("GateIO - " + err.Error())
+		log.Error("Dial GateIO ws base string: " + err.Error())
 		failoverChannel <- string(GATEIO_EXCHANGE)
 		return "closed"
 	}
@@ -67,16 +68,34 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 		log.Infof("GateIO - Subscribed for Pair %v", pair.ForeignName)
 		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error("GateIO - " + err.Error())
+			log.Error("GateIO - WriteJSON: " + err.Error())
 		}
 	}
+
+	gateIOLastTradeTime = time.Now()
+	log.Info("GateIO - Initialize lastTradeTime after failover: ", gateIOLastTradeTime)
+	watchdogTicker := time.NewTicker(time.Duration(gateIOWatchdogDelay) * time.Second)
+
+	go func() {
+		for range watchdogTicker.C {
+			log.Info("GateIO - watchdogTicker - lastTradeTime: ", gateIOLastTradeTime)
+			log.Info("GateIO - watchdogTicker - timeNow: ", time.Now())
+			duration := time.Since(gateIOLastTradeTime)
+			if duration > time.Duration(gateIOWatchdogDelay)*time.Second {
+				log.Error("GateIO - watchdogTicker failover")
+				gateIORun = false
+				break
+			}
+		}
+	}()
 
 	var errCount int
 	for gateIORun {
 
 		var message GateIOResponseTrade
 		if err = wsClient.ReadJSON(&message); err != nil {
-			log.Error("GateIO - " + err.Error())
+			log.Error("GateIO - readJSON: " + err.Error())
+			errCount++
 			if errCount > gateIOMaxErrCount {
 				log.Warnf("too many errors. wait for %v seconds and restart scraper.", gateIORestartWaitTime)
 				time.Sleep(time.Duration(gateIORestartWaitTime) * time.Second)
@@ -120,6 +139,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 
 		// log.Info("Got trade: ", t)
+		gateIOLastTradeTime = t.Time
 		tradesChannel <- t
 
 	}
