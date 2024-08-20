@@ -15,6 +15,7 @@ import (
 	"go.uber.org/ratelimit"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 )
 
 const (
@@ -158,6 +159,14 @@ type CryptoDotComScraper struct {
 	// used to handle connection retry
 	connMutex      sync.RWMutex
 	connRetryCount int
+}
+
+func init() {
+	var err error
+	cryptoDotComWatchdogDelay, err = strconv.ParseInt(utils.Getenv("CRYPTODOTOM_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse CRYPTODOTOM_WATCHDOGDELAY: ", err)
+	}
 }
 
 // NewCryptoDotComScraper returns a new Crypto.com scraper

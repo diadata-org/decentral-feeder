@@ -7,6 +7,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -39,6 +40,14 @@ type GateIOResponseTrade struct {
 		Amount       string `json:"amount"`
 		Price        string `json:"price"`
 	} `json:"result"`
+}
+
+func init() {
+	var err error
+	gateIOWatchdogDelay, err = strconv.ParseInt(utils.Getenv("GATEIO_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse GATEIO_WATCHDOGDELAY: ", err)
+	}
 }
 
 func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -51,6 +52,15 @@ var (
 	kucoinRestartWaitTime = 5
 	kucoinLastTradeTime   time.Time
 )
+
+func init() {
+	var err error
+	kucoinWatchdogDelay, err = strconv.ParseInt(utils.Getenv("KUCOIN_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse KUCOIN_WATCHDOGDELAY: ", err)
+	}
+
+}
 
 func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()

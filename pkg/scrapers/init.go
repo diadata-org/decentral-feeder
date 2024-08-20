@@ -24,7 +24,7 @@ var (
 )
 
 func init() {
-	var err error
+
 	log = logrus.New()
 	Exchanges[BINANCE_EXCHANGE] = models.Exchange{Name: BINANCE_EXCHANGE, Centralized: true}
 	Exchanges[COINBASE_EXCHANGE] = models.Exchange{Name: COINBASE_EXCHANGE, Centralized: true}

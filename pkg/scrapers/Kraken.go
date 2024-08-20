@@ -7,6 +7,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -45,6 +46,14 @@ var (
 	krakenRestartWaitTime = 5
 	krakenLastTradeTime   time.Time
 )
+
+func init() {
+	var err error
+	krakenWatchdogDelay, err = strconv.ParseInt(utils.Getenv("KRAKEN_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse KRAKEN_WATCHDOGDELAY: ", err)
+	}
+}
 
 func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()

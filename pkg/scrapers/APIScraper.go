@@ -66,21 +66,31 @@ func RunScraper(
 }
 
 func watchdog(
-	lastTradeTime time.Time,
-	watchdogDelay int,
-	watchdogTicker *time.Ticker,
-	run *bool,
+	pair models.ExchangePair,
+	ticker *time.Ticker,
+	lastTradeTimeMap map[string]time.Time,
+	watchdogDelayMap map[string]int64,
+	runChannel chan models.ExchangePair,
+	lock *sync.RWMutex,
 ) {
-
-	for range watchdogTicker.C {
-		log.Info("lastTradeTime: ", lastTradeTime)
-		log.Info("timeNow: ", time.Now())
-		duration := time.Since(lastTradeTime)
-		if duration > time.Duration(binanceWatchdogDelay)*time.Second {
-			log.Error("failover")
-			*run = false
-			break
+	for range ticker.C {
+		lock.RLock()
+		duration := time.Since(lastTradeTimeMap[pair.ForeignName])
+		if duration > time.Duration(watchdogDelayMap[pair.ForeignName])*time.Second {
+			log.Error("CoinBase - watchdogTicker failover")
+			runChannel <- pair
 		}
+		lock.RUnlock()
 	}
+}
 
+func readJSONError(exchange string, err error, errCount *int, run *bool, restartWaitTime int, maxErrCount int) {
+	log.Errorf("%s - ReadMessage: %v", exchange, err)
+	*errCount++
+	if *errCount > maxErrCount {
+		log.Warnf("too many errors. wait for %v seconds and restart scraper.", restartWaitTime)
+		time.Sleep(time.Duration(restartWaitTime) * time.Second)
+		*run = false
+	}
+	return
 }

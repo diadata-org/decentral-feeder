@@ -23,6 +23,14 @@ var (
 	binanceRun             bool
 )
 
+func init() {
+	var err error
+	binanceWatchdogDelay, err = strconv.ParseInt(utils.Getenv("BINANCE_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse BINANCE_WATCHDOGDELAY: ", err)
+	}
+}
+
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	binanceRun = true
 	defer wg.Done()
