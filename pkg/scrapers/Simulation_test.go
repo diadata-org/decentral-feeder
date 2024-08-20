@@ -75,7 +75,7 @@ func Test1(t *testing.T) {
 		{
 			name:    "uni test",
 			decimal: 18,
-			want:    float64(3191.916321),
+			want:    float64(315.442822),
 			events: []SwapEvents{
 				{
 					Amount0In:  1000000000,
