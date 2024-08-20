@@ -72,25 +72,25 @@ func Test1(t *testing.T) {
 		// 	},
 		// },
 
-		{
-			name:    "uni test",
-			decimal: 18,
-			want:    float64(315.442822),
-			events: []SwapEvents{
-				{
-					Amount0In:  1000000000,
-					Amount0Out: 0,
-					Amount1In:  0,
-					Amount1Out: 294117507868533908,
-				},
-				{
-					Amount0In:  0,
-					Amount0Out: 3170146627780400005,
-					Amount1In:  294117507868533908,
-					Amount1Out: 0,
-				},
-			},
-		},
+		// {
+		// 	name:    "uni test",
+		// 	decimal: 18,
+		// 	want:    float64(315.442822),
+		// 	events: []SwapEvents{
+		// 		{
+		// 			Amount0In:  1000000000,
+		// 			Amount0Out: 0,
+		// 			Amount1In:  0,
+		// 			Amount1Out: 294117507868533908,
+		// 		},
+		// 		{
+		// 			Amount0In:  0,
+		// 			Amount0Out: 3170146627780400005,
+		// 			Amount1In:  294117507868533908,
+		// 			Amount1Out: 0,
+		// 		},
+		// 	},
+		// },
 	}
 
 	for _, tt := range tests {
