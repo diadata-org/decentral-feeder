@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: diaoracleservice-conduit-011
-  namespace: monitoring
+  namespace: dia-testspace
 spec:
   replicas: 1
   selector:
