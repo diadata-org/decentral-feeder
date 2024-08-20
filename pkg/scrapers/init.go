@@ -17,6 +17,7 @@ const (
 	KUCOIN_EXCHANGE       = "KuCoin"
 
 	UNISWAPV2_EXCHANGE = "UniswapV2"
+	Simulation         = "Simulation"
 )
 
 var (

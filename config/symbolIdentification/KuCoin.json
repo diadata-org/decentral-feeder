@@ -64,6 +64,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "USD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Fiat",
+            "Address": "840",
+            "Decimals": 2
+        },
+        {
             "Symbol": "USDC",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

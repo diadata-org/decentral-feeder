@@ -64,6 +64,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "USD",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Fiat",
+            "Address": "840",
+            "Decimals": 2
+        },
+        {
             "Symbol": "USDC",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
