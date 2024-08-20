@@ -59,6 +59,8 @@ func RunScraper(
 
 	case UNISWAPV2_EXCHANGE:
 		NewUniswapV2Scraper(pools, tradesChannel, wg)
+	case Simulation:
+		NewSimulationScraper(pools, tradesChannel, wg)
 
 	}
 }
