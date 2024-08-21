@@ -38,7 +38,9 @@ func Collector(
 	}
 
 	// tradesblockMap maps an exchangpair identifier onto a TradesBlock.
-	// This also means that each value consists of trades of only one exchangepair.
+	// This also means that each value in the map consists of trades of only one exchangepair.
+	// We call these blocks "atomic" tradesblocks.
+	// TO DO: Make a dedicated type for atomic tradesblocks?
 	tradesblockMap := make(map[string]models.TradesBlock)
 
 	go func() {

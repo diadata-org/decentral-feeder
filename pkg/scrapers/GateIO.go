@@ -7,6 +7,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -41,10 +42,19 @@ type GateIOResponseTrade struct {
 	} `json:"result"`
 }
 
+func init() {
+	var err error
+	gateIOWatchdogDelay, err = strconv.ParseInt(utils.Getenv("GATEIO_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse GATEIO_WATCHDOGDELAY: ", err)
+	}
+}
+
 func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started GateIO scraper.")
 	gateIORun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
@@ -53,9 +63,6 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		failoverChannel <- string(GATEIO_EXCHANGE)
 		return "closed"
 	}
-
-	// In case this is the same for all exchanges we can put it to APIScraper.go.
-	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	for _, pair := range pairs {
 		gateioPairTicker := strings.Split(pair.ForeignName, "-")[0] + "_" + strings.Split(pair.ForeignName, "-")[1]
@@ -75,33 +82,15 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	gateIOLastTradeTime = time.Now()
 	log.Info("GateIO - Initialize lastTradeTime after failover: ", gateIOLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(gateIOWatchdogDelay) * time.Second)
+	go globalWatchdog(watchdogTicker, &gateIOLastTradeTime, gateIOWatchdogDelay, &gateIORun)
 
-	go func() {
-		for range watchdogTicker.C {
-			log.Info("GateIO - watchdogTicker - lastTradeTime: ", gateIOLastTradeTime)
-			log.Info("GateIO - watchdogTicker - timeNow: ", time.Now())
-			duration := time.Since(gateIOLastTradeTime)
-			if duration > time.Duration(gateIOWatchdogDelay)*time.Second {
-				log.Error("GateIO - watchdogTicker failover")
-				gateIORun = false
-				break
-			}
-		}
-	}()
 
 	var errCount int
 	for gateIORun {
 
 		var message GateIOResponseTrade
 		if err = wsClient.ReadJSON(&message); err != nil {
-			log.Error("GateIO - readJSON: " + err.Error())
-			errCount++
-			if errCount > gateIOMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", gateIORestartWaitTime)
-				time.Sleep(time.Duration(gateIORestartWaitTime) * time.Second)
-				gateIORun = false
-				break
-			}
+			readJSONError(_GateIOsocketurl, err, &errCount, &gateIORun, gateIORestartWaitTime, gateIOMaxErrCount)
 			continue
 		}
 

@@ -2,7 +2,6 @@ package scrapers
 
 import (
 	"sync"
-	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 )
@@ -63,24 +62,4 @@ func RunScraper(
 		NewSimulationScraper(pools, tradesChannel, wg)
 
 	}
-}
-
-func watchdog(
-	lastTradeTime time.Time,
-	watchdogDelay int,
-	watchdogTicker *time.Ticker,
-	run *bool,
-) {
-
-	for range watchdogTicker.C {
-		log.Info("lastTradeTime: ", lastTradeTime)
-		log.Info("timeNow: ", time.Now())
-		duration := time.Since(lastTradeTime)
-		if duration > time.Duration(binanceWatchdogDelay)*time.Second {
-			log.Error("failover")
-			*run = false
-			break
-		}
-	}
-
 }

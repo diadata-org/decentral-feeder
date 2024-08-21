@@ -36,7 +36,7 @@ func OracleUpdateExecutor(
 				"filterPoint received at %v: %v -- %v -- %v -- %v",
 				time.Unix(timestamp, 0),
 				fp.Source,
-				fp.Pair.QuoteToken.Symbol+"-"+fp.Pair.BaseToken.Symbol,
+				fp.Pair.QuoteToken.Symbol,
 				fp.Value,
 				fp.Time,
 			)
