@@ -7,6 +7,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -46,10 +47,19 @@ var (
 	krakenLastTradeTime   time.Time
 )
 
+func init() {
+	var err error
+	krakenWatchdogDelay, err = strconv.ParseInt(utils.Getenv("KRAKEN_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse KRAKEN_WATCHDOGDELAY: ", err)
+	}
+}
+
 func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started Kraken scraper.")
 	krakenRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
@@ -100,7 +110,6 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 				}
 
 				// Identify ticker symbols with underlying assets.
-				tickerPairMap := models.MakeTickerPairMap(pairs)
 				pair := strings.Split(data.Symbol, "/")
 				var exchangepair models.Pair
 				if len(pair) > 1 {

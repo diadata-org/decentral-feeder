@@ -15,6 +15,7 @@ import (
 	"go.uber.org/ratelimit"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 )
 
 const (
@@ -160,10 +161,20 @@ type CryptoDotComScraper struct {
 	connRetryCount int
 }
 
+func init() {
+	var err error
+	cryptoDotComWatchdogDelay, err = strconv.ParseInt(utils.Getenv("CRYPTODOTOM_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse CRYPTODOTOM_WATCHDOGDELAY: ", err)
+	}
+}
+
 // NewCryptoDotComScraper returns a new Crypto.com scraper
 func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
+	log.Info("Started Crypto.com scraper.")
 	cryptoDotComRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	s := &CryptoDotComScraper{
 		shutdown:     make(chan nothing),
@@ -255,7 +266,6 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 			}
 
 			// baseCurrency := strings.Split(subscription.InstrumentName, `_`)[0]
-			tickerPairMap := models.MakeTickerPairMap(pairs)
 
 			exchangepair := tickerPairMap[strings.Split(subscription.InstrumentName, "_")[0]+strings.Split(subscription.InstrumentName, "_")[1]]
 

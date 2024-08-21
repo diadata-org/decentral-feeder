@@ -7,6 +7,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -43,11 +44,21 @@ var (
 	coinbaseLastTradeTime   time.Time
 )
 
+func init() {
+	var err error
+	coinbaseWatchdogDelay, err = strconv.ParseInt(utils.Getenv("COINBASE_WATCHDOGDELAY", "240"), 10, 64)
+	if err != nil {
+		log.Error("Parse COINBASE_WATCHDOGDELAY: ", err)
+	}
+}
+
 func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started CoinBase scraper.")
 	coinbaseRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
+	// Dial websocket API.
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(coinbaseWSBaseString, nil)
 	if err != nil {
@@ -56,13 +67,14 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 		return "closed"
 	}
 
-	// Subscribe to pairs.
+	// Subscribe to pairs and initialize coinbaseLastTradeTimeMap.
 	for _, pair := range pairs {
 		if err := coinbaseSubscribe(pair, wsClient); err != nil {
 			log.Errorf("CoinBase - subscribe to pair %s: %v", pair.ForeignName, err)
 		}
 	}
 
+	// Check last trade time across all pairs and restart if no activity for more than @coinbaseWatchdogDelay.
 	coinbaseLastTradeTime = time.Now()
 	log.Info("CoinBase - Initialize coinbaseLastTradeTime after failover: ", coinbaseLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
@@ -87,7 +99,6 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 			}
 
 			// Identify ticker symbols with underlying assets.
-			tickerPairMap := models.MakeTickerPairMap(pairs)
 			pair := strings.Split(message.ProductID, "-")
 			var exchangepair models.Pair
 			if len(pair) > 1 {
@@ -103,7 +114,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 				Exchange:       models.Exchange{Name: COINBASE_EXCHANGE},
 				ForeignTradeID: foreignTradeID,
 			}
-			log.Info("Got trade: ", trade)
+			// log.Info("Got trade: ", trade)
 			coinbaseLastTradeTime = trade.Time
 			tradesChannel <- trade
 		}

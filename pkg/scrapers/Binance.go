@@ -2,8 +2,6 @@ package scrapers
 
 import (
 	"encoding/json"
-	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -23,44 +21,29 @@ var (
 	binanceRun             bool
 )
 
+func init() {
+	var err error
+	binanceWatchdogDelay, err = strconv.ParseInt(utils.Getenv("BINANCE_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse BINANCE_WATCHDOGDELAY: ", err)
+	}
+}
+
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
-	binanceRun = true
 	defer wg.Done()
 	log.Info("Started Binance scraper at: ", time.Now())
+	binanceRun = true
+	// Make tickerPairMap for identification of exchangepairs.
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	wsAssetsString := ""
 	for _, pair := range pairs {
 		wsAssetsString += strings.ToLower(strings.Split(pair.ForeignName, "-")[0]) + strings.ToLower(strings.Split(pair.ForeignName, "-")[1]) + "@trade" + "/"
 	}
 
-	// Make tickerPairMap for identification of exchangepairs.
-	tickerPairMap := models.MakeTickerPairMap(pairs)
-
-	// Set up websocket dialer with proxy.
-	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", "http://samuelbrack:hD3bfFBVLg@193.124.16.228:50100"))
-	if err != nil {
-		log.Error("Binance - parse proxy url: %v", err)
-	}
-
-	var d = ws.Dialer{
-		Proxy: http.ProxyURL(&url.URL{
-			Scheme: "http", // or "https" depending on your proxy
-			User:   proxyURL.User,
-			Host:   proxyURL.Host,
-			Path:   "/",
-		}),
-	}
-
-	// pw, _ := u.User.Password()
-	// log.Infof("user -- password: %s -- %s", u.User.Username(), pw)
-	// conn1, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
-	// if err != nil {
-	// 	log.Error("DefaultDialer: ", err)
-	// }
-	// log.Info("conn1: ", conn1)
-
-	// Connect to Binance API.
-	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
+	// Remove trailing slash
+	wsAssetsString = wsAssetsString[:len(wsAssetsString)-1]
+	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
 		log.Errorf("Connect to Binance API: %s.", err.Error())
 		failoverChannel <- string(BINANCE_EXCHANGE)

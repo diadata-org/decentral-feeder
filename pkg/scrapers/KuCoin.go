@@ -11,6 +11,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -52,10 +53,20 @@ var (
 	kucoinLastTradeTime   time.Time
 )
 
+func init() {
+	var err error
+	kucoinWatchdogDelay, err = strconv.ParseInt(utils.Getenv("KUCOIN_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse KUCOIN_WATCHDOGDELAY: ", err)
+	}
+
+}
+
 func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
-	kucoinRun = true
 	log.Info("Started KuCoin scraper.")
+	kucoinRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	token, pingInterval, err := getPublicKuCoinToken(kucoinTokenURL)
 	if err != nil {
@@ -108,7 +119,6 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 			}
 
 			// Identify ticker symbols with underlying assets.
-			tickerPairMap := models.MakeTickerPairMap(pairs)
 			pair := strings.Split(message.Data.Symbol, "-")
 			var exchangepair models.Pair
 			if len(pair) > 1 {

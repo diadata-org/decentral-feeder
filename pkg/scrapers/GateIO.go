@@ -7,6 +7,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -41,10 +42,19 @@ type GateIOResponseTrade struct {
 	} `json:"result"`
 }
 
+func init() {
+	var err error
+	gateIOWatchdogDelay, err = strconv.ParseInt(utils.Getenv("GATEIO_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse GATEIO_WATCHDOGDELAY: ", err)
+	}
+}
+
 func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started GateIO scraper.")
 	gateIORun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
@@ -53,9 +63,6 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		failoverChannel <- string(GATEIO_EXCHANGE)
 		return "closed"
 	}
-
-	// In case this is the same for all exchanges we can put it to APIScraper.go.
-	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	for _, pair := range pairs {
 		gateioPairTicker := strings.Split(pair.ForeignName, "-")[0] + "_" + strings.Split(pair.ForeignName, "-")[1]
