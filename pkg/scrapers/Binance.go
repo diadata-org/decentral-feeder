@@ -32,23 +32,24 @@ func init() {
 }
 
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
-	binanceRun = true
 	defer wg.Done()
 	log.Info("Started Binance scraper at: ", time.Now())
+	binanceRun = true
+	// Make tickerPairMap for identification of exchangepairs.
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	wsAssetsString := ""
 	for _, pair := range pairs {
 		wsAssetsString += strings.ToLower(strings.Split(pair.ForeignName, "-")[0]) + strings.ToLower(strings.Split(pair.ForeignName, "-")[1]) + "@trade" + "/"
 	}
-
-	// Make tickerPairMap for identification of exchangepairs.
-	tickerPairMap := models.MakeTickerPairMap(pairs)
+	wsAssetsString = wsAssetsString[:len(wsAssetsString)-1]
 
 	// Set up websocket dialer with proxy.
 	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
 	if err != nil {
 		log.Error("Binance - parse proxy url: %v", err)
 	}
+
 	var d = ws.Dialer{
 		Proxy: http.ProxyURL(&url.URL{
 			Scheme: "http", // or "https" depending on your proxy
@@ -57,14 +58,6 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 			Path:   "/",
 		}),
 	}
-
-	// pw, _ := u.User.Password()
-	// log.Infof("user -- password: %s -- %s", u.User.Username(), pw)
-	// conn1, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
-	// if err != nil {
-	// 	log.Error("DefaultDialer: ", err)
-	// }
-	// log.Info("conn1: ", conn1)
 
 	// Connect to Binance API.
 	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
@@ -79,15 +72,12 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	binanceLastTradeTime = time.Now()
 	log.Info("Binance - Initialize lastTradeTime after failover: ", binanceLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
-	log.Info("watchdogDelay: ", time.Duration(binanceWatchdogDelay)*time.Second)
 
 	// Check for liveliness of the scraper.
 	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
 	// and the exchange name is sent to the failover channel.
 	go func() {
 		for range watchdogTicker.C {
-			log.Info("Binance - watchdogTicker - lastTradeTime: ", binanceLastTradeTime)
-			log.Info("Binance - watchdogTicker - timeNow: ", time.Now())
 			duration := time.Since(binanceLastTradeTime)
 			if duration > time.Duration(binanceWatchdogDelay)*time.Second {
 				log.Error("Binance - watchdogTicker failover")
@@ -146,7 +136,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 		binanceLastTradeTime = trade.Time
 
-		log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
+		// log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
 		tradesChannel <- trade
 
 	}
