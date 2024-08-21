@@ -7,12 +7,12 @@ import (
 
 	coreEntities "github.com/daoleno/uniswap-sdk-core/entities"
 	"github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/sirupsen/logrus"
 
 	"github.com/daoleno/uniswapv3-sdk/examples/contract"
 	"github.com/daoleno/uniswapv3-sdk/examples/helper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -27,10 +27,11 @@ var (
 
 type Simulator struct {
 	Eth *ethclient.Client
+	log *logrus.Logger
 }
 
-func New(client *ethclient.Client) *Simulator {
-	c := Simulator{Eth: client}
+func New(client *ethclient.Client, log *logrus.Logger) *Simulator {
+	c := Simulator{Eth: client, log: log}
 	return &c
 
 }
@@ -48,7 +49,7 @@ func (c *Simulator) Execute(t1 models.Asset, t2 models.Asset) (string, error) {
 func (c *Simulator) quoteTokens(ctx context.Context, input string, token0 *coreEntities.Token, token1 *coreEntities.Token) (string, error) {
 	quoterContract, err := contract.NewUniswapv3Quoter(common.HexToAddress(helper.ContractV3Quoter), c.Eth)
 	if err != nil {
-		log.Err(err).Msg("failed to create quoter contract")
+		c.log.Errorln("failed to create quoter contract")
 		return "", err
 	}
 	// 0.03% slippage
@@ -64,11 +65,11 @@ func (c *Simulator) quoteTokens(ctx context.Context, input string, token0 *coreE
 	err = rawCaller.Call(nil, &out, "quoteExactInputSingle", token0.Address, token1.Address,
 		fee, amountIn, sqrtPriceLimitX96)
 	if err != nil {
-		log.Err(err).Msg("failed to call quoteExactInputSingle")
+		c.log.Errorln("failed to call quoteExactInputSingle")
 		return "", err
 	}
 
-	log.Debug().Msgf("Quote: input: %s, output: %s", input, out[0].(*big.Int).String())
+	c.log.Debugf("Quote: input: %s, output: %s", input, out[0].(*big.Int).String())
 
 	return CurrencyToString(out[0].(*big.Int), int(token1.Decimals())), nil
 }
