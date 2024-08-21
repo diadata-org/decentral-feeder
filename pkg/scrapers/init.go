@@ -1,8 +1,6 @@
 package scrapers
 
 import (
-	"strconv"
-
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	"github.com/sirupsen/logrus"
