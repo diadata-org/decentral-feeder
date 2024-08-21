@@ -47,7 +47,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	// Set up websocket dialer with proxy.
 	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
 	if err != nil {
-		log.Error("Binance - parse proxy url: %v", err)
+		log.Errorf("Binance - parse proxy url: %v", err)
 	}
 
 	var d = ws.Dialer{
