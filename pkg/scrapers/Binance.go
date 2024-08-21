@@ -62,6 +62,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	// and the exchange name is sent to the failover channel.
 	go globalWatchdog(watchdogTicker, &binanceLastTradeTime, binanceWatchdogDelay, &binanceRun)
 
+
 	var errCount int
 	for binanceRun {
 
@@ -105,7 +106,8 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 
 		binanceLastTradeTime = trade.Time
 
-		log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
+
+		// log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
 		tradesChannel <- trade
 
 	}

@@ -80,6 +80,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
 	go globalWatchdog(watchdogTicker, &coinbaseLastTradeTime, coinbaseWatchdogDelay, &coinbaseRun)
 
+
 	// Read trades stream.
 	var errCount int
 	for coinbaseRun {
