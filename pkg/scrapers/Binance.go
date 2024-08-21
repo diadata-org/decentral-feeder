@@ -2,6 +2,8 @@ package scrapers
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -40,10 +42,25 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	for _, pair := range pairs {
 		wsAssetsString += strings.ToLower(strings.Split(pair.ForeignName, "-")[0]) + strings.ToLower(strings.Split(pair.ForeignName, "-")[1]) + "@trade" + "/"
 	}
-
-	// Remove trailing slash
 	wsAssetsString = wsAssetsString[:len(wsAssetsString)-1]
-	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
+
+	// Set up websocket dialer with proxy.
+	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
+	if err != nil {
+		log.Errorf("Binance - parse proxy url: %v", err)
+	}
+
+	var d = ws.Dialer{
+		Proxy: http.ProxyURL(&url.URL{
+			Scheme: "http", // or "https" depending on your proxy
+			User:   proxyURL.User,
+			Host:   proxyURL.Host,
+			Path:   "/",
+		}),
+	}
+
+	// Connect to Binance API.
+	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
 		log.Errorf("Connect to Binance API: %s.", err.Error())
 		failoverChannel <- string(BINANCE_EXCHANGE)
@@ -55,13 +72,11 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	binanceLastTradeTime = time.Now()
 	log.Info("Binance - Initialize lastTradeTime after failover: ", binanceLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
-	log.Info("watchdogDelay: ", time.Duration(binanceWatchdogDelay)*time.Second)
 
 	// Check for liveliness of the scraper.
 	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
 	// and the exchange name is sent to the failover channel.
 	go globalWatchdog(watchdogTicker, &binanceLastTradeTime, binanceWatchdogDelay, &binanceRun)
-
 
 	var errCount int
 	for binanceRun {
@@ -105,7 +120,6 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 		trade.BaseToken = tickerPairMap[messageMap["s"].(string)].BaseToken
 
 		binanceLastTradeTime = trade.Time
-
 
 		// log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
 		tradesChannel <- trade
