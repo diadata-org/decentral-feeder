@@ -84,6 +84,7 @@ func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	watchdogTicker := time.NewTicker(time.Duration(gateIOWatchdogDelay) * time.Second)
 	go globalWatchdog(watchdogTicker, &gateIOLastTradeTime, gateIOWatchdogDelay, &gateIORun)
 
+
 	var errCount int
 	for gateIORun {
 

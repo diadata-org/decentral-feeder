@@ -1,6 +1,8 @@
 package scrapers
 
 import (
+	"strconv"
+
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	"github.com/sirupsen/logrus"
@@ -15,6 +17,7 @@ const (
 	KUCOIN_EXCHANGE       = "KuCoin"
 
 	UNISWAPV2_EXCHANGE = "UniswapV2"
+	Simulation         = "Simulation"
 )
 
 var (
@@ -23,7 +26,6 @@ var (
 )
 
 func init() {
-
 	log = logrus.New()
 	Exchanges[BINANCE_EXCHANGE] = models.Exchange{Name: BINANCE_EXCHANGE, Centralized: true}
 	Exchanges[COINBASE_EXCHANGE] = models.Exchange{Name: COINBASE_EXCHANGE, Centralized: true}
@@ -33,5 +35,4 @@ func init() {
 	Exchanges[KUCOIN_EXCHANGE] = models.Exchange{Name: KUCOIN_EXCHANGE, Centralized: true}
 
 	Exchanges[UNISWAPV2_EXCHANGE] = models.Exchange{Name: UNISWAPV2_EXCHANGE, Centralized: false, Blockchain: utils.ETHEREUM}
-
 }
