@@ -50,7 +50,7 @@ func NewSimulationScraper(pools []models.Pool, tradesChannel chan models.Trade, 
 	}
 	scraper.pools = pools
 	// scraper.tradeSimulationRPC = "http://localhost:8085/tradesimulator/symbol" //?symbol=UNI&blocknumber=20333049
-	scraper.simulator = simulation.New(scraper.restClient)
+	scraper.simulator = simulation.New(scraper.restClient, log)
 	scraper.initTokens()
 
 	log.Info("Started Simulation scraper.")
