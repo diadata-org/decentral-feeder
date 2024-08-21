@@ -2,7 +2,6 @@ package scrapers
 
 import (
 	"sync"
-	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 )
@@ -63,34 +62,4 @@ func RunScraper(
 		NewSimulationScraper(pools, tradesChannel, wg)
 
 	}
-}
-
-func watchdog(
-	pair models.ExchangePair,
-	ticker *time.Ticker,
-	lastTradeTimeMap map[string]time.Time,
-	watchdogDelayMap map[string]int64,
-	runChannel chan models.ExchangePair,
-	lock *sync.RWMutex,
-) {
-	for range ticker.C {
-		lock.RLock()
-		duration := time.Since(lastTradeTimeMap[pair.ForeignName])
-		if duration > time.Duration(watchdogDelayMap[pair.ForeignName])*time.Second {
-			log.Error("CoinBase - watchdogTicker failover")
-			runChannel <- pair
-		}
-		lock.RUnlock()
-	}
-}
-
-func readJSONError(exchange string, err error, errCount *int, run *bool, restartWaitTime int, maxErrCount int) {
-	log.Errorf("%s - ReadMessage: %v", exchange, err)
-	*errCount++
-	if *errCount > maxErrCount {
-		log.Warnf("too many errors. wait for %v seconds and restart scraper.", restartWaitTime)
-		time.Sleep(time.Duration(restartWaitTime) * time.Second)
-		*run = false
-	}
-	return
 }

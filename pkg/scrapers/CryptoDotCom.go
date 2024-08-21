@@ -172,7 +172,9 @@ func init() {
 // NewCryptoDotComScraper returns a new Crypto.com scraper
 func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
+	log.Info("Started Crypto.com scraper.")
 	cryptoDotComRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	s := &CryptoDotComScraper{
 		shutdown:     make(chan nothing),
@@ -202,16 +204,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	cryptoDotComLastTradeTime = time.Now()
 	log.Info("Crypto.com - Initialize cryptoDotComLastTradeTime after failover: ", cryptoDotComLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(cryptoDotComWatchdogDelay) * time.Second)
-	go func() {
-		for range watchdogTicker.C {
-			duration := time.Since(cryptoDotComLastTradeTime)
-			if duration > time.Duration(cryptoDotComWatchdogDelay)*time.Second {
-				log.Error("Crypto.com - watchdogTicker failover")
-				kucoinRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &cryptoDotComLastTradeTime, cryptoDotComWatchdogDelay, &cryptoDotComRun)
 
 	// ----------------------------------------
 	// Fetch trades
@@ -273,7 +266,6 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 			}
 
 			// baseCurrency := strings.Split(subscription.InstrumentName, `_`)[0]
-			tickerPairMap := models.MakeTickerPairMap(pairs)
 
 			exchangepair := tickerPairMap[strings.Split(subscription.InstrumentName, "_")[0]+strings.Split(subscription.InstrumentName, "_")[1]]
 

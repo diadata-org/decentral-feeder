@@ -76,30 +76,15 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	// Check for liveliness of the scraper.
 	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
 	// and the exchange name is sent to the failover channel.
-	go func() {
-		for range watchdogTicker.C {
-			duration := time.Since(binanceLastTradeTime)
-			if duration > time.Duration(binanceWatchdogDelay)*time.Second {
-				log.Error("Binance - watchdogTicker failover")
-				binanceRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &binanceLastTradeTime, binanceWatchdogDelay, &binanceRun)
 
 	var errCount int
 	for binanceRun {
 
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Errorln("Binance - ReadMessage:", err)
-			errCount++
-			if errCount > binanceMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", binanceRestartWaitTime)
-				time.Sleep(time.Duration(binanceRestartWaitTime) * time.Second)
-				binanceRun = false
-				break
-			}
+			readJSONError(BINANCE_EXCHANGE, err, &errCount, &binanceRun, binanceRestartWaitTime, binanceMaxErrCount)
+			continue
 		}
 
 		messageMap := make(map[string]interface{})

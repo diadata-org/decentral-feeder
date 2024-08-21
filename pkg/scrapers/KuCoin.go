@@ -64,8 +64,9 @@ func init() {
 
 func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
-	kucoinRun = true
 	log.Info("Started KuCoin scraper.")
+	kucoinRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	token, pingInterval, err := getPublicKuCoinToken(kucoinTokenURL)
 	if err != nil {
@@ -82,37 +83,19 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 
 	// Subscribe to pairs.
 	for _, pair := range pairs {
-
-		a := &kuCoinWSSubscribeMessage{
-			Type:  "subscribe",
-			Topic: "/market/match:" + pair.ForeignName,
-		}
-		log.Infof("Subscribed for Pair %s:%s", KUCOIN_EXCHANGE, pair.ForeignName)
-		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error("KuCoin - " + err.Error())
+		if err := kucoinSubscribe(pair, wsClient); err != nil {
+			log.Errorf("KuCoin - subscribe to pair %s: %v", pair.ForeignName, err)
 		}
 	}
 
 	closePingChannel := make(chan bool)
 	go ping(wsClient, pingInterval, time.Now(), closePingChannel)
 
+	// Check for liveliness of the scraper.
 	kucoinLastTradeTime = time.Now()
 	log.Info("KuCoin - Initialize kucoinLastTradeTime after failover: ", kucoinLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(kucoinWatchdogDelay) * time.Second)
-
-	// Check for liveliness of the scraper.
-	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
-	// and the exchange name is sent to the failover channel.
-	go func() {
-		for range watchdogTicker.C {
-			duration := time.Since(kucoinLastTradeTime)
-			if duration > time.Duration(kucoinWatchdogDelay)*time.Second {
-				log.Error("KuCoin - watchdogTicker failover")
-				kucoinRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &kucoinLastTradeTime, kucoinWatchdogDelay, &kucoinRun)
 
 	// Read trades stream.
 	var errCount int
@@ -121,14 +104,7 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message kuCoinWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("KuCoin - ReadMessage: %v", err)
-			errCount++
-			if errCount > kucoinMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", kucoinRestartWaitTime)
-				time.Sleep(time.Duration(kucoinRestartWaitTime) * time.Second)
-				kucoinRun = false
-				break
-			}
+			readJSONError(KUCOIN_EXCHANGE, err, &errCount, &kucoinRun, kucoinRestartWaitTime, kucoinMaxErrCount)
 			continue
 		}
 
@@ -143,7 +119,6 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 			}
 
 			// Identify ticker symbols with underlying assets.
-			tickerPairMap := models.MakeTickerPairMap(pairs)
 			pair := strings.Split(message.Data.Symbol, "-")
 			var exchangepair models.Pair
 			if len(pair) > 1 {
@@ -169,6 +144,15 @@ func NewKuCoinScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	failoverChannel <- string(KUCOIN_EXCHANGE)
 	return "closed"
 
+}
+
+func kucoinSubscribe(pair models.ExchangePair, client *ws.Conn) error {
+	a := &kuCoinWSSubscribeMessage{
+		Type:  "subscribe",
+		Topic: "/market/match:" + pair.ForeignName,
+	}
+	log.Infof("Subscribed for Pair %s:%s", KUCOIN_EXCHANGE, pair.ForeignName)
+	return client.WriteJSON(a)
 }
 
 func parseKuCoinTradeMessage(message kuCoinWSResponse) (price float64, volume float64, timestamp time.Time, foreignTradeID string, err error) {

@@ -59,6 +59,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	defer wg.Done()
 	log.Info("Started Kraken scraper.")
 	krakenRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
@@ -87,18 +88,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 	log.Info("Kraken - Initialize lastTradeTime after failover: ", krakenLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(krakenWatchdogDelay) * time.Second)
 
-	go func() {
-		for range watchdogTicker.C {
-			log.Info("Kraken - watchdogTicker - lastTradeTime: ", krakenLastTradeTime)
-			log.Info("Kraken - watchdogTicker - timeNow: ", time.Now())
-			duration := time.Since(krakenLastTradeTime)
-			if duration > time.Duration(krakenWatchdogDelay)*time.Second {
-				log.Error("Kraken - watchdogTicker failover")
-				krakenRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &krakenLastTradeTime, krakenWatchdogDelay, &krakenRun)
 
 	// Read trades stream.
 	var errCount int
@@ -107,14 +97,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message krakenWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("Kraken - ReadMessage: %v", err)
-			errCount++
-			if errCount > krakenMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", krakenRestartWaitTime)
-				time.Sleep(time.Duration(krakenRestartWaitTime) * time.Second)
-				krakenRun = false
-				break
-			}
+			readJSONError(KRAKEN_EXCHANGE, err, &errCount, &krakenRun, krakenRestartWaitTime, krakenMaxErrCount)
 			continue
 		}
 
@@ -128,7 +111,6 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 				}
 
 				// Identify ticker symbols with underlying assets.
-				tickerPairMap := models.MakeTickerPairMap(pairs)
 				pair := strings.Split(data.Symbol, "/")
 				var exchangepair models.Pair
 				if len(pair) > 1 {

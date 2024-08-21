@@ -36,15 +36,12 @@ type coinBaseWSResponse struct {
 }
 
 var (
-	coinbaseWSBaseString     = "wss://ws-feed.exchange.coinbase.com"
-	coinbaseMaxErrCount      = 20
-	coinbaseRun              bool
-	coinbaseWatchdogDelay    int64
-	coinbaseRestartWaitTime  = 5
-	coinbaseLastTradeTime    time.Time
-	coinbaseLastTradeTimeMap = make(map[string]time.Time)
-	coinbaseWatchdogDelayMap = make(map[string]int64)
-	coinbaseRunChannel       chan models.ExchangePair
+	coinbaseWSBaseString    = "wss://ws-feed.exchange.coinbase.com"
+	coinbaseMaxErrCount     = 20
+	coinbaseRun             bool
+	coinbaseWatchdogDelay   int64
+	coinbaseRestartWaitTime = 5
+	coinbaseLastTradeTime   time.Time
 )
 
 func init() {
@@ -57,11 +54,11 @@ func init() {
 
 func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
-	defer close(coinbaseRunChannel)
-	var lock sync.RWMutex
 	log.Info("Started CoinBase scraper.")
 	coinbaseRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
+	// Dial websocket API.
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(coinbaseWSBaseString, nil)
 	if err != nil {
@@ -74,8 +71,6 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	for _, pair := range pairs {
 		if err := coinbaseSubscribe(pair, wsClient); err != nil {
 			log.Errorf("CoinBase - subscribe to pair %s: %v", pair.ForeignName, err)
-		} else {
-			coinbaseLastTradeTimeMap[pair.ForeignName] = time.Now()
 		}
 	}
 
@@ -83,28 +78,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	coinbaseLastTradeTime = time.Now()
 	log.Info("CoinBase - Initialize coinbaseLastTradeTime after failover: ", coinbaseLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
-
-	go func() {
-		for range watchdogTicker.C {
-			duration := time.Since(coinbaseLastTradeTime)
-			if duration > time.Duration(coinbaseWatchdogDelay)*time.Second {
-				log.Error("CoinBase - watchdogTicker failover")
-				coinbaseRun = false
-				break
-			}
-		}
-	}()
-
-	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @coinbaseWatchdogDelayMap.
-	for _, pair := range pairs {
-		coinbaseWatchdogDelayMap[pair.ForeignName], err = strconv.ParseInt(utils.Getenv(COINBASE_EXCHANGE+strings.ToUpper(pair.ForeignName), "60"), 10, 64)
-		if err != nil {
-			log.Error("Parse coinbaseWatchdogDelayMap: ", err)
-		}
-		watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelayMap[pair.ForeignName]) * time.Second)
-		go watchdog(pair, watchdogTicker, coinbaseLastTradeTimeMap, coinbaseWatchdogDelayMap, coinbaseRunChannel, &lock)
-		go coinbaseResubscribe(coinbaseRunChannel, wsClient)
-	}
+	go globalWatchdog(watchdogTicker, &coinbaseLastTradeTime, coinbaseWatchdogDelay, &coinbaseRun)
 
 	// Read trades stream.
 	var errCount int
@@ -112,14 +86,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 		var message coinBaseWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("CoinBase - ReadMessage: %v", err)
-			errCount++
-			if errCount > coinbaseMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", coinbaseRestartWaitTime)
-				time.Sleep(time.Duration(coinbaseRestartWaitTime) * time.Second)
-				coinbaseRun = false
-				break
-			}
+			readJSONError(COINBASE_EXCHANGE, err, &errCount, &coinbaseRun, coinbaseRestartWaitTime, coinbaseMaxErrCount)
 			continue
 		}
 
@@ -132,7 +99,6 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 			}
 
 			// Identify ticker symbols with underlying assets.
-			tickerPairMap := models.MakeTickerPairMap(pairs)
 			pair := strings.Split(message.ProductID, "-")
 			var exchangepair models.Pair
 			if len(pair) > 1 {
@@ -158,23 +124,6 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	failoverChannel <- string(COINBASE_EXCHANGE)
 	return "closed"
 
-}
-
-func coinbaseResubscribe(runChannel chan models.ExchangePair, conn *ws.Conn) {
-	for {
-		select {
-		case pair := <-runChannel:
-			err := coinbaseUnsubscribe(pair, conn)
-			if err != nil {
-				log.Errorf("CoinBase - Unsubscribe pair %s: %v", pair.ForeignName, err)
-			}
-			time.Sleep(2 * time.Second)
-			err = coinbaseSubscribe(pair, conn)
-			if err != nil {
-				log.Errorf("CoinBase - Resubscribe pair %s: %v", pair.ForeignName, err)
-			}
-		}
-	}
 }
 
 func coinbaseSubscribe(pair models.ExchangePair, wsClient *ws.Conn) error {
