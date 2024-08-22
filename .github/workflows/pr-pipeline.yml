@@ -1,7 +1,7 @@
 name: decentralized-feeder-pull-request-pipeline
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
