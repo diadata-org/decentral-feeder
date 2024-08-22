@@ -65,7 +65,8 @@ jobs:
           CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
         run: |
-
+          set -e
+          set -o pipefail
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           # Set cluster
@@ -80,6 +81,8 @@ jobs:
       # Helm upgrade command
       - name: Helm upgrade/install all conduit nodes
         run: |
+          set -e
+          set -o pipefail
           for i in $(seq -w 001 010); do
             echo "Deploying node $i"
             cd cluster-backend/helmcharts/oracles/conduit-test/$i
