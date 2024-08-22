@@ -77,11 +77,14 @@ jobs:
           # Use context
           kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
 
+      - name: Debug TIMESTAMP
+        run: echo "TIMESTAMP is ${{ env.TIMESTAMP }}"
+
       # Helm upgrade command
       - name: Helm upgrade deployment
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/001
-          helm upgrade --install -n dia-testspace --set repository.tag="unix-1724318354" diaoracleservice-conduit-001 . 
+          helm upgrade --install -n dia-testspace --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-001 . 
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
