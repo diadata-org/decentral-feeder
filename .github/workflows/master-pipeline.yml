@@ -102,10 +102,28 @@ jobs:
           # Use context
           kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
 
+      # Check if the repository was cloned correctly
+      - name: Verify clone success
+        run: |
+          if [ -d "cluster-backend" ]; then
+            echo "Repository cloned successfully."
+          else
+            echo "Repository clone failed." >&2
+            exit 1
+          fi
+
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
         run: |
           rm -rf cluster-backend
 
-
+      # Check if the repository was cloned correctly
+      - name: Verify clone success
+        run: |
+          if [ -d "cluster-backend" ]; then
+            echo "Repository cloned successfully."
+          else
+            echo "Repository clone failed." >&2
+            exit 1
+          fi
 
