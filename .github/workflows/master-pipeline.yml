@@ -61,7 +61,7 @@ jobs:
       # kubectl config with service account 
       - name: Configure kubectl with Service Account
         env:
-          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
           CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
         run: |
@@ -71,9 +71,9 @@ jobs:
           # Set cluster
           kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
           # Set credentials
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+          kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
           # Set context
-          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod
           # Use context
           kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
 
@@ -84,7 +84,7 @@ jobs:
       - name: Helm upgrade deployment
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/001
-          helm upgrade --install -n dia-testspace --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-001 . 
+          helm upgrade --install -n dia-oracles-prod --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-001 . 
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
