@@ -81,8 +81,8 @@ jobs:
       # Replace symbolic link with actual files
       - name: Replace symbolic link
         run: |
-          cp -r ./cluster-backend/helm-template/templates/* ./cluster-backend/helmcharts/oracles/conduit-test/001/templates/
           rm ./cluster-backend/helmcharts/oracles/conduit-test/001/templates
+          cp -r ./cluster-backend/helm-template/templates/* ./cluster-backend/helmcharts/oracles/conduit-test/001/templates/
 
       # Helm upgrade command
       - name: Helm upgrade deployment
