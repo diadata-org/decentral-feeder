@@ -81,7 +81,7 @@ jobs:
       - name: Helm upgrade deployment
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/001
-          helm upgrade --install -n dia-testspace --set repository.tag="${{ env.IMAGE_TAG }}" diaoracleservice-conduit-001 . 
+          helm upgrade --install -n dia-testspace --set repository.tag="unix-1724318354" diaoracleservice-conduit-001 . 
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
