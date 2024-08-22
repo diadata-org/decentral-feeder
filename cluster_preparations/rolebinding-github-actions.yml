@@ -5,7 +5,7 @@ metadata:
   namespace: dia-oracles-prod
 subjects:
 - kind: ServiceAccount
-  name: github-actions-sa-prod
+  name: github-deploy-sa-prod
   namespace: dia-oracles-prod
 roleRef:
   kind: Role
