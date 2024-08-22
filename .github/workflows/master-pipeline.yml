@@ -77,14 +77,6 @@ jobs:
           # Use context
           kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
 
-
-      # Replace symbolic link with actual files
-      - name: Replace symbolic link
-        run: |
-          rm ./cluster-backend/helmcharts/oracles/conduit-test/001/templates
-          mkdir /cluster-backend/helmcharts/oracles/conduit-test/001/templates
-          cp -r ./cluster-backend/helm-template/templates/* ./cluster-backend/helmcharts/oracles/conduit-test/001/templates/
-
       # Helm upgrade command
       - name: Helm upgrade deployment
         run: |
