@@ -12,14 +12,6 @@ jobs:
       # Checkout the current repository
       - uses: actions/checkout@v4
 
-      # Checkout the cluster-backend repository
-      - name: Checkout cluster-backend repository
-        env:
-          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
-        run: |
-          git clone https://$TOKEN@github.com/diadata-org/cluster-backend private-repo-directory
-
-
       # Set up Go
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -44,6 +36,14 @@ jobs:
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
+
+      # Checkout the cluster-backend repository
+      - name: Checkout cluster-backend repository
+        env:
+          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
+        run: |
+          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -101,6 +101,11 @@ jobs:
           kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa
           # Use context
           kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
+
+      # Cleanup the cloned repository
+      - name: Cleanup cloned repository
+        run: |
+          rm -rf cluster-backend
 
 
 
