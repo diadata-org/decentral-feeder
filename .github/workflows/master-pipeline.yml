@@ -82,6 +82,7 @@ jobs:
       - name: Replace symbolic link
         run: |
           rm ./cluster-backend/helmcharts/oracles/conduit-test/001/templates
+          mkdir /cluster-backend/helmcharts/oracles/conduit-test/001/templates
           cp -r ./cluster-backend/helm-template/templates/* ./cluster-backend/helmcharts/oracles/conduit-test/001/templates/
 
       # Helm upgrade command
