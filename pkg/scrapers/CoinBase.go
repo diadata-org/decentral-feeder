@@ -36,12 +36,14 @@ type coinBaseWSResponse struct {
 }
 
 var (
-	coinbaseWSBaseString    = "wss://ws-feed.exchange.coinbase.com"
-	coinbaseMaxErrCount     = 20
-	coinbaseRun             bool
-	coinbaseWatchdogDelay   int64
-	coinbaseRestartWaitTime = 5
-	coinbaseLastTradeTime   time.Time
+	coinbaseWSBaseString     = "wss://ws-feed.exchange.coinbase.com"
+	coinbaseMaxErrCount      = 20
+	coinbaseRun              bool
+	coinbaseWatchdogDelay    int64
+	coinbaseRestartWaitTime  = 5
+	coinbaseLastTradeTime    time.Time
+	coinbaseLastTradeTimeMap = make(map[string]time.Time)
+	coinbaseSubscribeChannel = make(chan models.ExchangePair)
 )
 
 func init() {
@@ -54,6 +56,8 @@ func init() {
 
 func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
+	defer close(coinbaseSubscribeChannel)
+	var lock sync.RWMutex
 	log.Info("Started CoinBase scraper.")
 	coinbaseRun = true
 	tickerPairMap := models.MakeTickerPairMap(pairs)
@@ -69,8 +73,11 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 
 	// Subscribe to pairs and initialize coinbaseLastTradeTimeMap.
 	for _, pair := range pairs {
-		if err := coinbaseSubscribe(pair, wsClient); err != nil {
+		if err := coinbaseSubscribe(pair, &lock, wsClient); err != nil {
 			log.Errorf("CoinBase - subscribe to pair %s: %v", pair.ForeignName, err)
+		} else {
+			log.Infof("CoinBase - Subscribed to pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+			coinbaseLastTradeTimeMap[pair.ForeignName] = time.Now()
 		}
 	}
 
@@ -80,6 +87,17 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 	watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
 	go globalWatchdog(watchdogTicker, &coinbaseLastTradeTime, coinbaseWatchdogDelay, &coinbaseRun)
 
+	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @coinbaseWatchdogDelayMap.
+	for _, pair := range pairs {
+		envVar := strings.ToUpper(COINBASE_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
+		coinbaseWatchdogDelay, err = strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
+		if err != nil {
+			log.Error("Parse coinbaseWatchdogDelay: ", err)
+		}
+		watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
+		go watchdog(pair, watchdogTicker, coinbaseLastTradeTimeMap, coinbaseWatchdogDelay, coinbaseSubscribeChannel, &lock)
+		go coinbaseResubscribe(coinbaseSubscribeChannel, &lock, wsClient)
+	}
 
 	// Read trades stream.
 	var errCount int
@@ -93,30 +111,22 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 
 		if message.Type == "match" {
 
-			// Parse trade quantities.
-			price, volume, timestamp, foreignTradeID, err := parseCoinBaseTradeMessage(message)
+			trade, err := coinbaseParseTradeMessage(message)
 			if err != nil {
-				log.Error("CoinBase - parseTradeMessage: ", err)
+				log.Errorf("parseCoinBaseTradeMessage: %s", err.Error())
+				continue
 			}
 
 			// Identify ticker symbols with underlying assets.
 			pair := strings.Split(message.ProductID, "-")
-			var exchangepair models.Pair
 			if len(pair) > 1 {
-				exchangepair = tickerPairMap[pair[0]+pair[1]]
+				trade.QuoteToken = tickerPairMap[pair[0]+pair[1]].QuoteToken
+				trade.BaseToken = tickerPairMap[pair[0]+pair[1]].BaseToken
 			}
 
-			trade := models.Trade{
-				QuoteToken:     exchangepair.QuoteToken,
-				BaseToken:      exchangepair.BaseToken,
-				Price:          price,
-				Volume:         volume,
-				Time:           timestamp,
-				Exchange:       models.Exchange{Name: COINBASE_EXCHANGE},
-				ForeignTradeID: foreignTradeID,
-			}
-			// log.Info("Got trade: ", trade)
+			// log.Infof("Got trade: %s -- %v", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price)
 			coinbaseLastTradeTime = trade.Time
+			coinbaseLastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
 			tradesChannel <- trade
 		}
 	}
@@ -127,7 +137,29 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 
 }
 
-func coinbaseSubscribe(pair models.ExchangePair, wsClient *ws.Conn) error {
+func coinbaseResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.RWMutex, conn *ws.Conn) {
+	for {
+		select {
+		case pair := <-subscribeChannel:
+			err := coinbaseUnsubscribe(pair, lock, conn)
+			if err != nil {
+				log.Errorf("CoinBase - Unsubscribe pair %s: %v", pair.ForeignName, err)
+			} else {
+				log.Infof("CoinBase - Unsubscribed pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+			}
+			time.Sleep(2 * time.Second)
+			err = coinbaseSubscribe(pair, lock, conn)
+			if err != nil {
+				log.Errorf("CoinBase - Resubscribe pair %s: %v", pair.ForeignName, err)
+			} else {
+				log.Infof("CoinBase - Subscribed to pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+			}
+		}
+	}
+}
+
+func coinbaseSubscribe(pair models.ExchangePair, lock *sync.RWMutex, wsClient *ws.Conn) error {
+	defer lock.Unlock()
 	a := &coinBaseWSSubscribeMessage{
 		Type: "subscribe",
 		Channels: []coinBaseChannel{
@@ -137,11 +169,12 @@ func coinbaseSubscribe(pair models.ExchangePair, wsClient *ws.Conn) error {
 			},
 		},
 	}
-	log.Infof("CoinBase - Subscribed for Pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+	lock.Lock()
 	return wsClient.WriteJSON(a)
 }
 
-func coinbaseUnsubscribe(pair models.ExchangePair, wsClient *ws.Conn) error {
+func coinbaseUnsubscribe(pair models.ExchangePair, lock *sync.RWMutex, wsClient *ws.Conn) error {
+	defer lock.Unlock()
 	a := &coinBaseWSSubscribeMessage{
 		Type: "unsubscribe",
 		Channels: []coinBaseChannel{
@@ -151,27 +184,36 @@ func coinbaseUnsubscribe(pair models.ExchangePair, wsClient *ws.Conn) error {
 			},
 		},
 	}
-	log.Infof("CoinBase - Unsubscribed Pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+	lock.Lock()
 	return wsClient.WriteJSON(a)
 }
 
-func parseCoinBaseTradeMessage(message coinBaseWSResponse) (price float64, volume float64, timestamp time.Time, foreignTradeID string, err error) {
-	price, err = strconv.ParseFloat(message.Price, 64)
+func coinbaseParseTradeMessage(message coinBaseWSResponse) (models.Trade, error) {
+	price, err := strconv.ParseFloat(message.Price, 64)
 	if err != nil {
-		return
+		return models.Trade{}, nil
 	}
-	volume, err = strconv.ParseFloat(message.Size, 64)
+	volume, err := strconv.ParseFloat(message.Size, 64)
 	if err != nil {
-		return
+		return models.Trade{}, nil
 	}
 	if message.Side == "sell" {
 		volume -= 1
 	}
-	timestamp, err = time.Parse("2006-01-02T15:04:05.000000Z", message.Time)
+	timestamp, err := time.Parse("2006-01-02T15:04:05.000000Z", message.Time)
 	if err != nil {
-		return
+		return models.Trade{}, nil
 	}
 
-	foreignTradeID = strconv.Itoa(int(message.TradeID))
-	return
+	foreignTradeID := strconv.Itoa(int(message.TradeID))
+
+	trade := models.Trade{
+		Price:          price,
+		Volume:         volume,
+		Time:           timestamp,
+		Exchange:       models.Exchange{Name: COINBASE_EXCHANGE},
+		ForeignTradeID: foreignTradeID,
+	}
+
+	return trade, nil
 }

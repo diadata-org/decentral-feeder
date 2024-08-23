@@ -182,8 +182,8 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 		err:          nil,
 	}
 	if err := s.newConn(); err != nil {
-		log.Error("Crypto.com - " + err.Error())
-		log.Warn("Close Crypto.com scraper.")
+		log.Error("Crypto.com" + err.Error())
+		log.Warn("newConn: Close Crypto.com scraper.")
 		failoverChannel <- string(CRYPTODOTCOM_EXCHANGE)
 		return "closed"
 	}
@@ -215,7 +215,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 		select {
 		case <-s.shutdown:
 			log.Println("Crypto.com - Shutting down main loop")
-			log.Warn("Close Crypto.com scraper.")
+			log.Warn("Close Crypto.com scraper due to shutdown.")
 			failoverChannel <- string(CRYPTODOTCOM_EXCHANGE)
 			return "closed"
 		default:
