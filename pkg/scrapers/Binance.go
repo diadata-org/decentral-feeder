@@ -50,7 +50,6 @@ func init() {
 
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
-	defer close(binanceSubscribeChannel)
 	var lock sync.RWMutex
 	log.Info("Started Binance scraper at: ", time.Now())
 	binanceRun = true

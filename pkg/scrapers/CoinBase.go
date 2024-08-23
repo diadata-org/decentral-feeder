@@ -56,7 +56,6 @@ func init() {
 
 func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
-	defer close(coinbaseSubscribeChannel)
 	var lock sync.RWMutex
 	log.Info("Started CoinBase scraper.")
 	coinbaseRun = true
