@@ -33,14 +33,14 @@ func watchdog(
 	subscribeChannel chan models.ExchangePair,
 	lock *sync.RWMutex,
 ) {
-	log.Infof("start watching %s with channel %v", pair.ForeignName, subscribeChannel)
+	log.Infof("start watching %s.", pair.ForeignName)
 	for range ticker.C {
-		log.Infof("check liveliness of %s with channel %v", pair.ForeignName, subscribeChannel)
+		log.Infof("%s - check liveliness of %s.", pair.Exchange, pair.ForeignName)
 
 		// Make read lock for lastTradeTimeMap.
 		lock.RLock()
 		duration := time.Since(lastTradeTimeMap[pair.ForeignName])
-		log.Infof("duration for %s: %v. Threshold: %v", pair.ForeignName, duration, watchdogDelay)
+		log.Infof("%s - duration for %s: %v. Threshold: %v", pair.Exchange, pair.ForeignName, duration, watchdogDelay)
 		lock.RUnlock()
 		if duration > time.Duration(watchdogDelay)*time.Second {
 			log.Errorf("CoinBase - watchdogTicker failover for %s", pair.ForeignName)

@@ -58,7 +58,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	// Set up websocket dialer with proxy.
-	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
+	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", "http://samuelbrack:hD3bfFBVLg@178.218.129.235:50100"))
 	if err != nil {
 		log.Errorf("Binance - parse proxy url: %v", err)
 	}
@@ -72,22 +72,19 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 		}),
 	}
 
+	wsAssetsString := ""
+	for _, pair := range pairs {
+		wsAssetsString += "/" + strings.ToLower(strings.Split(pair.ForeignName, "-")[0]) + strings.ToLower(strings.Split(pair.ForeignName, "-")[1]) + "@trade"
+	}
+
 	// Connect to Binance API.
-	conn, _, err := d.Dial(binanceWSBaseString, nil)
+	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
 		log.Errorf("Connect to Binance API: %s.", err.Error())
 		failoverChannel <- string(BINANCE_EXCHANGE)
 		return "closed"
 	}
 	defer conn.Close()
-
-	//Subscribe to pairs.
-	for _, pair := range pairs {
-		err = binanceSubscribe(pair, &lock, conn)
-		if err != nil {
-			log.Errorf("Subscribe to %s: %v", pair.ForeignName, err)
-		}
-	}
 
 	// Check last trade time across all pairs and restart the scraper if no activity for more than @binanceWatchdogDelay.
 	binanceLastTradeTime = time.Now()
