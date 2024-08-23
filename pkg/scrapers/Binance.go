@@ -100,7 +100,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 			log.Error("Parse binanceWatchdogDelayMap: ", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
-		go watchdog(pair, watchdogTicker, binanceLastTradeTimeMap, binanceWatchdogDelay, binanceSubscribeChannel, &lock)
+		go watchdog(pair, watchdogTicker, binanceLastTradeTimeMap, binanceWatchdogDelay, binanceSubscribeChannel, &binanceRun, &lock)
 		go binanceResubscribe(binanceSubscribeChannel, &lock, conn)
 	}
 

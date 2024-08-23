@@ -94,7 +94,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 			log.Error("Parse coinbaseWatchdogDelay: ", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
-		go watchdog(pair, watchdogTicker, coinbaseLastTradeTimeMap, coinbaseWatchdogDelay, coinbaseSubscribeChannel, &lock)
+		go watchdog(pair, watchdogTicker, coinbaseLastTradeTimeMap, coinbaseWatchdogDelay, coinbaseSubscribeChannel, &coinbaseRun, &lock)
 		go coinbaseResubscribe(coinbaseSubscribeChannel, &lock, wsClient)
 	}
 

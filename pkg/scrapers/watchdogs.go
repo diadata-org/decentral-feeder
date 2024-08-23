@@ -31,22 +31,27 @@ func watchdog(
 	lastTradeTimeMap map[string]time.Time,
 	watchdogDelay int64,
 	subscribeChannel chan models.ExchangePair,
+	scraperRun *bool,
 	lock *sync.RWMutex,
 ) {
 	log.Infof("start watching %s.", pair.ForeignName)
-	for range ticker.C {
-		log.Infof("%s - check liveliness of %s.", pair.Exchange, pair.ForeignName)
+	for *scraperRun {
+		for range ticker.C {
+			log.Infof("%s - check liveliness of %s.", pair.Exchange, pair.ForeignName)
 
-		// Make read lock for lastTradeTimeMap.
-		lock.RLock()
-		duration := time.Since(lastTradeTimeMap[pair.ForeignName])
-		log.Infof("%s - duration for %s: %v. Threshold: %v", pair.Exchange, pair.ForeignName, duration, watchdogDelay)
-		lock.RUnlock()
-		if duration > time.Duration(watchdogDelay)*time.Second {
-			log.Errorf("CoinBase - watchdogTicker failover for %s", pair.ForeignName)
-			subscribeChannel <- pair
+			// Make read lock for lastTradeTimeMap.
+			lock.RLock()
+			duration := time.Since(lastTradeTimeMap[pair.ForeignName])
+			log.Infof("%s - duration for %s: %v. Threshold: %v", pair.Exchange, pair.ForeignName, duration, watchdogDelay)
+			lock.RUnlock()
+			if duration > time.Duration(watchdogDelay)*time.Second {
+				log.Errorf("CoinBase - watchdogTicker failover for %s", pair.ForeignName)
+				subscribeChannel <- pair
+			}
 		}
 	}
+	log.Warnf("%s - close watchdog for pair %s", pair.Exchange, pair.ForeignName)
+	return
 }
 
 // // TO DO: Add watchdog per pair that includes watchdog per pair and a subsquent resubscribe.
