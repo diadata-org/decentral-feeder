@@ -1,10 +1,6 @@
-name: decentralized-feeder-pipeline
+name: decentralized-feeder-pull-request-pipeline
 
 on:
-  push:
-    branches:
-      - master
-
   pull_request:
     branches:
       - master
@@ -40,6 +36,13 @@ jobs:
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
+
+      # Checkout the cluster-backend repository
+      - name: Checkout cluster-backend repository
+        env:
+          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
+        run: |
+          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -98,43 +101,16 @@ jobs:
           # Use context
           kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
 
-      # Deploy to Kubernetes
-      - name: Deploy to Kubernetes 
-        env:
-          IMAGE_TAG: unix-${{ env.TIMESTAMP }}
-          DEPLOYED_CONTRACT: ${{ secrets.DEPLOYED_CONTRACT }}
-          BLOCKCHAIN_NODE: ${{ secrets.BLOCKCHAIN_NODE }}
-          BACKUP_NODE: ${{ secrets.BACKUP_NODE }}
-          CHAIN_ID: ${{ secrets.CHAIN_ID }}
-          UniswapV2_URI_REST: ${{ secrets.UniswapV2_URI_REST }}
-          UniswapV2_URI_WS: ${{ secrets.UniswapV2_URI_WS }}
-          POOLS: ${{ secrets.POOLS }}
-          #HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-          #PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          #PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
-
+      # Helm upgrade command
+      - name: Helm upgrade/install conduit-node-011
         run: |
-          # Verify the deployment
-          #kubectl rollout status deployment/nginx-deployment
-          # Create a new deployment YAML with the replaced IMAGE_TAG
-          envsubst < kubernetes_deployment/diaoracleservice-conduit-011.yaml > kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
+          cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
+          helm upgrade --install -n dia-testspace --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-011 .
 
-          # Apply the Kubernetes deployment manifest
-          timeout 120s kubectl apply -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml
+      # Cleanup the cloned repository
+      - name: Cleanup cloned repository
+        run: |
+          rm -rf cluster-backend
 
-          # Wait for 20 seconds before verifying the deployment
-          sleep 20
 
-          timeout 120s kubectl rollout status -n dia-testspace deployment/diaoracleservice-conduit-011
-
-          # Remove temporary files for security
-          rm kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml || true
-
-          # Confirm file removal
-          if [ ! -f kubernetes_deployment/diaoracleservice-conduit-011.temp.yaml ]; then
-            echo "Temporary file successfully removed."
-          else
-            echo "Temporary file removal failed."
-            exit 1
-          fi
 
