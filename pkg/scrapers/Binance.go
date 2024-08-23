@@ -1,6 +1,8 @@
 package scrapers
 
 import (
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -55,8 +57,23 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	// Make tickerPairMap for identification of exchangepairs.
 	tickerPairMap := models.MakeTickerPairMap(pairs)
 
-	// Establish a connection to binance websocket API.
-	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString, nil)
+	// Set up websocket dialer with proxy.
+	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
+	if err != nil {
+		log.Errorf("Binance - parse proxy url: %v", err)
+	}
+
+	var d = ws.Dialer{
+		Proxy: http.ProxyURL(&url.URL{
+			Scheme: "http", // or "https" depending on your proxy
+			User:   proxyURL.User,
+			Host:   proxyURL.Host,
+			Path:   "/",
+		}),
+	}
+
+	// Connect to Binance API.
+	conn, _, err := d.Dial(binanceWSBaseString, nil)
 	if err != nil {
 		log.Errorf("Connect to Binance API: %s.", err.Error())
 		failoverChannel <- string(BINANCE_EXCHANGE)
