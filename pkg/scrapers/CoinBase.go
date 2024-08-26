@@ -155,6 +155,7 @@ func coinbaseResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.R
 			}
 		}
 	}
+	return
 }
 
 func coinbaseSubscribe(pair models.ExchangePair, lock *sync.RWMutex, wsClient *ws.Conn) error {

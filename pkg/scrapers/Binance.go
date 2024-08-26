@@ -149,6 +149,7 @@ func binanceResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.RW
 			}
 		}
 	}
+	return
 }
 
 func binanceSubscribe(pair models.ExchangePair, lock *sync.RWMutex, wsClient *ws.Conn) error {
