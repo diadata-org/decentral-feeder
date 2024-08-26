@@ -101,7 +101,7 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 		}
 		watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
 		go watchdog(pair, watchdogTicker, binanceLastTradeTimeMap, binanceWatchdogDelay, binanceSubscribeChannel, &binanceRun, &lock)
-		go binanceResubscribe(binanceSubscribeChannel, &lock, conn)
+		go binanceResubscribe(binanceSubscribeChannel, &lock, &binanceRun, conn)
 	}
 
 	var errCount int
@@ -134,8 +134,8 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	return "closed"
 }
 
-func binanceResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.RWMutex, conn *ws.Conn) {
-	for {
+func binanceResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.RWMutex, scraperRun *bool, conn *ws.Conn) {
+	for *scraperRun {
 		select {
 		case pair := <-subscribeChannel:
 			err := binanceUnsubscribe(pair, lock, conn)

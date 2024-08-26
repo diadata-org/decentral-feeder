@@ -356,7 +356,9 @@ func (s *CryptoDotComScraper) cleanup() {
 		s.setError(err)
 	}
 
-	close(s.chanTrades)
+	if s.chanTrades != nil {
+		close(s.chanTrades)
+	}
 	s.close()
 	s.signalShutdownDone.Do(func() {
 		close(s.shutdownDone)

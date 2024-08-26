@@ -95,7 +95,7 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 		}
 		watchdogTicker := time.NewTicker(time.Duration(coinbaseWatchdogDelay) * time.Second)
 		go watchdog(pair, watchdogTicker, coinbaseLastTradeTimeMap, coinbaseWatchdogDelay, coinbaseSubscribeChannel, &coinbaseRun, &lock)
-		go coinbaseResubscribe(coinbaseSubscribeChannel, &lock, wsClient)
+		go coinbaseResubscribe(coinbaseSubscribeChannel, &lock, &coinbaseRun, wsClient)
 	}
 
 	// Read trades stream.
@@ -136,8 +136,8 @@ func NewCoinBaseScraper(pairs []models.ExchangePair, tradesChannel chan models.T
 
 }
 
-func coinbaseResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.RWMutex, conn *ws.Conn) {
-	for {
+func coinbaseResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.RWMutex, scraperRun *bool, conn *ws.Conn) {
+	for *scraperRun {
 		select {
 		case pair := <-subscribeChannel:
 			err := coinbaseUnsubscribe(pair, lock, conn)
