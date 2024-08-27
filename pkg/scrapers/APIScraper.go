@@ -30,7 +30,6 @@ func RunScraper(
 			return
 		}
 	case COINBASE_EXCHANGE:
-		NewCoinBaseScraper(pairs, tradesChannel, failoverChannel, wg)
 		status := NewCoinBaseScraper(pairs, tradesChannel, failoverChannel, wg)
 		if status == "closed" {
 			return
