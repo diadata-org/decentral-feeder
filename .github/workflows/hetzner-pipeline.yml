@@ -57,6 +57,7 @@ jobs:
 
   deploy_to_cluster:
     runs-on: ubuntu-latest
+    needs: push_image
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
