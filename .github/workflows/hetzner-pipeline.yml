@@ -82,8 +82,8 @@ jobs:
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/013
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-013 .
-          cd 
           sleep 10
+          cd ..
           cd cluster-backend/helmcharts/oracles/conduit-test/014
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-014 .
 
