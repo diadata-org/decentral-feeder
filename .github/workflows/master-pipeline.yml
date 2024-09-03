@@ -102,7 +102,7 @@ jobs:
           kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
 
       # Helm upgrade command
-      - name: Helm upgrade/install all conduit nodes
+      - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
         run: |
           for i in $(seq -w 001 010); do
             echo "Deploying node $i"
