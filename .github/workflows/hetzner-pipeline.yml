@@ -49,25 +49,7 @@ jobs:
         run: |
           ibmcloud cr login
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }}
-        
-      # Cleanup the cloned repository
-      - name: Cleanup cloned repository
-        run: |
-          rm -rf cluster-backend
-
-  deploy_to_cluster:
-    runs-on: ubuntu-latest
-    needs: push_image
-    steps:
-      # Checkout the repository
-      - uses: actions/checkout@v4
-
-      # Checkout the cluster-backend repository
-      - name: Checkout cluster-backend repository
-        env:
-          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
-        run: |
-            git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+  
 
       # Install kubectl
       - name: Install kubectl
@@ -105,12 +87,8 @@ jobs:
           cd ..
           cd 014
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-014 .
-
+        
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
         run: |
           rm -rf cluster-backend
-
-
-
-
