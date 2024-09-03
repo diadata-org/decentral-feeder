@@ -101,9 +101,9 @@ jobs:
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/013
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-013 .
-          pwd
           sleep 10
-          cd cluster-backend/helmcharts/oracles/conduit-test/014
+          cd ..
+          cd 014
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-014 .
 
       # Cleanup the cloned repository
