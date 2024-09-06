@@ -85,7 +85,7 @@ jobs:
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-015 .
           sleep 10
           cd ..
-          cd 015
+          cd 016
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-016 .
         
       # Cleanup the cloned repository
