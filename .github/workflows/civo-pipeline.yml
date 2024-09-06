@@ -3,7 +3,7 @@ name: decentralized-feeder-pull-request-pipeline
 on:
   push:
     branches:
-      - deployment-to-civo-hetzner
+      - xxx
 
 jobs:
   push_image:
