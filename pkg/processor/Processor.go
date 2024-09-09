@@ -52,6 +52,7 @@ func Processor(
 			atomicFilterValue, _, err := filters.LastPrice(tb.Trades, true)
 			if err != nil {
 				log.Error("GetLastPrice: ", err)
+				continue
 			}
 
 			// Identify Pair from tradesblock
