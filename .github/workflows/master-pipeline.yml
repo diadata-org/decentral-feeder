@@ -86,20 +86,22 @@ jobs:
       - name: IBM Cluster kubectl config 
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
-          CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
         run: |
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           # Set cluster
-          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          # kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" # --insecure-skip-tls-verify=true
+          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER"
           # Set credentials
           kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
           # Set context
-          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
           # Use context
-          kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
-
+          kubectl config use-context $CONTEXT
+# TODO CHANGE THESE TO SECRETS
 
       - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
         run: |
