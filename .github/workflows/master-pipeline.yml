@@ -93,9 +93,6 @@ jobs:
         run: |
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          # Set cluster
-          # kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" # --insecure-skip-tls-verify=true
-
           # Decode the base64-encoded CA certificate and save it to a file
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           # Set cluster using the CA PEM file
@@ -119,7 +116,11 @@ jobs:
             cd -  # Navigate back to the previous directory
           done
           cd
-          # Cleanup: Securely remove the CA certificate file
+
+
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
           shred -u /tmp/ca.pem
 
       - name: Hetzner Cluster kubectl config
@@ -128,12 +129,17 @@ jobs:
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_HETZNER }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_HETZNER }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_HETZNER }} # Example: https://your-api-server:6443
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_HETZNER }} # Base64-encoded PEM file
         run: |
 
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           # Set cluster
-          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
           # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
           # Set context
@@ -152,6 +158,10 @@ jobs:
           helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-014 .
           cd
 
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
+          shred -u /tmp/ca.pem
 
       - name: Civo Cluster kubectl config
         env:
@@ -159,11 +169,16 @@ jobs:
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_CIVO }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_CIVO }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_CIVO }} # Example: https://your-api-server:6443
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_CIVO }} # Base64-encoded PEM file
         run: |
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           # Set cluster
-          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
           # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
           # Set context
@@ -185,5 +200,10 @@ jobs:
       - name: Cleanup cloned repository
         run: |
           rm -rf cluster-backend
+          # Check if any CA PEM files were used (if applicable) and securely delete them
+          if [ -f /tmp/ca.pem ]; then
+            shred -u /tmp/ca.pem
+            echo "cert removed"
+          fi
 
 
