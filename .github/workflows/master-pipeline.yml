@@ -1,0 +1,119 @@
+name: decentralized-feeder-master-pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v4
+
+      # Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      # Get dependencies
+      - name: Get dependencies
+        run: go mod tidy
+
+      # Build the Go application
+      - name: Build
+        run: go build -v ./...
+
+      # Test the Go application
+      - name: Test
+        run: go test -v ./...
+
+  push_image:
+    runs-on: ubuntu-latest
+    needs: build_and_test
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v4
+
+      # Checkout the cluster-backend repository
+      - name: Checkout cluster-backend repository
+        env:
+          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
+        run: |
+          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+
+
+      # Install IBM Cloud CLI and Container Registry CLI
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud plugin install container-registry -f
+
+      # Log in to IBM Cloud
+      - name: Log in to IBM Cloud
+        env:
+          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
+        run: |
+          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
+          ibmcloud target -r us-south
+          ibmcloud target -g Default
+
+      # Get Unix Timestamp
+      - name: Get Unix Timestamp
+        id: get_timestamp
+        run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+
+      # Build and Tag the Docker image
+      - name: Build and Tag Docker image
+        run: |
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }} .
+
+      # Push the Docker image to IBM Cloud Container Registry
+      - name: Push Docker image
+        run: |
+          ibmcloud cr login
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }}
+
+      # Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      # kubectl config with service account 
+      - name: Configure kubectl with Service Account
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
+          CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
+        run: |
+          # Ensure token does not contain unexpected newline characters
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          # Set cluster
+          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          # Set credentials
+          kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
+          # Set context
+          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod
+          # Use context
+          kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
+
+      # Helm upgrade command
+      - name: Helm upgrade/install all conduit nodes
+        run: |
+          for i in $(seq -w 001 010); do
+            echo "Deploying node $i"
+            cd cluster-backend/helmcharts/oracles/conduit-test/$i
+            helm upgrade --install -n dia-oracles-prod --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-$i .
+            cd -  # Navigate back to the previous directory
+          done
+
+      # Cleanup the cloned repository
+      - name: Cleanup cloned repository
+        run: |
+          rm -rf cluster-backend
+
+

@@ -2,68 +2,89 @@ package scrapers
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
 var (
-	binanceWSBaseString  = "wss://stream.binance.com:9443/ws/"
-	binanceWatchdogDelay = 60
-	lastTradeTime        time.Time
-	binanceRun           bool
+	binanceWSBaseString    = "wss://stream.binance.com:9443/ws/"
+	binanceMaxErrCount     = 20
+	binanceWatchdogDelay   int64
+	binanceLastTradeTime   time.Time
+	binanceRestartWaitTime = 5
+	binanceRun             bool
 )
 
+func init() {
+	var err error
+	binanceWatchdogDelay, err = strconv.ParseInt(utils.Getenv("BINANCE_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse BINANCE_WATCHDOGDELAY: ", err)
+	}
+}
+
 func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
-	binanceRun = true
 	defer wg.Done()
 	log.Info("Started Binance scraper at: ", time.Now())
+	binanceRun = true
+	// Make tickerPairMap for identification of exchangepairs.
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	wsAssetsString := ""
 	for _, pair := range pairs {
 		wsAssetsString += strings.ToLower(strings.Split(pair.ForeignName, "-")[0]) + strings.ToLower(strings.Split(pair.ForeignName, "-")[1]) + "@trade" + "/"
 	}
-
-	// Make tickerPairMap for identification of exchangepairs.
-	tickerPairMap := models.MakeTickerPairMap(pairs)
-
-	// Remove trailing slash
 	wsAssetsString = wsAssetsString[:len(wsAssetsString)-1]
-	conn, _, err := ws.DefaultDialer.Dial(binanceWSBaseString+wsAssetsString, nil)
+
+	// Set up websocket dialer with proxy.
+	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
 	if err != nil {
-		log.Error("connect to Binance API.")
+		log.Errorf("Binance - parse proxy url: %v", err)
 	}
+
+	var d = ws.Dialer{
+		Proxy: http.ProxyURL(&url.URL{
+			Scheme: "http", // or "https" depending on your proxy
+			User:   proxyURL.User,
+			Host:   proxyURL.Host,
+			Path:   "/",
+		}),
+	}
+
+	// Connect to Binance API.
+	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
+	if err != nil {
+		log.Errorf("Connect to Binance API: %s.", err.Error())
+		failoverChannel <- string(BINANCE_EXCHANGE)
+		return "closed"
+	}
+
 	defer conn.Close()
 
-	lastTradeTime = time.Now()
-	log.Info("Binance - Initialize lastTradeTime after failover: ", lastTradeTime)
+	binanceLastTradeTime = time.Now()
+	log.Info("Binance - Initialize lastTradeTime after failover: ", binanceLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
 
 	// Check for liveliness of the scraper.
 	// More precisely, if there is no trades for a period longer than @watchdogDelayBinance the scraper is stopped
 	// and the exchange name is sent to the failover channel.
-	go func() {
-		for range watchdogTicker.C {
-			log.Info("Binance - watchdogTicker - lastTradeTime: ", lastTradeTime)
-			log.Info("Binance - watchdogTicker - timeNow: ", time.Now())
-			duration := time.Since(lastTradeTime)
-			if duration > time.Duration(binanceWatchdogDelay)*time.Second {
-				log.Error("Binance - watchdogTicker failover")
-				binanceRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &binanceLastTradeTime, binanceWatchdogDelay, &binanceRun)
 
+	var errCount int
 	for binanceRun {
 
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Errorln("Binance - ReadMessage:", err)
+			readJSONError(BINANCE_EXCHANGE, err, &errCount, &binanceRun, binanceRestartWaitTime, binanceMaxErrCount)
+			continue
 		}
 
 		messageMap := make(map[string]interface{})
@@ -98,11 +119,9 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 		trade.QuoteToken = tickerPairMap[messageMap["s"].(string)].QuoteToken
 		trade.BaseToken = tickerPairMap[messageMap["s"].(string)].BaseToken
 
-		lastTradeTime = trade.Time
+		binanceLastTradeTime = trade.Time
 
-		// Send message to @failoverChannel in case there is no trades for at least @watchdogDelayBinance seconds.
 		// log.Infof("%v -- Got trade: time -- price -- ID: %v -- %v -- %s", time.Now(), trade.Time, trade.Price, trade.ForeignTradeID)
-
 		tradesChannel <- trade
 
 	}

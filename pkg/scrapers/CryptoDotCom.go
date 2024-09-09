@@ -15,6 +15,7 @@ import (
 	"go.uber.org/ratelimit"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 )
 
 const (
@@ -40,7 +41,8 @@ const (
 
 var (
 	cryptoDotComRun           bool
-	cryptoDotComWatchdogDelay = 60
+	cryptoDotComWatchdogDelay int64
+	cryptoDotComLastTradeTime time.Time
 )
 
 type nothing struct{}
@@ -159,10 +161,20 @@ type CryptoDotComScraper struct {
 	connRetryCount int
 }
 
+func init() {
+	var err error
+	cryptoDotComWatchdogDelay, err = strconv.ParseInt(utils.Getenv("CRYPTODOTOM_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse CRYPTODOTOM_WATCHDOGDELAY: ", err)
+	}
+}
+
 // NewCryptoDotComScraper returns a new Crypto.com scraper
 func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
+	log.Info("Started Crypto.com scraper.")
 	cryptoDotComRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	s := &CryptoDotComScraper{
 		shutdown:     make(chan nothing),
@@ -189,19 +201,10 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 	// ----------------------------------------
 	//  Check for liveliness of the scraper.
 	// ----------------------------------------
-	lastTradeTime = time.Now()
-	log.Info("Crypto.com - Initialize lastTradeTime after failover: ", lastTradeTime)
+	cryptoDotComLastTradeTime = time.Now()
+	log.Info("Crypto.com - Initialize cryptoDotComLastTradeTime after failover: ", cryptoDotComLastTradeTime)
 	watchdogTicker := time.NewTicker(time.Duration(cryptoDotComWatchdogDelay) * time.Second)
-	go func() {
-		for range watchdogTicker.C {
-			duration := time.Since(lastTradeTime)
-			if duration > time.Duration(cryptoDotComWatchdogDelay)*time.Second {
-				log.Error("Crypto.com - watchdogTicker failover")
-				kucoinRun = false
-				break
-			}
-		}
-	}()
+	go globalWatchdog(watchdogTicker, &cryptoDotComLastTradeTime, cryptoDotComWatchdogDelay, &cryptoDotComRun)
 
 	// ----------------------------------------
 	// Fetch trades
@@ -263,7 +266,6 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 			}
 
 			// baseCurrency := strings.Split(subscription.InstrumentName, `_`)[0]
-			tickerPairMap := models.MakeTickerPairMap(pairs)
 
 			exchangepair := tickerPairMap[strings.Split(subscription.InstrumentName, "_")[0]+strings.Split(subscription.InstrumentName, "_")[1]]
 
@@ -302,6 +304,7 @@ func NewCryptoDotComScraper(pairs []models.ExchangePair, tradesChannel chan mode
 				select {
 				case <-s.shutdown:
 				case tradesChannel <- trade:
+					cryptoDotComLastTradeTime = trade.Time
 					// log.Info("Got trade: ", trade)
 				}
 			}

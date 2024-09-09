@@ -7,6 +7,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -41,14 +42,24 @@ var (
 	krakenWSBaseString    = "wss://ws.kraken.com/v2"
 	krakenMaxErrCount     = 20
 	krakenRun             bool
-	krakenWatchdogDelay   = 60
+	krakenWatchdogDelay   int64
 	krakenRestartWaitTime = 5
+	krakenLastTradeTime   time.Time
 )
+
+func init() {
+	var err error
+	krakenWatchdogDelay, err = strconv.ParseInt(utils.Getenv("KRAKEN_WATCHDOGDELAY", "60"), 10, 64)
+	if err != nil {
+		log.Error("Parse KRAKEN_WATCHDOGDELAY: ", err)
+	}
+}
 
 func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
 	defer wg.Done()
 	log.Info("Started Kraken scraper.")
 	krakenRun = true
+	tickerPairMap := models.MakeTickerPairMap(pairs)
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
@@ -73,6 +84,12 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		}
 	}
 
+	krakenLastTradeTime = time.Now()
+	log.Info("Kraken - Initialize lastTradeTime after failover: ", krakenLastTradeTime)
+	watchdogTicker := time.NewTicker(time.Duration(krakenWatchdogDelay) * time.Second)
+
+	go globalWatchdog(watchdogTicker, &krakenLastTradeTime, krakenWatchdogDelay, &krakenRun)
+
 	// Read trades stream.
 	var errCount int
 	for krakenRun {
@@ -80,13 +97,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 		var message krakenWSResponse
 		err = wsClient.ReadJSON(&message)
 		if err != nil {
-			log.Errorf("Kraken - ReadMessage: %v", err)
-			if errCount > krakenMaxErrCount {
-				log.Warnf("too many errors. wait for %v seconds and restart scraper.", krakenRestartWaitTime)
-				time.Sleep(time.Duration(krakenRestartWaitTime) * time.Second)
-				krakenRun = false
-				break
-			}
+			readJSONError(KRAKEN_EXCHANGE, err, &errCount, &krakenRun, krakenRestartWaitTime, krakenMaxErrCount)
 			continue
 		}
 
@@ -100,7 +111,6 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 				}
 
 				// Identify ticker symbols with underlying assets.
-				tickerPairMap := models.MakeTickerPairMap(pairs)
 				pair := strings.Split(data.Symbol, "/")
 				var exchangepair models.Pair
 				if len(pair) > 1 {
@@ -117,6 +127,7 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 					ForeignTradeID: foreignTradeID,
 				}
 				// log.Info("Got trade: ", trade)
+				krakenLastTradeTime = trade.Time
 				tradesChannel <- trade
 			}
 		}
