@@ -3,7 +3,7 @@ name: decentralized-feeder-master-pipeline
 on:
   push:
     branches:
-      - deployment-to-civo-hetzner
+      - master
 
 jobs:
   build_and_test:
