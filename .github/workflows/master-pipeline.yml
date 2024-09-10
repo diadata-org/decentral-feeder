@@ -83,26 +83,31 @@ jobs:
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
 
-      # kubectl config with service account 
-      - name: Configure kubectl with Service Account
+      - name: IBM Cluster kubectl config 
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
-          CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }} # Base64-encoded PEM file
         run: |
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          # Set cluster
-          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          # Set cluster using the CA PEM file
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
           # Set credentials
           kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
           # Set context
-          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
           # Use context
-          kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
+          kubectl config use-context $CONTEXT
 
-      # Helm upgrade command
-      - name: Helm upgrade/install all conduit nodes
+
+      - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
         run: |
           for i in $(seq -w 001 010); do
             echo "Deploying node $i"
@@ -110,10 +115,95 @@ jobs:
             helm upgrade --install -n dia-oracles-prod --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-$i .
             cd -  # Navigate back to the previous directory
           done
+          cd
+
+
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
+          shred -u /tmp/ca.pem
+
+      - name: Hetzner Cluster kubectl config
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_HETZNER }}
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_HETZNER }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_HETZNER }}
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_HETZNER }} # Example: https://your-api-server:6443
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_HETZNER }} # Base64-encoded PEM file
+        run: |
+
+          # Ensure token does not contain unexpected newline characters
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          # Set cluster
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
+          # Set credentials
+          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+          # Set context
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          # Use context
+          kubectl config use-context $CONTEXT
+  
+        # Helm upgrade command
+      - name: Helm upgrade/install conduit-node-013 and conduit-node-014 to Hetzner Cluster
+        run: |
+          cd cluster-backend/helmcharts/oracles/conduit-test/013
+          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-013 .
+          sleep 10
+          cd ..
+          cd 014
+          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-014 .
+          cd
+
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
+          shred -u /tmp/ca.pem
+
+      - name: Civo Cluster kubectl config
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_CIVO }}
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_CIVO }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_CIVO }}
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_CIVO }} # Example: https://your-api-server:6443
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_CIVO }} # Base64-encoded PEM file
+        run: |
+          # Ensure token does not contain unexpected newline characters
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          # Set cluster
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
+          # Set credentials
+          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+          # Set context
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          # Use context
+          kubectl config use-context $CONTEXT
+  
+        # Helm upgrade command
+      - name: Helm upgrade/install conduit-node-015 and conduit-node-016 to Civo Cluster
+        run: |
+          cd cluster-backend/helmcharts/oracles/conduit-test/015
+          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-015 .
+          sleep 10
+          cd ..
+          cd 016
+          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-016 .
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
         run: |
           rm -rf cluster-backend
+          # Check if any CA PEM files were used (if applicable) and securely delete them
+          if [ -f /tmp/ca.pem ]; then
+            shred -u /tmp/ca.pem
+            echo "cert removed"
+          fi
 
 
