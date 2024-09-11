@@ -34,7 +34,7 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewBinanceScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("BINANCE_WATCHDOG_DELAY", "60"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("BINANCE_WATCHDOG_DELAY", "300"))
 		if err != nil {
 			log.Error("parse BINANCE_WATCHDOG_DELAY: ", err)
 		}
@@ -65,7 +65,7 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewCoinBaseScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("COINBASE_WATCHDOG_DELAY", "60"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("COINBASE_WATCHDOG_DELAY", "300"))
 		if err != nil {
 			log.Error("parse COINBASE_WATCHDOG_DELAY: ", err)
 		}
@@ -95,7 +95,7 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewCryptodotcomScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("CRYPTODOTCOM_WATCHDOG_DELAY", "60"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("CRYPTODOTCOM_WATCHDOG_DELAY", "300"))
 		if err != nil {
 			log.Error("parse CRYPTODOTCOM_WATCHDOG_DELAY: ", err)
 		}
@@ -125,7 +125,7 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewGateIOScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("GATEIO_WATCHDOG_DELAY", "60"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("GATEIO_WATCHDOG_DELAY", "300"))
 		if err != nil {
 			log.Error("parse GATEIO_WATCHDOG_DELAY: ", err)
 		}
@@ -155,7 +155,7 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewKrakenScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("KRAKEN_WATCHDOG_DELAY", "60"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("KRAKEN_WATCHDOG_DELAY", "300"))
 		if err != nil {
 			log.Error("parse KRAKEN_WATCHDOG_DELAY: ", err)
 		}
@@ -185,7 +185,7 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewKuCoinScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("KUCOIN_WATCHDOG_DELAY", "60"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("KUCOIN_WATCHDOG_DELAY", "300"))
 		if err != nil {
 			log.Error("parse KUCOIN_WATCHDOG_DELAY: ", err)
 		}

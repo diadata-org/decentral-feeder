@@ -93,6 +93,8 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 	for _, pair := range pairs {
 		if err := scraper.subscribe(pair, true, &lock); err != nil {
 			log.Errorf("KuCoin - subscribe to pair %s: %v", pair.ForeignName, err)
+		} else {
+			log.Infof("KuCoin - subscribe to pair %s", pair.ForeignName)
 		}
 	}
 
@@ -132,7 +134,7 @@ func (scraper *kucoinScraper) fetchTrades() {
 		if message.Type == "pong" {
 			log.Info("KuCoin - Successful ping: received pong.")
 		} else if message.Type == "message" {
-
+			scraper.handleWSResponse(message)
 		}
 
 	}
