@@ -1,23 +1,14 @@
 package scrapers
 
 import (
+	"context"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
-	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
-)
-
-var (
-	_GateIOsocketurl      string = "wss://api.gateio.ws/ws/v4/"
-	gateIOMaxErrCount            = 20
-	gateIORun             bool
-	gateIOWatchdogDelay   int64
-	gateIORestartWaitTime = 5
-	gateIOLastTradeTime   time.Time
 )
 
 type SubscribeGate struct {
@@ -42,99 +33,166 @@ type GateIOResponseTrade struct {
 	} `json:"result"`
 }
 
-func init() {
-	var err error
-	gateIOWatchdogDelay, err = strconv.ParseInt(utils.Getenv("GATEIO_WATCHDOGDELAY", "60"), 10, 64)
-	if err != nil {
-		log.Error("Parse GATEIO_WATCHDOGDELAY: ", err)
-	}
+type gateIOScraper struct {
+	wsClient         *ws.Conn
+	tradesChannel    chan models.Trade
+	subscribeChannel chan models.ExchangePair
+	tickerPairMap    map[string]models.Pair
+	lastTradeTimeMap map[string]time.Time
+	maxErrCount      int
+	restartWaitTime  int
+	genesis          time.Time
 }
 
-func NewGateIOScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
+var (
+	_GateIOsocketurl string = "wss://api.gateio.ws/ws/v4/"
+)
+
+func NewGateIOScraper(ctrx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
+	var lock sync.RWMutex
 	log.Info("Started GateIO scraper.")
-	gateIORun = true
-	tickerPairMap := models.MakeTickerPairMap(pairs)
+
+	scraper := gateIOScraper{
+		tradesChannel:    make(chan models.Trade),
+		subscribeChannel: make(chan models.ExchangePair),
+		tickerPairMap:    models.MakeTickerPairMap(pairs),
+		lastTradeTimeMap: make(map[string]time.Time),
+		maxErrCount:      20,
+		restartWaitTime:  5,
+		genesis:          time.Now(),
+	}
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
 	if err != nil {
 		log.Error("Dial GateIO ws base string: " + err.Error())
 		failoverChannel <- string(GATEIO_EXCHANGE)
-		return "closed"
+		return &scraper
 	}
+	scraper.wsClient = wsClient
 
 	for _, pair := range pairs {
-		gateioPairTicker := strings.Split(pair.ForeignName, "-")[0] + "_" + strings.Split(pair.ForeignName, "-")[1]
-
-		a := &SubscribeGate{
-			Event:   "subscribe",
-			Time:    time.Now().Unix(),
-			Channel: "spot.trades",
-			Payload: []string{gateioPairTicker},
-		}
-		log.Infof("GateIO - Subscribed for Pair %v", pair.ForeignName)
-		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error("GateIO - WriteJSON: " + err.Error())
+		if err := scraper.subscribe(pair, true, &lock); err != nil {
+			log.Errorf("GateIO - subscribe to pair %s: %v", pair.ForeignName, err)
+		} else {
+			scraper.lastTradeTimeMap[pair.ForeignName] = time.Now()
 		}
 	}
 
-	gateIOLastTradeTime = time.Now()
-	log.Info("GateIO - Initialize lastTradeTime after failover: ", gateIOLastTradeTime)
-	watchdogTicker := time.NewTicker(time.Duration(gateIOWatchdogDelay) * time.Second)
-	go globalWatchdog(watchdogTicker, &gateIOLastTradeTime, gateIOWatchdogDelay, &gateIORun)
+	go scraper.fetchTrades()
 
+	// TO DO: Add watchdog and resubscribe for pairs.
 
+	return &scraper
+
+}
+
+func (scraper *gateIOScraper) Close(cancel context.CancelFunc) error {
+	log.Warn("Kraken - call scraper.Close()")
+	cancel()
+	return scraper.wsClient.Close()
+}
+
+func (scraper *gateIOScraper) fetchTrades() {
 	var errCount int
-	for gateIORun {
+	for {
 
 		var message GateIOResponseTrade
-		if err = wsClient.ReadJSON(&message); err != nil {
-			readJSONError(_GateIOsocketurl, err, &errCount, &gateIORun, gateIORestartWaitTime, gateIOMaxErrCount)
+		if err := scraper.wsClient.ReadJSON(&message); err != nil {
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, scraper.restartWaitTime) {
+				return
+			}
 			continue
 		}
 
-		var (
-			f64Price     float64
-			f64Volume    float64
-			exchangepair models.Pair
-		)
+		trade := scraper.handleWSResponse(message)
+		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
 
-		f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
-		if err != nil {
-			log.Errorf("GateIO - error parsing float Price %v: %v", message.Result.Price, err)
-			continue
-		}
-
-		f64Volume, err = strconv.ParseFloat(message.Result.Amount, 64)
-		if err != nil {
-			log.Errorln("GateIO - error parsing float Volume", err)
-			continue
-		}
-
-		if message.Result.Side == "sell" {
-			f64Volume = -f64Volume
-		}
-		exchangepair = tickerPairMap[strings.Split(message.Result.CurrencyPair, "_")[0]+strings.Split(message.Result.CurrencyPair, "_")[1]]
-
-		t := models.Trade{
-			QuoteToken:     exchangepair.QuoteToken,
-			BaseToken:      exchangepair.BaseToken,
-			Price:          f64Price,
-			Volume:         f64Volume,
-			Time:           time.Unix(int64(message.Result.CreateTime), 0),
-			Exchange:       models.Exchange{Name: GATEIO_EXCHANGE},
-			ForeignTradeID: strconv.FormatInt(int64(message.Result.ID), 16),
-		}
-
-		// log.Info("Got trade: ", t)
-		gateIOLastTradeTime = t.Time
-		tradesChannel <- t
+		scraper.tradesChannel <- trade
 
 	}
+}
 
-	log.Warn("Close GateIO scraper.")
-	failoverChannel <- string(GATEIO_EXCHANGE)
-	return "closed"
+func (scraper *gateIOScraper) TradesChannel() chan models.Trade {
+	return scraper.tradesChannel
+}
 
+func (scraper *gateIOScraper) handleWSResponse(message GateIOResponseTrade) models.Trade {
+	var (
+		f64Price     float64
+		f64Volume    float64
+		exchangepair models.Pair
+		err          error
+	)
+
+	f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
+	if err != nil {
+		log.Errorf("GateIO - error parsing float Price %v: %v", message.Result.Price, err)
+		return models.Trade{}
+	}
+
+	f64Volume, err = strconv.ParseFloat(message.Result.Amount, 64)
+	if err != nil {
+		log.Errorln("GateIO - error parsing float Volume", err)
+		return models.Trade{}
+	}
+
+	if message.Result.Side == "sell" {
+		f64Volume = -f64Volume
+	}
+	exchangepair = scraper.tickerPairMap[strings.Split(message.Result.CurrencyPair, "_")[0]+strings.Split(message.Result.CurrencyPair, "_")[1]]
+
+	t := models.Trade{
+		QuoteToken:     exchangepair.QuoteToken,
+		BaseToken:      exchangepair.BaseToken,
+		Price:          f64Price,
+		Volume:         f64Volume,
+		Time:           time.Unix(int64(message.Result.CreateTime), 0),
+		Exchange:       models.Exchange{Name: GATEIO_EXCHANGE},
+		ForeignTradeID: strconv.FormatInt(int64(message.Result.ID), 16),
+	}
+
+	return t
+}
+
+func (scraper *gateIOScraper) resubscribe(ctx context.Context, lock *sync.RWMutex) {
+	for {
+		select {
+		case pair := <-scraper.subscribeChannel:
+			err := scraper.subscribe(pair, false, lock)
+			if err != nil {
+				log.Errorf("GateIO - Unsubscribe pair %s: %v", pair.ForeignName, err)
+			} else {
+				log.Infof("GateIO - Unsubscribed pair %s:%s", GATEIO_EXCHANGE, pair.ForeignName)
+			}
+			time.Sleep(2 * time.Second)
+			err = scraper.subscribe(pair, true, lock)
+			if err != nil {
+				log.Errorf("GateIO - Resubscribe pair %s: %v", pair.ForeignName, err)
+			} else {
+				log.Infof("GateIO - Subscribed to pair %s:%s", GATEIO_EXCHANGE, pair.ForeignName)
+			}
+		case <-ctx.Done():
+			log.Warn("-------------------------------------GateIO - close resubscribe routine of scraper with genesis: ", scraper.genesis)
+			return
+		}
+	}
+}
+
+func (scraper *gateIOScraper) subscribe(pair models.ExchangePair, subscribe bool, lock *sync.RWMutex) error {
+	defer lock.Unlock()
+	gateioPairTicker := strings.Split(pair.ForeignName, "-")[0] + "_" + strings.Split(pair.ForeignName, "-")[1]
+	subscribeType := "unsubscribe"
+	if subscribe {
+		subscribeType = "subscribe"
+	}
+	a := &SubscribeGate{
+		Event:   subscribeType,
+		Time:    time.Now().Unix(),
+		Channel: "spot.trades",
+		Payload: []string{gateioPairTicker},
+	}
+	lock.Lock()
+	return scraper.wsClient.WriteJSON(a)
 }

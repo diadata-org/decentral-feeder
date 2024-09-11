@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -29,33 +30,138 @@ type binanceWSResponse struct {
 	Buy            bool        `json:"m"`
 }
 
-var (
-	binanceWSBaseString     = "wss://stream.binance.com:9443/ws"
-	binanceMaxErrCount      = 20
-	binanceWatchdogDelay    int64
-	binanceRestartWaitTime  = 5
-	binanceRun              bool
-	binanceLastTradeTime    time.Time
-	binanceLastTradeTimeMap = make(map[string]time.Time)
-	binanceSubscribeChannel = make(chan models.ExchangePair)
-)
-
-func init() {
-	var err error
-	binanceWatchdogDelay, err = strconv.ParseInt(utils.Getenv("BINANCE_WATCHDOGDELAY", "60"), 10, 64)
-	if err != nil {
-		log.Error("Parse BINANCE_WATCHDOGDELAY: ", err)
-	}
+type binanceScraper struct {
+	wsClient         *ws.Conn
+	tradesChannel    chan models.Trade
+	subscribeChannel chan models.ExchangePair
+	tickerPairMap    map[string]models.Pair
+	lastTradeTimeMap map[string]time.Time
+	maxErrCount      int
+	restartWaitTime  int
+	genesis          time.Time
 }
 
-func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
+var (
+	binanceWSBaseString = "wss://stream.binance.com:9443/ws"
+)
+
+func NewBinanceScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
 	var lock sync.RWMutex
 	log.Info("Started Binance scraper at: ", time.Now())
-	binanceRun = true
-	// Make tickerPairMap for identification of exchangepairs.
-	tickerPairMap := models.MakeTickerPairMap(pairs)
 
+	scraper := binanceScraper{
+		tradesChannel:    make(chan models.Trade),
+		subscribeChannel: make(chan models.ExchangePair),
+		tickerPairMap:    models.MakeTickerPairMap(pairs),
+		lastTradeTimeMap: make(map[string]time.Time),
+		maxErrCount:      20,
+		restartWaitTime:  5,
+		genesis:          time.Now(),
+	}
+
+	err := scraper.connectToAPI(pairs)
+	if err != nil {
+		failoverChannel <- BINANCE_EXCHANGE
+		return &scraper
+	}
+
+	go scraper.fetchTrades()
+
+	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @binanceWatchdogDelay[pair].
+	for _, pair := range pairs {
+		envVar := strings.ToUpper(BINANCE_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
+		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
+		if err != nil {
+			log.Error("Parse binanceWatchdogDelayMap: ", err)
+		}
+		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
+		go watchdog(ctx, pair, watchdogTicker, scraper.lastTradeTimeMap, watchdogDelay, scraper.subscribeChannel, &lock)
+		go scraper.resubscribe(ctx, &lock)
+	}
+
+	return &scraper
+
+}
+
+func (scraper *binanceScraper) Close(cancel context.CancelFunc) error {
+	cancel()
+	return scraper.wsClient.Close()
+}
+
+func (scraper *binanceScraper) TradesChannel() chan models.Trade {
+	return scraper.tradesChannel
+}
+
+func (scraper *binanceScraper) fetchTrades() {
+	var errCount int
+
+	for {
+
+		var message binanceWSResponse
+		err := scraper.wsClient.ReadJSON(&message)
+		if err != nil {
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, scraper.restartWaitTime) {
+				return
+			}
+			continue
+		}
+
+		if message.Type == nil {
+			log.Warn("subscribe message: ", message)
+			continue
+		}
+
+		trade := binanceParseWSResponse(message)
+		trade.QuoteToken = scraper.tickerPairMap[message.ForeignName].QuoteToken
+		trade.BaseToken = scraper.tickerPairMap[message.ForeignName].BaseToken
+
+		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
+		log.Infof("Binance - got trade %s -- %v -- %v -- %v", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+
+		scraper.tradesChannel <- trade
+	}
+
+}
+
+func (scraper *binanceScraper) resubscribe(ctx context.Context, lock *sync.RWMutex) {
+	for {
+		select {
+		case pair := <-scraper.subscribeChannel:
+			log.Errorf("binance with genesis %v - resubscribe pair %s.", scraper.genesis, pair.ForeignName)
+			err := scraper.subscribe(pair, false, lock)
+			if err != nil {
+				log.Errorf("binance with genesis %v - Unsubscribe pair %s: %v", scraper.genesis, pair.ForeignName, err)
+			}
+			time.Sleep(2 * time.Second)
+			err = scraper.subscribe(pair, true, lock)
+			if err != nil {
+				log.Errorf("binance - Resubscribe pair %s: %v", pair.ForeignName, err)
+			}
+		case <-ctx.Done():
+			log.Warn("------------------------------------Binance - close resubscribe routine of scraper with genesis: ", scraper.genesis)
+			return
+		}
+	}
+}
+
+func (scraper *binanceScraper) subscribe(pair models.ExchangePair, subscribe bool, lock *sync.RWMutex) error {
+	defer lock.Unlock()
+	subscribeType := "UNSUBSCRIBE"
+	if subscribe {
+		subscribeType = "SUBSCRIBE"
+	}
+	pairTicker := strings.ToLower(strings.Split(pair.ForeignName, "-")[0] + strings.Split(pair.ForeignName, "-")[1])
+	subscribeMessage := &binanceWSSubscribeMessage{
+		Method: subscribeType,
+		Params: []string{pairTicker + "@trade"},
+		ID:     1,
+	}
+	lock.Lock()
+	return scraper.wsClient.WriteJSON(subscribeMessage)
+}
+
+func (scraper *binanceScraper) connectToAPI(pairs []models.ExchangePair) error {
 	// Set up websocket dialer with proxy.
 	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", "http://samuelbrack:hD3bfFBVLg@178.218.129.235:50100"))
 	if err != nil {
@@ -80,100 +186,11 @@ func NewBinanceScraper(pairs []models.ExchangePair, tradesChannel chan models.Tr
 	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
 		log.Errorf("Connect to Binance API: %s.", err.Error())
-		failoverChannel <- string(BINANCE_EXCHANGE)
-		return "closed"
+		return err
 	}
-	defer conn.Close()
+	scraper.wsClient = conn
+	return nil
 
-	// Check last trade time across all pairs and restart the scraper if no activity for more than @binanceWatchdogDelay.
-	binanceLastTradeTime = time.Now()
-	log.Info("Binance - Initialize lastTradeTime after failover: ", binanceLastTradeTime)
-	watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
-	log.Info("watchdogDelay: ", time.Duration(binanceWatchdogDelay)*time.Second)
-	go globalWatchdog(watchdogTicker, &binanceLastTradeTime, binanceWatchdogDelay, &binanceRun)
-
-	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @binanceWatchdogDelay[pair].
-	for _, pair := range pairs {
-		envVar := strings.ToUpper(BINANCE_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
-		binanceWatchdogDelay, err = strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
-		if err != nil {
-			log.Error("Parse binanceWatchdogDelayMap: ", err)
-		}
-		watchdogTicker := time.NewTicker(time.Duration(binanceWatchdogDelay) * time.Second)
-		go watchdog(pair, watchdogTicker, binanceLastTradeTimeMap, binanceWatchdogDelay, binanceSubscribeChannel, &binanceRun, &lock)
-		go binanceResubscribe(binanceSubscribeChannel, &lock, &binanceRun, conn)
-	}
-
-	var errCount int
-	for binanceRun {
-
-		var message binanceWSResponse
-		err := conn.ReadJSON(&message)
-		if err != nil {
-			readJSONError(BINANCE_EXCHANGE, err, &errCount, &binanceRun, binanceRestartWaitTime, binanceMaxErrCount)
-			continue
-		}
-
-		if message.Type == nil {
-			log.Warn("subscribe message: ", message)
-			continue
-		}
-
-		trade := binanceParseWSResponse(message)
-		trade.QuoteToken = tickerPairMap[message.ForeignName].QuoteToken
-		trade.BaseToken = tickerPairMap[message.ForeignName].BaseToken
-		binanceLastTradeTime = trade.Time
-		binanceLastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
-		// log.Infof("Got trade %s -- %v -- %v", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume)
-		tradesChannel <- trade
-
-	}
-
-	log.Warn("Close Binance scraper.")
-	failoverChannel <- string(BINANCE_EXCHANGE)
-	return "closed"
-}
-
-func binanceResubscribe(subscribeChannel chan models.ExchangePair, lock *sync.RWMutex, scraperRun *bool, conn *ws.Conn) {
-	for *scraperRun {
-		select {
-		case pair := <-subscribeChannel:
-			err := binanceUnsubscribe(pair, lock, conn)
-			if err != nil {
-				log.Errorf("binance - Unsubscribe pair %s: %v", pair.ForeignName, err)
-			}
-			time.Sleep(2 * time.Second)
-			err = binanceSubscribe(pair, lock, conn)
-			if err != nil {
-				log.Errorf("binance - Resubscribe pair %s: %v", pair.ForeignName, err)
-			}
-		}
-	}
-	return
-}
-
-func binanceSubscribe(pair models.ExchangePair, lock *sync.RWMutex, wsClient *ws.Conn) error {
-	defer lock.Unlock()
-	pairTicker := strings.ToLower(strings.Split(pair.ForeignName, "-")[0] + strings.Split(pair.ForeignName, "-")[1])
-	subscribeMessage := &binanceWSSubscribeMessage{
-		Method: "SUBSCRIBE",
-		Params: []string{pairTicker + "@trade"},
-		ID:     1,
-	}
-	lock.Lock()
-	return wsClient.WriteJSON(subscribeMessage)
-}
-
-func binanceUnsubscribe(pair models.ExchangePair, lock *sync.RWMutex, wsClient *ws.Conn) error {
-	defer lock.Unlock()
-	pairTicker := strings.ToLower(strings.Split(pair.ForeignName, "-")[0] + strings.Split(pair.ForeignName, "-")[1])
-	unsubscribeMessage := &binanceWSSubscribeMessage{
-		Method: "UNSUBSCRIBE",
-		Params: []string{pairTicker + "@trade"},
-		ID:     1,
-	}
-	lock.Lock()
-	return wsClient.WriteJSON(unsubscribeMessage)
 }
 
 func binanceParseWSResponse(message binanceWSResponse) (trade models.Trade) {

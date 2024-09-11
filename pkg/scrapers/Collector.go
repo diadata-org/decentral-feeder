@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -30,11 +31,11 @@ func Collector(
 	tradesChannelIn := make(chan models.Trade)
 	for exchange := range exchangepairMap {
 		wg.Add(1)
-		go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
+		go RunScraper(context.Background(), exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
 	}
 	for exchange := range poolMap {
 		wg.Add(1)
-		go RunScraper(exchange, []models.ExchangePair{}, poolMap[exchange], tradesChannelIn, failoverChannel, wg)
+		go RunScraper(context.Background(), exchange, []models.ExchangePair{}, poolMap[exchange], tradesChannelIn, failoverChannel, wg)
 	}
 
 	// tradesblockMap maps an exchangpair identifier onto a TradesBlock.
@@ -81,7 +82,7 @@ func Collector(
 			case exchange := <-failoverChannel:
 				log.Info("Restart scraper for ", exchange)
 				wg.Add(1)
-				go RunScraper(exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
+				go RunScraper(context.Background(), exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
 			}
 		}
 	}()
