@@ -132,7 +132,7 @@ func (scraper *kucoinScraper) fetchTrades() {
 		}
 
 		if message.Type == "pong" {
-			log.Info("KuCoin - Successful ping: received pong.")
+			// log.Info("KuCoin - Successful ping: received pong.")
 		} else if message.Type == "message" {
 			scraper.handleWSResponse(message)
 		}

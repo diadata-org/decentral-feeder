@@ -127,7 +127,6 @@ func (scraper *coinbaseScraper) fetchTrades() {
 			}
 			continue
 		}
-		log.Info("message.Type: ", message.Type)
 
 		if message.Type == "match" {
 			scraper.handleWSResponse(message)

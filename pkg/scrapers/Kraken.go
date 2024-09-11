@@ -201,7 +201,6 @@ func (scraper *krakenScraper) subscribe(pair models.ExchangePair, subscribe bool
 			Symbol:  []string{pair.UnderlyingPair.QuoteToken.Symbol + "/" + pair.UnderlyingPair.BaseToken.Symbol},
 		},
 	}
-	log.Infof("Subscribed for Pair %s:%s", KRAKEN_EXCHANGE, pair.ForeignName)
 	lock.Lock()
 	return scraper.wsClient.WriteJSON(a)
 }

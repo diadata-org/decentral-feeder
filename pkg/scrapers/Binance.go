@@ -108,7 +108,6 @@ func (scraper *binanceScraper) fetchTrades() {
 		}
 
 		if message.Type == nil {
-			log.Warn("subscribe message: ", message)
 			continue
 		}
 
