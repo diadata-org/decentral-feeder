@@ -163,7 +163,7 @@ func (scraper *binanceScraper) subscribe(pair models.ExchangePair, subscribe boo
 
 func (scraper *binanceScraper) connectToAPI(pairs []models.ExchangePair) error {
 	// Set up websocket dialer with proxy.
-	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", "http://samuelbrack:hD3bfFBVLg@178.218.129.235:50100"))
+	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
 	if err != nil {
 		log.Errorf("Binance - parse proxy url: %v", err)
 	}
