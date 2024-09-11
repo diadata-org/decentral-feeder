@@ -96,7 +96,7 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 		}
 	}
 
-	go scraper.ping(ctx, pingInterval, time.Now())
+	go scraper.ping(ctx, pingInterval, time.Now(), &lock)
 	go scraper.fetchTrades()
 
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @kucoinWatchdogDelayMap.
@@ -254,7 +254,7 @@ type instanceServers struct {
 }
 
 // Send ping to server.
-func (scraper *kucoinScraper) ping(ctx context.Context, pingInterval int64, starttime time.Time) {
+func (scraper *kucoinScraper) ping(ctx context.Context, pingInterval int64, starttime time.Time, lock *sync.RWMutex) {
 	var ping kuCoinWSMessage
 	ping.Type = "ping"
 	tick := time.NewTicker(time.Duration(kucoinPingIntervalFix) * time.Second)
@@ -262,10 +262,13 @@ func (scraper *kucoinScraper) ping(ctx context.Context, pingInterval int64, star
 	for {
 		select {
 		case <-tick.C:
+			lock.Lock()
 			if err := scraper.wsClient.WriteJSON(ping); err != nil {
 				log.Error("KuCoin - send ping: " + err.Error())
+				lock.Unlock()
 				return
 			}
+			lock.Unlock()
 		case <-ctx.Done():
 			log.Warn("close ping.")
 			return
