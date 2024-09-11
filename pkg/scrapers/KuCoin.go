@@ -163,7 +163,7 @@ func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse) {
 		Exchange:       models.Exchange{Name: KUCOIN_EXCHANGE},
 		ForeignTradeID: foreignTradeID,
 	}
-
+	scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
 	scraper.tradesChannel <- trade
 }
 
