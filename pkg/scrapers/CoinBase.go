@@ -152,7 +152,7 @@ func (scraper *coinbaseScraper) handleWSResponse(message coinBaseWSResponse) {
 		trade.BaseToken = scraper.tickerPairMap[pair[0]+pair[1]].BaseToken
 	}
 
-	log.Infof("CoinBase - got trade: %s -- %v -- %s", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.ForeignTradeID)
+	// log.Infof("CoinBase - got trade: %s -- %v -- %s", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.ForeignTradeID)
 	scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
 
 	scraper.tradesChannel <- trade

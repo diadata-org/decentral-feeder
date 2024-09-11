@@ -117,7 +117,7 @@ func (scraper *binanceScraper) fetchTrades() {
 		trade.BaseToken = scraper.tickerPairMap[message.ForeignName].BaseToken
 
 		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
-		log.Infof("Binance - got trade %s -- %v -- %v -- %v", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+		// log.Infof("Binance - got trade %s -- %v -- %v -- %v", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 
 		scraper.tradesChannel <- trade
 	}

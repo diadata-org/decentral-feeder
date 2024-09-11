@@ -163,7 +163,7 @@ func (scraper *cryptodotcomScraper) handleWSResponse(message cryptodotcomWSRespo
 			trade.BaseToken = scraper.tickerPairMap[pair[0]+pair[1]].BaseToken
 		}
 
-		log.Infof("Crypto.com - got trade: %v -- %s -- %v -- %v -- %s", trade.Time, trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+		// log.Infof("Crypto.com - got trade: %v -- %s -- %v -- %v -- %s", trade.Time, trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 		scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
 
 		scraper.tradesChannel <- trade
