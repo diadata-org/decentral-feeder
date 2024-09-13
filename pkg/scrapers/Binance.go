@@ -48,7 +48,7 @@ var (
 func NewBinanceScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
 	var lock sync.RWMutex
-	log.Info("Started Binance scraper at: ", time.Now())
+	log.Infof("Binance - Started scraper at %v.", time.Now())
 
 	scraper := binanceScraper{
 		tradesChannel:    make(chan models.Trade),
@@ -73,7 +73,7 @@ func NewBinanceScraper(ctx context.Context, pairs []models.ExchangePair, failove
 		envVar := strings.ToUpper(BINANCE_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
 		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
 		if err != nil {
-			log.Error("Parse binanceWatchdogDelayMap: ", err)
+			log.Errorf("Binance - Parse binanceWatchdogDelayMap: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		go watchdog(ctx, pair, watchdogTicker, scraper.lastTradeTimeMap, watchdogDelay, scraper.subscribeChannel, &lock)
@@ -101,7 +101,7 @@ func (scraper *binanceScraper) fetchTrades() {
 		var message binanceWSResponse
 		err := scraper.wsClient.ReadJSON(&message)
 		if err != nil {
-			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, scraper.restartWaitTime) {
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, BINANCE_EXCHANGE, scraper.restartWaitTime) {
 				return
 			}
 			continue
@@ -116,7 +116,7 @@ func (scraper *binanceScraper) fetchTrades() {
 		trade.BaseToken = scraper.tickerPairMap[message.ForeignName].BaseToken
 
 		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
-		// log.Infof("Binance - got trade %s -- %v -- %v -- %v", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+		log.Tracef("Binance - got trade %s -- %v -- %v -- %v.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 
 		scraper.tradesChannel <- trade
 	}
@@ -127,18 +127,18 @@ func (scraper *binanceScraper) resubscribe(ctx context.Context, lock *sync.RWMut
 	for {
 		select {
 		case pair := <-scraper.subscribeChannel:
-			log.Errorf("binance with genesis %v - resubscribe pair %s.", scraper.genesis, pair.ForeignName)
+			log.Debugf("Binance - scraper with genesis %v: Resubscribe pair %s.", scraper.genesis, pair.ForeignName)
 			err := scraper.subscribe(pair, false, lock)
 			if err != nil {
-				log.Errorf("binance with genesis %v - Unsubscribe pair %s: %v", scraper.genesis, pair.ForeignName, err)
+				log.Errorf("Binance - scraper with genesis %v: Unsubscribe pair %s: %v.", scraper.genesis, pair.ForeignName, err)
 			}
 			time.Sleep(2 * time.Second)
 			err = scraper.subscribe(pair, true, lock)
 			if err != nil {
-				log.Errorf("binance - Resubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("Binance - Resubscribe pair %s: %v.", pair.ForeignName, err)
 			}
 		case <-ctx.Done():
-			log.Warn("------------------------------------Binance - close resubscribe routine of scraper with genesis: ", scraper.genesis)
+			log.Debugf("Binance - Close resubscribe routine of scraper with genesis: %v.", scraper.genesis)
 			return
 		}
 	}
@@ -164,7 +164,7 @@ func (scraper *binanceScraper) connectToAPI(pairs []models.ExchangePair) error {
 	// Set up websocket dialer with proxy.
 	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
 	if err != nil {
-		log.Errorf("Binance - parse proxy url: %v", err)
+		log.Errorf("Binance - Parse proxy url: %v.", err)
 	}
 
 	var d = ws.Dialer{
@@ -184,7 +184,7 @@ func (scraper *binanceScraper) connectToAPI(pairs []models.ExchangePair) error {
 	// Connect to Binance API.
 	conn, _, err := d.Dial(binanceWSBaseString+wsAssetsString, nil)
 	if err != nil {
-		log.Errorf("Connect to Binance API: %s.", err.Error())
+		log.Errorf("Binance - Connect to API: %s.", err.Error())
 		return err
 	}
 	scraper.wsClient = conn
@@ -198,11 +198,11 @@ func binanceParseWSResponse(message binanceWSResponse) (trade models.Trade) {
 	trade.Time = time.Unix(0, message.Timestamp*1000000)
 	trade.Price, err = strconv.ParseFloat(message.Price, 64)
 	if err != nil {
-		log.Error("Binance - Parse price: ", err)
+		log.Errorf("Binance - Parse price: %v.", err)
 	}
 	trade.Volume, err = strconv.ParseFloat(message.Volume, 64)
 	if err != nil {
-		log.Error("Binance - Parse volume: ", err)
+		log.Errorf("Binance - Parse volume: %v.", err)
 	}
 	if !message.Buy {
 		trade.Volume -= 1

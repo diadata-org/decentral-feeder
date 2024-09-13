@@ -25,44 +25,22 @@ func watchdog(
 	for {
 		select {
 		case <-ticker.C:
-			log.Infof("%s - check liveliness of %s.", pair.Exchange, pair.ForeignName)
+			log.Debugf("%s - check liveliness of %s.", pair.Exchange, pair.ForeignName)
 
 			// Make read lock for lastTradeTimeMap.
 			lock.RLock()
 			duration := time.Since(lastTradeTimeMap[pair.ForeignName])
-			log.Infof("%s - duration for %s: %v. Threshold: %v", pair.Exchange, pair.ForeignName, duration, watchdogDelay)
+			log.Debugf("%s - duration for %s: %v. Threshold: %v.", pair.Exchange, pair.ForeignName, duration, watchdogDelay)
 			lock.RUnlock()
 			if duration > time.Duration(watchdogDelay)*time.Second {
-				log.Errorf("%s - watchdogTicker failover for %s", pair.Exchange, pair.ForeignName)
+				log.Errorf("%s - watchdogTicker failover for %s.", pair.Exchange, pair.ForeignName)
 				subscribeChannel <- pair
 			}
 		case <-ctx.Done():
-			log.Warnf("%s - close watchdog for pair %s", pair.Exchange, pair.ForeignName)
+			log.Debugf("%s - close watchdog for pair %s.", pair.Exchange, pair.ForeignName)
 			return
 		}
 	}
-}
-
-func readJSONError(exchange string, err error, errCount *int, closeChan chan bool, restartWaitTime int, maxErrCount int) {
-	log.Errorf("%s - ReadMessage: %v", exchange, err)
-	*errCount++
-	if *errCount > maxErrCount {
-		log.Warnf("too many errors. wait for %v seconds and restart scraper.", restartWaitTime)
-		time.Sleep(time.Duration(restartWaitTime) * time.Second)
-		closeChan <- true
-	}
-	return
-}
-
-func readJSONErrorOld(exchange string, err error, errCount *int, run *bool, restartWaitTime int, maxErrCount int) {
-	log.Errorf("%s - ReadMessage: %v", exchange, err)
-	*errCount++
-	if *errCount > maxErrCount {
-		log.Warnf("too many errors. wait for %v seconds and restart scraper.", restartWaitTime)
-		time.Sleep(time.Duration(restartWaitTime) * time.Second)
-		*run = false
-	}
-	return
 }
 
 // TO DO: rewrite scrapers such that they return a static object.

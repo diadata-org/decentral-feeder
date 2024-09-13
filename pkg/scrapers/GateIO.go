@@ -8,6 +8,7 @@ import (
 	"time"
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	ws "github.com/gorilla/websocket"
 )
 
@@ -48,10 +49,10 @@ var (
 	_GateIOsocketurl string = "wss://api.gateio.ws/ws/v4/"
 )
 
-func NewGateIOScraper(ctrx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
+func NewGateIOScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
 	var lock sync.RWMutex
-	log.Info("Started GateIO scraper.")
+	log.Info("GateIO - Started scraper.")
 
 	scraper := gateIOScraper{
 		tradesChannel:    make(chan models.Trade),
@@ -66,7 +67,7 @@ func NewGateIOScraper(ctrx context.Context, pairs []models.ExchangePair, failove
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(_GateIOsocketurl, nil)
 	if err != nil {
-		log.Error("Dial GateIO ws base string: " + err.Error())
+		log.Errorf("GateIO - Dial ws base string: %s." + err.Error())
 		failoverChannel <- string(GATEIO_EXCHANGE)
 		return &scraper
 	}
@@ -74,24 +75,39 @@ func NewGateIOScraper(ctrx context.Context, pairs []models.ExchangePair, failove
 
 	for _, pair := range pairs {
 		if err := scraper.subscribe(pair, true, &lock); err != nil {
-			log.Errorf("GateIO - subscribe to pair %s: %v", pair.ForeignName, err)
+			log.Errorf("GateIO - subscribe to pair %s: %v.", pair.ForeignName, err)
 		} else {
+			log.Debugf("GateIO - Subscribed to pair %s.", pair.ForeignName)
 			scraper.lastTradeTimeMap[pair.ForeignName] = time.Now()
 		}
 	}
 
 	go scraper.fetchTrades()
 
-	// TO DO: Add watchdog and resubscribe for pairs.
+	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @gateIOWatchdogDelayMap.
+	for _, pair := range pairs {
+		envVar := strings.ToUpper(GATEIO_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
+		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
+		if err != nil {
+			log.Errorf("GateIO - Parse gateIOWatchdogDelay: %v.", err)
+		}
+		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
+		go watchdog(ctx, pair, watchdogTicker, scraper.lastTradeTimeMap, watchdogDelay, scraper.subscribeChannel, &lock)
+		go scraper.resubscribe(ctx, &lock)
+	}
 
 	return &scraper
 
 }
 
 func (scraper *gateIOScraper) Close(cancel context.CancelFunc) error {
-	log.Warn("Kraken - call scraper.Close()")
+	log.Warn("GateIO - call scraper.Close().")
 	cancel()
 	return scraper.wsClient.Close()
+}
+
+func (scraper *gateIOScraper) TradesChannel() chan models.Trade {
+	return scraper.tradesChannel
 }
 
 func (scraper *gateIOScraper) fetchTrades() {
@@ -100,7 +116,7 @@ func (scraper *gateIOScraper) fetchTrades() {
 
 		var message GateIOResponseTrade
 		if err := scraper.wsClient.ReadJSON(&message); err != nil {
-			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, scraper.restartWaitTime) {
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, GATEIO_EXCHANGE, scraper.restartWaitTime) {
 				return
 			}
 			continue
@@ -108,14 +124,11 @@ func (scraper *gateIOScraper) fetchTrades() {
 
 		trade := scraper.handleWSResponse(message)
 		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
+		log.Tracef("GateIO - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 
 		scraper.tradesChannel <- trade
 
 	}
-}
-
-func (scraper *gateIOScraper) TradesChannel() chan models.Trade {
-	return scraper.tradesChannel
 }
 
 func (scraper *gateIOScraper) handleWSResponse(message GateIOResponseTrade) models.Trade {
@@ -128,13 +141,13 @@ func (scraper *gateIOScraper) handleWSResponse(message GateIOResponseTrade) mode
 
 	f64Price, err = strconv.ParseFloat(message.Result.Price, 64)
 	if err != nil {
-		log.Errorf("GateIO - error parsing float Price %v: %v", message.Result.Price, err)
+		log.Errorf("GateIO - error parsing float Price %v: %v.", message.Result.Price, err)
 		return models.Trade{}
 	}
 
 	f64Volume, err = strconv.ParseFloat(message.Result.Amount, 64)
 	if err != nil {
-		log.Errorln("GateIO - error parsing float Volume", err)
+		log.Errorf("GateIO - error parsing float Volume %v: %v.", message.Result.Amount, err)
 		return models.Trade{}
 	}
 
@@ -162,19 +175,19 @@ func (scraper *gateIOScraper) resubscribe(ctx context.Context, lock *sync.RWMute
 		case pair := <-scraper.subscribeChannel:
 			err := scraper.subscribe(pair, false, lock)
 			if err != nil {
-				log.Errorf("GateIO - Unsubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("GateIO - Unsubscribe pair %s: %v.", pair.ForeignName, err)
 			} else {
-				log.Infof("GateIO - Unsubscribed pair %s:%s", GATEIO_EXCHANGE, pair.ForeignName)
+				log.Debugf("GateIO - Unsubscribed pair %s.", pair.ForeignName)
 			}
 			time.Sleep(2 * time.Second)
 			err = scraper.subscribe(pair, true, lock)
 			if err != nil {
 				log.Errorf("GateIO - Resubscribe pair %s: %v", pair.ForeignName, err)
 			} else {
-				log.Infof("GateIO - Subscribed to pair %s:%s", GATEIO_EXCHANGE, pair.ForeignName)
+				log.Debugf("GateIO - Subscribed to pair %s.", pair.ForeignName)
 			}
 		case <-ctx.Done():
-			log.Warn("-------------------------------------GateIO - close resubscribe routine of scraper with genesis: ", scraper.genesis)
+			log.Warnf("GateIO - Close resubscribe routine of scraper with genesis: %v.", scraper.genesis)
 			return
 		}
 	}

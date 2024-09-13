@@ -34,9 +34,9 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewBinanceScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("BINANCE_WATCHDOG_DELAY", "300"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("BINANCE_WATCHDOG", "300"))
 		if err != nil {
-			log.Error("parse BINANCE_WATCHDOG_DELAY: ", err)
+			log.Errorf("parse BINANCE_WATCHDOG: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		lastTradeTime := time.Now()
@@ -52,7 +52,7 @@ func RunScraper(
 				if duration > time.Duration(watchdogDelay)*time.Second {
 					err := scraper.Close(cancel)
 					if err != nil {
-						log.Error("Binance - Close(): ", err)
+						log.Errorf("Binance - Close(): %v.", err)
 					}
 					log.Warnf("Closed Binance scraper as duration since last trade is %v.", duration)
 					failoverChannel <- BINANCE_EXCHANGE
@@ -65,9 +65,9 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewCoinBaseScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("COINBASE_WATCHDOG_DELAY", "300"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("COINBASE_WATCHDOG", "300"))
 		if err != nil {
-			log.Error("parse COINBASE_WATCHDOG_DELAY: ", err)
+			log.Errorf("parse COINBASE_WATCHDOG: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		lastTradeTime := time.Now()
@@ -83,7 +83,7 @@ func RunScraper(
 				if duration > time.Duration(watchdogDelay)*time.Second {
 					err := scraper.Close(cancel)
 					if err != nil {
-						log.Error("CoinBase - Close(): ", err)
+						log.Errorf("CoinBase - Close(): %v.", err)
 					}
 					log.Warnf("Closed CoinBase scraper as duration since last trade is %v.", duration)
 					failoverChannel <- COINBASE_EXCHANGE
@@ -95,9 +95,9 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewCryptodotcomScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("CRYPTODOTCOM_WATCHDOG_DELAY", "300"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("CRYPTODOTCOM_WATCHDOG", "300"))
 		if err != nil {
-			log.Error("parse CRYPTODOTCOM_WATCHDOG_DELAY: ", err)
+			log.Errorf("parse CRYPTODOTCOM_WATCHDOG: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		lastTradeTime := time.Now()
@@ -113,7 +113,7 @@ func RunScraper(
 				if duration > time.Duration(watchdogDelay)*time.Second {
 					err := scraper.Close(cancel)
 					if err != nil {
-						log.Error("Crypto.com - Close(): ", err)
+						log.Errorf("Crypto.com - Close(): %v.", err)
 					}
 					log.Warnf("Closed Crypto.com scraper as duration since last trade is %v.", duration)
 					failoverChannel <- CRYPTODOTCOM_EXCHANGE
@@ -125,9 +125,9 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewGateIOScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("GATEIO_WATCHDOG_DELAY", "300"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("GATEIO_WATCHDOG", "300"))
 		if err != nil {
-			log.Error("parse GATEIO_WATCHDOG_DELAY: ", err)
+			log.Errorf("parse GATEIO_WATCHDOG: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		lastTradeTime := time.Now()
@@ -143,7 +143,7 @@ func RunScraper(
 				if duration > time.Duration(watchdogDelay)*time.Second {
 					err := scraper.Close(cancel)
 					if err != nil {
-						log.Error("GateIO - Close(): ", err)
+						log.Errorf("GateIO - Close(): %v.", err)
 					}
 					log.Warnf("Closed GateIO scraper as duration since last trade is %v.", duration)
 					failoverChannel <- GATEIO_EXCHANGE
@@ -155,9 +155,9 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewKrakenScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("KRAKEN_WATCHDOG_DELAY", "300"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("KRAKEN_WATCHDOG", "300"))
 		if err != nil {
-			log.Error("parse KRAKEN_WATCHDOG_DELAY: ", err)
+			log.Errorf("parse KRAKEN_WATCHDOG: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		lastTradeTime := time.Now()
@@ -173,7 +173,7 @@ func RunScraper(
 				if duration > time.Duration(watchdogDelay)*time.Second {
 					err := scraper.Close(cancel)
 					if err != nil {
-						log.Error("Kraken - Close(): ", err)
+						log.Errorf("Kraken - Close(): %v.", err)
 					}
 					log.Warnf("Close Kraken scraper as duration since last trade is %v.", duration)
 					failoverChannel <- KRAKEN_EXCHANGE
@@ -185,9 +185,9 @@ func RunScraper(
 		ctx, cancel := context.WithCancel(context.Background())
 		scraper := NewKuCoinScraper(ctx, pairs, failoverChannel, wg)
 
-		watchdogDelay, err := strconv.Atoi(utils.Getenv("KUCOIN_WATCHDOG_DELAY", "300"))
+		watchdogDelay, err := strconv.Atoi(utils.Getenv("KUCOIN_WATCHDOG", "300"))
 		if err != nil {
-			log.Error("parse KUCOIN_WATCHDOG_DELAY: ", err)
+			log.Errorf("parse KUCOIN_WATCHDOG: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		lastTradeTime := time.Now()
@@ -203,7 +203,7 @@ func RunScraper(
 				if duration > time.Duration(watchdogDelay)*time.Second {
 					err := scraper.Close(cancel)
 					if err != nil {
-						log.Error("KuCoin - Close(): ", err)
+						log.Errorf("KuCoin - Close(): %v.", err)
 					}
 					log.Warnf("Close KuCoin scraper as duration since last trade is %v.", duration)
 					failoverChannel <- KUCOIN_EXCHANGE
@@ -221,8 +221,8 @@ func RunScraper(
 }
 
 // If @handleErrorReadJSON returns true, the calling function should return. Otherwise continue.
-func handleErrorReadJSON(err error, errCount *int, maxErrCount int, restartWaitTime int) bool {
-	log.Errorf("%s - ReadMessage: %v", COINBASE_EXCHANGE, err)
+func handleErrorReadJSON(err error, errCount *int, maxErrCount int, exchange string, restartWaitTime int) bool {
+	log.Errorf("%s - ReadMessage: %v", exchange, err)
 	*errCount++
 
 	if strings.Contains(err.Error(), "closed network connection") {
@@ -230,7 +230,7 @@ func handleErrorReadJSON(err error, errCount *int, maxErrCount int, restartWaitT
 	}
 
 	if *errCount > maxErrCount {
-		log.Warnf("too many errors. wait for %v seconds and restart scraper.", restartWaitTime)
+		log.Warnf("%s - too many errors. wait for %v seconds and restart scraper.", exchange, restartWaitTime)
 		time.Sleep(time.Duration(restartWaitTime) * time.Second)
 		return true
 	}

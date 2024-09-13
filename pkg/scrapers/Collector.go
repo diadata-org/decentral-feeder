@@ -21,10 +21,10 @@ func Collector(
 
 	// exchangepairMap maps a centralized exchange onto the given pairs.
 	exchangepairMap := models.MakeExchangepairMap(exchangePairs)
-	log.Info("exchangepairMap: ", exchangepairMap)
+	log.Debugf("Collector - exchangepairMap: %v.", exchangepairMap)
 	// poolMap maps a decentralized exchange onto the given pools.
 	poolMap := models.MakePoolMap(pools)
-	log.Info("poolMap: ", poolMap)
+	log.Debugf("Collector - poolMap: %v.", poolMap)
 
 	// Start all needed scrapers.
 	// @tradesChannelIn collects trades from the started scrapers.
@@ -66,7 +66,7 @@ func Collector(
 
 			case timestamp := <-triggerChannel:
 
-				// log.Info("triggered at : ", timestamp)
+				log.Debugf("Collector - triggered at %v.", timestamp)
 				for id := range tradesblockMap {
 					tb := tradesblockMap[id]
 					tb.EndTime = timestamp
@@ -74,13 +74,13 @@ func Collector(
 				}
 
 				tradesblockChannel <- tradesblockMap
-				log.Info("number of tradesblocks: ", len(tradesblockMap))
+				log.Infof("Collector - number of tradesblocks: %v.", len(tradesblockMap))
 
 				// Make a new tradesblockMap for the next trigger period.
 				tradesblockMap = make(map[string]models.TradesBlock)
 
 			case exchange := <-failoverChannel:
-				log.Info("Restart scraper for ", exchange)
+				log.Debugf("Collector - Restart scraper for %s.", exchange)
 				wg.Add(1)
 				go RunScraper(context.Background(), exchange, exchangepairMap[exchange], []models.Pool{}, tradesChannelIn, failoverChannel, wg)
 			}

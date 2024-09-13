@@ -8,12 +8,26 @@ import (
 	"time"
 
 	"github.com/diadata-org/decentral-feeder/pkg/models"
+	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
+
+var (
+	log *logrus.Logger
+)
+
+func init() {
+	log = logrus.New()
+	loglevel, err := logrus.ParseLevel(utils.Getenv("LOG_LEVEL_UPDATER", "info"))
+	if err != nil {
+		log.Errorf("Parse log level: %v.", err)
+	}
+	log.SetLevel(loglevel)
+}
 
 func OracleUpdateExecutor(
 	// publishedPrices map[string]float64,
@@ -33,7 +47,7 @@ func OracleUpdateExecutor(
 		var values []int64
 		for _, fp := range filterPoints {
 			log.Infof(
-				"filterPoint received at %v: %v -- %v -- %v -- %v",
+				"updater - filterPoint received at %v: %v -- %v -- %v -- %v.",
 				time.Unix(timestamp, 0),
 				fp.Source,
 				fp.Pair.QuoteToken.Symbol,
@@ -45,7 +59,7 @@ func OracleUpdateExecutor(
 		}
 		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, values, timestamp)
 		if err != nil {
-			log.Printf("Failed to update Oracle: %v", err)
+			log.Warnf("updater - Failed to update Oracle: %v.", err)
 			return
 		}
 	}
@@ -90,7 +104,7 @@ func updateOracleMultiValues(
 		// Get gas price suggestion
 		gasPrice, err = client.SuggestGasPrice(context.Background())
 		if err != nil {
-			log.Print(err)
+			log.Errorf("updater - SuggestGasPrice: %v.", err)
 			return err
 		}
 
@@ -120,10 +134,10 @@ func updateOracleMultiValues(
 		return err
 	}
 
-	log.Printf("Gas price: %d\n", tx.GasPrice())
+	log.Infof("updater - Gas price: %d.", tx.GasPrice())
 	// log.Printf("Data: %x\n", tx.Data())
-	log.Printf("Nonce: %d\n", tx.Nonce())
-	log.Printf("Tx To: %s\n", tx.To().String())
-	log.Printf("Tx Hash: 0x%x\n", tx.Hash())
+	log.Infof("updater - Nonce: %d.", tx.Nonce())
+	log.Infof("updater - Tx To: %s.", tx.To().String())
+	log.Infof("updater - Tx Hash: 0x%x.", tx.Hash())
 	return nil
 }

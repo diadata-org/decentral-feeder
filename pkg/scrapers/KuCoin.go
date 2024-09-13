@@ -63,11 +63,11 @@ var (
 func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
 	var lock sync.RWMutex
-	log.Info("Started KuCoin scraper.")
+	log.Info("KuCoin - Started scraper.")
 
 	token, pingInterval, err := getPublicKuCoinToken(kucoinTokenURL)
 	if err != nil {
-		log.Error("getPublicKuCoinToken: ", err)
+		log.Errorf("KuCoin - getPublicKuCoinToken: %v.", err)
 	}
 
 	scraper := kucoinScraper{
@@ -83,7 +83,7 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(kucoinWSBaseString+"?token="+token, nil)
 	if err != nil {
-		log.Error("Dial KuCoin ws base string: ", err)
+		log.Errorf("KuCoin - Dial ws base string: %v.", err)
 		failoverChannel <- string(KUCOIN_EXCHANGE)
 		return &scraper
 	}
@@ -92,9 +92,9 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 	// Subscribe to pairs.
 	for _, pair := range pairs {
 		if err := scraper.subscribe(pair, true, &lock); err != nil {
-			log.Errorf("KuCoin - subscribe to pair %s: %v", pair.ForeignName, err)
+			log.Errorf("KuCoin - Subscribe to pair %s: %v.", pair.ForeignName, err)
 		} else {
-			log.Infof("KuCoin - subscribe to pair %s", pair.ForeignName)
+			log.Debugf("KuCoin - Subscribe to pair %s.", pair.ForeignName)
 		}
 	}
 
@@ -106,7 +106,7 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 		envVar := strings.ToUpper(KUCOIN_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
 		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
 		if err != nil {
-			log.Error("Parse kucoinWatchdogDelay: ", err)
+			log.Errorf("KuCoin - Parse kucoinWatchdogDelay: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		go watchdog(ctx, pair, watchdogTicker, scraper.lastTradeTimeMap, watchdogDelay, scraper.subscribeChannel, &lock)
@@ -125,14 +125,14 @@ func (scraper *kucoinScraper) fetchTrades() {
 		var message kuCoinWSResponse
 		err := scraper.wsClient.ReadJSON(&message)
 		if err != nil {
-			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, scraper.restartWaitTime) {
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, KUCOIN_EXCHANGE, scraper.restartWaitTime) {
 				return
 			}
 			continue
 		}
 
 		if message.Type == "pong" {
-			// log.Info("KuCoin - Successful ping: received pong.")
+			log.Debug("KuCoin - Successful ping: received pong.")
 		} else if message.Type == "message" {
 			scraper.handleWSResponse(message)
 		}
@@ -144,7 +144,7 @@ func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse) {
 	// Parse trade quantities.
 	price, volume, timestamp, foreignTradeID, err := parseKuCoinTradeMessage(message)
 	if err != nil {
-		log.Error("KuCoin - parseTradeMessage: ", err)
+		log.Errorf("KuCoin - parseTradeMessage: %v.", err)
 	}
 
 	// Identify ticker symbols with underlying assets.
@@ -164,11 +164,13 @@ func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse) {
 		ForeignTradeID: foreignTradeID,
 	}
 	scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
+
+	log.Tracef("KuCoin - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 	scraper.tradesChannel <- trade
 }
 
 func (scraper *kucoinScraper) Close(cancel context.CancelFunc) error {
-	log.Warn("KuCoin - call scraper.Close()")
+	log.Warn("KuCoin - Call scraper.Close()")
 	cancel()
 	return scraper.wsClient.Close()
 }
@@ -183,19 +185,19 @@ func (scraper *kucoinScraper) resubscribe(ctx context.Context, lock *sync.RWMute
 		case pair := <-scraper.subscribeChannel:
 			err := scraper.subscribe(pair, false, lock)
 			if err != nil {
-				log.Errorf("KuCoin - Unsubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("KuCoin - Unsubscribe pair %s: %v.", pair.ForeignName, err)
 			} else {
-				log.Infof("KuCoin - Unsubscribed pair %s:%s", KUCOIN_EXCHANGE, pair.ForeignName)
+				log.Debugf("KuCoin - Unsubscribed pair %s.", pair.ForeignName)
 			}
 			time.Sleep(2 * time.Second)
 			err = scraper.subscribe(pair, true, lock)
 			if err != nil {
-				log.Errorf("KuCoin - Resubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("KuCoin - Resubscribe pair %s: %v.", pair.ForeignName, err)
 			} else {
-				log.Infof("KuCoin - Subscribed to pair %s:%s", KUCOIN_EXCHANGE, pair.ForeignName)
+				log.Debugf("KuCoin - Subscribed to pair %s.", pair.ForeignName)
 			}
 		case <-ctx.Done():
-			log.Warn("-------------------------------------KuCoin - close resubscribe routine of scraper with genesis: ", scraper.genesis)
+			log.Debugf("KuCoin - Close resubscribe routine of scraper with genesis: %v.", scraper.genesis)
 			return
 		}
 	}
@@ -266,13 +268,13 @@ func (scraper *kucoinScraper) ping(ctx context.Context, pingInterval int64, star
 		case <-tick.C:
 			lock.Lock()
 			if err := scraper.wsClient.WriteJSON(ping); err != nil {
-				log.Error("KuCoin - send ping: " + err.Error())
+				log.Errorf("KuCoin - Send ping: %s.", err.Error())
 				lock.Unlock()
 				return
 			}
 			lock.Unlock()
 		case <-ctx.Done():
-			log.Warn("close ping.")
+			log.Warn("KuCoin - Close ping.")
 			return
 		}
 	}

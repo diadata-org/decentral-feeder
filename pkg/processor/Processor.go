@@ -9,7 +9,6 @@ import (
 	"github.com/diadata-org/decentral-feeder/pkg/metafilters"
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/scrapers"
-	log "github.com/sirupsen/logrus"
 )
 
 // Processor handles blocks from @tradesblockChannel.
@@ -26,7 +25,7 @@ func Processor(
 	wg *sync.WaitGroup,
 ) {
 
-	log.Info("Start Processor......")
+	log.Info("Processor - Start......")
 	// Collector starts collecting trades in the background and sends atomic tradesblocks to @tradesblockChannel.
 	go scrapers.Collector(exchangePairs, pools, tradesblockChannel, triggerChannel, failoverChannel, wg)
 
@@ -40,19 +39,18 @@ func Processor(
 		// --------------------------------------------------------------------------------------------
 		for exchangepairIdentifier, tb := range tradesblocks {
 
-			if len(tb.Trades) > 0 {
-				log.Infof("length of tradesblock for %s: %v", tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol, len(tb.Trades))
-			} else {
-				if len(strings.Split(exchangepairIdentifier, "-")) > 0 {
-					log.Infof("length of tradesblock for %s: %v", strings.Split(exchangepairIdentifier, "-")[0], len(tb.Trades))
-				}
-			}
-
 			// TO DO: Set flag for trades' filter switch. For instance Median, Average, Minimum, etc.
 			atomicFilterValue, _, err := filters.LastPrice(tb.Trades, true)
 			if err != nil {
-				log.Error("GetLastPrice: ", err)
+				log.Errorf("Processor - GetLastPrice: %v.", err)
+				continue
 			}
+			log.Infof(
+				"Processor - Atomic filter value for market %s with %v trades: %v.",
+				tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
+				len(tb.Trades),
+				atomicFilterValue,
+			)
 
 			// Identify Pair from tradesblock
 			filterPoint := models.FilterPointExtended{
@@ -67,7 +65,9 @@ func Processor(
 
 		var removedFilterPoints int
 		filterPoints, removedFilterPoints = models.RemoveOldFilters(filterPoints, toleranceSeconds, time.Now())
-		log.Warnf("Removed %v old filter points.", removedFilterPoints)
+		if removedFilterPoints > 0 {
+			log.Warnf("Processor - Removed %v old filter points.", removedFilterPoints)
+		}
 
 		// --------------------------------------------------------------------------------------------
 		// 2. Compute an aggregated value across exchanges for each asset obtained from the aggregated
@@ -75,6 +75,9 @@ func Processor(
 		// --------------------------------------------------------------------------------------------
 		// TO DO: Set flag for metafilter switch. For instance Median, Average, Minimum, etc.
 		filterPointsMedianized := metafilters.Median(filterPoints)
+		for _, fpm := range filterPointsMedianized {
+			log.Infof("Processor - filter %s for %s: %v.", fpm.Name, fpm.Pair.QuoteToken.Symbol, fpm.Value)
+		}
 
 		filtersChannel <- filterPointsMedianized
 	}

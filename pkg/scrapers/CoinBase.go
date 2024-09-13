@@ -14,7 +14,7 @@ import (
 
 // A coinBaseWSSubscribeMessage represents a message to subscribe the public/private channel.
 type coinBaseWSSubscribeMessage struct {
-	Type     string            `json:"type	cancel        context.CancelFunc"`
+	Type     string            `json:"type"`
 	Channels []coinBaseChannel `json:"channels"`
 }
 
@@ -54,7 +54,7 @@ var (
 func NewCoinBaseScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
 	var lock sync.RWMutex
-	log.Info("Started CoinBase scraper.")
+	log.Info("CoinBase - Started scraper.")
 
 	scraper := coinbaseScraper{
 		tradesChannel:    make(chan models.Trade),
@@ -70,7 +70,7 @@ func NewCoinBaseScraper(ctx context.Context, pairs []models.ExchangePair, failov
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(coinbaseWSBaseString, nil)
 	if err != nil {
-		log.Error("Dial CoinBase ws base string: ", err)
+		log.Errorf("CoinBase - Dial ws base string: %v.", err)
 		failoverChannel <- string(COINBASE_EXCHANGE)
 		return &scraper
 	}
@@ -79,9 +79,9 @@ func NewCoinBaseScraper(ctx context.Context, pairs []models.ExchangePair, failov
 	// Subscribe to pairs and initialize coinbaseLastTradeTimeMap.
 	for _, pair := range pairs {
 		if err := scraper.subscribe(pair, true, &lock); err != nil {
-			log.Errorf("CoinBase - subscribe to pair %s: %v", pair.ForeignName, err)
+			log.Errorf("CoinBase - subscribe to pair %s: %v.", pair.ForeignName, err)
 		} else {
-			log.Infof("CoinBase - Subscribed to pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+			log.Debugf("CoinBase - Subscribed to pair %s:%s.", COINBASE_EXCHANGE, pair.ForeignName)
 			scraper.lastTradeTimeMap[pair.ForeignName] = time.Now()
 		}
 	}
@@ -93,7 +93,7 @@ func NewCoinBaseScraper(ctx context.Context, pairs []models.ExchangePair, failov
 		envVar := strings.ToUpper(COINBASE_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
 		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
 		if err != nil {
-			log.Error("Parse coinbaseWatchdogDelay: ", err)
+			log.Errorf("CoinBase - Parse coinbaseWatchdogDelay: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		go watchdog(ctx, pair, watchdogTicker, scraper.lastTradeTimeMap, watchdogDelay, scraper.subscribeChannel, &lock)
@@ -104,7 +104,7 @@ func NewCoinBaseScraper(ctx context.Context, pairs []models.ExchangePair, failov
 }
 
 func (scraper *coinbaseScraper) Close(cancel context.CancelFunc) error {
-	log.Warn("CoinBase - call scraper.Close()")
+	log.Warn("CoinBase - call scraper.Close().")
 	cancel()
 	return scraper.wsClient.Close()
 }
@@ -122,7 +122,7 @@ func (scraper *coinbaseScraper) fetchTrades() {
 		var message coinBaseWSResponse
 		err := scraper.wsClient.ReadJSON(&message)
 		if err != nil {
-			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, scraper.restartWaitTime) {
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, COINBASE_EXCHANGE, scraper.restartWaitTime) {
 				return
 			}
 			continue
@@ -139,8 +139,7 @@ func (scraper *coinbaseScraper) fetchTrades() {
 func (scraper *coinbaseScraper) handleWSResponse(message coinBaseWSResponse) {
 	trade, err := coinbaseParseTradeMessage(message)
 	if err != nil {
-		log.Errorf("parseCoinBaseTradeMessage: %s", err.Error())
-		// continue
+		log.Errorf("CoinBase - parseCoinBaseTradeMessage: %s.", err.Error())
 		return
 	}
 
@@ -151,7 +150,7 @@ func (scraper *coinbaseScraper) handleWSResponse(message coinBaseWSResponse) {
 		trade.BaseToken = scraper.tickerPairMap[pair[0]+pair[1]].BaseToken
 	}
 
-	// log.Infof("CoinBase - got trade: %s -- %v -- %s", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.ForeignTradeID)
+	log.Tracef("CoinBase - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 	scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
 
 	scraper.tradesChannel <- trade
@@ -164,19 +163,19 @@ func (scraper *coinbaseScraper) resubscribe(ctx context.Context, lock *sync.RWMu
 		case pair := <-scraper.subscribeChannel:
 			err := scraper.subscribe(pair, false, lock)
 			if err != nil {
-				log.Errorf("CoinBase - Unsubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("CoinBase - Unsubscribe pair %s: %v.", pair.ForeignName, err)
 			} else {
-				log.Infof("CoinBase - Unsubscribed pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+				log.Debugf("CoinBase - Unsubscribed pair %s.", pair.ForeignName)
 			}
 			time.Sleep(2 * time.Second)
 			err = scraper.subscribe(pair, true, lock)
 			if err != nil {
-				log.Errorf("CoinBase - Resubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("CoinBase - Resubscribe pair %s: %v.", pair.ForeignName, err)
 			} else {
-				log.Infof("CoinBase - Subscribed to pair %s:%s", COINBASE_EXCHANGE, pair.ForeignName)
+				log.Debugf("CoinBase - Subscribed to pair %s.", pair.ForeignName)
 			}
 		case <-ctx.Done():
-			log.Warn("-------------------------------------CoinBase - close resubscribe routine of scraper with genesis: ", scraper.genesis)
+			log.Debugf("CoinBase - Close resubscribe routine of scraper with genesis: %v.", scraper.genesis)
 			return
 		}
 	}

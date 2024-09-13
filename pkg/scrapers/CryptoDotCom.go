@@ -63,7 +63,7 @@ var (
 func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
 	var lock sync.RWMutex
-	log.Info("Started Crypto.com scraper.")
+	log.Info("Crypto.com - Started scraper.")
 
 	scraper := cryptodotcomScraper{
 		tradesChannel:    make(chan models.Trade),
@@ -79,7 +79,7 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(cryptodotcomWSBaseString, nil)
 	if err != nil {
-		log.Error("Dial Crypto.com ws base string: ", err)
+		log.Errorf("Crypto.com - Dial ws base string: %v.", err)
 		failoverChannel <- string(CRYPTODOTCOM_EXCHANGE)
 		return &scraper
 	}
@@ -88,9 +88,9 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 	// Subscribe to pairs and initialize cryptodotcomLastTradeTimeMap.
 	for _, pair := range pairs {
 		if err := scraper.subscribe(pair, true, &lock); err != nil {
-			log.Errorf("Crypto.com - subscribe to pair %s: %v", pair.ForeignName, err)
+			log.Errorf("Crypto.com - Subscribe to pair %s: %v.", pair.ForeignName, err)
 		} else {
-			log.Infof("Crypto.com - Subscribed to pair %s:%s", CRYPTODOTCOM_EXCHANGE, pair.ForeignName)
+			log.Debugf("Crypto.com - Subscribed to pair %s.", pair.ForeignName)
 			scraper.lastTradeTimeMap[pair.ForeignName] = time.Now()
 		}
 	}
@@ -100,9 +100,9 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @cryptodotcomWatchdogDelayMap.
 	for _, pair := range pairs {
 		envVar := "CRYPTODOTCOM_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
-		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
+		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "120"), 10, 64)
 		if err != nil {
-			log.Error("Parse cryptodotcomWatchdogDelay: ", err)
+			log.Errorf("Crypto.com - Parse cryptodotcomWatchdogDelay: %v.", err)
 		}
 		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
 		go watchdog(ctx, pair, watchdogTicker, scraper.lastTradeTimeMap, watchdogDelay, scraper.subscribeChannel, &lock)
@@ -113,7 +113,7 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 }
 
 func (scraper *cryptodotcomScraper) Close(cancel context.CancelFunc) error {
-	log.Warn("Crypto.com - call scraper.Close()")
+	log.Warn("Crypto.com - call scraper.Close().")
 	cancel()
 	return scraper.wsClient.Close()
 }
@@ -131,7 +131,7 @@ func (scraper *cryptodotcomScraper) fetchTrades(lock *sync.RWMutex) {
 		var message cryptodotcomWSResponse
 		err := scraper.wsClient.ReadJSON(&message)
 		if err != nil {
-			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, scraper.restartWaitTime) {
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, CRYPTODOTCOM_EXCHANGE, scraper.restartWaitTime) {
 				return
 			}
 			continue
@@ -150,7 +150,7 @@ func (scraper *cryptodotcomScraper) fetchTrades(lock *sync.RWMutex) {
 func (scraper *cryptodotcomScraper) handleWSResponse(message cryptodotcomWSResponse) {
 	trades, err := cryptodotcomParseTradeMessage(message)
 	if err != nil {
-		log.Errorf("parseCryptodotcomTradeMessage: %s", err.Error())
+		log.Errorf("Crypto.com - parseCryptodotcomTradeMessage: %s.", err.Error())
 		// continue
 		return
 	}
@@ -163,7 +163,7 @@ func (scraper *cryptodotcomScraper) handleWSResponse(message cryptodotcomWSRespo
 			trade.BaseToken = scraper.tickerPairMap[pair[0]+pair[1]].BaseToken
 		}
 
-		// log.Infof("Crypto.com - got trade: %v -- %s -- %v -- %v -- %s", trade.Time, trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+		log.Tracef("Crypto.com - got trade: %v -- %s -- %v -- %v -- %s.", trade.Time, trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 		scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
 
 		scraper.tradesChannel <- trade
@@ -177,19 +177,19 @@ func (scraper *cryptodotcomScraper) resubscribe(ctx context.Context, lock *sync.
 		case pair := <-scraper.subscribeChannel:
 			err := scraper.subscribe(pair, false, lock)
 			if err != nil {
-				log.Errorf("Crypto.com - Unsubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("Crypto.com - Unsubscribe pair %s: %v.", pair.ForeignName, err)
 			} else {
-				log.Infof("Crypto.com - Unsubscribed pair %s:%s", CRYPTODOTCOM_EXCHANGE, pair.ForeignName)
+				log.Debugf("Crypto.com - Unsubscribed pair %s.", pair.ForeignName)
 			}
 			time.Sleep(2 * time.Second)
 			err = scraper.subscribe(pair, true, lock)
 			if err != nil {
-				log.Errorf("Crypto.com - Resubscribe pair %s: %v", pair.ForeignName, err)
+				log.Errorf("Crypto.com - Resubscribe pair %s: %v.", pair.ForeignName, err)
 			} else {
-				log.Infof("Crypto.com - Subscribed to pair %s:%s", CRYPTODOTCOM_EXCHANGE, pair.ForeignName)
+				log.Debugf("Crypto.com - Subscribed to pair %s.", pair.ForeignName)
 			}
 		case <-ctx.Done():
-			log.Warn("-------------------------------------Crypto.com - close resubscribe routine of scraper with genesis: ", scraper.genesis)
+			log.Debugf("Crypto.com - Close resubscribe routine of scraper with genesis: %v.", scraper.genesis)
 			return
 		}
 	}

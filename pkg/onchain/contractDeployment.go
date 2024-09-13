@@ -8,7 +8,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	log "github.com/sirupsen/logrus"
 )
 
 func DeployOrBindContract(
@@ -38,8 +37,8 @@ func DeployOrBindContract(
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
 		}
-		log.Printf("Contract pending deploy: 0x%x\n", addr)
-		log.Printf("Transaction waiting to be mined: 0x%x\n\n", tx.Hash())
+		log.Warnf("Contract pending deploy: 0x%x.", addr)
+		log.Warnf("Transaction waiting to be mined: 0x%x.", tx.Hash())
 		// bind backup
 		*contractBackup, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(addr, connBackup)
 		if err != nil {
