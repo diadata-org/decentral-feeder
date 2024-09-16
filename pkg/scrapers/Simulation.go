@@ -83,8 +83,14 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 			defer w.Done()
 
 			tokens := scraper.allowedTokens[symbol]
-			tokenInDecimal, _ := scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
-			tokenOutDecimal, _ := scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
+			tokenInDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
+			if err != nil {
+				log.Errorf("error getting decimal tokenInStr of symbol %s err: %v", symbol, err)
+			}
+			tokenOutDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
+			if err != nil {
+				log.Errorf("error getting decimal tokenOutStr of symbol %s err: %v", symbol, err)
+			}
 
 			token0 := models.Asset{
 				Symbol:   "USDC",
@@ -243,5 +249,12 @@ func (scraper *SimulationScraper) initTokens() {
 	diaConfig["recipient"] = "0xD6153F5af5679a75cC85D8974463545181f48772"
 	diaConfig["tokenOutStr"] = "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419"
 	scraper.allowedTokens["DIA"] = diaConfig
+
+	var ustB = make(map[string]string)
+	ustB["tokenInStr"] = "0x83feDBc0B85c6e29B589aA6BdefB1Cc581935ECD"
+	ustB["amountStr"] = "1000000000"
+	ustB["recipient"] = "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3"
+	ustB["tokenOutStr"] = "0xAEC9e50e3397f9ddC635C6c429C8C7eca418a143"
+	scraper.allowedTokens["USTB"] = ustB
 
 }

@@ -37,8 +37,8 @@ func DeployOrBindContract(
 			log.Fatalf("could not deploy contract: %v", err)
 			return err
 		}
-		log.Warnf("Contract pending deploy: 0x%x.", addr)
-		log.Warnf("Transaction waiting to be mined: 0x%x.", tx.Hash())
+		log.Infof("Contract pending deploy: 0x%x.", addr)
+		log.Infof("Transaction waiting to be mined: 0x%x.", tx.Hash())
 		// bind backup
 		*contractBackup, err = diaOracleV2MultiupdateService.NewDiaOracleV2MultiupdateService(addr, connBackup)
 		if err != nil {
