@@ -24,7 +24,7 @@ var (
 )
 
 func init() {
-	log = logrus.New()
+
 	Exchanges[BINANCE_EXCHANGE] = models.Exchange{Name: BINANCE_EXCHANGE, Centralized: true}
 	Exchanges[COINBASE_EXCHANGE] = models.Exchange{Name: COINBASE_EXCHANGE, Centralized: true}
 	Exchanges[CRYPTODOTCOM_EXCHANGE] = models.Exchange{Name: CRYPTODOTCOM_EXCHANGE, Centralized: true}
@@ -34,4 +34,12 @@ func init() {
 
 	Exchanges[Simulation] = models.Exchange{Name: Simulation, Centralized: false, Blockchain: utils.ETHEREUM}
 	Exchanges[UNISWAPV2_EXCHANGE] = models.Exchange{Name: UNISWAPV2_EXCHANGE, Centralized: false, Blockchain: utils.ETHEREUM}
+
+	log = logrus.New()
+	loglevel, err := logrus.ParseLevel(utils.Getenv("LOG_LEVEL_SCRAPERS", "info"))
+	if err != nil {
+		log.Errorf("Parse log level: %v.", err)
+	}
+	log.SetLevel(loglevel)
+
 }

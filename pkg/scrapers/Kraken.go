@@ -1,6 +1,7 @@
 package scrapers
 
 import (
+	"context"
 	"strconv"
 	"strings"
 	"sync"
@@ -38,66 +39,95 @@ type krakenWSResponseData struct {
 	Time      string  `json:"timestamp"`
 }
 
-var (
-	krakenWSBaseString    = "wss://ws.kraken.com/v2"
-	krakenMaxErrCount     = 20
-	krakenRun             bool
-	krakenWatchdogDelay   int64
-	krakenRestartWaitTime = 5
-	krakenLastTradeTime   time.Time
-)
-
-func init() {
-	var err error
-	krakenWatchdogDelay, err = strconv.ParseInt(utils.Getenv("KRAKEN_WATCHDOGDELAY", "60"), 10, 64)
-	if err != nil {
-		log.Error("Parse KRAKEN_WATCHDOGDELAY: ", err)
-	}
+type krakenScraper struct {
+	wsClient         *ws.Conn
+	tradesChannel    chan models.Trade
+	subscribeChannel chan models.ExchangePair
+	tickerPairMap    map[string]models.Pair
+	lastTradeTimeMap map[string]time.Time
+	maxErrCount      int
+	restartWaitTime  int
+	genesis          time.Time
 }
 
-func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Trade, failoverChannel chan string, wg *sync.WaitGroup) string {
+var (
+	krakenWSBaseString = "wss://ws.kraken.com/v2"
+)
+
+func NewKrakenScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
 	defer wg.Done()
-	log.Info("Started Kraken scraper.")
-	krakenRun = true
-	tickerPairMap := models.MakeTickerPairMap(pairs)
+	var lock sync.RWMutex
+	log.Info("Kraken - Started scraper.")
+
+	scraper := krakenScraper{
+		tradesChannel:    make(chan models.Trade),
+		subscribeChannel: make(chan models.ExchangePair),
+		tickerPairMap:    models.MakeTickerPairMap(pairs),
+		lastTradeTimeMap: make(map[string]time.Time),
+		maxErrCount:      20,
+		restartWaitTime:  5,
+		genesis:          time.Now(),
+	}
 
 	var wsDialer ws.Dialer
 	wsClient, _, err := wsDialer.Dial(krakenWSBaseString, nil)
 	if err != nil {
-		log.Error("Dial Kraken ws base string: ", err)
+		log.Errorf("Kraken - Dial ws base string: %v.", err)
 		failoverChannel <- string(KRAKEN_EXCHANGE)
-		return "closed"
+		return &scraper
 	}
+	scraper.wsClient = wsClient
 
 	// Subscribe to pairs.
 	for _, pair := range pairs {
-		a := &krakenWSSubscribeMessage{
-			Method: "subscribe",
-			Params: krakenParams{
-				Channel: "trade",
-				Symbol:  []string{pair.UnderlyingPair.QuoteToken.Symbol + "/" + pair.UnderlyingPair.BaseToken.Symbol},
-			},
+		if err := scraper.subscribe(pair, true, &lock); err != nil {
+			log.Errorf("Kraken - Subscribe to pair %s: %v.", pair.ForeignName, err)
+		} else {
+			log.Debugf("Kraken - Subscribed to pair %s.", pair.ForeignName)
+			scraper.lastTradeTimeMap[pair.ForeignName] = time.Now()
 		}
-		log.Infof("Subscribed for Pair %s:%s", KRAKEN_EXCHANGE, pair.ForeignName)
-		if err := wsClient.WriteJSON(a); err != nil {
-			log.Error("Kraken - " + err.Error())
-		}
+
 	}
 
-	krakenLastTradeTime = time.Now()
-	log.Info("Kraken - Initialize lastTradeTime after failover: ", krakenLastTradeTime)
-	watchdogTicker := time.NewTicker(time.Duration(krakenWatchdogDelay) * time.Second)
+	go scraper.fetchTrades()
 
-	go globalWatchdog(watchdogTicker, &krakenLastTradeTime, krakenWatchdogDelay, &krakenRun)
+	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @krakenWatchdogDelayMap.
+	for _, pair := range pairs {
+		envVar := strings.ToUpper(KRAKEN_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
+		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
+		if err != nil {
+			log.Errorf("Parse krakenWatchdogDelay: %v.", err)
+		}
+		watchdogTicker := time.NewTicker(time.Duration(watchdogDelay) * time.Second)
+		go watchdog(ctx, pair, watchdogTicker, scraper.lastTradeTimeMap, watchdogDelay, scraper.subscribeChannel, &lock)
+		go scraper.resubscribe(ctx, &lock)
+	}
 
+	return &scraper
+
+}
+
+func (scraper *krakenScraper) Close(cancel context.CancelFunc) error {
+	log.Warn("Kraken - Call scraper.Close().")
+	cancel()
+	return scraper.wsClient.Close()
+}
+
+func (scraper *krakenScraper) TradesChannel() chan models.Trade {
+	return scraper.tradesChannel
+}
+
+func (scraper *krakenScraper) fetchTrades() {
 	// Read trades stream.
 	var errCount int
-	for krakenRun {
+	for {
 
 		var message krakenWSResponse
-		err = wsClient.ReadJSON(&message)
+		err := scraper.wsClient.ReadJSON(&message)
 		if err != nil {
-			readJSONError(KRAKEN_EXCHANGE, err, &errCount, &krakenRun, krakenRestartWaitTime, krakenMaxErrCount)
+			if handleErrorReadJSON(err, &errCount, scraper.maxErrCount, KRAKEN_EXCHANGE, scraper.restartWaitTime) {
+				return
+			}
 			continue
 		}
 
@@ -107,14 +137,14 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 				// Parse trade quantities.
 				price, volume, timestamp, foreignTradeID, err := parseKrakenTradeMessage(data)
 				if err != nil {
-					log.Error("Kraken - parseTradeMessage: ", err)
+					log.Errorf("Kraken - parseTradeMessage: %v.", err)
 				}
 
 				// Identify ticker symbols with underlying assets.
 				pair := strings.Split(data.Symbol, "/")
 				var exchangepair models.Pair
 				if len(pair) > 1 {
-					exchangepair = tickerPairMap[pair[0]+pair[1]]
+					exchangepair = scraper.tickerPairMap[pair[0]+pair[1]]
 				}
 
 				trade := models.Trade{
@@ -126,17 +156,53 @@ func NewKrakenScraper(pairs []models.ExchangePair, tradesChannel chan models.Tra
 					Exchange:       models.Exchange{Name: KRAKEN_EXCHANGE},
 					ForeignTradeID: foreignTradeID,
 				}
-				// log.Info("Got trade: ", trade)
-				krakenLastTradeTime = trade.Time
-				tradesChannel <- trade
+				log.Tracef("Kraken - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+
+				scraper.tradesChannel <- trade
 			}
 		}
 	}
+}
 
-	log.Warn("Close Kraken scraper.")
-	failoverChannel <- string(KRAKEN_EXCHANGE)
-	return "closed"
+func (scraper *krakenScraper) resubscribe(ctx context.Context, lock *sync.RWMutex) {
+	for {
+		select {
+		case pair := <-scraper.subscribeChannel:
+			err := scraper.subscribe(pair, false, lock)
+			if err != nil {
+				log.Errorf("Kraken - Unsubscribe pair %s: %v.", pair.ForeignName, err)
+			} else {
+				log.Debugf("Kraken - Unsubscribed pair %s.", pair.ForeignName)
+			}
+			time.Sleep(2 * time.Second)
+			err = scraper.subscribe(pair, true, lock)
+			if err != nil {
+				log.Errorf("Kraken - Resubscribe pair %s: %v.", pair.ForeignName, err)
+			} else {
+				log.Debugf("Kraken - Subscribed to pair %s.", pair.ForeignName)
+			}
+		case <-ctx.Done():
+			log.Debugf("Kraken - Close resubscribe routine of scraper with genesis: %v.", scraper.genesis)
+			return
+		}
+	}
+}
 
+func (scraper *krakenScraper) subscribe(pair models.ExchangePair, subscribe bool, lock *sync.RWMutex) error {
+	defer lock.Unlock()
+	subscribeType := "unsubscribe"
+	if subscribe {
+		subscribeType = "subscribe"
+	}
+	a := &krakenWSSubscribeMessage{
+		Method: subscribeType,
+		Params: krakenParams{
+			Channel: "trade",
+			Symbol:  []string{pair.UnderlyingPair.QuoteToken.Symbol + "/" + pair.UnderlyingPair.BaseToken.Symbol},
+		},
+	}
+	lock.Lock()
+	return scraper.wsClient.WriteJSON(a)
 }
 
 func parseKrakenTradeMessage(message krakenWSResponseData) (price float64, volume float64, timestamp time.Time, foreignTradeID string, err error) {
