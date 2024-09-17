@@ -28,10 +28,10 @@ func watchdog(
 			log.Debugf("%s - check liveliness of %s.", pair.Exchange, pair.ForeignName)
 
 			// Make read lock for lastTradeTimeMap.
-			lock.RLock()
+			lock.Lock()
 			duration := time.Since(lastTradeTimeMap[pair.ForeignName])
 			log.Debugf("%s - duration for %s: %v. Threshold: %v.", pair.Exchange, pair.ForeignName, duration, watchdogDelay)
-			lock.RUnlock()
+			lock.Unlock()
 			if duration > time.Duration(watchdogDelay)*time.Second {
 				log.Errorf("%s - watchdogTicker failover for %s.", pair.Exchange, pair.ForeignName)
 				subscribeChannel <- pair
