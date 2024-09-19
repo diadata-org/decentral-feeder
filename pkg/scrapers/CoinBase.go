@@ -86,7 +86,7 @@ func NewCoinBaseScraper(ctx context.Context, pairs []models.ExchangePair, failov
 		}
 	}
 
-	go scraper.fetchTrades()
+	go scraper.fetchTrades(&lock)
 
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @coinbaseWatchdogDelayMap.
 	for _, pair := range pairs {
@@ -113,7 +113,7 @@ func (scraper *coinbaseScraper) TradesChannel() chan models.Trade {
 	return scraper.tradesChannel
 }
 
-func (scraper *coinbaseScraper) fetchTrades() {
+func (scraper *coinbaseScraper) fetchTrades(lock *sync.RWMutex) {
 	// Read trades stream.
 	var errCount int
 
@@ -129,14 +129,14 @@ func (scraper *coinbaseScraper) fetchTrades() {
 		}
 
 		if message.Type == "match" {
-			scraper.handleWSResponse(message)
+			scraper.handleWSResponse(message, lock)
 		}
 
 	}
 
 }
 
-func (scraper *coinbaseScraper) handleWSResponse(message coinBaseWSResponse) {
+func (scraper *coinbaseScraper) handleWSResponse(message coinBaseWSResponse, lock *sync.RWMutex) {
 	trade, err := coinbaseParseTradeMessage(message)
 	if err != nil {
 		log.Errorf("CoinBase - parseCoinBaseTradeMessage: %s.", err.Error())
@@ -151,8 +151,9 @@ func (scraper *coinbaseScraper) handleWSResponse(message coinBaseWSResponse) {
 	}
 
 	log.Tracef("CoinBase - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+	lock.Lock()
 	scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
-
+	lock.Unlock()
 	scraper.tradesChannel <- trade
 
 }

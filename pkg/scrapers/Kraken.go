@@ -89,7 +89,7 @@ func NewKrakenScraper(ctx context.Context, pairs []models.ExchangePair, failover
 
 	}
 
-	go scraper.fetchTrades()
+	go scraper.fetchTrades(&lock)
 
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @krakenWatchdogDelayMap.
 	for _, pair := range pairs {
@@ -117,7 +117,7 @@ func (scraper *krakenScraper) TradesChannel() chan models.Trade {
 	return scraper.tradesChannel
 }
 
-func (scraper *krakenScraper) fetchTrades() {
+func (scraper *krakenScraper) fetchTrades(lock *sync.RWMutex) {
 	// Read trades stream.
 	var errCount int
 	for {
@@ -157,7 +157,9 @@ func (scraper *krakenScraper) fetchTrades() {
 					ForeignTradeID: foreignTradeID,
 				}
 				log.Tracef("Kraken - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
-
+				lock.Lock()
+				scraper.lastTradeTimeMap[exchangepair.QuoteToken.Symbol+"-"+exchangepair.BaseToken.Symbol] = trade.Time
+				lock.Unlock()
 				scraper.tradesChannel <- trade
 			}
 		}

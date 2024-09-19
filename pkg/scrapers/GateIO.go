@@ -82,7 +82,7 @@ func NewGateIOScraper(ctx context.Context, pairs []models.ExchangePair, failover
 		}
 	}
 
-	go scraper.fetchTrades()
+	go scraper.fetchTrades(&lock)
 
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @gateIOWatchdogDelayMap.
 	for _, pair := range pairs {
@@ -110,7 +110,7 @@ func (scraper *gateIOScraper) TradesChannel() chan models.Trade {
 	return scraper.tradesChannel
 }
 
-func (scraper *gateIOScraper) fetchTrades() {
+func (scraper *gateIOScraper) fetchTrades(lock *sync.RWMutex) {
 	var errCount int
 	for {
 
@@ -123,7 +123,11 @@ func (scraper *gateIOScraper) fetchTrades() {
 		}
 
 		trade := scraper.handleWSResponse(message)
+
+		lock.Lock()
 		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
+		lock.Unlock()
+
 		log.Tracef("GateIO - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 
 		scraper.tradesChannel <- trade
