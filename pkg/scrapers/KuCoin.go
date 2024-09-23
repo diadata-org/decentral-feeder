@@ -99,7 +99,7 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 	}
 
 	go scraper.ping(ctx, pingInterval, time.Now(), &lock)
-	go scraper.fetchTrades()
+	go scraper.fetchTrades(&lock)
 
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @kucoinWatchdogDelayMap.
 	for _, pair := range pairs {
@@ -117,7 +117,7 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 
 }
 
-func (scraper *kucoinScraper) fetchTrades() {
+func (scraper *kucoinScraper) fetchTrades(lock *sync.RWMutex) {
 	// Read trades stream.
 	var errCount int
 	for {
@@ -134,13 +134,13 @@ func (scraper *kucoinScraper) fetchTrades() {
 		if message.Type == "pong" {
 			log.Debug("KuCoin - Successful ping: received pong.")
 		} else if message.Type == "message" {
-			scraper.handleWSResponse(message)
+			scraper.handleWSResponse(message, lock)
 		}
 
 	}
 }
 
-func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse) {
+func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse, lock *sync.RWMutex) {
 	// Parse trade quantities.
 	price, volume, timestamp, foreignTradeID, err := parseKuCoinTradeMessage(message)
 	if err != nil {
@@ -163,7 +163,10 @@ func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse) {
 		Exchange:       models.Exchange{Name: KUCOIN_EXCHANGE},
 		ForeignTradeID: foreignTradeID,
 	}
+
+	lock.Lock()
 	scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
+	lock.Unlock()
 
 	log.Tracef("KuCoin - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
 	scraper.tradesChannel <- trade

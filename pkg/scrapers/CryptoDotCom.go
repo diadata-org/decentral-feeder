@@ -141,13 +141,13 @@ func (scraper *cryptodotcomScraper) fetchTrades(lock *sync.RWMutex) {
 			continue
 		}
 
-		scraper.handleWSResponse(message)
+		scraper.handleWSResponse(message, lock)
 
 	}
 
 }
 
-func (scraper *cryptodotcomScraper) handleWSResponse(message cryptodotcomWSResponse) {
+func (scraper *cryptodotcomScraper) handleWSResponse(message cryptodotcomWSResponse, lock *sync.RWMutex) {
 	trades, err := cryptodotcomParseTradeMessage(message)
 	if err != nil {
 		log.Errorf("Crypto.com - parseCryptodotcomTradeMessage: %s.", err.Error())
@@ -164,7 +164,9 @@ func (scraper *cryptodotcomScraper) handleWSResponse(message cryptodotcomWSRespo
 		}
 
 		log.Tracef("Crypto.com - got trade: %v -- %s -- %v -- %v -- %s.", trade.Time, trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+		lock.Lock()
 		scraper.lastTradeTimeMap[pair[0]+"-"+pair[1]] = trade.Time
+		lock.Unlock()
 
 		scraper.tradesChannel <- trade
 	}

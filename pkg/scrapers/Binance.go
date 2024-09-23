@@ -66,7 +66,7 @@ func NewBinanceScraper(ctx context.Context, pairs []models.ExchangePair, failove
 		return &scraper
 	}
 
-	go scraper.fetchTrades()
+	go scraper.fetchTrades(&lock)
 
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @binanceWatchdogDelay[pair].
 	for _, pair := range pairs {
@@ -93,7 +93,7 @@ func (scraper *binanceScraper) TradesChannel() chan models.Trade {
 	return scraper.tradesChannel
 }
 
-func (scraper *binanceScraper) fetchTrades() {
+func (scraper *binanceScraper) fetchTrades(lock *sync.RWMutex) {
 	var errCount int
 
 	for {
@@ -115,8 +115,10 @@ func (scraper *binanceScraper) fetchTrades() {
 		trade.QuoteToken = scraper.tickerPairMap[message.ForeignName].QuoteToken
 		trade.BaseToken = scraper.tickerPairMap[message.ForeignName].BaseToken
 
-		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
 		log.Tracef("Binance - got trade %s -- %v -- %v -- %v.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)
+		lock.Lock()
+		scraper.lastTradeTimeMap[trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol] = trade.Time
+		lock.Unlock()
 
 		scraper.tradesChannel <- trade
 	}
