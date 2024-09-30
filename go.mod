@@ -4,10 +4,6 @@ go 1.22
 
 // toolchain go1.22.3
 
-replace github.com/kwilteam/kwil-db/parse => ./pkg/kwil-db/parse
-
-replace github.com/kwilteam/kwil-db/core => ./pkg/kwil-db/core
-
 require (
 	github.com/daoleno/uniswap-sdk-core v0.1.7
 	github.com/daoleno/uniswapv3-sdk v0.4.0
@@ -65,8 +61,8 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/holiman/uint256 v1.2.4 // indirect
-	github.com/kwilteam/kwil-db/core v0.2.1-0.20240909192711-653711416339
-	github.com/kwilteam/kwil-db/parse v0.2.0-beta
+	github.com/kwilteam/kwil-db/core v0.3.0-beta.0.20240917145512-e6922733fc1a
+	github.com/kwilteam/kwil-db/parse v0.3.0-beta.0.20240917145512-e6922733fc1a
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/prometheus/client_golang v1.19.1
 	github.com/shirou/gopsutil v3.21.11+incompatible
