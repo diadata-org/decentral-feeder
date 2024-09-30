@@ -19,7 +19,7 @@ import (
 
 const (
 	chainID  = "kwil-chain-nSRNXdbH"
-	provider = "http://127.0.0.1:8484"
+	provider = "http://kwil-app-service.dia-sandbox.svc.cluster.local:8484" //kwil node 01 in dia-sandbox namespace
 )
 
 // DeployAndListTags function contains the main logic, exported for use in main.go
