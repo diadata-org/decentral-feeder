@@ -130,6 +130,7 @@ func init() {
 }
 
 func main() {
+
 	// get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
 	if err != nil {

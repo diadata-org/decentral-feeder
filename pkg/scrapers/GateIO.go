@@ -103,6 +103,9 @@ func NewGateIOScraper(ctx context.Context, pairs []models.ExchangePair, failover
 func (scraper *gateIOScraper) Close(cancel context.CancelFunc) error {
 	log.Warn("GateIO - call scraper.Close().")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 
