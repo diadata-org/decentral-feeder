@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	kwildb "github.com/diadata-org/decentral-feeder/pkg/kwil-db"
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/onchain"
 	"github.com/diadata-org/decentral-feeder/pkg/processor"
@@ -131,8 +130,7 @@ func init() {
 }
 
 func main() {
-	// Call the function from kwil.go
-	kwildb.DeployAndListTags()
+
 	// get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
 	if err != nil {
