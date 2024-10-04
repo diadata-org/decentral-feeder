@@ -110,6 +110,9 @@ func NewKrakenScraper(ctx context.Context, pairs []models.ExchangePair, failover
 func (scraper *krakenScraper) Close(cancel context.CancelFunc) error {
 	log.Warn("Kraken - Call scraper.Close().")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 

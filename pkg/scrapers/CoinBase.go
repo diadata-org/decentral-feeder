@@ -106,6 +106,9 @@ func NewCoinBaseScraper(ctx context.Context, pairs []models.ExchangePair, failov
 func (scraper *coinbaseScraper) Close(cancel context.CancelFunc) error {
 	log.Warn("CoinBase - call scraper.Close().")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 

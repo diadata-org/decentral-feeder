@@ -175,6 +175,9 @@ func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse, lock *s
 func (scraper *kucoinScraper) Close(cancel context.CancelFunc) error {
 	log.Warn("KuCoin - Call scraper.Close()")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 

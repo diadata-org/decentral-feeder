@@ -115,6 +115,9 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 func (scraper *cryptodotcomScraper) Close(cancel context.CancelFunc) error {
 	log.Warn("Crypto.com - call scraper.Close().")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 

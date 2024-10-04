@@ -85,7 +85,11 @@ func NewBinanceScraper(ctx context.Context, pairs []models.ExchangePair, failove
 }
 
 func (scraper *binanceScraper) Close(cancel context.CancelFunc) error {
+	log.Warn("Binance - call scraper.Close().")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 
