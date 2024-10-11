@@ -112,7 +112,7 @@ jobs:
           for i in $(seq -w 001 010); do
             echo "Deploying node $i"
             cd cluster-backend/helmcharts/oracles/conduit-test/$i
-            helm upgrade --install -n dia-oracles-prod --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-$i .
+            helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-$i .
             cd -  # Navigate back to the previous directory
           done
           cd
