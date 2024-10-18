@@ -6,6 +6,11 @@ The DIA Lumina oracle consists of a two major components:
 1. A collection of key/value smart contract that collect price data from each feeder.
 2. The DIA metacontract that collates these prices from the key/value contracts and provides an automatically refreshed reading of the latest market price.
 
+An exemplary Lumina data flow can be seen here.
+Oracle feeders scrape trades from exchanges and submit these as last prices into their respective oracle contracts.
+From there, a threshold of 5 in 1 hour is required for the meta contract to assume consensus on the median value of this set of trades.
+![plot of the Lumina system](abstract_flow.png)
+
 ## Usage
 The metacontract exposed a simple `Read` function called `getValue()`.
 It has one parameter `pairKey`, which consists of the symbol of the queried asset and `/USD` to denominate its price in US Dollars.
@@ -40,5 +45,5 @@ Removal is immediate, so any call made to `getValue()` from the removal block on
 
 ### Acceptance Threshold
 To make price discovery more robust, a threshold needs to be set by the admin.
-This threshold corresponds to the number of feeders that need to have submitted a price to reach a vaid consensus.
+This threshold corresponds to the number of feeders that need to have submitted a price to reach a valid consensus.
 
