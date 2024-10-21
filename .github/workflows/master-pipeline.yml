@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:  # This allows manual triggering
 
 jobs:
   build_and_test:
@@ -30,7 +31,7 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-  push_image:
+  push_image_and_deploy:
     runs-on: ubuntu-latest
     needs: build_and_test
     steps:
