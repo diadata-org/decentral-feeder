@@ -12,6 +12,7 @@ jobs:
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
+        
 
       # Set up Go
       - name: Set up Go
@@ -37,6 +38,8 @@ jobs:
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       # Get Short Commit Hash
       - name: Get Short Commit Hash
