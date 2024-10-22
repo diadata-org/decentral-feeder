@@ -101,7 +101,7 @@ jobs:
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
           # Set credentials
-          kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
+          kubectl config set-credentials github-actions-sa --token="$TOKEN"
           # Set context
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
           # Use context
