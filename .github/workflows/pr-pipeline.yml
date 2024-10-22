@@ -12,7 +12,6 @@ jobs:
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
-        
 
       # Set up Go
       - name: Set up Go
@@ -38,13 +37,11 @@ jobs:
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
-      # Get Short Commit Hash
+      # Get Short Commit Hash using PR's head SHA
       - name: Get Short Commit Hash
         run: |
-          COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_HASH=$(echo "${{ github.event.pull_request.head.sha }}" | cut -c1-7)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
       # Checkout the cluster-backend repository
