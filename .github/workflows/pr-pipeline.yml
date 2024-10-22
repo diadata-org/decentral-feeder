@@ -86,7 +86,7 @@ jobs:
 
       - name: IBM Cluster kubectl config 
         env:
-          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
@@ -103,7 +103,7 @@ jobs:
           # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
           # Set context
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa 
           # Use context
           kubectl config use-context $CONTEXT
 
