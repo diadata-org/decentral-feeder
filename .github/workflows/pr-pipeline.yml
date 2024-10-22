@@ -84,24 +84,39 @@ jobs:
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
 
-      # Configure kubectl with service account 
-      - name: Configure kubectl with Service Account
+      - name: IBM Cluster kubectl config 
         env:
-          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
-          CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }} # Base64-encoded PEM file
         run: |
+          # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER"
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
-          kubectl config set-context "$CLUSTER_NAME" --cluster="$CLUSTER_NAME" --user=github-actions-sa
-          kubectl config use-context "$CLUSTER_NAME"
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          # Set cluster using the CA PEM file
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
+          # Set credentials
+          kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
+          # Set context
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
+          # Use context
+          kubectl config use-context $CONTEXT
 
       # Helm upgrade command with the commit hash tag
       - name: Helm upgrade/install conduit-node-011
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
           helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
+
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
+          shred -u /tmp/ca.pem
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
