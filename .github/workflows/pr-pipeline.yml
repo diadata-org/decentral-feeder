@@ -69,13 +69,13 @@ jobs:
       # Build and Tag the Docker image with the commit hash
       - name: Build and Tag Docker image
         run: |
-          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-${{ env.COMMIT_HASH }} .
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
 
       # Push the Docker image to IBM Cloud Container Registry
       - name: Push Docker image
         run: |
           ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-${{ env.COMMIT_HASH }}
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
       # Install kubectl
       - name: Install kubectl
@@ -101,7 +101,7 @@ jobs:
       - name: Helm upgrade/install conduit-node-011
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
-          helm upgrade --install -n dia-testspace --set repository.tag="commit-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
+          helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
