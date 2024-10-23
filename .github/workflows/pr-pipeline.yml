@@ -38,6 +38,12 @@ jobs:
       # Checkout the repository
       - uses: actions/checkout@v4
 
+      # Get Short Commit Hash of the Merge Commit
+      - name: Get Short Commit Hash
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
       # Checkout the cluster-backend repository
       - name: Checkout cluster-backend repository
         env:
@@ -60,21 +66,16 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Get Unix Timestamp
-      - name: Get Unix Timestamp
-        id: get_timestamp
-        run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
-
-      # Build and Tag the Docker image
+      # Build and Tag the Docker image with the commit hash
       - name: Build and Tag Docker image
         run: |
-          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }} .
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
 
       # Push the Docker image to IBM Cloud Container Registry
       - name: Push Docker image
         run: |
           ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }}
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
       # Install kubectl
       - name: Install kubectl
@@ -83,35 +84,41 @@ jobs:
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
 
-      # kubectl config with service account 
-      - name: Configure kubectl with Service Account
+      - name: IBM Cluster kubectl config 
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
-          CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }} # Base64-encoded PEM file
         run: |
-
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          # Set cluster
-          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          # Set cluster using the CA PEM file
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
           # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
           # Set context
-          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa 
           # Use context
-          kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
+          kubectl config use-context $CONTEXT
 
-      # Helm upgrade command
+      # Helm upgrade command with the commit hash tag
       - name: Helm upgrade/install conduit-node-011
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
-          helm upgrade --install -n dia-testspace --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-011 .
+          helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
+
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
+          shred -u /tmp/ca.pem
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
         run: |
           rm -rf cluster-backend
-
-
-
