@@ -38,10 +38,10 @@ jobs:
       # Checkout the repository
       - uses: actions/checkout@v4
 
-      # Get Short Commit Hash using PR's head SHA
+      # Get Short Commit Hash of the Merge Commit
       - name: Get Short Commit Hash
         run: |
-          COMMIT_HASH=$(echo "${{ github.event.pull_request.head.sha }}" | cut -c1-7)
+          COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
       # Checkout the cluster-backend repository
