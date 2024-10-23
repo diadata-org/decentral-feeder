@@ -38,13 +38,18 @@ jobs:
       # Checkout the repository
       - uses: actions/checkout@v4
 
+      # Get Short Commit Hash for the latest commit in master
+      - name: Get Short Commit Hash
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
       # Checkout the cluster-backend repository
       - name: Checkout cluster-backend repository
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
           git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
-
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -61,21 +66,16 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Get Unix Timestamp
-      - name: Get Unix Timestamp
-        id: get_timestamp
-        run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
-
-      # Build and Tag the Docker image
+      # Build and Tag the Docker image with the commit hash
       - name: Build and Tag Docker image
         run: |
-          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }} .
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
 
       # Push the Docker image to IBM Cloud Container Registry
       - name: Push Docker image
         run: |
           ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }}
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
       # Install kubectl
       - name: Install kubectl
@@ -89,39 +89,30 @@ jobs:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }} # Base64-encoded PEM file
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
         run: |
-          # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          # Decode the base64-encoded CA certificate and save it to a file
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
-          # Set cluster using the CA PEM file
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          # Set credentials
           kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
-          # Set context
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
-          # Use context
           kubectl config use-context $CONTEXT
-
 
       - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
         run: |
           for i in $(seq -w 001 010); do
             echo "Deploying node $i"
             cd cluster-backend/helmcharts/oracles/conduit-test/$i
-            helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-$i .
-            cd -  # Navigate back to the previous directory
+            helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
+            cd -
           done
           cd
 
-
       - name: Cleanup IBM Cluster CA Certificate
         run: |
-          # Securely remove the CA certificate file
           shred -u /tmp/ca.pem
 
       - name: Hetzner Cluster kubectl config
@@ -129,39 +120,30 @@ jobs:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_HETZNER }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_HETZNER }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_HETZNER }}
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_HETZNER }} # Example: https://your-api-server:6443
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_HETZNER }} # Base64-encoded PEM file
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_HETZNER }}
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_HETZNER }}
         run: |
-
-          # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          # Decode the base64-encoded CA certificate and save it to a file
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
-          # Set cluster
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
-          # Set context
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
-          # Use context
           kubectl config use-context $CONTEXT
   
-        # Helm upgrade command
       - name: Helm upgrade/install conduit-node-013 and conduit-node-014 to Hetzner Cluster
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/013
-          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-013 .
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-013 .
           sleep 10
           cd ..
           cd 014
-          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-014 .
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-014 .
           cd
 
       - name: Cleanup Hetzner Cluster CA Certificate
         run: |
-          # Securely remove the CA certificate file
           shred -u /tmp/ca.pem
 
       - name: Civo Cluster kubectl config
@@ -169,42 +151,31 @@ jobs:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_CIVO }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_CIVO }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_CIVO }}
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_CIVO }} # Example: https://your-api-server:6443
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_CIVO }} # Base64-encoded PEM file
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_CIVO }}
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_CIVO }}
         run: |
-          # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          # Decode the base64-encoded CA certificate and save it to a file
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
-          # Set cluster
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          # Set credentials
           kubectl config set-credentials github-actions-sa --token="$TOKEN"
-          # Set context
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
-          # Use context
           kubectl config use-context $CONTEXT
   
-        # Helm upgrade command
       - name: Helm upgrade/install conduit-node-015 and conduit-node-016 to Civo Cluster
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/015
-          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-015 .
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-015 .
           sleep 10
           cd ..
           cd 016
-          helm upgrade --install -n dia-lumina --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-016 .
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-016 .
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
         run: |
           rm -rf cluster-backend
-          # Check if any CA PEM files were used (if applicable) and securely delete them
           if [ -f /tmp/ca.pem ]; then
             shred -u /tmp/ca.pem
-            echo "cert removed"
           fi
-
-
