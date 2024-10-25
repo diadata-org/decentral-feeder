@@ -1,6 +1,62 @@
 {
     "Tokens": [
         {
+            "Symbol": "AAVE",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ADA",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AERO",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "APT",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Aptos",
+            "Address": "0x1::aptos_coin::AptosCoin",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "AR",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Arweave",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "ARB",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ATOM",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "Crypto.com",
             "Blockchain": "Bitcoin",
@@ -8,10 +64,10 @@
             "Decimals": 18
         },
         {
-            "Symbol": "ETH",
+            "Symbol": "CRV",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
-            "Address": "0x0000000000000000000000000000000000000000",
+            "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52",
             "Decimals": 18
         },
         {
@@ -22,10 +78,101 @@
             "Decimals": 18
         },
         {
+            "Symbol": "DOGE",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 10
+        },
+        {
+            "Symbol": "DYDX",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ENA",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ENS",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "FET",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "FIL",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "FLOW",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "FTM",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GRT",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ICP",
+            "Exchange": "Crypto.com",
+            "Blockchain": "InternetComputer",
+            "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "LDO",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MKR",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
             "Decimals": 18
         },
         {
@@ -36,12 +183,96 @@
             "Decimals": 18
         },
         {
+            "Symbol": "NEAR",
+            "Exchange": "Crypto.com",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
             "Symbol": "OMG",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
             "Decimals": 18
-        },        
+        },
+        {
+            "Symbol": "ONDO",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "OP",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PENDLE",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "POL",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PRIME",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "Render",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SAND",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SEI",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Sei",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SHIB",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SNX",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SOL",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
         {
             "Symbol": "STG",
             "Exchange": "Crypto.com",
@@ -57,10 +288,52 @@
             "Decimals": 18
         },
         {
+            "Symbol": "STRK",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STX",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "SUI",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Sui",
+            "Address": "0x2::sui::SUI",
+            "Decimals": 9
+        },
+        {
             "Symbol": "SUSHI",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TAO",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Bittensor",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TIA",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "UNI",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
             "Decimals": 18
         },
         {
@@ -90,6 +363,27 @@
             "Blockchain": "Solana",
             "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
             "Decimals": 18
+        },
+        {
+            "Symbol": "WLD",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "XLM",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Stellar",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
         },
         {
             "Symbol": "YFI",
