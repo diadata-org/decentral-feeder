@@ -64,8 +64,8 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName string) *metr
 	m := &metrics{
 		uptime: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
-			Name:      "uptime_seconds",
-			Help:      "Uptime of the application in seconds.",
+			Name:      "uptime_hours",
+			Help:      "Uptime of the application in hours.",
 		}),
 		cpuUsage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
@@ -148,7 +148,7 @@ func main() {
 	// Update metrics periodically
 	go func() {
 		for {
-			uptime := time.Since(startTime).Seconds()
+			uptime := time.Since(startTime).Hours()
 			m.uptime.Set(uptime)
 
 			// Update memory usage
