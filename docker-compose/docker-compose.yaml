@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   my_service:
-    image: diadata/decentralized-feeder:v0.0.1
+    image: diadata/decentralized-feeder:v0.0.2
     env_file:
       - .env
     restart: always
