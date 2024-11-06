@@ -41,7 +41,7 @@ var (
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
-	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "")
+	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Crypto.com:BTC-USDT,Crypto.com:BTC-USD")
 	// Comma separated list of pools.
 	// The binary digit in the third position controls the order of the trades in the pool:
 	// TO DO: For 0 the original order is taken into consideration, while for 1 the order of all trades in the pool is reversed.
@@ -186,8 +186,8 @@ func main() {
 	key := utils.Getenv("PRIVATE_KEY", "")
 	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
-	backupNode := utils.Getenv("BACKUP_NODE", "")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
+	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
 
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
@@ -197,7 +197,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", ""), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "23104"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
