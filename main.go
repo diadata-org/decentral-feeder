@@ -17,6 +17,7 @@ import (
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
@@ -183,8 +184,7 @@ func main() {
 	failoverChannel := make(chan string)
 
 	// Feeder mechanics
-	key := utils.Getenv("PRIVATE_KEY", "")
-	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
+	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
@@ -208,7 +208,12 @@ func main() {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 
-	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(chainId))
+	privateKey, err := crypto.HexToECDSA(privateKeyHex)
+	if err != nil {
+		log.Fatalf("Failed to load private key: %v", err)
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
