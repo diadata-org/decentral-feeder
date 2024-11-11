@@ -6,6 +6,10 @@ on:
       - master
   workflow_dispatch:  # This allows manual triggering
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -49,7 +53,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -106,6 +110,8 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa 
           # Use context
           kubectl config use-context $CONTEXT
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Helm upgrade command with the commit hash tag
       - name: Helm upgrade/install conduit-node-011
@@ -116,7 +122,7 @@ jobs:
       - name: Cleanup IBM Cluster CA Certificate
         run: |
           # Securely remove the CA certificate file
-          shred -u /tmp/ca.pem
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository

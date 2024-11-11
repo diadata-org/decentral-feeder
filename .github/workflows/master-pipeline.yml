@@ -49,7 +49,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -100,6 +100,8 @@ jobs:
           kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
           kubectl config use-context $CONTEXT
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
         run: |
