@@ -35,9 +35,21 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-  push_image_and_deploy:
+
+  request_approval:
     runs-on: ubuntu-latest
     needs: build_and_test
+    if: github.event_name == 'pull_request'  # Ensure it's a PR
+    steps:
+      - name: Awaiting Approval for Deployment
+        run: |
+          echo "Waiting for approval from a CODEOWNER to deploy to dia-testspace."
+          echo "Please approve the deployment by selecting 'Approve and run' on this job."
+        timeout-minutes: 120  # Maximum wait time for approval
+
+  push_image_and_deploy:
+    runs-on: ubuntu-latest
+    needs: request_approval
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4

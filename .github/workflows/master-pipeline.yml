@@ -100,8 +100,7 @@ jobs:
           kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
           kubectl config use-context $CONTEXT
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+
 
       - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
         run: |
@@ -112,6 +111,8 @@ jobs:
             cd -
           done
           cd
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup IBM Cluster CA Certificate
         run: |
@@ -143,6 +144,8 @@ jobs:
           cd 014
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-014 .
           cd
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup Hetzner Cluster CA Certificate
         run: |
@@ -173,6 +176,8 @@ jobs:
           cd ..
           cd 016
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-016 .
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository
