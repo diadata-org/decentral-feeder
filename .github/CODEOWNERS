@@ -1,0 +1,5 @@
+# Specify the default team to review all changes
+* @your-org/team-name
+
+# Specify other teams or individuals for specific directories or files
+/deploy/ @your-org/deployment-team

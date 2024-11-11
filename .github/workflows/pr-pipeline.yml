@@ -110,14 +110,14 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa 
           # Use context
           kubectl config use-context $CONTEXT
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Helm upgrade command with the commit hash tag
       - name: Helm upgrade/install conduit-node-011
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
           helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup IBM Cluster CA Certificate
         run: |
