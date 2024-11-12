@@ -202,6 +202,7 @@ func (scraper *binanceScraper) connectToAPI(pairs []models.ExchangePair) error {
 	host := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_HOST", "")
 
 	log.Errorf("Binance username -- password -- user -- host: %s -- %s -- %s -- %s", username, password, user, host)
+	log.Errorf("lengths username -- password -- host: %d -- %d -- %d", len(username), len(password), len(host))
 
 	var d = ws.Dialer{
 		Proxy: http.ProxyURL(&url.URL{
