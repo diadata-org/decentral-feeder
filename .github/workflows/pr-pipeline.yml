@@ -95,8 +95,9 @@ jobs:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }} # Base64-encoded PEM file
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} 
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
@@ -107,9 +108,9 @@ jobs:
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
           # Set credentials
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
           # Set context
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa 
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           # Use context
           kubectl config use-context $CONTEXT
 

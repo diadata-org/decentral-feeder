@@ -91,14 +91,15 @@ jobs:
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
           KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           kubectl config use-context $CONTEXT
 
 
@@ -125,14 +126,15 @@ jobs:
           CONTEXT: ${{ secrets.K8s_CONTEXT_HETZNER }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_HETZNER }}
           KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_HETZNER }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
       - name: Helm upgrade/install conduit-node-013 and conduit-node-014 to Hetzner Cluster
@@ -158,14 +160,15 @@ jobs:
           CONTEXT: ${{ secrets.K8s_CONTEXT_CIVO }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_CIVO }}
           KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_CIVO }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
       - name: Helm upgrade/install conduit-node-015 and conduit-node-016 to Civo Cluster
