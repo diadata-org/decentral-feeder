@@ -6,6 +6,12 @@ on:
       - master
   workflow_dispatch:  # This allows manual triggering
 
+permissions:
+  contents: read
+  packages: write
+  deployments: write  # Only if deployments are required
+  id-token: none  # Disable unless specifically needed
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -146,7 +152,7 @@ jobs:
           cd 014
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-014 .
           cd
-          # Clean up CA certificate immediately
+          # Clean up CA certificate
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup Hetzner Cluster CA Certificate
@@ -179,7 +185,7 @@ jobs:
           cd ..
           cd 016
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-016 .
-          # Clean up CA certificate immediately
+          # Clean up CA certificate
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository

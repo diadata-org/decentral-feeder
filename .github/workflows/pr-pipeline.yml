@@ -10,6 +10,9 @@ permissions:
   contents: read
   packages: write
 
+env:
+  ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }}  # Set debug mode globally
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -119,7 +122,7 @@ jobs:
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
           helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
-          # Clean up CA certificate immediately
+          # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup IBM Cluster CA Certificate
