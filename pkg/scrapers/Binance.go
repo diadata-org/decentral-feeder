@@ -2,6 +2,7 @@ package scrapers
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -31,18 +32,25 @@ type binanceWSResponse struct {
 }
 
 type binanceScraper struct {
-	wsClient         *ws.Conn
-	tradesChannel    chan models.Trade
-	subscribeChannel chan models.ExchangePair
-	tickerPairMap    map[string]models.Pair
-	lastTradeTimeMap map[string]time.Time
-	maxErrCount      int
-	restartWaitTime  int
-	genesis          time.Time
+	wsClient          *ws.Conn
+	tradesChannel     chan models.Trade
+	subscribeChannel  chan models.ExchangePair
+	tickerPairMap     map[string]models.Pair
+	lastTradeTimeMap  map[string]time.Time
+	maxErrCount       int
+	restartWaitTime   int
+	genesis           time.Time
+	apiConnectRetries int
+	proxyIndex        int
 }
 
+const (
+	BINANCE_API_MAX_RETRIES = 5
+)
+
 var (
-	binanceWSBaseString = "wss://stream.binance.com:9443/ws"
+	binanceWSBaseString   = "wss://stream.binance.com:9443/ws"
+	binanceApiWaitSeconds = 5
 )
 
 func NewBinanceScraper(ctx context.Context, pairs []models.ExchangePair, failoverChannel chan string, wg *sync.WaitGroup) Scraper {
@@ -58,12 +66,24 @@ func NewBinanceScraper(ctx context.Context, pairs []models.ExchangePair, failove
 		maxErrCount:      20,
 		restartWaitTime:  5,
 		genesis:          time.Now(),
+		proxyIndex:       0,
 	}
 
-	err := scraper.connectToAPI(pairs)
-	if err != nil {
-		failoverChannel <- BINANCE_EXCHANGE
-		return &scraper
+	err := errors.New("cannot connect to API")
+	var errCount int
+	for err != nil {
+
+		if errCount > 2*scraper.apiConnectRetries {
+			failoverChannel <- BINANCE_EXCHANGE
+			return &scraper
+		}
+
+		err = scraper.connectToAPI(pairs)
+		if err != nil {
+			errCount++
+			scraper.apiConnectRetries++
+			time.Sleep(time.Duration(binanceApiWaitSeconds) * time.Second)
+		}
 	}
 
 	go scraper.fetchTrades(&lock)
@@ -167,17 +187,25 @@ func (scraper *binanceScraper) subscribe(pair models.ExchangePair, subscribe boo
 }
 
 func (scraper *binanceScraper) connectToAPI(pairs []models.ExchangePair) error {
-	// Set up websocket dialer with proxy.
-	proxyURL, err := url.Parse(utils.Getenv("BINANCE_PROXY_URL", ""))
-	if err != nil {
-		log.Errorf("Binance - Parse proxy url: %v.", err)
+
+	// Switch to alternative Proxy whenever too many retries on the first.
+	if scraper.apiConnectRetries > BINANCE_API_MAX_RETRIES {
+		log.Errorf("too many timeouts for Binance api connection with proxy %v. Switch to alternative proxy.", scraper.proxyIndex)
+		scraper.apiConnectRetries = 0
+		scraper.proxyIndex = (scraper.proxyIndex + 1) % 2
 	}
+
+	username := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_USERNAME", "samuelbrack")
+	password := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_PASSWORD", "hD3bfFBVLg")
+	user := url.UserPassword(username, password)
+
+	host := utils.Getenv("BINANCE_PROXY"+strconv.Itoa(scraper.proxyIndex)+"_HOST", "178.218.129.213:50100")
 
 	var d = ws.Dialer{
 		Proxy: http.ProxyURL(&url.URL{
 			Scheme: "http", // or "https" depending on your proxy
-			User:   proxyURL.User,
-			Host:   proxyURL.Host,
+			User:   user,
+			Host:   host,
 			Path:   "/",
 		}),
 	}
