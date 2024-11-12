@@ -6,6 +6,13 @@ on:
       - master
   workflow_dispatch:  # This allows manual triggering
 
+permissions:
+  contents: read
+  packages: write
+
+env:
+  ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }}  # Set debug mode globally
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -34,6 +41,8 @@ jobs:
   push_image_and_deploy:
     runs-on: ubuntu-latest
     needs: build_and_test
+    environment:
+      name: dia-testspace  # BEFORE GOING PUBLIC CHANGE THE ENV PROTENTIOC RULES TO INCLUDE THIS 
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
@@ -49,7 +58,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -89,8 +98,9 @@ jobs:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }} # Base64-encoded PEM file
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} 
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
@@ -101,9 +111,9 @@ jobs:
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
           # Set credentials
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
           # Set context
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa 
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           # Use context
           kubectl config use-context $CONTEXT
 
@@ -112,13 +122,16 @@ jobs:
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
           helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
+          # Clean up CA certificate 
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup IBM Cluster CA Certificate
         run: |
           # Securely remove the CA certificate file
-          shred -u /tmp/ca.pem
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
-      - name: Cleanup cloned repository
+      - name: Cleanup cloned repository and log out from IBM
         run: |
           rm -rf cluster-backend
+          ibmcloud logout

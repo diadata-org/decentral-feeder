@@ -6,6 +6,12 @@ on:
       - master
   workflow_dispatch:  # This allows manual triggering
 
+permissions:
+  contents: read
+  packages: write
+  deployments: write  # Only if deployments are required
+  id-token: none  # Disable unless specifically needed
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -49,7 +55,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -91,15 +97,17 @@ jobs:
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
           KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials github-actions-sa-prod --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa-prod 
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           kubectl config use-context $CONTEXT
+
 
       - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
         run: |
@@ -110,6 +118,8 @@ jobs:
             cd -
           done
           cd
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup IBM Cluster CA Certificate
         run: |
@@ -122,14 +132,15 @@ jobs:
           CONTEXT: ${{ secrets.K8s_CONTEXT_HETZNER }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_HETZNER }}
           KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_HETZNER }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
       - name: Helm upgrade/install conduit-node-013 and conduit-node-014 to Hetzner Cluster
@@ -141,6 +152,8 @@ jobs:
           cd 014
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-014 .
           cd
+          # Clean up CA certificate
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Cleanup Hetzner Cluster CA Certificate
         run: |
@@ -153,14 +166,15 @@ jobs:
           CONTEXT: ${{ secrets.K8s_CONTEXT_CIVO }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_CIVO }}
           KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_CIVO }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
           echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
           kubectl config set-cluster "$CLUSTER_NAME" \
             --server="$API_SERVER" \
             --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
       - name: Helm upgrade/install conduit-node-015 and conduit-node-016 to Civo Cluster
@@ -171,11 +185,14 @@ jobs:
           cd ..
           cd 016
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-016 .
+          # Clean up CA certificate
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
-      - name: Cleanup cloned repository
+      - name: Cleanup cloned repository and logout from IBM
         run: |
           rm -rf cluster-backend
           if [ -f /tmp/ca.pem ]; then
             shred -u /tmp/ca.pem
           fi
+          ibmcloud logout
