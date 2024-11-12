@@ -130,3 +130,4 @@ jobs:
       - name: Cleanup cloned repository
         run: |
           rm -rf cluster-backend
+          ibmcloud logout -q

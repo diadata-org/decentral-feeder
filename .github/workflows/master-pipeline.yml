@@ -186,3 +186,4 @@ jobs:
           if [ -f /tmp/ca.pem ]; then
             shred -u /tmp/ca.pem
           fi
+          ibmcloud logout -q
