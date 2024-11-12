@@ -151,10 +151,6 @@ jobs:
           # Clean up CA certificate
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
-      - name: Cleanup Hetzner Cluster CA Certificate
-        run: |
-          shred -u /tmp/ca.pem
-
       - name: Civo Cluster kubectl config
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_CIVO }}
