@@ -180,10 +180,10 @@ jobs:
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
-      - name: Cleanup cloned repository
+      - name: Cleanup cloned repository and logout from IBM
         run: |
           rm -rf cluster-backend
           if [ -f /tmp/ca.pem ]; then
             shred -u /tmp/ca.pem
           fi
-          ibmcloud logout -q
+          ibmcloud logout
