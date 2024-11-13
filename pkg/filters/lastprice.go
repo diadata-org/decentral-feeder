@@ -6,6 +6,7 @@ import (
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 // LastPrice returns the price of the latest trade.
@@ -32,6 +33,7 @@ func LastPrice(trades []models.Trade, USDPrice bool) (lastPrice float64, timesta
 		baseString := "https://api.diadata.org/v1/assetQuotation/" + lastTrade.BaseToken.Blockchain + "/" + lastTrade.BaseToken.Address
 		response, _, err = utils.GetRequest(baseString)
 		if err != nil {
+			log.Debugf("GetRequest for %s on %s", lastTrade.BaseToken.Address, lastTrade.BaseToken.Blockchain)
 			return
 		}
 		err = json.Unmarshal(response, &aq)
