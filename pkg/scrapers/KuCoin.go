@@ -104,7 +104,7 @@ func NewKuCoinScraper(ctx context.Context, pairs []models.ExchangePair, failover
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @kucoinWatchdogDelayMap.
 	for _, pair := range pairs {
 		envVar := strings.ToUpper(KUCOIN_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
-		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
+		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "300"), 10, 64)
 		if err != nil {
 			log.Errorf("KuCoin - Parse kucoinWatchdogDelay: %v.", err)
 		}
