@@ -372,6 +372,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "USD",
+            "Exchange": "Kraken",
+            "Blockchain": "Fiat",
+            "Address": "840",
+            "Decimals": 2
+        },
+        {
             "Symbol": "USDC",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
