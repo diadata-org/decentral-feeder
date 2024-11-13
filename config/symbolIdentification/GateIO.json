@@ -59,9 +59,16 @@
         {
             "Symbol": "BNB",
             "Exchange": "GateIO",
-            "Blockchain": "BinanceSmartChain",
+            "Blockchain": "GateIOSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+            "Decimals": 5
         },
         {
             "Symbol": "BTC",
@@ -351,7 +358,7 @@
             "Decimals": 18
         },
         {
-            "Symbol": "TRON",
+            "Symbol": "TRX",
             "Exchange": "GateIO",
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",

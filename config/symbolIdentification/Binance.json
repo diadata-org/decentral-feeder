@@ -15,6 +15,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "AERO",
+            "Exchange": "Binance",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+            "Decimals": 18
+        },
+        {
             "Symbol": "APT",
             "Exchange": "Binance",
             "Blockchain": "Aptos",
@@ -55,6 +62,13 @@
             "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "Binance",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+            "Decimals": 5
         },
         {
             "Symbol": "BTC",
@@ -176,6 +190,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MNT",
+            "Exchange": "Binance",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "Binance",
             "Blockchain": "Moonriver",
@@ -197,6 +218,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ONDO",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3",
+            "Decimals": 18
+        },
+        {
             "Symbol": "OP",
             "Exchange": "Binance",
             "Blockchain": "Optimism",
@@ -215,6 +243,13 @@
             "Exchange": "Binance",
             "Blockchain": "Polygon",
             "Address": "0x0000000000000000000000000000000000001010",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PRIME",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
             "Decimals": 18
         },
         {
@@ -323,7 +358,7 @@
             "Decimals": 18
         },
         {
-            "Symbol": "TRON",
+            "Symbol": "TRX",
             "Exchange": "Binance",
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",
