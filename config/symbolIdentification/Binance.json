@@ -134,6 +134,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "FDUSD",
+            "Exchange": "Binance",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409",
+            "Decimals": 18
+        },
+        {
             "Symbol": "FET",
             "Exchange": "Binance",
             "Blockchain": "Fetch",
