@@ -15,11 +15,25 @@
             "Decimals": 6
         },
         {
+            "Symbol": "AERO",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+            "Decimals": 18
+        },
+        {
             "Symbol": "APT",
             "Exchange": "Kraken",
             "Blockchain": "Aptos",
             "Address": "0x1::aptos_coin::AptosCoin",
             "Decimals": 8
+        },
+        {
+            "Symbol": "AR",
+            "Exchange": "Kraken",
+            "Blockchain": "Arweave",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
         },
         {
             "Symbol": "ARB",
@@ -41,6 +55,20 @@
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "BNB",
+            "Exchange": "Kraken",
+            "Blockchain": "KrakenSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+            "Decimals": 5
         },
         {
             "Symbol": "BTC",
@@ -76,6 +104,13 @@
             "Blockchain": "Polkadot",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 10
+        },
+        {
+            "Symbol": "DYDX",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5",
+            "Decimals": 18
         },
         {
             "Symbol": "ENA",
@@ -218,7 +253,7 @@
             "Decimals": 18
         },
         {
-            "Symbol": "Render",
+            "Symbol": "RENDER",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
@@ -323,7 +358,7 @@
             "Decimals": 18
         },
         {
-            "Symbol": "TRON",
+            "Symbol": "TRX",
             "Exchange": "Kraken",
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",
@@ -362,6 +397,13 @@
             "Exchange": "Kraken",
             "Blockchain": "Solana",
             "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WLD",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753",
             "Decimals": 18
         },
         {

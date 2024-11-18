@@ -59,9 +59,16 @@
         {
             "Symbol": "BNB",
             "Exchange": "KuCoin",
-            "Blockchain": "BinanceSmartChain",
+            "Blockchain": "KuCoinSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "KuCoin",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+            "Decimals": 5
         },
         {
             "Symbol": "BTC",
@@ -239,7 +246,14 @@
             "Decimals": 18
         },
         {
-            "Symbol": "Render",
+            "Symbol": "PRIME",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RENDER",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
@@ -344,7 +358,7 @@
             "Decimals": 18
         },
         {
-            "Symbol": "TRON",
+            "Symbol": "TRX",
             "Exchange": "KuCoin",
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",

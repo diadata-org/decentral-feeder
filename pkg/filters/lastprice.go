@@ -6,7 +6,19 @@ import (
 
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
+	"github.com/sirupsen/logrus"
 )
+
+var log *logrus.Logger
+
+func init() {
+	log = logrus.New()
+	loglevel, err := logrus.ParseLevel(utils.Getenv("LOG_LEVEL_FILTERS", "info"))
+	if err != nil {
+		log.Errorf("Parse log level: %v.", err)
+	}
+	log.SetLevel(loglevel)
+}
 
 // LastPrice returns the price of the latest trade.
 func LastPrice(trades []models.Trade, USDPrice bool) (lastPrice float64, timestamp time.Time, err error) {
@@ -32,6 +44,7 @@ func LastPrice(trades []models.Trade, USDPrice bool) (lastPrice float64, timesta
 		baseString := "https://api.diadata.org/v1/assetQuotation/" + lastTrade.BaseToken.Blockchain + "/" + lastTrade.BaseToken.Address
 		response, _, err = utils.GetRequest(baseString)
 		if err != nil {
+			log.Debugf("GetRequest for %s on %s", lastTrade.BaseToken.Address, lastTrade.BaseToken.Blockchain)
 			return
 		}
 		err = json.Unmarshal(response, &aq)

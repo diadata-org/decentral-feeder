@@ -21,7 +21,7 @@ func watchdog(
 	subscribeChannel chan models.ExchangePair,
 	lock *sync.RWMutex,
 ) {
-	log.Infof("%s - start watching %s.", pair.Exchange, pair.ForeignName)
+	log.Infof("%s - start watching %s with watchdog %v.", pair.Exchange, pair.ForeignName, watchdogDelay)
 	for {
 		select {
 		case <-ticker.C:
