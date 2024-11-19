@@ -22,6 +22,7 @@ type SimulationScraper struct {
 	restClient    *ethclient.Client
 	simulator     *simulation.Simulator
 	allowedTokens map[string]map[string]string
+	decimalCache  map[string]uint8
 }
 
 type SwapEvents struct {
@@ -52,6 +53,7 @@ func NewSimulationScraper(pools []models.Pool, tradesChannel chan models.Trade, 
 	// scraper.tradeSimulationRPC = "http://localhost:8085/tradesimulator/symbol" //?symbol=UNI&blocknumber=20333049
 	scraper.simulator = simulation.New(scraper.restClient, log)
 	scraper.initTokens()
+	scraper.decimalCache = make(map[string]uint8)
 
 	log.Info("Started Simulation scraper.")
 
@@ -83,13 +85,27 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 			defer w.Done()
 
 			tokens := scraper.allowedTokens[symbol]
-			tokenInDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
-			if err != nil {
-				log.Errorf("error getting decimal tokenInStr of symbol %s err: %v", symbol, err)
+
+			tokenInDecimal, ok := scraper.decimalCache[tokens["tokenInStr"]]
+			if !ok {
+				tokenInDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
+				if err != nil {
+					log.Errorf("error getting decimal tokenInStr of symbol %s err: %v", symbol, err)
+					return
+				}
+				scraper.decimalCache[tokens["tokenInStr"]] = tokenInDecimal
+
 			}
-			tokenOutDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
-			if err != nil {
-				log.Errorf("error getting decimal tokenOutStr of symbol %s err: %v", symbol, err)
+
+			tokenOutDecimal, ok := scraper.decimalCache[tokens["tokenOutStr"]]
+			if !ok {
+				tokenOutDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
+				if err != nil {
+					log.Errorf("error getting decimal tokenOutStr of symbol %s err: %v", symbol, err)
+					return
+				}
+				scraper.decimalCache[tokens["tokenOutStr"]] = tokenOutDecimal
+
 			}
 
 			token0 := models.Asset{

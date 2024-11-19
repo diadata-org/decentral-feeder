@@ -57,6 +57,20 @@
             "Decimals": 0
         },
         {
+            "Symbol": "BNB",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Crypto.comSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+            "Decimals": 5
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "Crypto.com",
             "Blockchain": "Bitcoin",
@@ -173,6 +187,13 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MNT",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
             "Decimals": 18
         },
         {
@@ -327,6 +348,20 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "TON",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TRX",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
         },
         {
