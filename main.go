@@ -208,6 +208,8 @@ func main() {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 
+	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
+
 	privateKey, err := crypto.HexToECDSA(privateKeyHex)
 	if err != nil {
 		log.Fatalf("Failed to load private key: %v", err)
