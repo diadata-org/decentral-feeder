@@ -17,6 +17,7 @@ import (
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
@@ -41,7 +42,7 @@ var (
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
-	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "")
+	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Crypto.com:BTC-USDT,Crypto.com:BTC-USD")
 	// Comma separated list of pools.
 	// The binary digit in the third position controls the order of the trades in the pool:
 	// TO DO: For 0 the original order is taken into consideration, while for 1 the order of all trades in the pool is reversed.
@@ -183,11 +184,10 @@ func main() {
 	failoverChannel := make(chan string)
 
 	// Feeder mechanics
-	key := utils.Getenv("PRIVATE_KEY", "")
-	key_password := utils.Getenv("PRIVATE_KEY_PASSWORD", "")
+	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
-	backupNode := utils.Getenv("BACKUP_NODE", "")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
+	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc-static-violet-vicuna-qhcog2uell.t.conduit.xyz")
 
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
@@ -197,7 +197,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", ""), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "23104"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
@@ -208,7 +208,14 @@ func main() {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 
-	auth, err := bind.NewTransactorWithChainID(strings.NewReader(key), key_password, big.NewInt(chainId))
+	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
+
+	privateKey, err := crypto.HexToECDSA(privateKeyHex)
+	if err != nil {
+		log.Fatalf("Failed to load private key: %v", err)
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
