@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  Lazernet-feeder:
+  lasernet-feeder:
     image: diadata/decentralized-feeder:v0.0.4
     env_file:
       - .env

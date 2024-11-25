@@ -16,6 +16,7 @@
    - [Alternative Deployment Methods](#alternative-deployment-methods)
      - [Docker Run Deployment](#docker-run-deployment)
      - [Kubernetes Deployment](#kubernetes-deployment)
+   - [Adding Exchange Pairs](#adding-exchange-pairs)
    - [Error Handling](#error-handling)
 4. [Conclusion](#conclusion)
 
@@ -204,6 +205,35 @@ Kubernetes is ideal for production environments requiring scalability and high a
       ```
 
 ---
+
+### Adding Exchange Pairs
+
+The `EXCHANGEPAIRS` environment variable is used to configure asset pairs for the decentralized feeder. You can specify pairs to scrape from various exchanges, including Binance, Crypto.com, Gate.io, Coinbase, Kraken, and more. The format for each pair is `<Exchange>:<Asset-Pair>` (e.g., `Binance:BTC-USDT`).
+
+---
+
+#### **Adding Exchange Pairs in Docker Compose**
+
+1. Open your `.env` file or add the `EXCHANGEPAIRS` variable directly to your `docker-compose.yaml` file.
+2. Specify the exchange pairs as a comma-separated list.
+
+   - Example:
+     ```plaintext
+      EXCHANGEPAIRS=" 
+      Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
+      CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD,
+      GateIO:ARB-USDT, GateIO:ATOM-USDT, GateIO:AVAX-USDT, GateIO:BNB-USDT, GateIO:BONK-USDT,
+      Kraken:AAVE-USD, Kraken:ADA-USD, Kraken:ADA-USDT, Kraken:APT-USD, Kraken:ARB-USD,
+      KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
+      Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
+      "
+     ```
+
+3. Restart the services to apply the changes:
+   ```bash
+   docker-compose down && docker-compose up -d
+
+
 ### **Error Handling**
 
 If any issues arise during deployment, follow these steps based on your deployment method:
