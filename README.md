@@ -1,16 +1,11 @@
-# Overview
-
-This repository contains a self-contained pipeline for data collection, processing, and publishing. Specifically, scrapers gather trade data from various centralized and decentralized exchanges. The collected trades undergo a two-step aggregation process to produce a scalar value associated with an asset, which is then published on-chain. In most cases, this value represents the asset's USD price.
-
----
-
 ## Table of Contents
-1. [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
+1. [Overview](#overview)
+2. [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
    - [Scrapers](#scrapers)
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
-2. [Node Deployment Guide](#node-deployment-guide)
+3. [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
      - [1. Navigate to the Docker Compose Folder](#1-navigate-to-the-docker-compose-folder)
@@ -22,8 +17,18 @@ This repository contains a self-contained pipeline for data collection, processi
      - [Docker Run Deployment](#docker-run-deployment)
      - [Kubernetes Deployment](#kubernetes-deployment)
    - [Error Handling](#error-handling)
-3. [Conclusion](#conclusion)
+4. [Conclusion](#conclusion)
 
+
+---
+
+# Overview
+
+This repository contains a self-contained pipeline for data collection, processing, and publishing. Specifically, scrapers gather trade data from various centralized and decentralized exchanges. The collected trades undergo a two-step aggregation process to produce a scalar value associated with an asset, which is then published on-chain. In most cases, this value represents the asset's USD price.
+
+![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
+
+---
 ---
 
 # Detailed Description of the Building Blocks
