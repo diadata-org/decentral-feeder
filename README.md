@@ -154,21 +154,6 @@ This method is suitable for simple setups without orchestration.
 
 ---
 
-### **Error Handling**
-   - If any issues arise during deployment, follow these steps:
-     1. **Check Logs**: View the logs to identify error messages. Use:
-        ```bash
-        docker-compose logs -f
-        ```
-     2. **Verify Environment Variables**: Ensure all required environment variables (`PRIVATE_KEY`, `DEPLOYED_CONTRACT`) are correctly set in the `.env` file.
-     3. **Restart Deployment**: If needed, restart the deployment by bringing down and restarting the container:
-        ```bash
-        docker-compose down
-        docker-compose up -d
-        ```
-
----
-
 ### **2. Kubernetes Deployment**
 
 Kubernetes is ideal for production environments requiring scalability and high availability.
@@ -216,8 +201,54 @@ Kubernetes is ideal for production environments requiring scalability and high a
       ```
 
 ---
+### **Error Handling**
 
+If any issues arise during deployment, follow these steps based on your deployment method:
 
+1. **Check Logs**:
+   - **Docker Compose**: `docker-compose logs -f`
+   - **Docker Run**: `docker logs <container_name>`
+   - **Kubernetes**: `kubectl logs <pod-name>`
+
+2. **Verify Environment Variables**:
+   - Ensure all required variables (`PRIVATE_KEY`, `DEPLOYED_CONTRACT`) are correctly set:
+     - **Docker Compose**: Check `.env` file.
+     - **Docker Run**: Verify `-e` flags.
+     - **Kubernetes**: Check the Deployment manifest or ConfigMap.
+
+3. **Restart Deployment**:
+   - **Docker Compose**: 
+     ```bash
+     docker-compose down && docker-compose up -d
+     ```
+   - **Docker Run**: 
+     ```bash
+     docker stop <container_name> && docker rm <container_name> && docker run -d ...
+     ```
+   - **Kubernetes**:
+     ```bash
+     kubectl delete pod <pod-name>
+     ```
+
+4. **Check Configuration**:
+   - Ensure the correct image version is used and manifests/files are properly configured.
+
+5. **Monitor Resources**:
+   - Check CPU and memory usage if issues persist:
+     - **Docker**: `docker stats`
+     - **Kubernetes**: `kubectl top pod <pod-name>`
+
+6. **Network Connectivity**:
+   - Verify the container/pod can access required external services (e.g., blockchain nodes, databases).
+
+7. **Update or Rebuild**:
+   - Ensure you're using the correct image version:
+     ```bash
+     docker pull diadata/decentralized-feeder:<VERSION>
+     ```
+   - Apply fixes and redeploy.
+
+--- 
 
 ## **Conclusion**
 
