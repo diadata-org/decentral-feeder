@@ -26,12 +26,11 @@
 
 This repository contains a self-contained pipeline for data collection, processing, and publishing. Specifically, scrapers gather trade data from various centralized and decentralized exchanges. The collected trades undergo a two-step aggregation process to produce a scalar value associated with an asset, which is then published on-chain. In most cases, this value represents the asset's USD price.
 
-![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
-
 ---
 
 # 2. Detailed Description of the Building Blocks
 ![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
+
 In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
 
 
