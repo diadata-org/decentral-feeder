@@ -251,7 +251,13 @@ Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated
        ```
    - **Docker Run**:
      ```bash
-     docker run -d -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ..." your-image
+     docker run -d \
+      -e PRIVATE_KEY=your-private-key \
+      -e DEPLOYED_CONTRACT=your-contrract \
+      -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT" \
+      --name decentralized-feeder \
+      diadata/decentralized-feeder:<VERSION>
+
      ```
 
  Verify the configuration:
