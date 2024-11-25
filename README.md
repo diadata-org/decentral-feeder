@@ -29,7 +29,6 @@ This repository contains a self-contained pipeline for data collection, processi
 ![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
 
 ---
----
 
 # 2. Detailed Description of the Building Blocks
 ![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
