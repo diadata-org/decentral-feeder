@@ -5,6 +5,30 @@ Thus obtained trades are then processed in a 2-step aggregation procedure in ord
 
 ![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
 
+---
+
+## Table of Contents
+1. [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
+   - [Scrapers](#scrapers)
+   - [Collector](#collector)
+   - [Processor](#processor)
+   - [Feeder](#feeder)
+2. [Node Deployment Guide](#node-deployment-guide)
+   - [Requirements](#requirements)
+   - [Docker Compose Deployment](#docker-compose-deployment)
+     - [1. Navigate to the Docker Compose Folder](#1-navigate-to-the-docker-compose-folder)
+     - [2. Configure Environment Variables](#2-configure-environment-variables)
+     - [3. Retrieve Deployed Contract](#3-retrieve-deployed-contract)
+     - [4. Run Docker Compose](#4-run-docker-compose)
+   - [Verification](#verification)
+   - [Alternative Deployment Methods](#alternative-deployment-methods)
+     - [Docker Run Deployment](#docker-run-deployment)
+     - [Kubernetes Deployment](#kubernetes-deployment)
+   - [Error Handling](#error-handling)
+3. [Conclusion](#conclusion)
+
+---
+
 # Detailed Description of the Building Blocks
 In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
 
