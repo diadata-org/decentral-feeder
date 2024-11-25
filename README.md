@@ -37,10 +37,6 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 - Ensure **Docker** and **Docker Compose** are installed on your machine.
 
-# Decentralized Feeder Deployment Guide
-
-This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g., `v0.0.4`, `v0.0.5`, etc.) when deploying.
-
 ---
 
 ## **Docker Compose Deployment**
