@@ -213,12 +213,12 @@ To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS
 
 #### **Steps to Add Exchange Pairs**
 
-1. Locate the environment configuration file or section for your deployment method:
+Locate the environment configuration file or section for your deployment method:
    - **For Docker Compose**: Use the `.env` file or add directly to the `docker-compose.yaml` file.
    - **For Kubernetes**: Update the `values.yaml` file or use Helm's `--set` flag.
    - **For Docker Run**: Pass the variable directly using the `-e` flag.
 
-2. Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
+Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
 
    - Example:
      ```plaintext
@@ -232,7 +232,7 @@ To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS
      "
      ```
 
-3. Apply the changes based on your deployment method:
+ Apply the changes based on your deployment method:
    - **Docker Compose**:
      ```bash
      docker-compose up 
@@ -254,7 +254,7 @@ To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS
      docker run -d -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ..." your-image
      ```
 
-4. Verify the configuration:
+ Verify the configuration:
    - **Docker Compose**: Check logs with:
      ```bash
      docker-compose logs -f
@@ -276,18 +276,18 @@ By following these steps, you can add or update exchange pairs in your deploymen
 
 If any issues arise during deployment, follow these steps based on your deployment method:
 
-1. **Check Logs**:
+ **Check Logs**:
    - **Docker Compose**: `docker-compose logs -f`
    - **Docker Run**: `docker logs <container_name>`
    - **Kubernetes**: `kubectl logs <pod-name>`
 
-2. **Verify Environment Variables**:
+ **Verify Environment Variables**:
    - Ensure all required variables (`PRIVATE_KEY`, `DEPLOYED_CONTRACT`) are correctly set:
      - **Docker Compose**: Check `.env` file.
      - **Docker Run**: Verify `-e` flags.
      - **Kubernetes**: Check the Deployment manifest or ConfigMap.
 
-3. **Restart Deployment**:
+ **Restart Deployment**:
    - **Docker Compose**: 
      ```bash
      docker-compose down && docker-compose up -d
@@ -301,18 +301,18 @@ If any issues arise during deployment, follow these steps based on your deployme
      kubectl delete pod <pod-name>
      ```
 
-4. **Check Configuration**:
+ **Check Configuration**:
    - Ensure the correct image version is used and manifests/files are properly configured.
 
-5. **Monitor Resources**:
+ **Monitor Resources**:
    - Check CPU and memory usage if issues persist:
      - **Docker**: `docker stats`
      - **Kubernetes**: `kubectl top pod <pod-name>`
 
-6. **Network Connectivity**:
+ **Network Connectivity**:
    - Verify the container/pod can access required external services (e.g., blockchain nodes, databases).
 
-7. **Update or Rebuild**:
+ **Update or Rebuild**:
    - Ensure you're using the correct image version:
      ```bash
      docker pull diadata/decentralized-feeder:<VERSION>
@@ -321,7 +321,7 @@ If any issues arise during deployment, follow these steps based on your deployme
 
  
 
-4. ## **Conclusion**
+## **Conclusion**
 
 The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
 
