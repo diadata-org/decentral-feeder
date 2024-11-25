@@ -57,7 +57,7 @@ func NewSimulationScraper(pools []models.Pool, tradesChannel chan models.Trade, 
 
 	log.Info("Started Simulation scraper.")
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(30 * time.Second)
 	go func() {
 		for {
 			select {
@@ -88,48 +88,44 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 
 			tokenInDecimal, ok := scraper.decimalCache[tokens["tokenInStr"]]
 			if !ok {
-				tokenInDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
+				var err error
+				tokenInDecimal, err = scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
 				if err != nil {
 					log.Errorf("error getting decimal tokenInStr of symbol %s err: %v", symbol, err)
 					return
 				}
 				scraper.decimalCache[tokens["tokenInStr"]] = tokenInDecimal
-
 			}
 
 			tokenOutDecimal, ok := scraper.decimalCache[tokens["tokenOutStr"]]
 			if !ok {
-				tokenOutDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
+				var err error
+				tokenOutDecimal, err = scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
 				if err != nil {
 					log.Errorf("error getting decimal tokenOutStr of symbol %s err: %v", symbol, err)
 					return
 				}
 				scraper.decimalCache[tokens["tokenOutStr"]] = tokenOutDecimal
-
 			}
-
 			token0 := models.Asset{
-				Symbol:   "USDC",
-				Name:     "USDC",
-				Address:  tokens["tokenInStr"],
-				Decimals: tokenInDecimal,
-
+				Symbol:     "USDC",
+				Name:       "USDC",
+				Address:    tokens["tokenInStr"],
+				Decimals:   tokenInDecimal,
 				Blockchain: utils.ETHEREUM,
 			}
 
 			token1 := models.Asset{
-				Address:  tokens["tokenOutStr"],
-				Symbol:   symbol,
-				Name:     symbol,
-				Decimals: tokenOutDecimal,
-
+				Address:    tokens["tokenOutStr"],
+				Symbol:     symbol,
+				Name:       symbol,
+				Decimals:   tokenOutDecimal,
 				Blockchain: utils.ETHEREUM,
 			}
 			price, err := scraper.simulator.Execute(token1, token0)
 			if err != nil {
 				log.Errorf("error getting price of %s ", symbol)
 				return
-
 			}
 
 			f, _ := strconv.ParseFloat(price, 64)
@@ -141,7 +137,6 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 				Time:       time.Now(),
 				Exchange:   models.Exchange{Name: Simulation, Blockchain: utils.ETHEREUM},
 			}
-
 			tradesChannel <- t
 
 		}(pool.Address, &wg)
