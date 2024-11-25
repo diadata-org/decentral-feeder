@@ -1,6 +1,6 @@
 ## Table of Contents
- [Overview](#overview)
- [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
+ - [Overview](#overview)
+ - [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
    - [Scrapers](#scrapers)
    - [Collector](#collector)
    - [Processor](#processor)
@@ -18,7 +18,7 @@
      - [Kubernetes Deployment](#kubernetes-deployment)
    - [Adding Exchange Pairs](#adding-exchange-pairs)
    - [Error Handling](#error-handling)
- [Conclusion](#conclusion)
+- [Conclusion](#conclusion)
 
 
 
