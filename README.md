@@ -51,6 +51,7 @@ The obtained scalar value is sent to the Oracle feeder.
 ## Feeder
 The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
 
+---
 
 # Node Deployment Guide
 
