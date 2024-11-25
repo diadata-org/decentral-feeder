@@ -118,10 +118,10 @@ jobs:
           kubectl config use-context $CONTEXT
 
       # Helm upgrade command with the commit hash tag
-      - name: Helm upgrade/install conduit-node-011
+      - name: Helm upgrade/install conduit-node-001
         run: |
-          cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
-          helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-011 .
+          cd cluster-backend/helmcharts/oracles/conduit-test/001
+          helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
           # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
