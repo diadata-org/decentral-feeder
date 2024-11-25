@@ -1,11 +1,11 @@
 ## Table of Contents
-1. [Overview](#overview)
-2. [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
+ [Overview](#overview)
+ [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
    - [Scrapers](#scrapers)
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
-3. [Node Deployment Guide](#node-deployment-guide)
+ [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
      - [1. Navigate to the Docker Compose Folder](#1-navigate-to-the-docker-compose-folder)
@@ -18,18 +18,18 @@
      - [Kubernetes Deployment](#kubernetes-deployment)
    - [Adding Exchange Pairs](#adding-exchange-pairs)
    - [Error Handling](#error-handling)
-4. [Conclusion](#conclusion)
+ [Conclusion](#conclusion)
 
 
----
 
-# 1. Overview
+
+# Overview
 
 This repository contains a self-contained pipeline for data collection, processing, and publishing. Specifically, scrapers gather trade data from various centralized and decentralized exchanges. The collected trades undergo a two-step aggregation process to produce a scalar value associated with an asset, which is then published on-chain. In most cases, this value represents the asset's USD price.
 
----
 
-# 2. Detailed Description of the Building Blocks
+
+# Detailed Description of the Building Blocks
 ![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
 
 In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
@@ -55,9 +55,9 @@ The obtained scalar value is sent to the Oracle feeder.
 ## Feeder
 The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
 
----
 
-# 3. Node Deployment Guide
+
+# Node Deployment Guide
 
 This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g., `v0.0.4`, `v0.0.5`, etc.) when deploying.
 
@@ -65,15 +65,15 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 - Ensure **Docker** OR **Docker Compose** are installed on your machine.
 
----
+
 
 ## **Docker Compose Deployment**
 
-### **1. Navigate to the Docker Compose Folder**
+### ** Navigate to the Docker Compose Folder**
    - Locate the `docker-compose` folder in this repository.
    - Inside, you will find a file named `docker-compose.yaml`.
 
-### **2. Configure Environment Variables**
+### ** Configure Environment Variables**
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
@@ -84,7 +84,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      DEPLOYED_CONTRACT=
      ```
 
-### **3. Retrieve Deployed Contract**
+### ** Retrieve Deployed Contract**
    - Deploy the feeder with `DEPLOYED_CONTRACT` empty.
    - Upon the first deployment, the logs will display the deployed contract address in the following format:
      ```plaintext
@@ -98,17 +98,17 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      DEPLOYED_CONTRACT=0x708e54f09a8b0xxxxxxxxxxxxxxxx
      ```
 
-### **4. Run Docker Compose**
+### ** Run Docker Compose**
    - Open a terminal in the `docker-compose` folder and start the deployment by running:
      ```bash
      docker-compose up -d
      ```
 
----
+
 
 ## **Verification**
 
-### **4. Verify Logs**
+### ** Verify Logs**
    - Check if the container is running correctly by viewing the logs. Run the following command:
      ```bash
      docker-compose logs -f
@@ -125,11 +125,11 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      │ time="2024-10-29T13:39:35Z" level=info msg="Processor - filter median for WETH: 2626.9564003841315."   
      ```
 
----
+
 
 ## **Alternative Deployment Methods**
 
-### **2. Docker Run Deployment**
+### ** Docker Run Deployment**
 
 This method is suitable for simple setups without orchestration.
 
@@ -156,9 +156,9 @@ This method is suitable for simple setups without orchestration.
        diadata/decentralized-feeder:<VERSION>
      ```
 
----
 
-### **2. Kubernetes Deployment**
+
+### ** Kubernetes Deployment**
 
 Kubernetes is ideal for production environments requiring scalability and high availability.
 
@@ -204,7 +204,7 @@ Kubernetes is ideal for production environments requiring scalability and high a
       kubectl apply -f deployment.yaml
       ```
 
----
+
 
 ### Adding Exchange Pairs
 
@@ -319,7 +319,7 @@ If any issues arise during deployment, follow these steps based on your deployme
      ```
    - Apply fixes and redeploy.
 
---- 
+ 
 
 4. ## **Conclusion**
 
