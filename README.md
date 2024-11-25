@@ -208,30 +208,68 @@ Kubernetes is ideal for production environments requiring scalability and high a
 
 ### Adding Exchange Pairs
 
-The `EXCHANGEPAIRS` environment variable is used to configure asset pairs for the decentralized feeder. You can specify pairs to scrape from various exchanges, including Binance, Crypto.com, Gate.io, Coinbase, Kraken, and more. The format for each pair is `<Exchange>:<Asset-Pair>` (e.g., `Binance:BTC-USDT`).
+To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS` environment variable. This can be done regardless of the deployment method. The variable specifies pairs to scrape from various exchanges, formatted as a comma-separated list of `<Exchange>:<Asset-Pair>` (e.g., `Binance:BTC-USDT`).
 
----
 
-#### **Adding Exchange Pairs in Docker Compose**
+#### **Steps to Add Exchange Pairs**
 
-1. Open your `.env` file or add the `EXCHANGEPAIRS` variable directly to your `docker-compose.yaml` file.
-2. Specify the exchange pairs as a comma-separated list.
+1. Locate the environment configuration file or section for your deployment method:
+   - **For Docker Compose**: Use the `.env` file or add directly to the `docker-compose.yaml` file.
+   - **For Kubernetes**: Update the `values.yaml` file or use Helm's `--set` flag.
+   - **For Docker Run**: Pass the variable directly using the `-e` flag.
+
+2. Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
 
    - Example:
      ```plaintext
-      EXCHANGEPAIRS=" 
-      Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
-      CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD,
-      GateIO:ARB-USDT, GateIO:ATOM-USDT, GateIO:AVAX-USDT, GateIO:BNB-USDT, GateIO:BONK-USDT,
-      Kraken:AAVE-USD, Kraken:ADA-USD, Kraken:ADA-USDT, Kraken:APT-USD, Kraken:ARB-USD,
-      KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
-      Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
-      "
+     EXCHANGEPAIRS=" 
+     Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
+     CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD,
+     GateIO:ARB-USDT, GateIO:ATOM-USDT, GateIO:AVAX-USDT, GateIO:BNB-USDT, GateIO:BONK-USDT,
+     Kraken:AAVE-USD, Kraken:ADA-USD, Kraken:ADA-USDT, Kraken:APT-USD, Kraken:ARB-USD,
+     KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
+     Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
+     "
      ```
 
-3. Restart the services to apply the changes:
-   ```bash
-   docker-compose down && docker-compose up -d
+3. Apply the changes based on your deployment method:
+   - **Docker Compose**:
+     ```bash
+     docker-compose down && docker-compose up -d
+     ```
+   - **Kubernetes**:
+     - Update `values.yaml`:
+       ```yaml
+       env:
+         EXCHANGEPAIRS: >
+           Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
+           CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD
+       ```
+     - Apply the changes with:
+       ```bash
+       helm upgrade decentralized-feeder ./helm-chart -f values.yaml
+       ```
+   - **Docker Run**:
+     ```bash
+     docker run -d -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ..." your-image
+     ```
+
+4. Verify the configuration:
+   - **Docker Compose**: Check logs with:
+     ```bash
+     docker-compose logs -f
+     ```
+   - **Kubernetes**: Check pod logs:
+     ```bash
+     kubectl logs <pod-name>
+     ```
+   - **Docker Run**: View logs with:
+     ```bash
+     docker logs <container-name>
+     ```
+
+By following these steps, you can add or update exchange pairs in your deployment environment regardless of the method used.
+
 
 
 ### **Error Handling**
