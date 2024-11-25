@@ -22,7 +22,7 @@
 
 ---
 
-# Overview
+# 1. Overview
 
 This repository contains a self-contained pipeline for data collection, processing, and publishing. Specifically, scrapers gather trade data from various centralized and decentralized exchanges. The collected trades undergo a two-step aggregation process to produce a scalar value associated with an asset, which is then published on-chain. In most cases, this value represents the asset's USD price.
 
@@ -31,7 +31,7 @@ This repository contains a self-contained pipeline for data collection, processi
 ---
 ---
 
-# Detailed Description of the Building Blocks
+# 2. Detailed Description of the Building Blocks
 ![alt text](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_Small.jpg?raw=true)
 In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
 
@@ -58,7 +58,7 @@ The feeder is feeding a simple key value oracle. It publishes the value obtained
 
 ---
 
-# Node Deployment Guide
+# 3. Node Deployment Guide
 
 This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g., `v0.0.4`, `v0.0.5`, etc.) when deploying.
 
@@ -255,7 +255,7 @@ If any issues arise during deployment, follow these steps based on your deployme
 
 --- 
 
-## **Conclusion**
+4. ## **Conclusion**
 
 The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
 
