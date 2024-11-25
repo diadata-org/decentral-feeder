@@ -109,9 +109,9 @@ jobs:
           kubectl config use-context $CONTEXT
 
 
-      - name: Helm upgrade/install 01-010 conduit nodes to IBM Cluster
+      - name: Helm upgrade/install 02-06 conduit nodes to IBM Cluster
         run: |
-          for i in $(seq -w 001 010); do
+          for i in $(seq -w 002 006); do
             echo "Deploying node $i"
             cd cluster-backend/helmcharts/oracles/conduit-test/$i
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
@@ -139,16 +139,16 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
-      - name: Helm upgrade/install conduit-node-013 and conduit-node-014 to Hetzner Cluster
+      - name: Helm upgrade/install 07-011 conduit nodes to IBM Cluster
         run: |
-          cd cluster-backend/helmcharts/oracles/conduit-test/013
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-013 .
-          sleep 10
-          cd ..
-          cd 014
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-014 .
+          for i in $(seq -w 007 011); do
+            echo "Deploying node $i"
+            cd cluster-backend/helmcharts/oracles/conduit-test/$i
+            helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
+            cd -
+          done
           cd
-          # Clean up CA certificate
+          # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Civo Cluster kubectl config
@@ -169,15 +169,16 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
-      - name: Helm upgrade/install conduit-node-015 and conduit-node-016 to Civo Cluster
+      - name: Helm upgrade/install conduit-node-012 and conduit-node-016 to Civo Cluster
         run: |
-          cd cluster-backend/helmcharts/oracles/conduit-test/015
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-015 .
-          sleep 10
-          cd ..
-          cd 016
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-016 .
-          # Clean up CA certificate
+          for i in $(seq -w 012 016); do
+            echo "Deploying node $i"
+            cd cluster-backend/helmcharts/oracles/conduit-test/$i
+            helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
+            cd -
+          done
+          cd
+          # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository

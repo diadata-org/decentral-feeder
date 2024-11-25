@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  my_service:
-    image: diadata/decentralized-feeder:v0.0.2
+  lasernet-feeder:
+    image: diadata/decentralized-feeder:v0.0.4
     env_file:
       - .env
     restart: always
