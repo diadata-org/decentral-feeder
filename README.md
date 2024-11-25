@@ -63,7 +63,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 ## Requirements
 
-- Ensure **Docker** and **Docker Compose** are installed on your machine.
+- Ensure **Docker** OR **Docker Compose** are installed on your machine.
 
 ---
 
