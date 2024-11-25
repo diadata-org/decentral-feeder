@@ -235,7 +235,7 @@ To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS
 3. Apply the changes based on your deployment method:
    - **Docker Compose**:
      ```bash
-     docker-compose down && docker-compose up -d
+     docker-compose up 
      ```
    - **Kubernetes**:
      - Update `values.yaml`:
