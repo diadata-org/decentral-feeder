@@ -63,17 +63,17 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 ## Requirements
 
-- Ensure **Docker** OR **Docker Compose** are installed on your machine.
+- Ensure Docker OR Docker Compose are installed on your machine.
 
 
 
-## **Docker Compose Deployment**
+## Docker Compose Deployment
 
-### ** Navigate to the Docker Compose Folder**
+###  Navigate to the Docker Compose Folder
    - Locate the `docker-compose` folder in this repository.
    - Inside, you will find a file named `docker-compose.yaml`.
 
-### ** Configure Environment Variables**
+###  Configure Environment Variables
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
@@ -84,7 +84,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      DEPLOYED_CONTRACT=
      ```
 
-### ** Retrieve Deployed Contract**
+###  Retrieve Deployed Contract
    - Deploy the feeder with `DEPLOYED_CONTRACT` empty.
    - Upon the first deployment, the logs will display the deployed contract address in the following format:
      ```plaintext
@@ -98,7 +98,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      DEPLOYED_CONTRACT=0x708e54f09a8b0xxxxxxxxxxxxxxxx
      ```
 
-### ** Run Docker Compose**
+###  Run Docker Compose
    - Open a terminal in the `docker-compose` folder and start the deployment by running:
      ```bash
      docker-compose up -d
@@ -106,15 +106,15 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 
 
-## **Verification**
+## Verification
 
-### ** Verify Logs**
+###  Verify Logs
    - Check if the container is running correctly by viewing the logs. Run the following command:
      ```bash
      docker-compose logs -f
      ```
 
-   - **Expected Logs**: Look for logs similar to the example below, which indicate a successful startup:
+   - Expected Logs: Look for logs similar to the example below, which indicate a successful startup:
      ```
      │ time="2024-10-29T13:39:35Z" level=info msg="Processor - Atomic filter value for market Binance:SUSHI-USDT with 20 trades: 0.7095307176575745."                                                                  │
      │ time="2024-10-29T13:39:35Z" level=info msg="Processor - Atomic filter value for market Simulation:UNI-USDC with 1 trades: 8.008539500390082."                                                                   │
@@ -127,13 +127,13 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 
 
-## **Alternative Deployment Methods**
+## Alternative Deployment Methods
 
-### ** Docker Run Deployment**
+###  Docker Run Deployment
 
 This method is suitable for simple setups without orchestration.
 
-#### **Command**
+#### Command
    - Deploy the feeder with `DEPLOYED_CONTRACT` initially empty:
      ```bash
      docker run -d \
@@ -158,11 +158,11 @@ This method is suitable for simple setups without orchestration.
 
 
 
-### ** Kubernetes Deployment**
+###  Kubernetes Deployment
 
 Kubernetes is ideal for production environments requiring scalability and high availability.
 
-#### **Deployment YAML**
+#### Deployment YAML
    - Create a Kubernetes `Deployment` manifest. Replace `<VERSION>` with the desired version:
      ```yaml
      apiVersion: apps/v1
@@ -192,7 +192,7 @@ Kubernetes is ideal for production environments requiring scalability and high a
              - containerPort: 8080
      ```
 
-#### **Steps to Deploy**
+#### Steps to Deploy
    1. Deploy the feeder with `DEPLOYED_CONTRACT` set to an empty string (`""`) in the Kubernetes manifest.
    2. Monitor the logs for the deployed contract address:
       ```bash
@@ -211,14 +211,14 @@ Kubernetes is ideal for production environments requiring scalability and high a
 To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS` environment variable. This can be done regardless of the deployment method. The variable specifies pairs to scrape from various exchanges, formatted as a comma-separated list of `<Exchange>:<Asset-Pair>` (e.g., `Binance:BTC-USDT`).
 
 
-#### **Steps to Add Exchange Pairs**
+#### Steps to Add Exchange Pairs
 
 Locate the environment configuration file or section for your deployment method:
-   - **For Docker Compose**: Use the `.env` file or add directly to the `docker-compose.yaml` file.
-   - **For Kubernetes**: Update the `values.yaml` file or use Helm's `--set` flag.
-   - **For Docker Run**: Pass the variable directly using the `-e` flag.
+   - For Docker Compose: Use the `.env` file or add directly to the `docker-compose.yaml` file.
+   - For Kubernetes: Update the `values.yaml` file or use Helm's `--set` flag.
+   - For Docker Run: Pass the variable directly using the `-e` flag.
 
-Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
+### Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
 
    - Example:
      ```plaintext
@@ -232,12 +232,12 @@ Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated
      "
      ```
 
- Apply the changes based on your deployment method:
-   - **Docker Compose**:
+ ### Apply the changes based on your deployment method:
+   - Docker Compose:
      ```bash
      docker-compose up 
      ```
-   - **Kubernetes**:
+   - Kubernetes:
      - Update `values.yaml`:
        ```yaml
        env:
@@ -249,7 +249,7 @@ Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated
        ```bash
        helm upgrade decentralized-feeder ./helm-chart -f values.yaml
        ```
-   - **Docker Run**:
+   - Docker Run:
      ```bash
      docker run -d \
       -e PRIVATE_KEY=your-private-key \
@@ -260,16 +260,16 @@ Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated
 
      ```
 
- Verify the configuration:
-   - **Docker Compose**: Check logs with:
+ ### Verify the configuration:
+   - Docker Compose: Check logs with:
      ```bash
      docker-compose logs -f
      ```
-   - **Kubernetes**: Check pod logs:
+   - Kubernetes: Check pod logs:
      ```bash
      kubectl logs <pod-name>
      ```
-   - **Docker Run**: View logs with:
+   - Docker Run: View logs with:
      ```bash
      docker logs <container-name>
      ```
@@ -278,47 +278,44 @@ By following these steps, you can add or update exchange pairs in your deploymen
 
 
 
-### **Error Handling**
+### Error Handling
 
 If any issues arise during deployment, follow these steps based on your deployment method:
 
- **Check Logs**:
-   - **Docker Compose**: `docker-compose logs -f`
-   - **Docker Run**: `docker logs <container_name>`
-   - **Kubernetes**: `kubectl logs <pod-name>`
+ #### Check Logs:
+   - Docker Compose: `docker-compose logs -f`
+   - Docker Run: `docker logs <container_name>`
+   - Kubernetes: `kubectl logs <pod-name>`
 
- **Verify Environment Variables**:
+ #### Verify Environment Variables:
    - Ensure all required variables (`PRIVATE_KEY`, `DEPLOYED_CONTRACT`) are correctly set:
-     - **Docker Compose**: Check `.env` file.
-     - **Docker Run**: Verify `-e` flags.
-     - **Kubernetes**: Check the Deployment manifest or ConfigMap.
+     - Docker Compose: Check `.env` file.
+     - Docker Run: Verify `-e` flags.
+     - Kubernetes: Check the Deployment manifest or ConfigMap.
 
- **Restart Deployment**:
-   - **Docker Compose**: 
+ #### Restart Deployment:
+   - Docker Compose: 
      ```bash
      docker-compose down && docker-compose up -d
      ```
-   - **Docker Run**: 
+   - Docker Run: 
      ```bash
      docker stop <container_name> && docker rm <container_name> && docker run -d ...
      ```
-   - **Kubernetes**:
+   - Kubernetes:
      ```bash
      kubectl delete pod <pod-name>
      ```
 
- **Check Configuration**:
+ #### Check Configuration:
    - Ensure the correct image version is used and manifests/files are properly configured.
 
- **Monitor Resources**:
+ #### Monitor Resources:
    - Check CPU and memory usage if issues persist:
-     - **Docker**: `docker stats`
-     - **Kubernetes**: `kubectl top pod <pod-name>`
+     - Docker: `docker stats`
+     - Kubernetes: `kubectl top pod <pod-name>`
 
- **Network Connectivity**:
-   - Verify the container/pod can access required external services (e.g., blockchain nodes, databases).
-
- **Update or Rebuild**:
+ #### Update or Rebuild:
    - Ensure you're using the correct image version:
      ```bash
      docker pull diadata/decentralized-feeder:<VERSION>
@@ -327,7 +324,7 @@ If any issues arise during deployment, follow these steps based on your deployme
 
  
 
-## **Conclusion**
+## Conclusion
 
 The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
 
