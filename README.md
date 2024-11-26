@@ -87,6 +87,10 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 - The container has minimal resource requirements, making it suitable for most machines, including Windows, macOS, Linux, and Raspberry Pi, as long as Docker is installed.
 
+- An ETH private key from MetaMask or any other Eth wallet. Alternatively to generate private key effortlesly eth-keys tool can be used for this [ethereum/eth-keys](https://github.com/ethereum/eth-keys)
+
+- DIA tokens in your wallet (you can use faucet for this [https://faucet.diadata.org](https://faucet.diadata.org)   
+
 
 ## Docker Compose Deployment
 
