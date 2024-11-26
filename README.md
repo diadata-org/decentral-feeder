@@ -5,7 +5,7 @@
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
-   - [Smart contract documentation](contracts/README.md)
+   - [Smart Contract Documentation](contracts/README.md)
  - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
@@ -55,10 +55,10 @@ The obtained scalar value is sent to the Oracle feeder.
 ## Feeder
 The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
 
-## Contracts Documentation
+## Smart Contract Documentation
 For more details about the contracts, refer to the following documentation:
 
-[Smart contract documentation](contracts/README.md)
+[Smart Contract Documentation](contracts/README.md)
 
 
 # Node Deployment Guide
