@@ -84,7 +84,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      DEPLOYED_CONTRACT=
      ```
 
-    - Open a terminal in the `docker-compose` folder and start the deployment by running:
+   - Open a terminal in the `docker-compose` folder and start the deployment by running:
       ```bash
       docker-compose up
       ```
