@@ -222,7 +222,7 @@ Locate the environment configuration file or section for your deployment method:
 
 ### Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
 
-   - Example:
+   - Example in docker-compose:
      ```plaintext
      EXCHANGEPAIRS=" 
      Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
@@ -233,13 +233,12 @@ Locate the environment configuration file or section for your deployment method:
      Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
      "
      ```
-
- ### Apply the changes based on your deployment method:
-   - Docker Compose:
-     ```bash
-     docker-compose up 
+     start the container with:
      ```
-   - Kubernetes:
+     docker compose up 
+     ```
+
+   - Example in Kubernetes manifest:
      Modify the environment variables in the env section of the  Deployment specification.
        ```yaml
       spec:
@@ -263,7 +262,7 @@ Locate the environment configuration file or section for your deployment method:
        ```bash
        kubectl apply -f `manifest.yaml` 
        ```
-   - Docker Run:
+   - Example in Docker Run:
      ```bash
      docker run -d \
       -e PRIVATE_KEY=your-private-key \
