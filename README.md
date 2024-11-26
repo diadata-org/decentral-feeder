@@ -1,6 +1,6 @@
 ## Table of Contents
- - [Overview](#overview)
  - [Resources](#resources)
+ - [Overview](#overview)
  - [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
    - [Scrapers](#scrapers)
    - [Collector](#collector)
