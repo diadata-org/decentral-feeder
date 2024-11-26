@@ -189,6 +189,9 @@ Kubernetes is ideal for production environments requiring scalability and high a
                value: "myprivatekey"
              - name: DEPLOYED_CONTRACT
                value: ""
+             - name: EXCHANGEPAIRS
+               value: ""
+
              ports:
              - containerPort: 8080
      ```
@@ -216,7 +219,7 @@ To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS
 
 Locate the environment configuration file or section for your deployment method:
    - For Docker Compose: Use the `.env` file or add directly to the `docker-compose.yaml` file.
-   - For Kubernetes: Update the `values.yaml` file or use Helm's `--set` flag.
+   - For Kubernetes: Update the kubernetes manifest file `manifest.yaml`
    - For Docker Run: Pass the variable directly using the `-e` flag.
 
 ### Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
@@ -239,16 +242,27 @@ Locate the environment configuration file or section for your deployment method:
      docker-compose up 
      ```
    - Kubernetes:
-     - Update `values.yaml`:
+     Modify the environment variables in the env section of the Pod or Deployment specification.
        ```yaml
-       env:
-         EXCHANGEPAIRS: >
-           Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
-           CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD
+      spec:
+        containers:
+        - name: feeder-container
+          image: diadata/decentralized-feeder:<VERSION>
+          env:
+          - name: PRIVATE_KEY
+            value: "myprivatekey"
+          - name: DEPLOYED_CONTRACT
+            value: ""
+          - name: EXCHANGEPAIRS
+            value: >
+              Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
+              CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD
+          ports:
+          - containerPort: 8080
        ```
      - Apply the changes with:
        ```bash
-       helm upgrade decentralized-feeder ./helm-chart -f values.yaml
+       kubectl apply -f `manifest.yaml` 
        ```
    - Docker Run:
      ```bash
@@ -274,8 +288,6 @@ Locate the environment configuration file or section for your deployment method:
      ```bash
      docker logs <container-name>
      ```
-
-By following these steps, you can add or update exchange pairs in your deployment environment regardless of the method used.
 
 
 
@@ -310,11 +322,6 @@ If any issues arise during deployment, follow these steps based on your deployme
 
  #### Check Configuration:
    - Ensure the correct image version is used and manifests/files are properly configured.
-
- #### Monitor Resources:
-   - Check CPU and memory usage if issues persist:
-     - Docker: `docker stats`
-     - Kubernetes: `kubectl top pod <pod-name>`
 
  #### Update or Rebuild:
    - Ensure you're using the correct image version:
