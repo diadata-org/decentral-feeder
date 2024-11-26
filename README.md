@@ -1,12 +1,12 @@
 ## Table of Contents
  - [Overview](#overview)
+ - [Resources](#resources)
  - [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
    - [Scrapers](#scrapers)
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
  - [Smart Contract Documentation](contracts/README.md)
- - [Resources](#resources)
  - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
@@ -28,6 +28,19 @@
 
 This repository hosts a self-contained containerized application comprising three main components: scraper, collector, and processor. The scraper collects trade data from various centralized and decentralized exchanges. The collector and processor aggregate the data through a two-step process to produce a scalar value associated with an asset, which is subsequently published on-chain. In most cases, this value represents the asset's price in USD.
 
+
+## Resources
+
+| **Field**         | **Value**                                                                                      |
+|--------------------|-----------------------------------------------------------------------------------------------|
+| **Chain name**     | DIA Lasernet Testnet                                                                          |
+| **Chain ID**       | 10640                                                                                         |
+| **Block explorer** | [https://testnet-explorer.diadata.org](https://testnet-explorer.diadata.org)                  |
+| **RPC URL**        | [https://testnet-rpc.diadata.org](https://testnet-rpc.diadata.org)                            |
+| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                |
+| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
+| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
+| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
 
 
 # Detailed Description of the Building Blocks
@@ -60,20 +73,6 @@ The feeder is feeding a simple key value oracle. It publishes the value obtained
 For more details about the contracts, refer to the following documentation:
 
 [Smart Contract Documentation](contracts/README.md)
-
-
-## Resources
-
-| **Field**         | **Value**                                                                                       |
-|--------------------|-----------------------------------------------------------------------------------------------|
-| **Chain name**     | DIA Lasernet Testnet                                                                          |
-| **Chain ID**       | 10640                                                                                        |
-| **Block explorer** | [https://testnet-explorer.diadata.org](https://testnet-explorer.diadata.org)                  |
-| **RPC URL**        | [https://testnet-rpc.diadata.org](https://testnet-rpc.diadata.org)                            |
-| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                |
-| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
-| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
-| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
 
 
 # Node Deployment Guide
