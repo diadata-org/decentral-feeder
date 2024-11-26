@@ -121,6 +121,10 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
       ```
       docker rm -f <container_name>
       ```
+   - Verify the container has been removed
+      ```
+      docker ps -a
+      ```
 
 
 
@@ -302,12 +306,6 @@ Locate the environment configuration file or section for your deployment method:
       lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market CoinBase:AERO-USD with 5 trades: 1.27824."
       ....
       ```
-
-
-
-
-
-
 
 ### Error Handling
 
