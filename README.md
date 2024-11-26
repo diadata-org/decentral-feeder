@@ -91,14 +91,14 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 ###  Retrieve Deployed Contract
    - Once the container is deployed with `DEPLOYED_CONTRACT` env variable empty the logs will display the deployed contract address in the following format:
      ```plaintext
-     │ time="2024-11-25T11:30:08Z" level=info msg="Contract pending deploy: 0x708e54f09a8b0xxxxxxxxxxxxxxxx."
+     │ time="2024-11-25T11:30:08Z" level=info msg="Contract pending deploy: 0xxxxxxxxxxxxxxxxxxxxxxxxxx."
      ```
-   - Copy the displayed contract address (e.g., `0x708e54f09a8b0xxxxxxxxxxxxxxxx`) and paste it into your `.env` file as the value for `DEPLOYED_CONTRACT`. Stop the container.
+   - Copy the displayed contract address (e.g., `0xxxxxxxxxxxxxxxxxxxxxxxxxx`) and paste it into your `.env` file as the value for `DEPLOYED_CONTRACT`. Stop the container.
 
    - Update your `.env` file with `DEPLOYED_CONTRACT` variable mentioned above. Redeployed the container with  `docker-compose up`
      ```plaintext
      PRIVATE_KEY=myprivatekey
-     DEPLOYED_CONTRACT=0x708e54f09a8b0xxxxxxxxxxxxxxxx
+     DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx
      ```
 
    - Check if the container is running correctly by viewing the logs. Run the following command:
@@ -143,7 +143,7 @@ This method is suitable for simple setups without orchestration.
      docker stop decentralized-feeder
      docker run -d \
        -e PRIVATE_KEY=myprivatekey \
-       -e DEPLOYED_CONTRACT=0x708e54f09a8b0xxxxxxxxxxxxxxxx \
+       -e DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx \
        --name decentralized-feeder \
        diadata/decentralized-feeder:<VERSION>
      ```
