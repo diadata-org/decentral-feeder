@@ -9,8 +9,7 @@ The DIA Lumina oracle consists of a two major components:
 An exemplary Lumina data flow can be seen here.
 Oracle feeders scrape trades from exchanges and submit these as last prices into their respective oracle contracts.
 From there, a threshold of 5 in 1 hour is required for the meta contract to assume consensus on the median value of this set of trades.
-<img src="abstract_flow.png" alt="Plot of the Lumina system" title="Plot of the Lumina system" width="2000" />
-
+![plot of the Lumina system](abstract_flow.png)
 
 ## DIA Feeder contracts
 Each decentralized Lumina feeder writes data into its own oracle contract.
