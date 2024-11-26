@@ -93,9 +93,9 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      ```plaintext
      │ time="2024-11-25T11:30:08Z" level=info msg="Contract pending deploy: 0xxxxxxxxxxxxxxxxxxxxxxxxxx."
      ```
-   - Copy the displayed contract address (e.g., `0xxxxxxxxxxxxxxxxxxxxxxxxxx`) and paste it into your `.env` file as the value for `DEPLOYED_CONTRACT`. Stop the container.
+   - Copy the displayed contract address (e.g., `0xxxxxxxxxxxxxxxxxxxxxxxxxx`) Stop the container with `docker rm -f <container_name>`.
 
-   - Update your `.env` file with `DEPLOYED_CONTRACT` variable mentioned above. Redeployed the container with  `docker-compose up`
+   - Update your `.env` file with `DEPLOYED_CONTRACT` variable mentioned above. Redeployed the container with  `docker-compose up -d`
      ```plaintext
      PRIVATE_KEY=myprivatekey
      DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx
