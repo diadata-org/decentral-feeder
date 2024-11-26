@@ -5,7 +5,7 @@
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
- [Node Deployment Guide](#node-deployment-guide)
+ - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
      - [1. Navigate to the Docker Compose Folder](#1-navigate-to-the-docker-compose-folder)
