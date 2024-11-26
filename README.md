@@ -191,8 +191,6 @@ Kubernetes is ideal for production environments requiring scalability and high a
                value: ""
              - name: EXCHANGEPAIRS
                value: ""
-
-             ports:
              - containerPort: 8080
      ```
 
@@ -242,7 +240,7 @@ Locate the environment configuration file or section for your deployment method:
      docker-compose up 
      ```
    - Kubernetes:
-     Modify the environment variables in the env section of the Pod or Deployment specification.
+     Modify the environment variables in the env section of the  Deployment specification.
        ```yaml
       spec:
         containers:
