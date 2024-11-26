@@ -24,7 +24,7 @@
 
 # Overview
 
-This repository contains a self-contained pipeline for data collection, processing, and publishing. Specifically, scrapers gather trade data from various centralized and decentralized exchanges. The collected trades undergo a two-step aggregation process to produce a scalar value associated with an asset, which is then published on-chain. In most cases, this value represents the asset's USD price.
+This repository hosts a self-contained containerized application comprising three main components: scraper, collector, and processor. The scraper collects trade data from various centralized and decentralized exchanges. The collector and processor aggregate the data through a two-step process to produce a scalar value associated with an asset, which is subsequently published on-chain. In most cases, this value represents the asset's price in USD.
 
 
 
