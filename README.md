@@ -101,9 +101,6 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      DEPLOYED_CONTRACT=0x708e54f09a8b0xxxxxxxxxxxxxxxx
      ```
 
-## Verification
-
-###  Verify Logs
    - Check if the container is running correctly by viewing the logs. Run the following command:
      ```bash
      docker-compose logs -f
@@ -150,7 +147,10 @@ This method is suitable for simple setups without orchestration.
        --name decentralized-feeder \
        diadata/decentralized-feeder:<VERSION>
      ```
-
+    - Retrieve the logs to verify the container is running as expected
+      ```bash
+      docker logs decentralized-feeder
+      ```
 
 
 ###  Kubernetes Deployment
