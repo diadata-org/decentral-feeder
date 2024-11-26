@@ -286,6 +286,26 @@ Locate the environment configuration file or section for your deployment method:
      ```bash
      docker logs <container-name>
      ```
+   - The output should look like:
+     ```
+      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Processor - Start......"
+      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="CoinBase - Started scraper."
+      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Kraken - Started scraper."
+      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="GateIO - Started scraper."
+      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="KuCoin - Started scraper."
+      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Crypto.com - Started scraper."
+      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Binance - Started scraper at 2024-11-26 12:22:47.97428349 +0000 UTC m=+0.037715635."lasernet-feeder-1  | time="2024-11-26T12:23:08Z" level=info msg="Processor - Atomic filter value for market Binance:USDC-USDT with 89 trades: 0.9998099980000003."
+      lasernet-feeder-1  | time="2024-11-26T12:23:08Z" level=info msg="Processor - Atomic filter value for market Binance:UNI-USDT with 47 trades: 10.817108170000003."
+      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market Binance:TRX-USDT with 297 trades: 0.18920189200000007."
+      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market CoinBase:APT-USD with 18 trades: 11.38."
+      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market GateIO:BNB-USDT with 3 trades: 620.9062090000001."
+      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market CoinBase:AERO-USD with 5 trades: 1.27824."
+      ....
+      ```
+
+
+
+
 
 
 
