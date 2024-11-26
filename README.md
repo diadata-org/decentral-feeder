@@ -12,7 +12,6 @@
      - [Configure Environment Variables](#configure-environment-variables)
      - [Retrieve Deployed Contract](#retrieve-deployed-contract)
      - [Run Docker Compose](#run-docker-compose)
-   - [Verification](#verification)
    - [Alternative Deployment Methods](#alternative-deployment-methods)
      - [Docker Run Deployment](#docker-run-deployment)
      - [Kubernetes Deployment](#kubernetes-deployment)
