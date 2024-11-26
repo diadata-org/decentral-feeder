@@ -22,13 +22,6 @@
 - [Conclusion](#conclusion)
 
 
-
-
-# Overview
-
-This repository hosts a self-contained containerized application comprising three main components: scraper, collector, and processor. The scraper collects trade data from various centralized and decentralized exchanges. The collector and processor aggregate the data through a two-step process to produce a scalar value associated with an asset, which is subsequently published on-chain. In most cases, this value represents the asset's price in USD.
-
-
 ## Resources
 
 | **Field**         | **Value**                                                                                      |
@@ -41,6 +34,11 @@ This repository hosts a self-contained containerized application comprising thre
 | **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
 | **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
 | **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
+
+
+# Overview
+
+This repository hosts a self-contained containerized application comprising three main components: scraper, collector, and processor. The scraper collects trade data from various centralized and decentralized exchanges. The collector and processor aggregate the data through a two-step process to produce a scalar value associated with an asset, which is subsequently published on-chain. In most cases, this value represents the asset's price in USD.
 
 
 # Detailed Description of the Building Blocks
