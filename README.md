@@ -143,11 +143,11 @@ This method is suitable for simple setups without orchestration.
      ```
    - Retrieve the logs to get the deployed contract address:
      ```bash
-     docker logs decentralized-feeder
+     docker logs <container_name>
      ```
    - Stop the container, update the `DEPLOYED_CONTRACT` value, and restart:
      ```bash
-     docker stop decentralized-feeder
+     docker stop <container_name>
      docker run -d \
        -e PRIVATE_KEY=myprivatekey \
        -e DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx \
@@ -156,7 +156,7 @@ This method is suitable for simple setups without orchestration.
      ```
    - Retrieve the logs to verify the container is running as expected
       ```bash
-      docker logs decentralized-feeder
+      docker logs <container_name>
       ```
 
 
