@@ -29,7 +29,7 @@ This repository contains a self-contained pipeline for data collection, processi
 
 
 # Detailed Description of the Building Blocks
-![Feeder Architecture v2](https://github.com/diadata-org/decentral-feeder/blob/master/assets/Feeder_Architecture_v2.png?raw=true)
+![Feeder Architecture v2](assets/Feeder_Architecture_v2.png)
 
 In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
 
