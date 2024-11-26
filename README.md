@@ -5,7 +5,7 @@
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
-   - [Contracts Documentation](contracts/README.md)
+   - [Smart contract documentation](contracts/README.md)
  - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
@@ -58,7 +58,7 @@ The feeder is feeding a simple key value oracle. It publishes the value obtained
 ## Contracts Documentation
 For more details about the contracts, refer to the following documentation:
 
-[Contracts Documentation](contracts/README.md)
+[Smart contract documentation](contracts/README.md)
 
 
 # Node Deployment Guide
