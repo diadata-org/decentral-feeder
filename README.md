@@ -119,9 +119,9 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      ```
     
    - Cleanup the deployment with
-    ```bash
-    docker rm -f <container_name>
-    ```
+      ```
+      docker rm -f <container_name>
+      ```
 
 
 
