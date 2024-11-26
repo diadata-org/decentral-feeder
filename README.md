@@ -5,7 +5,8 @@
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
-   - [Smart Contract Documentation](contracts/README.md)
+ - [Smart Contract Documentation](contracts/README.md)
+ - [Resources](#resources)
  - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
@@ -59,6 +60,20 @@ The feeder is feeding a simple key value oracle. It publishes the value obtained
 For more details about the contracts, refer to the following documentation:
 
 [Smart Contract Documentation](contracts/README.md)
+
+
+## Resources
+
+| **Field**         | **Value**                                                                                       |
+|--------------------|-----------------------------------------------------------------------------------------------|
+| **Chain name**     | DIA Lasernet Testnet                                                                          |
+| **Chain ID**       | 10640                                                                                        |
+| **Block explorer** | [https://testnet-explorer.diadata.org](https://testnet-explorer.diadata.org)                  |
+| **RPC URL**        | [https://testnet-rpc.diadata.org](https://testnet-rpc.diadata.org)                            |
+| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                |
+| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
+| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
+| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
 
 
 # Node Deployment Guide
