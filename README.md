@@ -155,9 +155,9 @@ This method is suitable for simple setups without orchestration.
        diadata/decentralized-feeder:<VERSION>
      ```
    - Retrieve the logs to verify the container is running as expected
-    ```bash
-    docker logs decentralized-feeder
-    ```
+      ```bash
+      docker logs decentralized-feeder
+      ```
 
 
 ###  Kubernetes Deployment
