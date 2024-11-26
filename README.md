@@ -83,6 +83,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      PRIVATE_KEY=myprivatekey
      DEPLOYED_CONTRACT=
      ```
+
     - Open a terminal in the `docker-compose` folder and start the deployment by running:
       ```bash
       docker-compose up
