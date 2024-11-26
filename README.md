@@ -117,6 +117,12 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      │ time="2024-10-29T13:39:35Z" level=info msg="Processor - filter median for DIA: 0.9839597410694259."                                                                                                             │
      │ time="2024-10-29T13:39:35Z" level=info msg="Processor - filter median for WETH: 2626.9564003841315."   
      ```
+    
+   - Cleanup the deployment with
+    ```bash
+    docker rm -f <container_name>
+    ```
+
 
 
 
