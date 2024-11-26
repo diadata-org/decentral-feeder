@@ -31,7 +31,7 @@ This repository hosts a self-contained containerized application comprising thre
 # Detailed Description of the Building Blocks
 ![Feeder Architecture v2](assets/Feeder_Architecture_v2.png)
 
-In the following sections, we describe the function and usage of the building blocks that constitute the system (see figure). The explanation progresses from left to right.
+In the following sections, we describe the function and usage of the building blocks (the three components mentioned earlier) that make up the system (see figure). The explanation proceeds from left to right
 
 
 ## Scrapers
