@@ -1,11 +1,12 @@
 ## Table of Contents
+ - [Resources](#resources)
  - [Overview](#overview)
  - [Detailed Description of the Building Blocks](#detailed-description-of-the-building-blocks)
    - [Scrapers](#scrapers)
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
-   - [Smart Contract Documentation](contracts/README.md)
+ - [Smart Contract Documentation](contracts/README.md)
  - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
    - [Docker Compose Deployment](#docker-compose-deployment)
@@ -21,12 +22,23 @@
 - [Conclusion](#conclusion)
 
 
+## Resources
+
+| **Field**         | **Value**                                                                                      |
+|--------------------|-----------------------------------------------------------------------------------------------|
+| **Chain name**     | DIA Lasernet Testnet                                                                          |
+| **Chain ID**       | 10640                                                                                         |
+| **Block explorer** | [https://testnet-explorer.diadata.org](https://testnet-explorer.diadata.org)                  |
+| **RPC URL**        | [https://testnet-rpc.diadata.org](https://testnet-rpc.diadata.org)                            |
+| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                |
+| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
+| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
+| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
 
 
 # Overview
 
 This repository hosts a self-contained containerized application comprising three main components: scraper, collector, and processor. The scraper collects trade data from various centralized and decentralized exchanges. The collector and processor aggregate the data through a two-step process to produce a scalar value associated with an asset, which is subsequently published on-chain. In most cases, this value represents the asset's price in USD.
-
 
 
 # Detailed Description of the Building Blocks
@@ -72,6 +84,10 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 - Clone this repository to your local machine.
 
 - The container has minimal resource requirements, making it suitable for most machines, including Windows, macOS, Linux, and Raspberry Pi, as long as Docker is installed.
+
+- An ETH private key from MetaMask or any other Eth wallet. Alternatively to generate private key effortlesly eth-keys tool can be used for this [ethereum/eth-keys](https://github.com/ethereum/eth-keys)
+
+- DIA tokens in your wallet (you can use faucet for this [https://faucet.diadata.org](https://faucet.diadata.org)   
 
 
 ## Docker Compose Deployment
@@ -361,3 +377,5 @@ If any issues arise during deployment, follow these steps based on your deployme
 The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
 
 If you encounter any issues or need further assistance, feel free to reach out to the team.
+
+
