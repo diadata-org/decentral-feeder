@@ -67,8 +67,11 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 ## Requirements
 
-- Ensure Docker OR Docker Compose are installed on your machine.
+- Ensure that Docker or Docker Compose is installed on your machine.
 
+- Clone this repository to your local machine.
+
+- The container has minimal resource requirements, making it suitable for most machines, including Windows, macOS, Linux, and Raspberry Pi, as long as Docker is installed.
 
 
 ## Docker Compose Deployment
