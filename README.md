@@ -31,7 +31,7 @@ This repository contains a self-contained pipeline for data collection, processi
 # Detailed Description of the Building Blocks
 ![Feeder Architecture v2](assets/Feeder_Architecture_v2.png)
 
-In the following, we describe function and usage of the constituting building blocks (see figure). We proceed from bottom to top.
+In the following sections, we describe the function and usage of the building blocks that constitute the system (see figure). The explanation progresses from left to right.
 
 
 ## Scrapers
