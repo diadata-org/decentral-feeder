@@ -254,9 +254,10 @@ Locate the environment configuration file or section for your deployment method:
           - name: DEPLOYED_CONTRACT
             value: ""
           - name: EXCHANGEPAIRS
-            value: >
-              Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
-              CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD
+            value: "
+            Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
+            CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD
+            "
           ports:
           - containerPort: 8080
        ```
