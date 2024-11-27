@@ -59,14 +59,9 @@ func NewSimulationScraper(pools []models.Pool, tradesChannel chan models.Trade, 
 
 	ticker := time.NewTicker(30 * time.Second)
 	go func() {
-		for {
-			select {
-
-			case <-ticker.C:
-				log.Info("RUN Simulation scraper.")
-
-				go scraper.mainLoop(pools, tradesChannel)
-			}
+		for range ticker.C {
+			log.Info("RUN Simulation scraper.")
+			go scraper.mainLoop(pools, tradesChannel)
 		}
 	}()
 
@@ -78,14 +73,15 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 	time.Sleep(4 * time.Second)
 
 	var wg sync.WaitGroup
+	var lock sync.RWMutex
+
 	for _, pool := range pools {
 		time.Sleep(time.Duration(scraper.waitTime) * time.Millisecond)
 		wg.Add(1)
-		go func(symbol string, w *sync.WaitGroup) {
+		go func(symbol string, w *sync.WaitGroup, lock *sync.RWMutex) {
 			defer w.Done()
 
 			tokens := scraper.allowedTokens[symbol]
-
 			tokenInDecimal, ok := scraper.decimalCache[tokens["tokenInStr"]]
 			if !ok {
 				var err error
@@ -94,7 +90,9 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 					log.Errorf("error getting decimal tokenInStr of symbol %s err: %v", symbol, err)
 					return
 				}
+				lock.Lock()
 				scraper.decimalCache[tokens["tokenInStr"]] = tokenInDecimal
+				lock.Unlock()
 			}
 
 			tokenOutDecimal, ok := scraper.decimalCache[tokens["tokenOutStr"]]
@@ -105,7 +103,9 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 					log.Errorf("error getting decimal tokenOutStr of symbol %s err: %v", symbol, err)
 					return
 				}
+				lock.Lock()
 				scraper.decimalCache[tokens["tokenOutStr"]] = tokenOutDecimal
+				lock.Unlock()
 			}
 			token0 := models.Asset{
 				Symbol:     "USDC",
@@ -139,7 +139,7 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 			}
 			tradesChannel <- t
 
-		}(pool.Address, &wg)
+		}(pool.Address, &wg, &lock)
 	}
 	wg.Wait()
 
