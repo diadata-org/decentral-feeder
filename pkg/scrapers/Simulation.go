@@ -76,6 +76,7 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 	var lock sync.RWMutex
 
 	for _, pool := range pools {
+
 		time.Sleep(time.Duration(scraper.waitTime) * time.Millisecond)
 		wg.Add(1)
 		go func(symbol string, w *sync.WaitGroup, lock *sync.RWMutex) {
@@ -108,8 +109,8 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 				lock.Unlock()
 			}
 			token0 := models.Asset{
-				Symbol:     "USDC",
-				Name:       "USDC",
+				Symbol:     symbol,
+				Name:       symbol,
 				Address:    tokens["tokenInStr"],
 				Decimals:   tokenInDecimal,
 				Blockchain: utils.ETHEREUM,
@@ -267,5 +268,41 @@ func (scraper *SimulationScraper) initTokens() {
 	ustB["recipient"] = "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3"
 	ustB["tokenOutStr"] = "0xAEC9e50e3397f9ddC635C6c429C8C7eca418a143"
 	scraper.allowedTokens["USTB"] = ustB
+
+	var dai = make(map[string]string)
+	ustB["tokenInStr"] = "0x83feDBc0B85c6e29B589aA6BdefB1Cc581935ECD"
+	ustB["amountStr"] = "1000000000"
+	ustB["recipient"] = "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3"
+	ustB["tokenOutStr"] = "0xAEC9e50e3397f9ddC635C6c429C8C7eca418a143"
+	scraper.allowedTokens["USTB"] = dai
+
+	// recipient
+	var steth = make(map[string]string)
+	ustB["tokenInStr"] = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84"
+	ustB["amountStr"] = "1"
+	ustB["recipient"] = "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3"
+	ustB["tokenOutStr"] = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+	scraper.allowedTokens["stETH/WETH"] = steth
+
+	var wsteth = make(map[string]string)
+	ustB["tokenInStr"] = "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+	ustB["amountStr"] = "1"
+	ustB["recipient"] = "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3"
+	ustB["tokenOutStr"] = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+	scraper.allowedTokens["wstETH/WETH"] = wsteth
+
+	var reth = make(map[string]string)
+	ustB["tokenInStr"] = "0xae78736cd615f374d3085123a210448e74fc6393"
+	ustB["amountStr"] = "1"
+	ustB["recipient"] = "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3"
+	ustB["tokenOutStr"] = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+	scraper.allowedTokens["rETH/WETH"] = reth
+
+	var cbeth = make(map[string]string)
+	ustB["tokenInStr"] = "0xbe9895146f7af43049ca1c1ae358b0541ea49704"
+	ustB["amountStr"] = "1"
+	ustB["recipient"] = "0xC6B3AaaAbf2f6eD6cF7fdFFfb0DaC45E10c4A5B3"
+	ustB["tokenOutStr"] = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+	scraper.allowedTokens["rETH/WETH"] = cbeth
 
 }
