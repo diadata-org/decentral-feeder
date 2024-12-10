@@ -7,13 +7,12 @@ The DIA Lumina oracle consists of a two major components:
 2. The DIA metacontract that collates these prices from the key/value contracts and provides an automatically refreshed reading of the latest market price.
 
 An exemplary Lumina data flow can be seen here.
-Oracle feeders scrape trades from exchanges and submit these as last prices into their respective oracle contracts.
-From there, a threshold of 5 in 1 hour is required for the meta contract to assume consensus on the median value of this set of trades.
+Oracle feeders fetch trades from exchanges and submit an aggregated price point to their respective oracle contracts. A minimum of 5 of such oracles have to report the same price in order for the meta contract to assume consensus on the provided price points.
 ![plot of the Lumina system](abstract_flow.png)
 
 ## DIA Feeder contracts
 Each decentralized Lumina feeder writes data into its own oracle contract.
-This feeder contract is a vasic key/value store which stores oracle updates accessible by a key, such as `BTC/USD`.
+This feeder contract is a basic key/value store which stores oracle updates accessible by a key, such as `BTC/USD`.
 The data stored for each entry is the last price of the asset and the timestamp of that price.
 
 Each feeder has their own feeder contract, so that it is always clear who made which update.

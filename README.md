@@ -59,9 +59,9 @@ For centralized exchanges, a json file in /config/symbolIdentification is needed
 The collector gathers trades from all running scrapers. As soon as it receives a signal through a trigger channel it bundles trades in *atomic tradesblocks*. An atomic tradesblock is a set of trades restricted to one market on one exchange, for instance `BTC-USDT` trades on Binance exchange. These tradesblocks are sent to the `Processor`.
 
 ## Processor
-The processor is a 2-step aggregation procedure similar to mapReduce.\
-1. Step: Aggregate trades from an atomic tradesblock. The type of aggregation can be selected through an environment variable (see Feeder/main). The only assumption on the aggregation implementation is that it returns a `float64`.
-2. Step: Aggregate filter values obtained in step 1. The selection of aggregation method and assumptions are identical to Step 1.
+The processor is a 2-step aggregation procedure similar to mapReduce:
+* Step 1: Aggregate trades from an atomic tradesblock. The type of aggregation can be selected through an environment variable (see Feeder/main). The only assumption on the aggregation implementation is that it returns a `float64`.
+* Step 2: Aggregate filter values obtained in step 1. The selection of aggregation method and assumptions are identical to Step 1.
 The obtained scalar value is sent to the Oracle feeder.
 
 ## Feeder
@@ -87,7 +87,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 - An ETH private key from MetaMask or any other Eth wallet. Alternatively to generate private key effortlesly eth-keys tool can be used for this [ethereum/eth-keys](https://github.com/ethereum/eth-keys)
 
-- DIA tokens in your wallet (you can use faucet for this [https://faucet.diadata.org](https://faucet.diadata.org)   
+- DIA tokens in your wallet (you can use faucet for this [https://faucet.diadata.org](https://faucet.diadata.org))   
 
 
 ## Docker Compose Deployment
@@ -145,7 +145,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
       ```
       docker rm -f <container_name>
       ```
-   - Verify the container has been removed
+   - Verify the container has been removed:
       ```
       docker ps -a
       ```
@@ -236,7 +236,7 @@ Kubernetes is ideal for production environments requiring scalability and high a
 
 
 
-### Adding Exchange Pairs
+## Adding Exchange Pairs
 
 To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS` environment variable. This can be done regardless of the deployment method. The variable specifies pairs to scrape from various exchanges, formatted as a comma-separated list of `<Exchange>:<Asset-Pair>` (e.g., `Binance:BTC-USDT`).
 
@@ -331,7 +331,7 @@ Locate the environment configuration file or section for your deployment method:
       ....
       ```
 
-### Error Handling
+## Error Handling
 
 If any issues arise during deployment, follow these steps based on your deployment method:
 
