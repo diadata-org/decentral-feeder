@@ -4,6 +4,14 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:  # This allows manual triggering
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }}  # Set debug mode globally
 
 jobs:
   build_and_test:
@@ -30,19 +38,27 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-  push_image:
+  push_image_and_deploy:
     runs-on: ubuntu-latest
     needs: build_and_test
+    environment:
+      name: dia-testspace  # BEFORE GOING PUBLIC CHANGE THE ENV PROTENTIOC RULES TO INCLUDE THIS 
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
+
+      # Get Short Commit Hash of the Merge Commit
+      - name: Get Short Commit Hash
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
       # Checkout the cluster-backend repository
       - name: Checkout cluster-backend repository
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          git clone https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -59,21 +75,16 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Get Unix Timestamp
-      - name: Get Unix Timestamp
-        id: get_timestamp
-        run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
-
-      # Build and Tag the Docker image
+      # Build and Tag the Docker image with the commit hash
       - name: Build and Tag Docker image
         run: |
-          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }} .
+          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
 
       # Push the Docker image to IBM Cloud Container Registry
       - name: Push Docker image
         run: |
           ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:unix-${{ env.TIMESTAMP }}
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
       # Install kubectl
       - name: Install kubectl
@@ -82,35 +93,45 @@ jobs:
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
 
-      # kubectl config with service account 
-      - name: Configure kubectl with Service Account
+      - name: IBM Cluster kubectl config 
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
-          CLUSTER_NAME: dia-cluster-dal/c1ebf5md0icveupf0t10
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} # Example: https://your-api-server:6443
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} 
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
-
           # Ensure token does not contain unexpected newline characters
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          # Set cluster
-          kubectl config set-cluster "$CLUSTER_NAME" --server="$API_SERVER" --insecure-skip-tls-verify=true
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          # Set cluster using the CA PEM file
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
           # Set credentials
-          kubectl config set-credentials github-actions-sa --token="$TOKEN"
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
           # Set context
-          kubectl config set-context dia-cluster-dal/c1ebf5md0icveupf0t10 --cluster="$CLUSTER_NAME" --user=github-actions-sa
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           # Use context
-          kubectl config use-context dia-cluster-dal/c1ebf5md0icveupf0t10
+          kubectl config use-context $CONTEXT
 
-      # Helm upgrade command
-      - name: Helm upgrade/install conduit-node-011
+      # Helm upgrade command with the commit hash tag
+      - name: Helm upgrade/install conduit-node-001
         run: |
-          cd cluster-backend/helmcharts/oracles/conduit-test/011-testspace
-          helm upgrade --install -n dia-testspace --set repository.tag="unix-${{ env.TIMESTAMP }}" diaoracleservice-conduit-011 .
+          cd cluster-backend/helmcharts/oracles/conduit-test/001
+          helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
+          # Clean up CA certificate 
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
-      - name: Cleanup cloned repository
+      - name: Cleanup cloned repository and log out from IBM
         run: |
           rm -rf cluster-backend
-
-
-
+          ibmcloud logout

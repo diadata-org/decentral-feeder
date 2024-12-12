@@ -46,14 +46,15 @@ type cryptodotcomWSResponseData struct {
 }
 
 type cryptodotcomScraper struct {
-	wsClient         *ws.Conn
-	tradesChannel    chan models.Trade
-	subscribeChannel chan models.ExchangePair
-	tickerPairMap    map[string]models.Pair
-	lastTradeTimeMap map[string]time.Time
-	maxErrCount      int
-	restartWaitTime  int
-	genesis          time.Time
+	wsClient            *ws.Conn
+	tradesChannel       chan models.Trade
+	subscribeChannel    chan models.ExchangePair
+	tickerPairMap       map[string]models.Pair
+	lastTradeTimeMap    map[string]time.Time
+	maxErrCount         int
+	restartWaitTime     int
+	genesis             time.Time
+	tradeTimeoutSeconds int
 }
 
 var (
@@ -66,13 +67,14 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 	log.Info("Crypto.com - Started scraper.")
 
 	scraper := cryptodotcomScraper{
-		tradesChannel:    make(chan models.Trade),
-		subscribeChannel: make(chan models.ExchangePair),
-		tickerPairMap:    models.MakeTickerPairMap(pairs),
-		lastTradeTimeMap: make(map[string]time.Time),
-		maxErrCount:      20,
-		restartWaitTime:  5,
-		genesis:          time.Now(),
+		tradesChannel:       make(chan models.Trade),
+		subscribeChannel:    make(chan models.ExchangePair),
+		tickerPairMap:       models.MakeTickerPairMap(pairs),
+		lastTradeTimeMap:    make(map[string]time.Time),
+		maxErrCount:         20,
+		restartWaitTime:     5,
+		genesis:             time.Now(),
+		tradeTimeoutSeconds: 120,
 	}
 
 	// Dial websocket API.
@@ -100,7 +102,7 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @cryptodotcomWatchdogDelayMap.
 	for _, pair := range pairs {
 		envVar := "CRYPTODOTCOM_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
-		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "120"), 10, 64)
+		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "300"), 10, 64)
 		if err != nil {
 			log.Errorf("Crypto.com - Parse cryptodotcomWatchdogDelay: %v.", err)
 		}
@@ -115,6 +117,9 @@ func NewCryptodotcomScraper(ctx context.Context, pairs []models.ExchangePair, fa
 func (scraper *cryptodotcomScraper) Close(cancel context.CancelFunc) error {
 	log.Warn("Crypto.com - call scraper.Close().")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 
@@ -157,6 +162,12 @@ func (scraper *cryptodotcomScraper) handleWSResponse(message cryptodotcomWSRespo
 
 	// Identify ticker symbols with underlying assets.
 	for _, trade := range trades {
+
+		// The websocket API returns very old trades when first subscribing. Hence, discard if too old.
+		if trade.Time.Before(time.Now().Add(-time.Duration(scraper.tradeTimeoutSeconds) * time.Second)) {
+			continue
+		}
+
 		pair := strings.Split(message.Result.Data[0].ForeignName, "_")
 		if len(pair) > 1 {
 			trade.QuoteToken = scraper.tickerPairMap[pair[0]+pair[1]].QuoteToken

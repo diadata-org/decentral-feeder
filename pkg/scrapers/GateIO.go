@@ -87,7 +87,7 @@ func NewGateIOScraper(ctx context.Context, pairs []models.ExchangePair, failover
 	// Check last trade time for each subscribed pair and resubscribe if no activity for more than @gateIOWatchdogDelayMap.
 	for _, pair := range pairs {
 		envVar := strings.ToUpper(GATEIO_EXCHANGE) + "_WATCHDOG_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[0] + "_" + strings.Split(strings.ToUpper(pair.ForeignName), "-")[1]
-		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "60"), 10, 64)
+		watchdogDelay, err := strconv.ParseInt(utils.Getenv(envVar, "300"), 10, 64)
 		if err != nil {
 			log.Errorf("GateIO - Parse gateIOWatchdogDelay: %v.", err)
 		}
@@ -103,6 +103,9 @@ func NewGateIOScraper(ctx context.Context, pairs []models.ExchangePair, failover
 func (scraper *gateIOScraper) Close(cancel context.CancelFunc) error {
 	log.Warn("GateIO - call scraper.Close().")
 	cancel()
+	if scraper.wsClient == nil {
+		return nil
+	}
 	return scraper.wsClient.Close()
 }
 

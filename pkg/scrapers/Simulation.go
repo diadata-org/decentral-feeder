@@ -22,6 +22,7 @@ type SimulationScraper struct {
 	restClient    *ethclient.Client
 	simulator     *simulation.Simulator
 	allowedTokens map[string]map[string]string
+	decimalCache  map[string]uint8
 }
 
 type SwapEvents struct {
@@ -52,19 +53,15 @@ func NewSimulationScraper(pools []models.Pool, tradesChannel chan models.Trade, 
 	// scraper.tradeSimulationRPC = "http://localhost:8085/tradesimulator/symbol" //?symbol=UNI&blocknumber=20333049
 	scraper.simulator = simulation.New(scraper.restClient, log)
 	scraper.initTokens()
+	scraper.decimalCache = make(map[string]uint8)
 
 	log.Info("Started Simulation scraper.")
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(30 * time.Second)
 	go func() {
-		for {
-			select {
-
-			case <-ticker.C:
-				log.Info("RUN Simulation scraper.")
-
-				go scraper.mainLoop(pools, tradesChannel)
-			}
+		for range ticker.C {
+			log.Info("RUN Simulation scraper.")
+			go scraper.mainLoop(pools, tradesChannel)
 		}
 	}()
 
@@ -76,44 +73,59 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 	time.Sleep(4 * time.Second)
 
 	var wg sync.WaitGroup
+	var lock sync.RWMutex
+
 	for _, pool := range pools {
 		time.Sleep(time.Duration(scraper.waitTime) * time.Millisecond)
 		wg.Add(1)
-		go func(symbol string, w *sync.WaitGroup) {
+		go func(symbol string, w *sync.WaitGroup, lock *sync.RWMutex) {
 			defer w.Done()
 
 			tokens := scraper.allowedTokens[symbol]
-			tokenInDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
-			if err != nil {
-				log.Errorf("error getting decimal tokenInStr of symbol %s err: %v", symbol, err)
-			}
-			tokenOutDecimal, err := scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
-			if err != nil {
-				log.Errorf("error getting decimal tokenOutStr of symbol %s err: %v", symbol, err)
+			tokenInDecimal, ok := scraper.decimalCache[tokens["tokenInStr"]]
+			if !ok {
+				var err error
+				tokenInDecimal, err = scraper.GetDecimals(common.HexToAddress(tokens["tokenInStr"]))
+				if err != nil {
+					log.Errorf("error getting decimal tokenInStr of symbol %s err: %v", symbol, err)
+					return
+				}
+				lock.Lock()
+				scraper.decimalCache[tokens["tokenInStr"]] = tokenInDecimal
+				lock.Unlock()
 			}
 
+			tokenOutDecimal, ok := scraper.decimalCache[tokens["tokenOutStr"]]
+			if !ok {
+				var err error
+				tokenOutDecimal, err = scraper.GetDecimals(common.HexToAddress(tokens["tokenOutStr"]))
+				if err != nil {
+					log.Errorf("error getting decimal tokenOutStr of symbol %s err: %v", symbol, err)
+					return
+				}
+				lock.Lock()
+				scraper.decimalCache[tokens["tokenOutStr"]] = tokenOutDecimal
+				lock.Unlock()
+			}
 			token0 := models.Asset{
-				Symbol:   "USDC",
-				Name:     "USDC",
-				Address:  tokens["tokenInStr"],
-				Decimals: tokenInDecimal,
-
+				Symbol:     "USDC",
+				Name:       "USDC",
+				Address:    tokens["tokenInStr"],
+				Decimals:   tokenInDecimal,
 				Blockchain: utils.ETHEREUM,
 			}
 
 			token1 := models.Asset{
-				Address:  tokens["tokenOutStr"],
-				Symbol:   symbol,
-				Name:     symbol,
-				Decimals: tokenOutDecimal,
-
+				Address:    tokens["tokenOutStr"],
+				Symbol:     symbol,
+				Name:       symbol,
+				Decimals:   tokenOutDecimal,
 				Blockchain: utils.ETHEREUM,
 			}
 			price, err := scraper.simulator.Execute(token1, token0)
 			if err != nil {
 				log.Errorf("error getting price of %s ", symbol)
 				return
-
 			}
 
 			f, _ := strconv.ParseFloat(price, 64)
@@ -125,10 +137,9 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 				Time:       time.Now(),
 				Exchange:   models.Exchange{Name: Simulation, Blockchain: utils.ETHEREUM},
 			}
-
 			tradesChannel <- t
 
-		}(pool.Address, &wg)
+		}(pool.Address, &wg, &lock)
 	}
 	wg.Wait()
 
