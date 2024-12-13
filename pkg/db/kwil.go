@@ -6,6 +6,7 @@ import (
 	"time"
 
 	kwilhelper "github.com/diadata-org/decentral-feeder/pkg/helpers/kwil"
+	envutils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	"github.com/kwilteam/kwil-db/core/client"
 	klog "github.com/kwilteam/kwil-db/core/log"
 	ctypes "github.com/kwilteam/kwil-db/core/types/client"
@@ -15,7 +16,7 @@ import (
 )
 
 func GetKwilClient(chainID string, provider string) *client.Client {
-	privKey := os.Getenv("PRIV_KEY")
+	privKey := envutils.Getenv("PRIV_KEY", "")
 	if privKey == "" {
 		log.Fatal("Private key not found in environment variables")
 	}
@@ -35,7 +36,7 @@ func GetKwilClient(chainID string, provider string) *client.Client {
 	return cl
 }
 
-func DeployDatabase(cl *client.Client, dbName string, dbSchema string) (string, bool, error) {
+func DeployDatabase(cl *client.Client, dbName string, dbSchemaPath string) (string, bool, error) {
 	ctx := context.Background()
 	acctID := cl.Signer.Identity()
 
@@ -64,11 +65,11 @@ func DeployDatabase(cl *client.Client, dbName string, dbSchema string) (string, 
 	if !deployed {
 		log.Infof("Deploying database: %v...", dbName)
 
-		// Parse the Kuneiform schema
-		schema, err := parse.Parse([]byte(dbSchema))
+		schemaContent, err := os.ReadFile(dbSchemaPath)
 		if err != nil {
-			return dbID, false, err
+			log.Fatal(err)
 		}
+		schema, err := parse.Parse(schemaContent)
 
 		// Deploy the database
 		txHash, err := cl.DeployDatabase(ctx, schema)

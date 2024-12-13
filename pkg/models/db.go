@@ -29,8 +29,8 @@ func NewDataStore(chainIDKwil string, providerKwil string) (*DB, error) {
 	return &DB{kwilClient: kwilClient}, nil
 }
 
-func (datastore *DB) DeployDatabase(dbName string, dbSchema string) (bool, error) {
-	dbID, deployed, err := db.DeployDatabase(datastore.kwilClient, dbName, dbSchema)
+func (datastore *DB) DeployDatabase(dbName string, dbSchemaPath string) (bool, error) {
+	dbID, deployed, err := db.DeployDatabase(datastore.kwilClient, dbName, dbSchemaPath)
 	datastore.kwilDBID = dbID
 	log.Info("dbID: ", dbID)
 	return deployed, err

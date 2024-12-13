@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"math/big"
 	"os"
@@ -132,6 +133,45 @@ func init() {
 
 func main() {
 
+	// ------------------test-----------------
+	chainID := ""
+	provider := ""
+	datastore, err := models.NewDataStore(chainID, provider)
+	if err != nil {
+		log.Error("datastore: ", err)
+	} else {
+		log.Info("datastore: ", datastore)
+	}
+
+	dbName := "lumina"
+	schemaPath := "./pkg/db/lumina_schema.kf"
+	deployed, err := datastore.DeployDatabase(dbName, schemaPath)
+	if err != nil {
+		log.Fatalf("DeployDatabase %s: %v", dbName, err)
+	}
+	if deployed {
+		log.Infof("Database %s already deployed.", dbName)
+	}
+
+	// testExchange := models.Exchange{
+	// 	Name:       "TestExchange2",
+	// 	Blockchain: "TestBlockchain",
+	// }
+	// err = datastore.SetExchange(context.Background(), testExchange)
+	// if err != nil {
+	// 	log.Fatal("SetExchange: ", err)
+	// }
+
+	e, err := datastore.GetExchange(context.Background(), "TestExchange")
+	if err != nil {
+		log.Error("GetExchange: ", err)
+	} else {
+		log.Info("got exchange: ", e)
+	}
+	log.Info("Done.")
+	time.Sleep(100 * time.Minute)
+	// ------------------test-----------------
+
 	// get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -184,8 +224,8 @@ func main() {
 	failoverChannel := make(chan string)
 
 	// Feeder mechanics
-	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	privateKeyHex := utils.Getenv("PRIVATE_KEY", "0x3994d1c3c16a4359072299dba16ee73c94e0d28c6203bc9bcefda73d1e58b937")
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "0x966a177f5e5ba3db874dd781e8369c673c8ce4fe")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
 

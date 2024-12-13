@@ -1,6 +1,4 @@
-package db
-
-var LuminaDBSchema = `database lumina;
+database lumina;
 
 table exchange {
 	exchange_id uuid primary notnull,
@@ -21,5 +19,3 @@ action get_all_exchanges() public view {
 action get_exchange($name) public view {
 	SELECT centralized,blockchain FROM exchange WHERE name=$name;
 }
-
-`
