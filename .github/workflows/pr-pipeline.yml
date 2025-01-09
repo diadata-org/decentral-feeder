@@ -95,7 +95,7 @@ jobs:
 
       - name: IBM Cluster kubectl config 
         env:
-          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} 
