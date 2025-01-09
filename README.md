@@ -100,6 +100,9 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
+     - `PUSHGATEWAY_USER`: Your private key for the deployment.
+     - `PUSHGATEWAY_USER`: Your private key for the deployment.
+     
 
    - Example `.env` file:
      ```plaintext
