@@ -59,9 +59,11 @@ type metrics struct {
 	memoryUsage    prometheus.Gauge
 	pushGatewayURL string
 	jobName        string
+	authUser       string
+	authPassword   string
 }
 
-func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName string) *metrics {
+func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, authPassword string) *metrics {
 	m := &metrics{
 		uptime: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
@@ -80,6 +82,8 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName string) *metr
 		}),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
+		authUser:       authUser,
+		authPassword:   authPassword,
 	}
 	reg.MustRegister(m.uptime)
 	reg.MustRegister(m.cpuUsage)
@@ -137,11 +141,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
-	// get pushgatewayURL variable from kubernetes env variables, if not, the default is https://pushgateway.diadata.org
-	pushgatewayURL := utils.Getenv("PUSHGATEWAY_URL", "https://pushgateway.diadata.org")
+	// get pushgatewayURL variable from kubernetes env variables, if not, the default is https://pushgateway-auth.diadata.org
+	pushgatewayURL := utils.Getenv("PUSHGATEWAY_URL", "https://pushgateway-auth.diadata.org")
+	authUser := os.Getenv("PUSHGATEWAY_USER")
+	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
 
 	reg := prometheus.NewRegistry()
-	m := NewMetrics(reg, pushgatewayURL, "df_"+hostname)
+	m := NewMetrics(reg, pushgatewayURL, "df_"+hostname, authUser, authPassword)
 
 	// Record start time for uptime calculation
 	startTime := time.Now()
@@ -169,8 +175,11 @@ func main() {
 				Collector(m.uptime).
 				Collector(m.cpuUsage).
 				Collector(m.memoryUsage).
+				BasicAuth(m.authUser, m.authPassword).
 				Push(); err != nil {
 				log.Errorf("Could not push metrics to Pushgateway: %v", err)
+			} else {
+				log.Printf("Metrics pushed successfully to Pushgateway")
 			}
 
 			time.Sleep(10 * time.Second) // update metrics every 10 seconds

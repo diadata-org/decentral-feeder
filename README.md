@@ -100,6 +100,9 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
+     - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials, info [at] diadata.org
+     - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials,  info [at] diadata.org
+     
 
    - Example `.env` file:
      ```plaintext
@@ -376,6 +379,6 @@ If any issues arise during deployment, follow these steps based on your deployme
 
 The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
 
-If you encounter any issues or need further assistance, feel free to reach out to the team.
+If you encounter any issues or need further assistance, feel free to reach out to the team @ info [at] diadata.org
 
 

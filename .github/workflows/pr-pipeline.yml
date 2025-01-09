@@ -95,7 +95,7 @@ jobs:
 
       - name: IBM Cluster kubectl config 
         env:
-          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN }}
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} 
@@ -121,7 +121,7 @@ jobs:
       - name: Helm upgrade/install conduit-node-001
         run: |
           cd cluster-backend/helmcharts/oracles/conduit-test/001
-          helm upgrade --install -n dia-testspace --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
           # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
