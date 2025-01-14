@@ -69,23 +69,23 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 		uptime: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
 			Name:      "uptime_hours",
-			Help:      "Uptime of the application in hours.",
+			Help:      "Feeder Uptime in hours.",
 		}),
 		cpuUsage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
 			Name:      "cpu_usage_percent",
-			Help:      "CPU usage of the application in percent.",
+			Help:      "Feeder CPU usage in percent.",
 		}),
 		memoryUsage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
 			Name:      "memory_usage_megabytes",
-			Help:      "Memory usage of the application in megabytes.",
+			Help:      "Feeder Memory usage in megabytes.",
 		}),
 		contract: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Namespace: "feeder",
 				Name:      "contract_info",
-				Help:      "Static information about the deployed contract.",
+				Help:      "Feeder contract information.",
 			},
 			[]string{"address"}, // Label to store the contract address
 		),
