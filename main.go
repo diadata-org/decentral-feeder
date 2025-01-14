@@ -43,6 +43,7 @@ var (
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
 	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Crypto.com:BTC-USDT,Crypto.com:BTC-USD")
+
 	// Comma separated list of pools.
 	// The binary digit in the third position controls the order of the trades in the pool:
 	// TO DO: For 0 the original order is taken into consideration, while for 1 the order of all trades in the pool is reversed.
@@ -58,6 +59,7 @@ type metrics struct {
 	cpuUsage       prometheus.Gauge
 	memoryUsage    prometheus.Gauge
 	contract       *prometheus.GaugeVec
+	exchangePairs  *prometheus.GaugeVec
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -87,7 +89,15 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 				Name:      "contract_info",
 				Help:      "Feeder contract information.",
 			},
-			[]string{"address"}, // Label to store the contract address
+			[]string{"contract"}, // Label to store the contract address
+		),
+		exchangePairs: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: "feeder",
+				Name:      "exchange_pairs",
+				Help:      "List of exchange pairs to be pushed as labels for each Feeder.",
+			},
+			[]string{"exchange_pair"}, // Label to store each exchange pair
 		),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
@@ -162,7 +172,20 @@ func main() {
 	// Record start time for uptime calculation
 	startTime := time.Now()
 
-	// Update metrics periodically
+	// Get deployed contract and set the metric
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	// Set the static contract label for Prometheus monitoring
+	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
+
+	exchangePairsList := strings.Split(exchangePairsEnv, ",")
+	for _, pair := range exchangePairsList {
+		pair = strings.TrimSpace(pair) // Clean whitespace
+		if pair != "" {
+			m.exchangePairs.WithLabelValues(pair).Set(1)
+		}
+	}
+
+	// Periodically update and push metrics to pushgateway
 	go func() {
 		for {
 			uptime := time.Since(startTime).Hours()
@@ -186,6 +209,7 @@ func main() {
 				Collector(m.cpuUsage).
 				Collector(m.memoryUsage).
 				Collector(m.contract).
+				Collector(m.exchangePairs).
 				BasicAuth(m.authUser, m.authPassword).
 				Push(); err != nil {
 				log.Errorf("Could not push metrics to Pushgateway: %v", err)
@@ -205,9 +229,6 @@ func main() {
 
 	// Feeder mechanics
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
-	// Set the static contract label for Prometheus monitoring
-	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
 	conn, err := ethclient.Dial(blockchainNode)
