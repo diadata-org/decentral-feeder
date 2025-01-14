@@ -57,6 +57,7 @@ type metrics struct {
 	uptime         prometheus.Gauge
 	cpuUsage       prometheus.Gauge
 	memoryUsage    prometheus.Gauge
+	contract       *prometheus.GaugeVec
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -80,6 +81,14 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 			Name:      "memory_usage_megabytes",
 			Help:      "Memory usage of the application in megabytes.",
 		}),
+		contract: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: "feeder",
+				Name:      "contract_info",
+				Help:      "Static information about the deployed contract.",
+			},
+			[]string{"address"}, // Label to store the contract address
+		),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
 		authUser:       authUser,
@@ -88,6 +97,7 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.uptime)
 	reg.MustRegister(m.cpuUsage)
 	reg.MustRegister(m.memoryUsage)
+	reg.MustRegister(m.contract)
 	return m
 }
 
@@ -175,6 +185,7 @@ func main() {
 				Collector(m.uptime).
 				Collector(m.cpuUsage).
 				Collector(m.memoryUsage).
+				Collector(m.contract).
 				BasicAuth(m.authUser, m.authPassword).
 				Push(); err != nil {
 				log.Errorf("Could not push metrics to Pushgateway: %v", err)
@@ -195,9 +206,10 @@ func main() {
 	// Feeder mechanics
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	// Set the static contract label for Prometheus monitoring
+	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
-
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
