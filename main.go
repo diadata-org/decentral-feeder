@@ -60,6 +60,7 @@ type metrics struct {
 	memoryUsage    prometheus.Gauge
 	contract       *prometheus.GaugeVec
 	exchangePairs  *prometheus.GaugeVec
+	pools          *prometheus.GaugeVec
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -99,6 +100,14 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 			},
 			[]string{"exchange_pair"}, // Label to store each exchange pair
 		),
+		pools: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: "feeder",
+				Name:      "pools",
+				Help:      "List of pools to be pushed as labels for each Feeder.",
+			},
+			[]string{"exchange", "pool_address"}, // Labels for the exchange and pool address
+		),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
 		authUser:       authUser,
@@ -108,6 +117,7 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.cpuUsage)
 	reg.MustRegister(m.memoryUsage)
 	reg.MustRegister(m.contract)
+	reg.MustRegister(m.pools)
 	return m
 }
 
@@ -184,6 +194,14 @@ func main() {
 			m.exchangePairs.WithLabelValues(pair).Set(1)
 		}
 	}
+	// Iterate through the pools slice and set values for the pools metric. Push only if pools are available.
+	if len(pools) > 0 {
+		for _, pool := range pools {
+			m.pools.WithLabelValues(pool.Exchange.Name, pool.Address).Set(1)
+		}
+	} else {
+		log.Info("No pools to push metrics for; POOLS environment variable is empty.")
+	}
 
 	// Periodically update and push metrics to pushgateway
 	go func() {
@@ -204,12 +222,18 @@ func main() {
 			}
 
 			// Push metrics to the Pushgateway
-			if err := push.New(m.pushGatewayURL, m.jobName).
+			pushCollector := push.New(m.pushGatewayURL, m.jobName).
 				Collector(m.uptime).
 				Collector(m.cpuUsage).
 				Collector(m.memoryUsage).
 				Collector(m.contract).
-				Collector(m.exchangePairs).
+				Collector(m.exchangePairs)
+
+			if len(pools) > 0 {
+				pushCollector = pushCollector.Collector(m.pools)
+			}
+
+			if err := pushCollector.
 				BasicAuth(m.authUser, m.authPassword).
 				Push(); err != nil {
 				log.Errorf("Could not push metrics to Pushgateway: %v", err)
@@ -217,7 +241,7 @@ func main() {
 				log.Printf("Metrics pushed successfully to Pushgateway")
 			}
 
-			time.Sleep(10 * time.Second) // update metrics every 10 seconds
+			time.Sleep(30 * time.Second) // update metrics every 30 seconds
 		}
 	}()
 
