@@ -43,6 +43,7 @@ var (
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
 	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Crypto.com:BTC-USDT,Crypto.com:BTC-USD")
+
 	// Comma separated list of pools.
 	// The binary digit in the third position controls the order of the trades in the pool:
 	// TO DO: For 0 the original order is taken into consideration, while for 1 the order of all trades in the pool is reversed.
@@ -57,6 +58,9 @@ type metrics struct {
 	uptime         prometheus.Gauge
 	cpuUsage       prometheus.Gauge
 	memoryUsage    prometheus.Gauge
+	contract       *prometheus.GaugeVec
+	exchangePairs  *prometheus.GaugeVec
+	pools          *prometheus.GaugeVec
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -68,18 +72,42 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 		uptime: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
 			Name:      "uptime_hours",
-			Help:      "Uptime of the application in hours.",
+			Help:      "Feeder Uptime in hours.",
 		}),
 		cpuUsage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
 			Name:      "cpu_usage_percent",
-			Help:      "CPU usage of the application in percent.",
+			Help:      "Feeder CPU usage in percent.",
 		}),
 		memoryUsage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
 			Name:      "memory_usage_megabytes",
-			Help:      "Memory usage of the application in megabytes.",
+			Help:      "Feeder Memory usage in megabytes.",
 		}),
+		contract: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: "feeder",
+				Name:      "contract_info",
+				Help:      "Feeder contract information.",
+			},
+			[]string{"contract"}, // Label to store the contract address
+		),
+		exchangePairs: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: "feeder",
+				Name:      "exchange_pairs",
+				Help:      "List of exchange pairs to be pushed as labels for each Feeder.",
+			},
+			[]string{"exchange_pair"}, // Label to store each exchange pair
+		),
+		pools: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: "feeder",
+				Name:      "pools",
+				Help:      "List of pools to be pushed as labels for each Feeder.",
+			},
+			[]string{"exchange", "pool_address"}, // Labels for the exchange and pool address
+		),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
 		authUser:       authUser,
@@ -88,6 +116,8 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.uptime)
 	reg.MustRegister(m.cpuUsage)
 	reg.MustRegister(m.memoryUsage)
+	reg.MustRegister(m.contract)
+	reg.MustRegister(m.pools)
 	return m
 }
 
@@ -152,7 +182,28 @@ func main() {
 	// Record start time for uptime calculation
 	startTime := time.Now()
 
-	// Update metrics periodically
+	// Get deployed contract and set the metric
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+	// Set the static contract label for Prometheus monitoring
+	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
+
+	exchangePairsList := strings.Split(exchangePairsEnv, ",")
+	for _, pair := range exchangePairsList {
+		pair = strings.TrimSpace(pair) // Clean whitespace
+		if pair != "" {
+			m.exchangePairs.WithLabelValues(pair).Set(1)
+		}
+	}
+	// Iterate through the pools slice and set values for the pools metric. Push only if pools are available.
+	if len(pools) > 0 {
+		for _, pool := range pools {
+			m.pools.WithLabelValues(pool.Exchange.Name, pool.Address).Set(1)
+		}
+	} else {
+		log.Info("No pools to push metrics for; POOLS environment variable is empty.")
+	}
+
+	// Periodically update and push metrics to pushgateway
 	go func() {
 		for {
 			uptime := time.Since(startTime).Hours()
@@ -171,10 +222,18 @@ func main() {
 			}
 
 			// Push metrics to the Pushgateway
-			if err := push.New(m.pushGatewayURL, m.jobName).
+			pushCollector := push.New(m.pushGatewayURL, m.jobName).
 				Collector(m.uptime).
 				Collector(m.cpuUsage).
 				Collector(m.memoryUsage).
+				Collector(m.contract).
+				Collector(m.exchangePairs)
+
+			if len(pools) > 0 {
+				pushCollector = pushCollector.Collector(m.pools)
+			}
+
+			if err := pushCollector.
 				BasicAuth(m.authUser, m.authPassword).
 				Push(); err != nil {
 				log.Errorf("Could not push metrics to Pushgateway: %v", err)
@@ -182,7 +241,7 @@ func main() {
 				log.Printf("Metrics pushed successfully to Pushgateway")
 			}
 
-			time.Sleep(10 * time.Second) // update metrics every 10 seconds
+			time.Sleep(30 * time.Second) // update metrics every 30 seconds
 		}
 	}()
 
@@ -194,10 +253,8 @@ func main() {
 
 	// Feeder mechanics
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
-
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
