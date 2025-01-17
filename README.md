@@ -113,12 +113,18 @@ m.uptime.Set(uptime)
 `time.Since(startTime)` calculates the elapsed time since the startTime variable was set.
 `.Hours() ` converts the elapsed time into hours.
 `m.uptime.Set(uptime)` sets the current value of the uptime gauge.
-Then we push the metrics to the pushgateway:
+Then we push the metrics to the pushgateway every 30secods:
 ```
-pushCollector := push.New(m.pushGatewayURL, m.jobName).
-    Collector(m.uptime)
-Pushgateway authentication
-pushCollector.BasicAuth(m.authUser, m.authPassword)
+			if err := pushCollector.
+				BasicAuth(m.authUser, m.authPassword).
+				Push(); err != nil {
+				log.Errorf("Could not push metrics to Pushgateway: %v", err)
+			} else {
+				log.Printf("Metrics pushed successfully to Pushgateway")
+			}
+
+			time.Sleep(30 * time.Second) // update metrics every 30 seconds
+		}
 ```
 
 ## Smart Contract Documentation
