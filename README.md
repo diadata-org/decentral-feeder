@@ -6,6 +6,7 @@
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
+   - [Monitoring](#monitoring)
  - [Smart Contract Documentation](contracts/README.md)
  - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
@@ -68,14 +69,14 @@ The obtained scalar value is sent to the Oracle feeder.
 The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
 
 ## Monitoring
-For monitoring we are these two prometheus client libraries for Go
+For monitoring we use these two prometheus client libraries for Go:
 ```
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/push"
+"github.com/prometheus/client_golang/prometheus"
+"github.com/prometheus/client_golang/prometheus/push"
 ```
 
 These provide the tools to create, manage and expose metrics that Prometheus can scrape or monitor. 
-Define metrics for the the DF node to expose
+Then we define the metrics for the the DF node to expose:
 ```
 type metrics struct {
     uptime         prometheus.Gauge
@@ -104,14 +105,14 @@ m := &metrics{
 }
 reg.MustRegister(m.uptime)
 ```
-* The uptime metric is updated periodically by calculating the time elapsed since the application started:
+The uptime metric is updated periodically by calculating the time elapsed since the application started:
 ```uptime := time.Since(startTime).Hours()
 m.uptime.Set(uptime)
 ```
-* time.Since(startTime) calculates the elapsed time since the startTime variable was set.
-.Hours() converts the elapsed time into hours.
-m.uptime.Set(uptime) sets the current value of the uptime gauge.
-* Then we push the metrics to the pushgateway
+`time.Since(startTime)` calculates the elapsed time since the startTime variable was set.
+`.Hours() ` converts the elapsed time into hours.
+`m.uptime.Set(uptime)` sets the current value of the uptime gauge.
+Then we push the metrics to the pushgateway:
 ```
 pushCollector := push.New(m.pushGatewayURL, m.jobName).
     Collector(m.uptime)
