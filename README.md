@@ -115,16 +115,16 @@ m.uptime.Set(uptime)
 `m.uptime.Set(uptime)` sets the current value of the uptime gauge.
 Then we push the metrics to the pushgateway every 30secods:
 ```
-			if err := pushCollector.
-				BasicAuth(m.authUser, m.authPassword).
-				Push(); err != nil {
-				log.Errorf("Could not push metrics to Pushgateway: %v", err)
-			} else {
-				log.Printf("Metrics pushed successfully to Pushgateway")
-			}
+if err := pushCollector.
+  BasicAuth(m.authUser, m.authPassword).
+  Push(); err != nil {
+  log.Errorf("Could not push metrics to Pushgateway: %v", err)
+} else {
+  log.Printf("Metrics pushed successfully to Pushgateway")
+}
 
-			time.Sleep(30 * time.Second) // update metrics every 30 seconds
-		}
+time.Sleep(30 * time.Second) // update metrics every 30 seconds
+}
 ```
 
 ## Smart Contract Documentation
