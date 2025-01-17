@@ -90,8 +90,9 @@ type metrics struct {
 * pushGatewayURL: The URL of the Pushgateway, obtained from an environment variable.
 * jobName: The identifier for the job pushing metrics, constructed as df_<hostname> 
 * authUser and authPassword: Credentials for authenticating with the Pushgateway
-* The NewMetrics function initializes and registers the uptime metric with a Prometheus registry:
+The `NewMetrics` function initializes and registers the uptime metric with a Prometheus registry:
 ```
+func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, authPassword string) *metrics {
 m := &metrics{
     uptime: prometheus.NewGauge(prometheus.GaugeOpts{
         Namespace: "feeder",
