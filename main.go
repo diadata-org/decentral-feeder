@@ -205,6 +205,9 @@ func main() {
 
 	// Periodically update and push metrics to pushgateway
 	go func() {
+		const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
+		cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
+
 		for {
 			uptime := time.Since(startTime).Hours()
 			m.uptime.Set(uptime)
@@ -215,12 +218,25 @@ func main() {
 			memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
 			m.memoryUsage.Set(memoryUsageMB)
 
-			// Update CPU usage using gopsutil
-			percent, _ := cpu.Percent(0, false)
-			if len(percent) > 0 {
-				m.cpuUsage.Set(percent[0])
-			}
+			// Update CPU usage using gopsutil with smoothing
+			percent, err := cpu.Percent(0, false)
+			if err != nil {
+				log.Errorf("Error gathering CPU usage: %v", err)
+			} else if len(percent) > 0 {
+				// Add the new sample to the buffer
+				if len(cpuSamples) == sampleWindowSize {
+					cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
+				}
+				cpuSamples = append(cpuSamples, percent[0])
 
+				// Calculate the rolling average
+				var sum float64
+				for _, v := range cpuSamples {
+					sum += v
+				}
+				avgCPUUsage := sum / float64(len(cpuSamples))
+				m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
+			}
 			// Push metrics to the Pushgateway
 			pushCollector := push.New(m.pushGatewayURL, m.jobName).
 				Collector(m.uptime).
