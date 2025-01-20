@@ -54,11 +54,11 @@ jobs:
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
       # Checkout the cluster-backend repository
-      - name: Checkout cluster-backend repository
+      - name: Checkout lumina-infra repository
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$TOKEN@github.com/diadata-org/lumina-infra lumina-infra
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -120,7 +120,7 @@ jobs:
       # Helm upgrade command with the commit hash tag
       - name: Helm upgrade/install conduit-node-001
         run: |
-          cd cluster-backend/helmcharts/oracles/conduit-test/001
+          cd cluster-backend/helmcharts/decentral-feeders/001
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
           # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
