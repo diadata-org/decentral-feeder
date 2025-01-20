@@ -53,7 +53,7 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
-      # Checkout the cluster-backend repository
+      # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
@@ -120,7 +120,7 @@ jobs:
       # Helm upgrade command with the commit hash tag
       - name: Helm upgrade/install conduit-node-001
         run: |
-          cd cluster-backend/helmcharts/decentral-feeders/001
+          cd lumina-infra/helmcharts/decentral-feeders/001
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
           # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
