@@ -133,5 +133,5 @@ jobs:
       # Cleanup the cloned repository
       - name: Cleanup cloned repository and log out from IBM
         run: |
-          rm -rf cluster-backend
+          rm -rf lumina-infra
           ibmcloud logout
