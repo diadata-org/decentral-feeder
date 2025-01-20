@@ -50,12 +50,12 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
-      # Checkout the cluster-backend repository
-      - name: Checkout cluster-backend repository
+      # Checkout the lumina-infra repository
+      - name: Checkout lumina-infra repository
         env:
           TOKEN: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$TOKEN@github.com/diadata-org/lumina-infra lumina-infra
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
@@ -113,7 +113,7 @@ jobs:
         run: |
           for i in $(seq -w 002 006); do
             echo "Deploying node $i"
-            cd cluster-backend/helmcharts/oracles/conduit-test/$i
+            cd lumina-infra/helmcharts/decentral-feeders/$i
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
             cd -
           done
@@ -143,7 +143,7 @@ jobs:
         run: |
           for i in $(seq -w 007 011); do
             echo "Deploying node $i"
-            cd cluster-backend/helmcharts/oracles/conduit-test/$i
+            cd lumina-infra/helmcharts/decentral-feeders/$i
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
             cd -
           done
@@ -173,7 +173,7 @@ jobs:
         run: |
           for i in $(seq -w 012 016); do
             echo "Deploying node $i"
-            cd cluster-backend/helmcharts/oracles/conduit-test/$i
+            cd lumina-infra/helmcharts/decentral-feeders/$i
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
             cd -
           done
@@ -184,7 +184,7 @@ jobs:
       # Cleanup the cloned repository
       - name: Cleanup cloned repository and logout from IBM
         run: |
-          rm -rf cluster-backend
+          rm -rf lumina-infra
           if [ -f /tmp/ca.pem ]; then
             shred -u /tmp/ca.pem
           fi
