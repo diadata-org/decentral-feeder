@@ -70,63 +70,7 @@ The obtained scalar value is sent to the Oracle feeder.
 The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
 
 ## Monitoring
-For monitoring we use these two prometheus client libraries for Go:
-```
-"github.com/prometheus/client_golang/prometheus"
-"github.com/prometheus/client_golang/prometheus/push"
-```
-
-These provide the tools to create, manage and expose metrics that Prometheus can scrape or monitor. 
-Then we define the metrics for the the DF node to expose:
-```
-type metrics struct {
-    uptime         prometheus.Gauge
-    pushGatewayURL string
-    jobName        string
-    authUser       string
-    authPassword   string
-}
-```
-* prometheus.Gauge: A gauge metric represents a single numerical value that can go up or down, such as uptime.
-* pushGatewayURL: The URL of the Pushgateway, obtained from an environment variable.
-* jobName: The identifier for the job pushing metrics, constructed as df_<hostname> 
-* authUser and authPassword: Credentials for authenticating with the Pushgateway
-The `NewMetrics` function initializes and registers the uptime metric with a Prometheus registry:
-```
-func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, authPassword string) *metrics {
-m := &metrics{
-    uptime: prometheus.NewGauge(prometheus.GaugeOpts{
-        Namespace: "feeder",
-        Name:      "uptime_hours",
-        Help:      "Feeder Uptime in hours.",
-    }),
-    pushGatewayURL: pushGatewayURL,
-    jobName:        jobName,
-    authUser:       authUser,
-    authPassword:   authPassword,
-}
-reg.MustRegister(m.uptime)
-```
-The uptime metric is updated periodically by calculating the time elapsed since the application started:
-```uptime := time.Since(startTime).Hours()
-m.uptime.Set(uptime)
-```
-`time.Since(startTime)` calculates the elapsed time since the startTime variable was set.
-`.Hours() ` converts the elapsed time into hours.
-`m.uptime.Set(uptime)` sets the current value of the uptime gauge.
-Then we push the metrics to the pushgateway every 30secods:
-```
-if err := pushCollector.
-  BasicAuth(m.authUser, m.authPassword).
-  Push(); err != nil {
-  log.Errorf("Could not push metrics to Pushgateway: %v", err)
-} else {
-  log.Printf("Metrics pushed successfully to Pushgateway")
-}
-
-time.Sleep(30 * time.Second) // update metrics every 30 seconds
-}
-```
+For monitoring, we use Prometheus client libraries for Go to create, manage, and expose metrics. A metrics struct is defined to track uptime (using a Prometheus gauge) and store Pushgateway details like URL, job name, and authentication credentials. The uptime metric is initialized, registered, and updated periodically based on the application's runtime. Metrics are pushed to the Pushgateway every 30 seconds, with authentication and error handling in place.
 
 ## Smart Contract Documentation
 For more details about the contracts, refer to the following documentation:
