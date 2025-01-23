@@ -288,11 +288,6 @@ Locate the environment configuration file or section for your deployment method:
      KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
      Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
      "
-     ```
-     start the container with:
-     ```
-     docker compose up 
-     ```
 
    - Example in Kubernetes manifest:
      Modify the environment variables in the env section of the  Deployment specification.
@@ -317,11 +312,8 @@ Locate the environment configuration file or section for your deployment method:
             "
           ports:
           - containerPort: 8080
-       ```
-     - Apply the changes with:
-       ```bash
-       kubectl apply -f `manifest.yaml` 
-       ```
+
+
    - Example in Docker Run:
      ```bash
      docker run -d \
@@ -330,7 +322,6 @@ Locate the environment configuration file or section for your deployment method:
       -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ....." \
       --name decentralized-feeder \
       diadata/decentralized-feeder:<VERSION>
-
      ```
 
  ### Verify the configuration:
