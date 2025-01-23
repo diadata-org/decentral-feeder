@@ -19,6 +19,7 @@
      - [Docker Run Deployment](#docker-run-deployment)
      - [Kubernetes Deployment](#kubernetes-deployment)
    - [Adding Exchange Pairs](#adding-exchange-pairs)
+   - [Watchdog environment variables](#watchdog-environment-variables)
    - [Error Handling](#error-handling)
 - [Conclusion](#conclusion)
 
@@ -168,6 +169,8 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      ```plaintext
      PRIVATE_KEY=myprivatekey
      DEPLOYED_CONTRACT=
+     PUSHGATEWAY_USER=
+     PUSHGATEWAY_PASSWORD=
      ```
 
    - Open a terminal in the `docker-compose` folder and start the deployment by running:
@@ -228,6 +231,8 @@ This method is suitable for simple setups without orchestration.
      docker run -d \
        -e PRIVATE_KEY=myprivatekey \
        -e DEPLOYED_CONTRACT= \
+       -e PUSHGATEWAY_USER= \
+       -e PUSHGATEWAY_PASSWORD= \
        --name decentralized-feeder \
        diadata/decentralized-feeder:<VERSION>
      ```
@@ -241,6 +246,9 @@ This method is suitable for simple setups without orchestration.
      docker run -d \
        -e PRIVATE_KEY=myprivatekey \
        -e DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx \
+       -e PUSHGATEWAY_USER= \
+       -e PUSHGATEWAY_PASSWORD= \
+       -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ....." 
        --name decentralized-feeder \
        diadata/decentralized-feeder:<VERSION>
      ```
@@ -281,6 +289,10 @@ Kubernetes is ideal for production environments requiring scalability and high a
              - name: DEPLOYED_CONTRACT
                value: ""
              - name: EXCHANGEPAIRS
+               value: ""
+             - name: PUSHGATEWAY_USER= 
+               value: ""
+             - name: PUSHGATEWAY_PASSWORD= 
                value: ""
              - containerPort: 8080
      ```
@@ -344,7 +356,11 @@ Locate the environment configuration file or section for your deployment method:
           - name: EXCHANGEPAIRS
             value: "
             Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
-            CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD
+            CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD,
+            GateIO:ARB-USDT, GateIO:ATOM-USDT, GateIO:AVAX-USDT, GateIO:BNB-USDT, GateIO:BONK-USDT,
+            Kraken:AAVE-USD, Kraken:ADA-USD, Kraken:ADA-USDT, Kraken:APT-USD, Kraken:ARB-USD,
+            KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
+            Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
             "
           ports:
           - containerPort: 8080
@@ -358,7 +374,7 @@ Locate the environment configuration file or section for your deployment method:
      docker run -d \
       -e PRIVATE_KEY=your-private-key \
       -e DEPLOYED_CONTRACT=your-contrract \
-      -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT" \
+      -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ....." \
       --name decentralized-feeder \
       diadata/decentralized-feeder:<VERSION>
 
@@ -394,8 +410,29 @@ Locate the environment configuration file or section for your deployment method:
       ....
       ```
 
-## Error Handling
+## Watchdog environment variables
+The decentralized feeders contain two different types of watchdog variables that monitor the liveliness of WebSocket connections used for subscribing to trades in exchange pairs.
+1. Exchange-wide watchdogs, such as `BINANCE_WATCHDOG` If no trades are recorded by a scraper for any pair on the given exchange within `BINANCE_WATCHDOG` seconds, the scraper is restarted and will resubscribe to all pairs specified in the feeder's configuration.
+2. Pairwise watchdogs such as `BINANCE_WATCHDOG_BTC_USDT`:  If no trades are recorded by a scraper for a specific pair within `EXCHANGE_WATCHDOG_ASSET1_ASSET2` seconds, the scraper will unsubscribe and subsequently resubscribe to the corresponding pair. All other subscriptions of this scraper will remain untouched.
+The first type of watchdog applies to cases where the scraper fails, for instance due to server-side issues, and require a restart.
+The second type of watchdog applies to dropping websocket subscriptions. These ocurr in websocket connections and are often "silent", i.e. there is no error message that allows for a proper handling. 
+An example of how watchdog variable could look like in the context of kubernetes manifest.
+```
+  - name: COINBASE_WATCHDOG
+    value: "240"
+  - name: CRYPTODOTOCOM_WATCHDOG
+    value: "240"
+  - name: GATEIO_WATCHDOG
+    value: "240"
+  - name: BINANCE_WATCHDOG_BTC_USDTs
+    value: "300"
+  - name: CRYPTODOTCOM_WATCHDOG_BTC_USDT
+    value: "300"
+  - name: KUCOIN_WATCHDOG_BTC_USDC
+    value: "300"
+```
 
+## Error Handling
 If any issues arise during deployment, follow these steps based on your deployment method:
 
  #### Check Logs:
