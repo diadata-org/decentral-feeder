@@ -80,8 +80,10 @@ For more details about the contracts, refer to the following documentation:
 
 # Node Deployment Guide
 
-This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g., `v0.0.4`, `v0.0.5`, etc.) when deploying.
+This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g.`v0.0.5`, etc.) when deploying.
 
+For the most recent Docker image tags, please refer to the following link:
+https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
 ## Requirements
 
 - Ensure that Docker or Docker Compose is installed on your machine.
