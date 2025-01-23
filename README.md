@@ -290,7 +290,6 @@ Locate the environment configuration file or section for your deployment method:
      "
 
    - Example in Kubernetes manifest:
-     Modify the environment variables in the env section of the  Deployment specification.
        ```yaml
       spec:
         containers:
