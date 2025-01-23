@@ -202,6 +202,7 @@ This method is suitable for simple setups without orchestration.
       ```bash
       docker logs <container_name>
       ```
+   -  For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
 
 
 ###  Kubernetes Deployment
@@ -242,6 +243,7 @@ Kubernetes is ideal for production environments requiring scalability and high a
                value: ""
              - containerPort: 8080
      ```
+    For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
 
 #### Steps to Deploy
    1. Deploy the feeder with `DEPLOYED_CONTRACT` set to an empty string (`""`) in the Kubernetes manifest.
