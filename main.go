@@ -38,7 +38,7 @@ var (
 	env = flag.Bool("env", true, "Get pairs and pools from env variable if set to true. Otherwise, pairs are read from config file.")
 
 	// Comma separated list of exchanges. Only used in case pairs are read from config files.
-	exchanges = utils.Getenv("EXCHANGES", "UniswapV2,Binance,Simulation")
+	exchanges = utils.Getenv("EXCHANGES", "UniswapV2,Binance,Simulation,Simulation-Curve")
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
@@ -132,10 +132,13 @@ func init() {
 			for _, p := range strings.Split(poolsEnv, ENV_SEPARATOR) {
 				var pool models.Pool
 				pool.Exchange = scrapers.Exchanges[strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[0]]
+
 				pool.Address = strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[1]
 				pool.Blockchain = models.Blockchain{Name: pool.Exchange.Blockchain}
 				pools = append(pools, pool)
+
 			}
+
 		}
 
 	} else {

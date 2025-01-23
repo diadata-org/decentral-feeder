@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/big"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,10 +18,12 @@ import (
 )
 
 type SimulationScraper struct {
-	pools         []models.Pool
-	waitTime      int
-	restClient    *ethclient.Client
-	simulator     *simulation.Simulator
+	pools            []models.Pool
+	waitTime         int
+	restClient       *ethclient.Client
+	uniswapSimulator simulation.Simulator
+	curveSimulator   simulation.Simulator
+
 	allowedTokens map[string]map[string]string
 	decimalCache  map[string]uint8
 }
@@ -51,7 +54,8 @@ func NewSimulationScraper(pools []models.Pool, tradesChannel chan models.Trade, 
 	}
 	scraper.pools = pools
 	// scraper.tradeSimulationRPC = "http://localhost:8085/tradesimulator/symbol" //?symbol=UNI&blocknumber=20333049
-	scraper.simulator = simulation.New(scraper.restClient, log)
+	scraper.uniswapSimulator = simulation.NewUniSimulator(scraper.restClient, log)
+	scraper.curveSimulator = simulation.NewCurveSimulator(scraper.restClient, log)
 	scraper.initTokens()
 	scraper.decimalCache = make(map[string]uint8)
 
@@ -79,9 +83,11 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 		time.Sleep(time.Duration(scraper.waitTime) * time.Millisecond)
 		wg.Add(1)
 		go func(symbol string, w *sync.WaitGroup, lock *sync.RWMutex) {
+
 			defer w.Done()
 
 			tokens := scraper.allowedTokens[symbol]
+
 			tokenInDecimal, ok := scraper.decimalCache[tokens["tokenInStr"]]
 			if !ok {
 				var err error
@@ -122,10 +128,30 @@ func (scraper *SimulationScraper) mainLoop(pools []models.Pool, tradesChannel ch
 				Decimals:   tokenOutDecimal,
 				Blockchain: utils.ETHEREUM,
 			}
-			price, err := scraper.simulator.Execute(token1, token0)
-			if err != nil {
-				log.Errorf("error getting price of %s ", symbol)
-				return
+
+			var (
+				price string
+				err   error
+			)
+
+			switch len(strings.Split(pool.Exchange.Name, "-")) {
+			case 1:
+				{
+					price, err = scraper.uniswapSimulator.Execute(token1, token0)
+					if err != nil {
+						log.Errorf("error getting price of %s ", symbol)
+						return
+					}
+				}
+			case 2:
+				{
+					price, err = scraper.curveSimulator.Execute(token1, token0)
+					if err != nil {
+						log.Errorf("error getting price of %s ", symbol)
+						return
+					}
+				}
+
 			}
 
 			f, _ := strconv.ParseFloat(price, 64)
