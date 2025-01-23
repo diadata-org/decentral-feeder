@@ -1,7 +1,9 @@
 package main
 
 import (
+    "context"
 	"flag"
+	"fmt"
 	"math"
 	"math/big"
 	"os"
@@ -19,6 +21,7 @@ import (
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
+	"crypto/ecdsa"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
@@ -129,25 +132,21 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	return m
 }
 
-func getAddressBalance(client *ethclient.Client, privateKeyHex string) (float64, error) {
-	privateKey, err := crypto.HexToECDSA(privateKeyHex)
-	if err != nil {
-		return 0, log.Errorf("Failed to parse private key: %w", err)
-	}
+func getAddressBalance(client *ethclient.Client, privateKey *ecdsa.PrivateKey) (float64, error) {
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		return 0, log.Errorf("Failed to cast public key to ECDSA")
+		return math.NaN(), fmt.Errorf("Failed to cast public key to ECDSA")
 	}
 
 	address := crypto.PubkeyToAddress(*publicKeyECDSA)
 	balance, err := client.BalanceAt(context.Background(), address, nil)
 	if err != nil {
-		return math.Nan(), log.Errorf("Failed to get balance: %w", err)
+		return math.NaN(), fmt.Errorf("Failed to get balance: %w", err)
 	}
 
-	balanceInDIA := new(big.Float).Quo(new(big.Float).SetInt(balance), big.NewFloat(1e18)).Float64()
+	balanceInDIA, _ := new(big.Float).Quo(new(big.Float).SetInt(balance), big.NewFloat(1e18)).Float64()
 	return balanceInDIA, nil
 }
 
@@ -222,6 +221,7 @@ func main() {
 	startTime := time.Now()
 
 	// Initialize feeder env variables
+	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
@@ -262,8 +262,7 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
 
-	// Get deployed contract and set the metric
-	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
+
 	// Set the static contract label for Prometheus monitoring
 	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
 
@@ -318,7 +317,7 @@ func main() {
 				m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
 			}
 
-            gas_balance, err := getAddressBalance(conn, privateKeyHex)
+            gas_balance, err := getAddressBalance(conn, privateKey)
             if err != nil {
                 log.Errorf("Failed to fetch address balance: %v", err)
             } else {
