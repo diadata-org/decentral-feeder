@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"math"
 	"math/big"
 	"os"
 	"runtime"
@@ -61,6 +62,7 @@ type metrics struct {
 	contract       *prometheus.GaugeVec
 	exchangePairs  *prometheus.GaugeVec
 	pools          *prometheus.GaugeVec
+	gas_balance    prometheus.Gauge
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -108,6 +110,11 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 			},
 			[]string{"exchange", "pool_address"}, // Labels for the exchange and pool address
 		),
+		gas_balance: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "gas_balance",
+			Help:      "Gas wallet balance in DIA.",
+		}),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
 		authUser:       authUser,
@@ -118,7 +125,30 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.memoryUsage)
 	reg.MustRegister(m.contract)
 	reg.MustRegister(m.pools)
+	reg.MustRegister(m.gas_balance)
 	return m
+}
+
+func getAddressBalance(client *ethclient.Client, privateKeyHex string) (float64, error) {
+	privateKey, err := crypto.HexToECDSA(privateKeyHex)
+	if err != nil {
+		return 0, log.Errorf("Failed to parse private key: %w", err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return 0, log.Errorf("Failed to cast public key to ECDSA")
+	}
+
+	address := crypto.PubkeyToAddress(*publicKeyECDSA)
+	balance, err := client.BalanceAt(context.Background(), address, nil)
+	if err != nil {
+		return math.Nan(), log.Errorf("Failed to get balance: %w", err)
+	}
+
+	balanceInDIA := new(big.Float).Quo(new(big.Float).SetInt(balance), big.NewFloat(1e18)).Float64()
+	return balanceInDIA, nil
 }
 
 func init() {
@@ -182,6 +212,47 @@ func main() {
 	// Record start time for uptime calculation
 	startTime := time.Now()
 
+	// Initialize feeder env variables
+	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
+	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
+	conn, err := ethclient.Dial(blockchainNode)
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+	connBackup, err := ethclient.Dial(backupNode)
+	if err != nil {
+		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
+	}
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "10640"), 10, 64)
+	if err != nil {
+		log.Fatalf("Failed to parse chainId: %v", err)
+	}
+
+	// Frequency for the trigger ticker initiating the computation of filter values.
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
+	if err != nil {
+		log.Fatalf("Failed to parse frequencySeconds: %v", err)
+	}
+
+	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
+
+	privateKey, err := crypto.HexToECDSA(privateKeyHex)
+	if err != nil {
+		log.Fatalf("Failed to load private key: %v", err)
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
+	if err != nil {
+		log.Fatalf("Failed to create authorized transactor: %v", err)
+	}
+
+	var contract, contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
+	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
+	if err != nil {
+		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
+	}
+
 	// Get deployed contract and set the metric
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	// Set the static contract label for Prometheus monitoring
@@ -237,13 +308,22 @@ func main() {
 				avgCPUUsage := sum / float64(len(cpuSamples))
 				m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
 			}
+
+            gas_balance, err := getAddressBalance(conn, privateKeyHex)
+            if err != nil {
+                log.Errorf("Failed to fetch address balance: %v", err)
+            } else {
+                m.gas_balance.Set(gas_balance)
+            }
+
 			// Push metrics to the Pushgateway
 			pushCollector := push.New(m.pushGatewayURL, m.jobName).
 				Collector(m.uptime).
 				Collector(m.cpuUsage).
 				Collector(m.memoryUsage).
 				Collector(m.contract).
-				Collector(m.exchangePairs)
+				Collector(m.exchangePairs).
+				Collector(m.gas_balance)
 
 			if len(pools) > 0 {
 				pushCollector = pushCollector.Collector(m.pools)
@@ -267,46 +347,7 @@ func main() {
 	triggerChannel := make(chan time.Time)
 	failoverChannel := make(chan string)
 
-	// Feeder mechanics
-	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
-	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
-	conn, err := ethclient.Dial(blockchainNode)
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	}
-	connBackup, err := ethclient.Dial(backupNode)
-	if err != nil {
-		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
-	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "10640"), 10, 64)
-	if err != nil {
-		log.Fatalf("Failed to parse chainId: %v", err)
-	}
-
-	// Frequency for the trigger ticker initiating the computation of filter values.
-	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
-	if err != nil {
-		log.Fatalf("Failed to parse frequencySeconds: %v", err)
-	}
-
-	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
-
-	privateKey, err := crypto.HexToECDSA(privateKeyHex)
-	if err != nil {
-		log.Fatalf("Failed to load private key: %v", err)
-	}
-
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
-	if err != nil {
-		log.Fatalf("Failed to create authorized transactor: %v", err)
-	}
-
-	var contract, contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
-	if err != nil {
-		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
-	}
+	// Feeder update mechanics
 
 	// Use a ticker for triggering the processing.
 	// This is for testing purposes for now. Could also be request based or other trigger types.
