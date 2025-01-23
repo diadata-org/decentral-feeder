@@ -244,7 +244,9 @@ Kubernetes is ideal for production environments requiring scalability and high a
              - name: PUSHGATEWAY_PASSWORD= 
                value: ""
              - containerPort: 8080
-     ```
+    ```
+    
+    
     For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
 
 #### Steps to Deploy
