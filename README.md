@@ -82,7 +82,7 @@ For more details about the contracts, refer to the following documentation:
 
 This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g.`v0.0.5`) when deploying.
 
-For the most recent Docker image tags, please refer to the following link:
+For the most recent Docker image tags, please refer to public docker hub:
 https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
 ## Requirements
 
