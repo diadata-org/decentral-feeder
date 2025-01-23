@@ -250,6 +250,9 @@ For additional environment variable configurations, refer to [Adding Exchange Pa
 
 #### Steps to Deploy
    1. Deploy the feeder with `DEPLOYED_CONTRACT` set to an empty string (`""`) in the Kubernetes manifest.
+      ```bash
+      kubectl apply -f deployment.yaml
+      ```
    2. Monitor the logs for the deployed contract address:
       ```bash
       kubectl logs <pod-name>
