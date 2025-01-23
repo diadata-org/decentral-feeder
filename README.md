@@ -244,10 +244,9 @@ Kubernetes is ideal for production environments requiring scalability and high a
              - name: PUSHGATEWAY_PASSWORD= 
                value: ""
              - containerPort: 8080
-    ```
     
-    
-    For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
+
+For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
 
 #### Steps to Deploy
    1. Deploy the feeder with `DEPLOYED_CONTRACT` set to an empty string (`""`) in the Kubernetes manifest.
