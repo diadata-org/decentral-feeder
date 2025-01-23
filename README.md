@@ -108,7 +108,7 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials, info [at] diadata.org
      - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials,  info [at] diadata.org
      
-     See - [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables) on how to add additional environment variables. 
+     For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
 
 
    - Example `.env` file:
