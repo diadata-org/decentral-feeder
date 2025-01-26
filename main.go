@@ -363,7 +363,7 @@ func main() {
 				Collector(m.memoryUsage).
 				Collector(m.contract).
 				Collector(m.exchangePairs).
-				Collector(m.gas_balance)
+				Collector(m.gas_balance).
 				Collector(m.last_update_time)
 
 			if len(pools) > 0 {
