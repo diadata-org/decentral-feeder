@@ -20,6 +20,7 @@ import (
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+    "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"crypto/ecdsa"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -56,20 +57,22 @@ var (
 
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
+	tx *types.Transaction
 )
 
 type metrics struct {
-	uptime         prometheus.Gauge
-	cpuUsage       prometheus.Gauge
-	memoryUsage    prometheus.Gauge
-	contract       *prometheus.GaugeVec
-	exchangePairs  *prometheus.GaugeVec
-	pools          *prometheus.GaugeVec
-	gas_balance    prometheus.Gauge
-	pushGatewayURL string
-	jobName        string
-	authUser       string
-	authPassword   string
+	uptime           prometheus.Gauge
+	cpuUsage         prometheus.Gauge
+	memoryUsage      prometheus.Gauge
+	contract         *prometheus.GaugeVec
+	exchangePairs    *prometheus.GaugeVec
+	pools            *prometheus.GaugeVec
+	gas_balance      prometheus.Gauge
+	last_update_time prometheus.Gauge
+	pushGatewayURL   string
+	jobName          string
+	authUser         string
+	authPassword     string
 }
 
 func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, authPassword string) *metrics {
@@ -118,6 +121,11 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 			Name:      "gas_balance",
 			Help:      "Gas wallet balance in DIA.",
 		}),
+		last_update_time: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "last_update_time",
+			Help:      "Last update time in UTC timestamp.'",
+		}),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
 		authUser:       authUser,
@@ -129,6 +137,7 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.contract)
 	reg.MustRegister(m.pools)
 	reg.MustRegister(m.gas_balance)
+	reg.MustRegister(m.last_update_time)
 	return m
 }
 
@@ -149,6 +158,29 @@ func getAddressBalance(client *ethclient.Client, privateKey *ecdsa.PrivateKey) (
 	balanceInDIA, _ := new(big.Float).Quo(new(big.Float).SetInt(balance), big.NewFloat(1e18)).Float64()
 	return balanceInDIA, nil
 }
+
+
+func GetTransactionTimestamp(client *ethclient.Client, tx *types.Transaction) (float64, error) {
+	if tx == nil {
+		return math.NaN(), fmt.Errorf("Transaction is nil; no valid transaction provided")
+	}
+
+	// Get the transaction receipt to find the block hash
+	receipt, err := client.TransactionReceipt(context.Background(), tx.Hash())
+	if err != nil {
+		return math.NaN(), fmt.Errorf("Failed to fetch transaction receipt: %w", err)
+	}
+
+	// Fetch the block details using the block hash from the receipt
+	block, err := client.BlockByHash(context.Background(), receipt.BlockHash)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch block: %w", err)
+	}
+
+	// Return the block's timestamp
+	return float64(block.Time()), nil
+}
+
 
 func init() {
 	flag.Parse()
@@ -318,11 +350,11 @@ func main() {
 			}
 
             gas_balance, err := getAddressBalance(conn, privateKey)
-            if err != nil {
-                log.Errorf("Failed to fetch address balance: %v", err)
-            } else {
-                m.gas_balance.Set(gas_balance)
-            }
+            m.gas_balance.Set(gas_balance)
+
+            last_update_time, err := GetTransactionTimestamp(conn, tx)
+            m.last_update_time.Set(last_update_time)
+
 
 			// Push metrics to the Pushgateway
 			pushCollector := push.New(m.pushGatewayURL, m.jobName).
@@ -371,5 +403,5 @@ func main() {
 	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
-	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+	tx, err = onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
 }
