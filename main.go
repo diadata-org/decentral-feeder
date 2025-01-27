@@ -19,7 +19,9 @@ import (
 	scrapers "github.com/diadata-org/decentral-feeder/pkg/scrapers"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"crypto/ecdsa"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -65,7 +67,8 @@ type metrics struct {
 	contract       *prometheus.GaugeVec
 	exchangePairs  *prometheus.GaugeVec
 	pools          *prometheus.GaugeVec
-	gas_balance    prometheus.Gauge
+	gasBalance     prometheus.Gauge
+	lastUpdateTime prometheus.Gauge
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -113,10 +116,15 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 			},
 			[]string{"exchange", "pool_address"}, // Labels for the exchange and pool address
 		),
-		gas_balance: prometheus.NewGauge(prometheus.GaugeOpts{
+		gasBalance: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
-			Name:      "gas_balance",
+			Name:      "gasBalance",
 			Help:      "Gas wallet balance in DIA.",
+		}),
+		lastUpdateTime: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "lastUpdateTime",
+			Help:      "Last update time in UTC timestamp.'",
 		}),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
@@ -128,7 +136,8 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.memoryUsage)
 	reg.MustRegister(m.contract)
 	reg.MustRegister(m.pools)
-	reg.MustRegister(m.gas_balance)
+	reg.MustRegister(m.gasBalance)
+	reg.MustRegister(m.lastUpdateTime)
 	return m
 }
 
@@ -148,6 +157,49 @@ func getAddressBalance(client *ethclient.Client, privateKey *ecdsa.PrivateKey) (
 
 	balanceInDIA, _ := new(big.Float).Quo(new(big.Float).SetInt(balance), big.NewFloat(1e18)).Float64()
 	return balanceInDIA, nil
+}
+
+func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (float64, error) {
+	// Get the latest block number
+	header, err := client.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch latest block header: %v", err)
+	}
+	latestBlock := header.Number.Int64()
+
+	// Calculate the start block for the query
+	startBlock := latestBlock - 1000
+	if startBlock < 0 {
+		startBlock = 0 // Ensure the start block is not negative
+	}
+
+	// Define filter query for the last 'blockRange' blocks
+	query := ethereum.FilterQuery{
+		Addresses: []common.Address{common.HexToAddress(contractAddress)},
+		FromBlock: big.NewInt(startBlock),
+		ToBlock:   big.NewInt(latestBlock),
+	}
+
+	// Fetch logs for the specified block range
+	logs, err := client.FilterLogs(context.Background(), query)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch logs: %v", err)
+	}
+
+	// Check if logs are empty
+	if len(logs) == 0 {
+		return math.NaN(), fmt.Errorf("no events found in the last 1000 blocks")
+	}
+
+	// Get the latest timestamp from the last log
+	lastLog := logs[len(logs)-1]
+	blockNumber := big.NewInt(int64(lastLog.BlockNumber))
+	block, err := client.BlockByNumber(context.Background(), blockNumber)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch block for log: %v", err)
+	}
+
+	return float64(block.Time()), nil
 }
 
 func init() {
@@ -316,13 +368,21 @@ func main() {
 				avgCPUUsage := sum / float64(len(cpuSamples))
 				m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
 			}
-
-            gas_balance, err := getAddressBalance(conn, privateKey)
+			
+            // Get the gas wallet balance
+            gasBalance, err := getAddressBalance(conn, privateKey)
             if err != nil {
                 log.Errorf("Failed to fetch address balance: %v", err)
-            } else {
-                m.gas_balance.Set(gas_balance)
             }
+            m.gasBalance.Set(gasBalance)
+  
+            // Get the latest event timestamp
+            lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+            if err != nil {
+                log.Errorf("Error fetching latest event timestamp: %v", err)
+            }
+            m.lastUpdateTime.Set(lastUpdateTime)
+
 
 			// Push metrics to the Pushgateway
 			pushCollector := push.New(m.pushGatewayURL, m.jobName).
@@ -331,7 +391,8 @@ func main() {
 				Collector(m.memoryUsage).
 				Collector(m.contract).
 				Collector(m.exchangePairs).
-				Collector(m.gas_balance)
+				Collector(m.gasBalance).
+				Collector(m.lastUpdateTime)
 
 			if len(pools) > 0 {
 				pushCollector = pushCollector.Collector(m.pools)
