@@ -190,20 +190,11 @@ func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (
 	if len(logs) == 0 {
 		return math.NaN(), fmt.Errorf("no events found in the last 1000 blocks")
 	}
-	fmt.Printf("Logs: %+v\n", logs)
 
 	// Get the latest timestamp from the last log
 	lastLog := logs[len(logs)-1]
-	txHash := lastLog.TxHash
-
-    // Fetch the transaction receipt using the transaction hash
-    receipt, err := client.TransactionReceipt(context.Background(), txHash)
-	if err != nil {
-		return math.NaN(), fmt.Errorf("failed to fetch transaction receipt: %v", err)
-	}
-
-	// Fetch the block using the block number from the receipt
-	block, err := client.BlockByNumber(context.Background(), receipt.BlockNumber)
+	log.Printf("Last Log: %+v\n", lastLog)
+	block, err := client.BlockByHash(context.Background(), lastLog.BlockHash)
 	if err != nil {
 		return math.NaN(), fmt.Errorf("failed to fetch block for log: %v", err)
 	}
