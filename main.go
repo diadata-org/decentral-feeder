@@ -118,12 +118,12 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 		),
 		gasBalance: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
-			Name:      "gasBalance",
+			Name:      "gas_balance",
 			Help:      "Gas wallet balance in DIA.",
 		}),
 		lastUpdateTime: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: "feeder",
-			Name:      "lastUpdateTime",
+			Name:      "last_update_time",
 			Help:      "Last update time in UTC timestamp.'",
 		}),
 		pushGatewayURL: pushGatewayURL,
@@ -193,8 +193,16 @@ func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (
 
 	// Get the latest timestamp from the last log
 	lastLog := logs[len(logs)-1]
-	blockNumber := big.NewInt(int64(lastLog.BlockNumber))
-	block, err := client.BlockByNumber(context.Background(), blockNumber)
+	txHash := lastLog.TxHash
+
+    // Fetch the transaction receipt using the transaction hash
+    receipt, err := client.TransactionReceipt(context.Background(), txHash)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch transaction receipt: %v", err)
+	}
+
+	// Fetch the block using the block number from the receipt
+	block, err := client.BlockByNumber(context.Background(), receipt.BlockNumber)
 	if err != nil {
 		return math.NaN(), fmt.Errorf("failed to fetch block for log: %v", err)
 	}
