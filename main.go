@@ -190,6 +190,7 @@ func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (
 	if len(logs) == 0 {
 		return math.NaN(), fmt.Errorf("no events found in the last 1000 blocks")
 	}
+	fmt.Printf("Logs: %+v\n", logs)
 
 	// Get the latest timestamp from the last log
 	lastLog := logs[len(logs)-1]
