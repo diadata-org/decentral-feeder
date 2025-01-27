@@ -341,9 +341,15 @@ func main() {
 			}
 
             gas_balance, err := getAddressBalance(conn, privateKey)
+            if err != nil {
+                log.Errorf("Failed to get gas wallet balance: %v", err)
+            }
             m.gas_balance.Set(gas_balance)
 
             last_update_time, err := GetTransactionTimestamp(conn, tx)
+            if err != nil {
+                log.Errorf("Failed to get last update time: %v", err)
+            }
             m.last_update_time.Set(last_update_time)
 
 
