@@ -12,7 +12,6 @@ import (
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
@@ -39,7 +38,8 @@ func OracleUpdateExecutor(
 	conn *ethclient.Client,
 	chainId int64,
 	// compatibilityMode bool,
-	filtersChannel <-chan []models.FilterPointExtended) (*types.Transaction, error){
+	filtersChannel <-chan []models.FilterPointExtended,
+) {
 
 	for filterPoints := range filtersChannel {
 		timestamp := time.Now().Unix()
@@ -57,15 +57,13 @@ func OracleUpdateExecutor(
 			keys = append(keys, fp.Pair.QuoteToken.Symbol+"/USD")
 			values = append(values, int64(fp.Value*100000000))
 		}
-		tx, err := updateOracleMultiValues(conn, contract, auth, chainId, keys, values, timestamp)
+		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, values, timestamp)
 		if err != nil {
 			log.Warnf("updater - Failed to update Oracle: %v.", err)
-			return nil, err
+			return
 		}
-		return tx, nil
 	}
-	log.Warn("updater - filtersChannel closed without receiving any data.")
-	return nil, nil
+
 }
 
 func updateOracleMultiValues(
@@ -75,7 +73,7 @@ func updateOracleMultiValues(
 	chainId int64,
 	keys []string,
 	values []int64,
-	timestamp int64) (*types.Transaction, error) {
+	timestamp int64) error {
 
 	var cValues []*big.Int
 	var gasPrice *big.Int
@@ -88,16 +86,16 @@ func updateOracleMultiValues(
 	case 592: //Astar
 		response, err := http.Get("https://gas.astar.network/api/gasnow?network=astar")
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		defer response.Body.Close()
 		if 200 != response.StatusCode {
-			return nil, err
+			return err
 		}
 		contents, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		gasSuggestion := gjson.Get(string(contents), "data.fast")
@@ -107,7 +105,7 @@ func updateOracleMultiValues(
 		gasPrice, err = client.SuggestGasPrice(context.Background())
 		if err != nil {
 			log.Errorf("updater - SuggestGasPrice: %v.", err)
-			return nil, err
+			return err
 		}
 
 		// Get 110% of the gas price
@@ -133,7 +131,7 @@ func updateOracleMultiValues(
 	// check if tx is sendable then fgo backup
 	if err != nil {
 		// backup in here
-		return nil, err
+		return err
 	}
 
 	log.Infof("updater - Gas price: %d.", tx.GasPrice())
@@ -141,5 +139,5 @@ func updateOracleMultiValues(
 	log.Infof("updater - Nonce: %d.", tx.Nonce())
 	log.Infof("updater - Tx To: %s.", tx.To().String())
 	log.Infof("updater - Tx Hash: 0x%x.", tx.Hash())
-	return tx, nil
+	return nil
 }
