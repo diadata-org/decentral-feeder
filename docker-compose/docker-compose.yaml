@@ -1,8 +1,9 @@
 version: '3.8'
 
 services:
-  lasernet-feeder:
-    image: diadata/decentralized-feeder:v0.0.4
+  app:
+    image: ${IMAGE_TAG}
+    container_name: ${CONTAINER_NAME}
     env_file:
       - .env
     restart: always
