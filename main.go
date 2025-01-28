@@ -165,7 +165,7 @@ func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (
 	if err != nil {
 		return math.NaN(), fmt.Errorf("failed to fetch latest block header: %v", err)
 	}
-	latestBlock := header.Number.Int64() - 10
+	latestBlock := header.Number.Int64()
 
 	// Calculate the start block for the query
 	startBlock := latestBlock - 1000
