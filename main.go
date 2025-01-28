@@ -194,12 +194,12 @@ func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (
 	// Get the latest timestamp from the last log
 	lastLog := logs[len(logs)-1]
 	log.Printf("Last Log: %+v\n", lastLog)
-	block, err := client.BlockByHash(context.Background(), lastLog.BlockHash)
+	blockHeader, err := client.HeaderByHash(context.Background(), lastLog.BlockHash)
 	if err != nil {
-		return math.NaN(), fmt.Errorf("failed to fetch block for log: %v", err)
+		return math.NaN(), fmt.Errorf("failed to fetch block header for log: %v", err)
 	}
 
-	return float64(block.Time()), nil
+	return float64(blockHeader.Time), nil
 }
 
 func init() {
