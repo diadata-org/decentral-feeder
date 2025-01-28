@@ -105,6 +105,7 @@ https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
 
 ###  Configure Environment Variables
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
+     - `NODE_OPERATOR_NAME`: A unique and descriptive name identifying the organization or entity running the node. This name is used for monitoring and should be chosen carefully to ensure it is both meaningful and recognizable (e.g., include your organization name or geographical region). Providing a clear name helps distinguish your node in dashboards and logs.
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
      - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials, info [at] diadata.org
@@ -115,7 +116,8 @@ https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
 
    - Example `.env` file:
      ```plaintext
-     PRIVATE_KEY=myprivatekey
+     NODE_OPERATOR_NAME=
+     PRIVATE_KEY=
      DEPLOYED_CONTRACT=
      PUSHGATEWAY_USER=
      PUSHGATEWAY_PASSWORD=
@@ -135,7 +137,6 @@ https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
 
    - Update your `.env` file with `DEPLOYED_CONTRACT` variable mentioned above. Redeployed the container with  `docker-compose up -d`
      ```plaintext
-     PRIVATE_KEY=myprivatekey
      DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx
      ```
 
@@ -177,7 +178,8 @@ This method is suitable for simple setups without orchestration.
    - Deploy the feeder with `DEPLOYED_CONTRACT` initially empty:
      ```bash
      docker run -d \
-       -e PRIVATE_KEY=myprivatekey \
+       -e NODE_OPERATOR_NAME= \
+       -e PRIVATE_KEY= \
        -e DEPLOYED_CONTRACT= \
        -e PUSHGATEWAY_USER= \
        -e PUSHGATEWAY_PASSWORD= \
@@ -192,11 +194,12 @@ This method is suitable for simple setups without orchestration.
      ```bash
      docker stop <container_name>
      docker run -d \
-       -e PRIVATE_KEY=myprivatekey \
-       -e DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx \
+       -e NODE_OPERATOR_NAME= \
+       -e PRIVATE_KEY= \
+       -e DEPLOYED_CONTRACT= \
        -e PUSHGATEWAY_USER= \
        -e PUSHGATEWAY_PASSWORD= \
-       -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ....." 
+       -e EXCHANGEPAIRS= \ 
        --name decentralized-feeder \
        diadata/decentralized-feeder:<VERSION>
      ```
@@ -233,8 +236,10 @@ Kubernetes is ideal for production environments requiring scalability and high a
            - name: feeder-container
              image: diadata/decentralized-feeder:<VERSION>
              env:
+             - name: NODE_OPERATOR_NAME
+               value: ""
              - name: PRIVATE_KEY
-               value: "myprivatekey"
+               value: ""
              - name: DEPLOYED_CONTRACT
                value: ""
              - name: EXCHANGEPAIRS
@@ -316,6 +321,7 @@ Locate the environment configuration file or section for your deployment method:
    - Example in Docker Run:
      ```bash
      docker run -d \
+      -e NODE_OPERATOR_NAME= \
       -e PRIVATE_KEY=your-private-key \
       -e DEPLOYED_CONTRACT=your-contrract \
       -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ....." \
