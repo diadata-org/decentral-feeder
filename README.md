@@ -96,7 +96,6 @@ https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
 
 - DIA tokens in your wallet (you can use faucet for this [https://faucet.diadata.org](https://faucet.diadata.org))   
 
-
 ## Docker Compose Deployment
 
 ###  Navigate to the Docker Compose Folder
