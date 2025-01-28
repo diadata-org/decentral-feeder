@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   app:
     image: ${IMAGE_TAG}
-    container_name: ${CONTAINER_NAME}
+    # for latest image versios see https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general 
     env_file:
       - .env
     restart: always
