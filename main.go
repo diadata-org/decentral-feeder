@@ -176,8 +176,17 @@ func main() {
 	authUser := os.Getenv("PUSHGATEWAY_USER")
 	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
 
+	// Get the node operator ID from the environment variable, with no default
+	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
+	if nodeOperatorName == "" {
+		log.Fatalf("NODE_OPERATOR_NAME environment variable is not set. Please specify a unique identifier for the node operator.")
+	}
+
+	// Create the dynamic jobName using the node operator ID and hostname
+	jobName := nodeOperatorName + "_" + hostname
+
 	reg := prometheus.NewRegistry()
-	m := NewMetrics(reg, pushgatewayURL, "df_"+hostname, authUser, authPassword)
+	m := NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
 
 	// Record start time for uptime calculation
 	startTime := time.Now()
