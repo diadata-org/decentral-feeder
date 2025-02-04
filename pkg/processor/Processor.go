@@ -45,43 +45,20 @@ func Processor(
 			}
 
 			var atomicFilterValue float64
-			switch sourceType {
 
-			case models.CEX_SOURCE:
-
-				switch filterTypeCEX {
-				case string(FILTER_LAST_PRICE):
-					atomicFilterValue, _, err = filters.LastPrice(tb.Trades, true)
-					if err != nil {
-						log.Errorf("Processor - GetLastPrice: %v.", err)
-						continue
-					}
-					log.Infof(
-						"Processor - Atomic filter value for market %s with %v trades: %v.",
-						tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
-						len(tb.Trades),
-						atomicFilterValue,
-					)
+			switch filterTypeCEX {
+			case string(FILTER_LAST_PRICE):
+				atomicFilterValue, _, err = filters.LastPrice(tb.Trades, true)
+				if err != nil {
+					log.Errorf("Processor - GetLastPrice: %v.", err)
+					continue
 				}
-
-			case models.SIMULATION_SOURCE:
-
-				switch filterTypeSimulation {
-				// TO DO: Write filter for simulation.
-				case string(FILTER_LAST_PRICE):
-					atomicFilterValue, _, err = filters.LastPrice(tb.Trades, true)
-					if err != nil {
-						log.Errorf("Processor - GetLastPrice: %v.", err)
-						continue
-					}
-					log.Infof(
-						"Processor - Atomic filter value for market %s with %v trades: %v.",
-						tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
-						len(tb.Trades),
-						atomicFilterValue,
-					)
-				}
-
+				log.Infof(
+					"Processor - Atomic filter value for market %s with %v trades: %v.",
+					tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
+					len(tb.Trades),
+					atomicFilterValue,
+				)
 			}
 
 			// Identify @Pair and @SourceType from atomic tradesblock.
@@ -107,55 +84,18 @@ func Processor(
 		// filter values in Step 1.
 		// --------------------------------------------------------------------------------------------
 
-		// TO DO: Set flag for metafilter switch. For instance Median, Average, Minimum, etc.
+		// metafilter set by environment variable. For instance Median, Average, Minimum, etc.
+		var filterPointsAggregated []models.FilterPointPair
 
-		// Group filter points by their @SourceType.
-		filterMap := make(map[models.SourceType][]models.FilterPointPair)
-		for _, fp := range filterPoints {
-			switch fp.SourceType {
-			case models.CEX_SOURCE:
-				filterMap[models.CEX_SOURCE] = append(filterMap[models.CEX_SOURCE], fp)
-			case models.SIMULATION_SOURCE:
-				filterMap[models.SIMULATION_SOURCE] = append(filterMap[models.SIMULATION_SOURCE], fp)
+		switch metaFilterTypeCEX {
+		case string(METAFILTER_MEDIAN):
+			filterPointsAggregated = metafilters.Median(filterPoints)
+			for _, fpm := range filterPointsAggregated {
+				log.Infof("Processor - filter %s for %s: %v.", fpm.Name, fpm.Pair.QuoteToken.Symbol, fpm.Value)
 			}
 		}
 
-		// TO DO: Range over source type and make switch for filter Type.
-		for sourceType, filterPoints := range filterMap {
-
-			switch sourceType {
-
-			case models.CEX_SOURCE:
-
-				switch metaFilterTypeCEX {
-				case string(METAFILTER_MEDIAN):
-					filterPointsMedianized := metafilters.Median(filterPoints)
-					for _, fpm := range filterPointsMedianized {
-						log.Infof("Processor - filter %s for %s: %v.", fpm.Name, fpm.Pair.QuoteToken.Symbol, fpm.Value)
-					}
-				}
-
-			case models.SIMULATION_SOURCE:
-
-				switch metaFilterTypeSimulation {
-				// TO DO: Add methodology for metafilters of simulated data.
-				case string(METAFILTER_MEDIAN):
-					filterPointsMedianized := metafilters.Median(filterPoints)
-					for _, fpm := range filterPointsMedianized {
-						log.Infof("Processor - filter %s for %s: %v.", fpm.Name, fpm.Pair.QuoteToken.Symbol, fpm.Value)
-					}
-				}
-
-			}
-
-		}
-
-		filterPointsMedianized := metafilters.Median(filterPoints)
-		for _, fpm := range filterPointsMedianized {
-			log.Infof("Processor - filter %s for %s: %v.", fpm.Name, fpm.Pair.QuoteToken.Symbol, fpm.Value)
-		}
-
-		filtersChannel <- filterPointsMedianized
+		filtersChannel <- filterPointsAggregated
 	}
 
 }
