@@ -14,7 +14,7 @@ var (
 	ETH  = Asset{Address: "0x0000000000000000000000000000000000000000", Blockchain: utils.ETHEREUM}
 	BTC  = Asset{Address: "0x0000000000000000000000000000000000000000", Blockchain: utils.BITCOIN}
 	USDC = Asset{Address: "", Blockchain: utils.ETHEREUM}
-	fpe1 = []FilterPointExtended{
+	fpe1 = []FilterPointPair{
 		{
 			Pair:  Pair{QuoteToken: ETH, BaseToken: USDC},
 			Value: 3388.34,
@@ -32,23 +32,23 @@ var (
 		},
 	}
 
-	fpe22 = FilterPointExtended{Pair: Pair{QuoteToken: BTC, BaseToken: USDC}, Value: 63199.11, Time: time.Unix(0, 0)}
+	fpe22 = FilterPointPair{Pair: Pair{QuoteToken: BTC, BaseToken: USDC}, Value: 63199.11, Time: time.Unix(0, 0)}
 )
 
 func testGroupFilterByAsset(t *testing.T) {
-	map1 := make(map[Asset][]FilterPointExtended)
-	map2 := make(map[Asset][]FilterPointExtended)
+	map1 := make(map[Asset][]FilterPointPair)
+	map2 := make(map[Asset][]FilterPointPair)
 
 	map1[ETH] = fpe1
 
 	fpe2 := fpe1
 	fpe2 = append(fpe2, fpe22)
 	map2[ETH] = fpe2
-	map2[BTC] = []FilterPointExtended{fpe22}
+	map2[BTC] = []FilterPointPair{fpe22}
 
 	cases := []struct {
-		filterPoints []FilterPointExtended
-		fpMap        map[Asset][]FilterPointExtended
+		filterPoints []FilterPointPair
+		fpMap        map[Asset][]FilterPointPair
 	}{
 		{
 			filterPoints: fpe1,
@@ -61,7 +61,7 @@ func testGroupFilterByAsset(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		filterPointMap := GroupFilterByAsset(c.filterPoints)
+		filterPointMap := GroupFiltersByAsset(c.filterPoints)
 		if !reflect.DeepEqual(filterPointMap, c.fpMap) {
 			t.Errorf("Map was incorrect, got: %v, expected: %v for set:%d", filterPointMap, c.fpMap, i)
 		}
@@ -76,7 +76,7 @@ func testGetValuesFromFilterPoints(t *testing.T) {
 	fpe2 = append(fpe2, fpe22)
 
 	cases := []struct {
-		filterPoints []FilterPointExtended
+		filterPoints []FilterPointPair
 		filterValues []float64
 	}{
 		{
@@ -100,7 +100,7 @@ func testGetValuesFromFilterPoints(t *testing.T) {
 
 func testGetLatestTimestampFromFilterPoints(t *testing.T) {
 	cases := []struct {
-		filterPoints []FilterPointExtended
+		filterPoints []FilterPointPair
 		timestamp    time.Time
 	}{
 		{
@@ -108,7 +108,7 @@ func testGetLatestTimestampFromFilterPoints(t *testing.T) {
 			time.Unix(1706846011, 0),
 		},
 		{
-			[]FilterPointExtended{fpe22},
+			[]FilterPointPair{fpe22},
 			time.Unix(0, 0),
 		},
 	}
@@ -123,17 +123,17 @@ func testGetLatestTimestampFromFilterPoints(t *testing.T) {
 
 func testRemoveOldFilters(t *testing.T) {
 	cases := []struct {
-		filterPoints        []FilterPointExtended
+		filterPoints        []FilterPointPair
 		toleranceSeconds    int64
 		timestamp           time.Time
-		cleanedFilterPoints []FilterPointExtended
+		cleanedFilterPoints []FilterPointPair
 		removedFilters      int
 	}{
 		{
 			filterPoints:     fpe1,
 			toleranceSeconds: int64(4),
 			timestamp:        time.Unix(1689497606, 0),
-			cleanedFilterPoints: []FilterPointExtended{
+			cleanedFilterPoints: []FilterPointPair{
 				{
 					Pair:  Pair{QuoteToken: ETH, BaseToken: USDC},
 					Value: 3381.11,
@@ -151,7 +151,7 @@ func testRemoveOldFilters(t *testing.T) {
 			filterPoints:        fpe1,
 			toleranceSeconds:    int64(4),
 			timestamp:           time.Unix(1706846017, 0),
-			cleanedFilterPoints: []FilterPointExtended{},
+			cleanedFilterPoints: []FilterPointPair{},
 			removedFilters:      3,
 		},
 	}

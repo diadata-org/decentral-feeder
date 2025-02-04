@@ -229,7 +229,7 @@ func (scraper *binanceScraper) connectToAPI(pairs []models.ExchangePair) error {
 
 func binanceParseWSResponse(message binanceWSResponse) (trade models.Trade) {
 	var err error
-	trade.Exchange = models.Exchange{Name: BINANCE_EXCHANGE}
+	trade.Exchange = Exchanges[BINANCE_EXCHANGE]
 	trade.Time = time.Unix(0, message.Timestamp*1000000)
 	trade.Price, err = strconv.ParseFloat(message.Price, 64)
 	if err != nil {

@@ -1,6 +1,12 @@
 package models
 
-import "time"
+import (
+	"time"
+)
+
+type FilterType string
+
+type MetafilterType string
 
 // FilterPoint contains the resulting value of a filter applied to an asset.
 type FilterPoint struct {
@@ -8,21 +14,23 @@ type FilterPoint struct {
 	Value      float64
 	Name       string
 	Time       time.Time
-	FirstTrade Trade
-	LastTrade  Trade
+	Source     Exchange
+	SourceType SourceType
 }
 
-type FilterPointExtended struct {
-	Pair   Pair
-	Value  float64
-	Name   string
-	Time   time.Time
-	Source string
+type FilterPointPair struct {
+	Pool       Pool
+	Pair       Pair
+	Value      float64
+	Name       string
+	Time       time.Time
+	Source     Exchange
+	SourceType SourceType
 }
 
-// GroupFilterByAsset returns @fpMap which maps an asset on all extended filter points contained in @filterPoints.
-func GroupFilterByAsset(filterPoints []FilterPointExtended) (fpMap map[Asset][]FilterPointExtended) {
-	fpMap = make(map[Asset][]FilterPointExtended)
+// GroupFilterByAsset returns @fpMap which maps an asset on all filter points contained in @filterPoints.
+func GroupFiltersByAsset(filterPoints []FilterPointPair) (fpMap map[Asset][]FilterPointPair) {
+	fpMap = make(map[Asset][]FilterPointPair)
 	for _, fp := range filterPoints {
 		fpMap[fp.Pair.QuoteToken] = append(fpMap[fp.Pair.QuoteToken], fp)
 	}
@@ -30,7 +38,7 @@ func GroupFilterByAsset(filterPoints []FilterPointExtended) (fpMap map[Asset][]F
 }
 
 // GetValuesFromFilterPoints returns a slice containing just the values from @filterPoints.
-func GetValuesFromFilterPoints(filterPoints []FilterPointExtended) (filterValues []float64) {
+func GetValuesFromFilterPoints(filterPoints []FilterPointPair) (filterValues []float64) {
 	for _, fp := range filterPoints {
 		filterValues = append(filterValues, fp.Value)
 	}
@@ -38,7 +46,7 @@ func GetValuesFromFilterPoints(filterPoints []FilterPointExtended) (filterValues
 }
 
 // GetLatestTimestampFromFilterPoints returns the latest timstamp among all @filterPoints.
-func GetLatestTimestampFromFilterPoints(filterPoints []FilterPointExtended) (timestamp time.Time) {
+func GetLatestTimestampFromFilterPoints(filterPoints []FilterPointPair) (timestamp time.Time) {
 	for _, fp := range filterPoints {
 		if fp.Time.After(timestamp) {
 			timestamp = fp.Time
@@ -49,7 +57,7 @@ func GetLatestTimestampFromFilterPoints(filterPoints []FilterPointExtended) (tim
 
 // RemoveOldFilters removes all filter points from @filterPoints whith timestamp more than
 // @toleranceSeconds before @timestamp.
-func RemoveOldFilters(filterPoints []FilterPointExtended, toleranceSeconds int64, timestamp time.Time) (cleanedFilterPoints []FilterPointExtended, removedFilters int) {
+func RemoveOldFilters(filterPoints []FilterPointPair, toleranceSeconds int64, timestamp time.Time) (cleanedFilterPoints []FilterPointPair, removedFilters int) {
 	for _, fp := range filterPoints {
 		if fp.Time.After(timestamp.Add(-time.Duration(toleranceSeconds) * time.Second)) {
 			cleanedFilterPoints = append(cleanedFilterPoints, fp)

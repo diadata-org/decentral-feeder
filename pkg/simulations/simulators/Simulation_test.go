@@ -1,4 +1,4 @@
-package scrapers
+package simulators
 
 import "testing"
 

@@ -227,7 +227,7 @@ func coinbaseParseTradeMessage(message coinBaseWSResponse) (models.Trade, error)
 		Price:          price,
 		Volume:         volume,
 		Time:           timestamp,
-		Exchange:       models.Exchange{Name: COINBASE_EXCHANGE},
+		Exchange:       Exchanges[COINBASE_EXCHANGE],
 		ForeignTradeID: foreignTradeID,
 	}
 

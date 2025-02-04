@@ -15,7 +15,7 @@ const (
 	KUCOIN_EXCHANGE       = "KuCoin"
 
 	UNISWAPV2_EXCHANGE = "UniswapV2"
-	Simulation         = "Simulation"
+	UNISWAP_SIMULATION = "UniswapSimulation"
 )
 
 var (
@@ -32,7 +32,7 @@ func init() {
 	Exchanges[KRAKEN_EXCHANGE] = models.Exchange{Name: KRAKEN_EXCHANGE, Centralized: true}
 	Exchanges[KUCOIN_EXCHANGE] = models.Exchange{Name: KUCOIN_EXCHANGE, Centralized: true}
 
-	Exchanges[Simulation] = models.Exchange{Name: Simulation, Centralized: false, Blockchain: utils.ETHEREUM}
+	Exchanges[UNISWAP_SIMULATION] = models.Exchange{Name: UNISWAP_SIMULATION, Centralized: false, Simulation: true, Blockchain: utils.ETHEREUM}
 	Exchanges[UNISWAPV2_EXCHANGE] = models.Exchange{Name: UNISWAPV2_EXCHANGE, Centralized: false, Blockchain: utils.ETHEREUM}
 
 	log = logrus.New()

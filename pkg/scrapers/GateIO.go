@@ -169,7 +169,7 @@ func (scraper *gateIOScraper) handleWSResponse(message GateIOResponseTrade) mode
 		Price:          f64Price,
 		Volume:         f64Volume,
 		Time:           time.Unix(int64(message.Result.CreateTime), 0),
-		Exchange:       models.Exchange{Name: GATEIO_EXCHANGE},
+		Exchange:       Exchanges[GATEIO_EXCHANGE],
 		ForeignTradeID: strconv.FormatInt(int64(message.Result.ID), 16),
 	}
 
