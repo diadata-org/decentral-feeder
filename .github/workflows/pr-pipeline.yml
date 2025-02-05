@@ -90,8 +90,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.PIPELINE_TOKEN }}
         run: |
-          # Clone the lumina-infra repository using the PAT for authentication
-          git clone https://$GITHUB_PAT@github.com/diadata-org/lumina-infra.git
+          # Naviagte to the helm-deployments/apps directory
           cd lumina-infra/argocd/helm-deployments/apps
       
           # Update the repository tag value in values-node017.yaml.
