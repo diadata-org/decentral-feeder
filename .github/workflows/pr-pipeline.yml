@@ -58,7 +58,7 @@ jobs:
         env:
           LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
-          git clone -q https://$TOKEN@github.com/diadata-org/lumina-infra lumina-infra
+          git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
