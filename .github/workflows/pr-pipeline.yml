@@ -56,7 +56,7 @@ jobs:
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
         env:
-          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
           git clone -q https://$TOKEN@github.com/diadata-org/lumina-infra lumina-infra
 
