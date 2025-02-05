@@ -88,7 +88,7 @@ jobs:
 
       - name: Update Helm manifest for node 017 (repository.tag)
         env:
-          GITHUB_PAT: ${{ secrets.PIPELINE_TOKEN }}
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
           # Naviagte to the helm-deployments/apps directory
           cd lumina-infra/argocd/helm-deployments/apps
