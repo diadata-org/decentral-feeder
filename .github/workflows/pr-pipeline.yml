@@ -110,6 +110,7 @@ jobs:
             echo "No changes detected in values-node*.yaml; nothing to commit."
           fi
 
+          
       # Cleanup the cloned repository
       - name: Cleanup cloned repository and log out from IBM
         run: |
