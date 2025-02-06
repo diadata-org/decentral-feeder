@@ -87,8 +87,6 @@ jobs:
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
       - name: Update Helm manifests for nodes 017-021 (repository.tag)
-        env:
-          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
           # Navigate to the helm-deployments/apps directory in the cloned repository
           cd lumina-infra/argocd/helm-deployments/apps
@@ -111,8 +109,6 @@ jobs:
           else
             echo "No changes detected in values-node*.yaml; nothing to commit."
           fi
-    
-          
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository and log out from IBM
