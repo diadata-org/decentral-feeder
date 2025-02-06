@@ -86,30 +86,32 @@ jobs:
           ibmcloud cr login
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
-      - name: Update Helm manifest for node 017 (repository.tag)
-        env:
-          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
-        run: |
-          # Naviagte to the helm-deployments/apps directory
-          cd lumina-infra/argocd/helm-deployments/apps
+          - name: Update Helm manifests for nodes 017-021 (repository.tag)
+          env:
+            LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
+          run: |
+            # Navigate to the helm-deployments/apps directory in the cloned repository
+            cd lumina-infra/argocd/helm-deployments/apps
+        
+            # Loop over each node file and update the repository.tag line
+            for node in 017 018 019 020 021; do
+              echo "Updating values-node${node}.yaml"
+              sed -i "s/^\(\s*tag:\s*\)commit-hash-[a-zA-Z0-9]\+/\1commit-hash-${{ env.COMMIT_HASH }}/" values-node${node}.yaml
+            done
+        
+            # Configure Git with a generic identity for the commit
+            git config user.email "actions@github.com"
+            git config user.name "GitHub Actions"
+        
+            # Check if there are any changes; if yes, commit and push them.
+            if [ -n "$(git status --porcelain)" ]; then
+              git add values-node*.yaml
+              git commit -m "Update repository tag in values-node017-021.yaml to commit-hash-${{ env.COMMIT_HASH }}"
+              git push origin master
+            else
+              echo "No changes detected in values-node*.yaml; nothing to commit."
+            fi
       
-          # Update the repository tag value in values-node017.yaml.
-          # This sed command looks for a line that begins with optional spaces, followed by "tag:",
-          # then "commit-hash-" with any alphanumeric characters, and replaces it with the new tag.
-          sed -i "s/^\(\s*tag:\s*\)commit-hash-[a-zA-Z0-9]\+/\1commit-hash-${{ env.COMMIT_HASH }}/" values-node017.yaml
-      
-          # Configure Git with a generic identity for the commit
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-      
-          # Check if there are any changes; if yes, commit and push them.
-          if [ -n "$(git status --porcelain)" ]; then
-            git add values-node017.yaml
-            git commit -m "Update repository tag in values-node017.yaml to commit-hash-${{ env.COMMIT_HASH }}"
-            git push origin master
-          else
-            echo "No changes detected in values-node017.yaml; nothing to commit."
-          fi
         
 
       # Cleanup the cloned repository
