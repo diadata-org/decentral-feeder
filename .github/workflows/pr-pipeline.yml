@@ -38,7 +38,7 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-  push_image_and_update_manifest:
+  push_image_and_deploy:
     runs-on: ubuntu-latest
     needs: build_and_test
     environment:
