@@ -86,31 +86,50 @@ jobs:
           ibmcloud cr login
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
-      - name: Update Helm manifests for nodes 017-021 (repository.tag)
+      # Install kubectl
+      - name: Install kubectl
         run: |
-          # Navigate to the helm-deployments/apps directory in the cloned repository
-          cd lumina-infra/argocd/helm-deployments/apps
-      
-          # Loop over each node file and update the repository.tag line
-          for node in 017 018 019 020 021; do
-            echo "Updating values-node${node}.yaml"
-            sed -i "s/^\(\s*tag:\s*\)commit-hash-[a-zA-Z0-9]\+/\1commit-hash-${{ env.COMMIT_HASH }}/" values-node${node}.yaml
-          done
-      
-          # Configure Git with a generic identity for the commit
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-      
-          # Check if there are any changes; if yes, commit and push them.
-          if [ -n "$(git status --porcelain)" ]; then
-            git add values-node*.yaml
-            git commit -m "Update repository tag in values-node017-021.yaml to commit-hash-${{ env.COMMIT_HASH }}"
-            git push origin master
-          else
-            echo "No changes detected in values-node*.yaml; nothing to commit."
-          fi
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
 
-          
+      - name: IBM Cluster kubectl config 
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }} 
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
+        run: |
+          # Ensure token does not contain unexpected newline characters
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          # Decode the base64-encoded CA certificate and save it to a file
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          # Set cluster using the CA PEM file
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
+          # Set credentials
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          # Set context
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
+          # Use context
+          kubectl config use-context $CONTEXT
+
+      # Helm upgrade command with the commit hash tag
+      - name: Helm upgrade/install conduit-node-001
+        run: |
+          cd lumina-infra/helmcharts/decentral-feeders/001
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
+          # Clean up CA certificate 
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+
+      - name: Cleanup IBM Cluster CA Certificate
+        run: |
+          # Securely remove the CA certificate file
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+
       # Cleanup the cloned repository
       - name: Cleanup cloned repository and log out from IBM
         run: |
