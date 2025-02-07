@@ -193,8 +193,8 @@ jobs:
           done
       
           # Configure Git with a generic identity for the commit
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
+          git config user.email "github_actions@github.com"
+          git config user.name "github_actions"
       
           # Check if there are any changes; if yes, commit and push them.
           if [ -n "$(git status --porcelain)" ]; then
