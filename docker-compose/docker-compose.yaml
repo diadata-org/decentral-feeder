@@ -1,7 +1,7 @@
 services:
   app:
     image: ${IMAGE_TAG}
-    # for latest image versios see https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general 
+    # for latest image versios see https://hub.docker.com/r/diadata/decentralized-feeder/tags
     env_file:
       - .env
     restart: always
