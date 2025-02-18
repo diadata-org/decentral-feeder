@@ -3,3 +3,10 @@ decentral-feeder
 decentral-feeder/build/docker-images.sh
 /build/docker-images.sh
 .env
+lib
+cache
+.vscode
+out
+
+
+
