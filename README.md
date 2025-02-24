@@ -26,16 +26,19 @@
 
 ## Resources
 
-| **Field**         | **Value**                                                                                      |
-|--------------------|-----------------------------------------------------------------------------------------------|
-| **Chain name**     | DIA Lasernet Testnet                                                                          |
-| **Chain ID**       | 10640                                                                                         |
-| **Block explorer** | [https://testnet-explorer.diadata.org](https://testnet-explorer.diadata.org)                  |
-| **RPC URL**        | [https://testnet-rpc.diadata.org](https://testnet-rpc.diadata.org)                            |
-| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                |
-| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
-| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
-| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
+## Resources
+
+| **Field**          | **Value**                                                                                           |
+|:-------------------|:----------------------------------------------------------------------------------------------------|
+| **Chain name**     | DIA Lasernet Testnet                                                                                |
+| **Chain ID**       | 100640                                                                                              |
+| **Block explorer** | [https://explorer-dia-lasernet-dipfsyyx2w.t.conduit.xyz/](https://explorer-dia-lasernet-dipfsyyx2w.t.conduit.xyz) |
+| **RPC URL**        | [hhttps://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz](https://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz)                                  |
+| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                      |
+| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                                     |
+| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                            |
+| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                                |
+
 
 
 # Overview

@@ -96,7 +96,7 @@ jobs:
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
           CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
           API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASEF64_IBM }}
           SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
         run: |
           TOKEN=$(echo "$TOKEN" | tr -d '\n')
