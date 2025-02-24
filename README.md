@@ -26,17 +26,19 @@
 
 ## Resources
 
+## Resources
+
+
 | **Field**         | **Value**                                                                                      |
 |--------------------|-----------------------------------------------------------------------------------------------|
 | **Chain name**     | DIA Lasernet Testnet                                                                          |
-| **Chain ID**       | 10640                                                                                         |
+| **Chain ID**       | 100640                                                                                        |
 | **Block explorer** | [https://testnet-explorer.diadata.org](https://testnet-explorer.diadata.org)                  |
 | **RPC URL**        | [https://testnet-rpc.diadata.org](https://testnet-rpc.diadata.org)                            |
 | **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                |
 | **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
 | **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
 | **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
-
 
 # Overview
 
@@ -83,7 +85,7 @@ For more details about the contracts, refer to the following documentation:
 This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g.`v0.0.5`) when deploying.
 
 For the most recent Docker image tags, please refer to public docker hub:
-https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
+[https://hub.docker.com/r/diadata/decentralized-feeder/tags](https://hub.docker.com/r/diadata/decentralized-feeder/tags)
 ## Requirements
 
 - Ensure that Docker or Docker Compose is installed on your machine.
@@ -105,6 +107,7 @@ https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
 ###  Configure Environment Variables
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
      - `NODE_OPERATOR_NAME`: A unique and descriptive name identifying the organization or entity running the node. This name is used for monitoring and should be chosen carefully to ensure it is both meaningful and recognizable (e.g., include your organization name or geographical region). Providing a clear name helps distinguish your node in dashboards and logs.
+     - `CHAIN_ID`: set the chain ID value
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
      - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials, info [at] diadata.org
@@ -116,6 +119,7 @@ https://hub.docker.com/repository/docker/diadata/decentralized-feeder/general
    - Example `.env` file:
      ```plaintext
      NODE_OPERATOR_NAME=
+     CHAIN_ID=
      PRIVATE_KEY=
      DEPLOYED_CONTRACT=
      PUSHGATEWAY_USER=
@@ -179,6 +183,7 @@ This method is suitable for simple setups without orchestration.
      docker run -d \
        -e NODE_OPERATOR_NAME= \
        -e PRIVATE_KEY= \
+       -e CHAIN_ID= \
        -e DEPLOYED_CONTRACT= \
        -e PUSHGATEWAY_USER= \
        -e PUSHGATEWAY_PASSWORD= \
@@ -195,6 +200,7 @@ This method is suitable for simple setups without orchestration.
      docker run -d \
        -e NODE_OPERATOR_NAME= \
        -e PRIVATE_KEY= \
+       -e CHAIN_ID= \
        -e DEPLOYED_CONTRACT= \
        -e PUSHGATEWAY_USER= \
        -e PUSHGATEWAY_PASSWORD= \
@@ -240,6 +246,8 @@ Kubernetes is ideal for production environments requiring scalability and high a
              - name: PRIVATE_KEY
                value: ""
              - name: DEPLOYED_CONTRACT
+               value: ""
+             - name: CHAIN_ID
                value: ""
              - name: EXCHANGEPAIRS
                value: ""
