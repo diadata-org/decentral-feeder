@@ -241,9 +241,10 @@ Kubernetes is ideal for production environments requiring scalability and high a
            - name: feeder-container
              image: diadata/decentralized-feeder:<VERSION>
              env:
-             - name: NODE_OPERATOR_NAME
-               value: ""
              - name: PRIVATE_KEY
+               valueFrom:
+                 secretKeyRef: {key: private_key_secret, name: private_key_secret}
+             - name: NODE_OPERATOR_NAME
                value: ""
              - name: DEPLOYED_CONTRACT
                value: ""
