@@ -1,7 +1,7 @@
 package main
 
 import (
-    "context"
+	"context"
 	"flag"
 	"fmt"
 	"math"
@@ -13,6 +13,8 @@ import (
 	"sync"
 	"time"
 
+	"crypto/ecdsa"
+
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/onchain"
 	"github.com/diadata-org/decentral-feeder/pkg/processor"
@@ -23,7 +25,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"crypto/ecdsa"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
@@ -284,7 +285,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "10640"), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
@@ -312,7 +313,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
-
 
 	// Set the static contract label for Prometheus monitoring
 	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
@@ -367,21 +367,20 @@ func main() {
 				avgCPUUsage := sum / float64(len(cpuSamples))
 				m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
 			}
-			
-            // Get the gas wallet balance
-            gasBalance, err := getAddressBalance(conn, privateKey)
-            if err != nil {
-                log.Errorf("Failed to fetch address balance: %v", err)
-            }
-            m.gasBalance.Set(gasBalance)
-  
-            // Get the latest event timestamp
-            lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
-            if err != nil {
-                log.Errorf("Error fetching latest event timestamp: %v", err)
-            }
-            m.lastUpdateTime.Set(lastUpdateTime)
 
+			// Get the gas wallet balance
+			gasBalance, err := getAddressBalance(conn, privateKey)
+			if err != nil {
+				log.Errorf("Failed to fetch address balance: %v", err)
+			}
+			m.gasBalance.Set(gasBalance)
+
+			// Get the latest event timestamp
+			lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+			if err != nil {
+				log.Errorf("Error fetching latest event timestamp: %v", err)
+			}
+			m.lastUpdateTime.Set(lastUpdateTime)
 
 			// Push metrics to the Pushgateway
 			pushCollector := push.New(m.pushGatewayURL, m.jobName).
