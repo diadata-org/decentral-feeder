@@ -440,14 +440,14 @@ If you encounter any issues or need further assistance, feel free to reach out t
 
 ## Migration guide to the new DIA testnet
 
+
 This tutorial provides step-by-step instructions to migrate your existing DIA Lasernet node to the new DIA testnet.
----
+
 ## Prerequisites
 - **DIA Docker Image**: Use the most recent image version.  
   Check the latest tags here: [DIA Docker Tags](https://hub.docker.com/r/diadata/decentralized-feeder/tags)
 - **DIA Tokens**: Verify that you have DIA tokens in your wallet on the new testnet.  
   Obtain tokens via the [DIA Faucet](https://faucet.diadata.org) or by contacting the team.
----
 
 1. **Set the DEPLOYED_CONTRACT to an Empty String**:  
    In your deployment configuration (or `.env` file), update the variable as follows:  
