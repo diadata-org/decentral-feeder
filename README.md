@@ -21,8 +21,8 @@
    - [Adding Exchange Pairs](#adding-exchange-pairs)
    - [Watchdog environment variables](#watchdog-environment-variables)
    - [Error Handling](#error-handling)
-- [Conclusion](#conclusion)
 - [Migration guide to the new DIA testnet](#migration-guide-to-the-new-dia-testnet)
+- [Conclusion](#conclusion)
 
 
 
