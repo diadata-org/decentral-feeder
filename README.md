@@ -22,6 +22,8 @@
    - [Watchdog environment variables](#watchdog-environment-variables)
    - [Error Handling](#error-handling)
 - [Conclusion](#conclusion)
+- [Migration guide to the new DIA testnet](#migration-guide-to-the-new-dia-testnet)
+
 
 
 ## Resources
@@ -436,3 +438,40 @@ The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various
 If you encounter any issues or need further assistance, feel free to reach out to the team @ info [at] diadata.org
 
 
+## Migration guide to the new DIA testnet
+
+This tutorial provides step-by-step instructions to migrate your existing DIA Lasernet node to the new DIA testnet.
+---
+## Prerequisites
+- **DIA Docker Image**: Use the most recent image version.  
+  Check the latest tags here: [DIA Docker Tags](https://hub.docker.com/r/diadata/decentralized-feeder/tags)
+- **DIA Tokens**: Verify that you have DIA tokens in your wallet on the new testnet.  
+  Obtain tokens via the [DIA Faucet](https://faucet.diadata.org) or by contacting the team.
+---
+
+1. **Set the DEPLOYED_CONTRACT to an Empty String**:  
+   In your deployment configuration (or `.env` file), update the variable as follows:  
+   `DEPLOYED_CONTRACT=""`
+
+2. **Set the CHAIN_ID to 100640 (new testnet id)*:  
+   `CHAIN_ID="100640"`
+
+3. Deploy the Container:
+  When deployed with an empty `DEPLOYED_CONTRACT`, the logs will display a message like: 
+  ``` 
+  time="2024-11-25T11:30:08Z" level=info msg="Contract pending deploy: 0xxxxxxxxxxxxxxxxxxxxxxxxxx."
+  ```
+
+4. Stop the Running Container:
+    Stop the container using your preferred method (e.g., docker rm -f <container_name>).
+
+5. Update Your Configuration File:
+    Open your .env file and update the DEPLOYED_CONTRACT variable with the copied address:
+    `DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx`
+
+6. Redeploy the Container:
+  Bring up the container again with the updated configuration (e.g., using docker-compose up -d).
+
+7. Verify the Deployment:
+Check the container logs to ensure everything is running correctly:
+`docker-compose logs -f`
