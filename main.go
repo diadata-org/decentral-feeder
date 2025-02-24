@@ -275,8 +275,8 @@ func main() {
 	// Initialize feeder env variables
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
-	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz")
+	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz")
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
