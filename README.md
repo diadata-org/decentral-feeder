@@ -26,18 +26,16 @@
 
 ## Resources
 
-## Resources
-
-| **Field**          | **Value**                                                                                           |
-|:-------------------|:----------------------------------------------------------------------------------------------------|
-| **Chain name**     | DIA Lasernet Testnet                                                                                |
-| **Chain ID**       | 100640                                                                                              |
-| **Block explorer** | [https://explorer-dia-lasernet-dipfsyyx2w.t.conduit.xyz/](https://explorer-dia-lasernet-dipfsyyx2w.t.conduit.xyz) |
-| **RPC URL**        | [hhttps://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz](https://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz)                                  |
-| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                      |
-| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                                     |
-| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                            |
-| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                                |
+| **Field**          | **Value**                                                                                    |
+|:-------------------|:---------------------------------------------------------------------------------------------|
+| **Chain name**     | DIA Lasernet Testnet                                                                         |
+| **Chain ID**       | 100640                                                                                       |
+| **Block explorer** | [https://explorer-dia-lasernet-dipfsyyx2w.t.conduit.xyz](https://explorer-dia-lasernet-dipfsyyx2w.t.conduit.xyz) |
+| **RPC URL**        | [https://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz](https://rpc-dia-lasernet-dipfsyyx2w.t.conduit.xyz) |
+| **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                             |
+| **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                           |
+| **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                    |
+| **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                        |
 
 
 
@@ -273,160 +271,4 @@ For additional environment variable configurations, refer to [Adding Exchange Pa
 
 ## Adding Exchange Pairs
 
-To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS` environment variable. This can be done regardless of the deployment method. The variable specifies pairs to scrape from various exchanges, formatted as a comma-separated list of `<Exchange>:<Asset-Pair>` (e.g., `Binance:BTC-USDT`).
-
-
-#### Steps to Add Exchange Pairs
-
-Locate the environment configuration file or section for your deployment method:
-   - For Docker Compose: Use the `.env` file or add directly to the `docker-compose.yaml` file.
-   - For Kubernetes: Update the kubernetes manifest file `manifest.yaml`
-   - For Docker Run: Pass the variable directly using the `-e` flag.
-
-### Define the `EXCHANGEPAIRS` variable with your desired pairs as a comma-separated list.
-
-   - Example in docker-compose:
-     ```plaintext
-     EXCHANGEPAIRS=" 
-     Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
-     CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD,
-     GateIO:ARB-USDT, GateIO:ATOM-USDT, GateIO:AVAX-USDT, GateIO:BNB-USDT, GateIO:BONK-USDT,
-     Kraken:AAVE-USD, Kraken:ADA-USD, Kraken:ADA-USDT, Kraken:APT-USD, Kraken:ARB-USD,
-     KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
-     Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
-     "
-
-   - Example in Kubernetes manifest:
-       ```yaml
-      spec:
-        containers:
-        - name: feeder-container
-          image: diadata/decentralized-feeder:<VERSION>
-          env:
-          - name: PRIVATE_KEY
-            value: "myprivatekey"
-          - name: DEPLOYED_CONTRACT
-            value: ""
-          - name: EXCHANGEPAIRS
-            value: "
-            Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
-            CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD,
-            GateIO:ARB-USDT, GateIO:ATOM-USDT, GateIO:AVAX-USDT, GateIO:BNB-USDT, GateIO:BONK-USDT,
-            Kraken:AAVE-USD, Kraken:ADA-USD, Kraken:ADA-USDT, Kraken:APT-USD, Kraken:ARB-USD,
-            KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
-            Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
-            "
-          ports:
-          - containerPort: 8080
-
-
-   - Example in Docker Run:
-     ```bash
-     docker run -d \
-      -e NODE_OPERATOR_NAME= \
-      -e PRIVATE_KEY=your-private-key \
-      -e DEPLOYED_CONTRACT=your-contrract \
-      -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ....." \
-      --name decentralized-feeder \
-      diadata/decentralized-feeder:<VERSION>
-     ```
-
- ### Verify the configuration:
-   - Docker Compose: Check logs with:
-     ```bash
-     docker-compose logs -f
-     ```
-   - Kubernetes: Check pod logs:
-     ```bash
-     kubectl logs <pod-name>
-     ```
-   - Docker Run: View logs with:
-     ```bash
-     docker logs <container-name>
-     ```
-   - The output should look like:
-     ```
-      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Processor - Start......"
-      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="CoinBase - Started scraper."
-      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Kraken - Started scraper."
-      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="GateIO - Started scraper."
-      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="KuCoin - Started scraper."
-      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Crypto.com - Started scraper."
-      lasernet-feeder-1  | time="2024-11-26T12:22:47Z" level=info msg="Binance - Started scraper at 2024-11-26 12:22:47.97428349 +0000 UTC m=+0.037715635."lasernet-feeder-1  | time="2024-11-26T12:23:08Z" level=info msg="Processor - Atomic filter value for market Binance:USDC-USDT with 89 trades: 0.9998099980000003."
-      lasernet-feeder-1  | time="2024-11-26T12:23:08Z" level=info msg="Processor - Atomic filter value for market Binance:UNI-USDT with 47 trades: 10.817108170000003."
-      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market Binance:TRX-USDT with 297 trades: 0.18920189200000007."
-      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market CoinBase:APT-USD with 18 trades: 11.38."
-      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market GateIO:BNB-USDT with 3 trades: 620.9062090000001."
-      lasernet-feeder-1  | time="2024-11-26T12:23:09Z" level=info msg="Processor - Atomic filter value for market CoinBase:AERO-USD with 5 trades: 1.27824."
-      ....
-      ```
-
-## Watchdog environment variables
-The decentralized feeders contain two different types of watchdog variables that monitor the liveliness of WebSocket connections used for subscribing to trades in exchange pairs.
-1. Exchange-wide watchdogs, such as `BINANCE_WATCHDOG` If no trades are recorded by a scraper for any pair on the given exchange within `BINANCE_WATCHDOG` seconds, the scraper is restarted and will resubscribe to all pairs specified in the feeder's configuration.
-2. Pairwise watchdogs such as `BINANCE_WATCHDOG_BTC_USDT`:  If no trades are recorded by a scraper for a specific pair within `EXCHANGE_WATCHDOG_ASSET1_ASSET2` seconds, the scraper will unsubscribe and subsequently resubscribe to the corresponding pair. All other subscriptions of this scraper will remain untouched.
-The first type of watchdog applies to cases where the scraper fails, for instance due to server-side issues, and require a restart.
-The second type of watchdog applies to dropping websocket subscriptions. These ocurr in websocket connections and are often "silent", i.e. there is no error message that allows for a proper handling. 
-An example of how watchdog variable could look like in the context of kubernetes manifest.
-```
-  - name: COINBASE_WATCHDOG
-    value: "240"
-  - name: CRYPTODOTOCOM_WATCHDOG
-    value: "240"
-  - name: GATEIO_WATCHDOG
-    value: "240"
-  - name: BINANCE_WATCHDOG_BTC_USDTs
-    value: "300"
-  - name: CRYPTODOTCOM_WATCHDOG_BTC_USDT
-    value: "300"
-  - name: KUCOIN_WATCHDOG_BTC_USDC
-    value: "300"
-```
-
-## Error Handling
-If any issues arise during deployment, follow these steps based on your deployment method:
-
- #### Check Logs:
-   - Docker Compose: `docker-compose logs -f`
-   - Docker Run: `docker logs <container_name>`
-   - Kubernetes: `kubectl logs <pod-name>`
-
- #### Verify Environment Variables:
-   - Ensure all required variables (`PRIVATE_KEY`, `DEPLOYED_CONTRACT`) are correctly set:
-     - Docker Compose: Check `.env` file.
-     - Docker Run: Verify `-e` flags.
-     - Kubernetes: Check the Deployment manifest or ConfigMap.
-
- #### Restart Deployment:
-   - Docker Compose: 
-     ```bash
-     docker-compose down && docker-compose up -d
-     ```
-   - Docker Run: 
-     ```bash
-     docker stop <container_name> && docker rm <container_name> && docker run -d ...
-     ```
-   - Kubernetes:
-     ```bash
-     kubectl delete pod <pod-name>
-     ```
-
- #### Check Configuration:
-   - Ensure the correct image version is used and manifests/files are properly configured.
-
- #### Update or Rebuild:
-   - Ensure you're using the correct image version:
-     ```bash
-     docker pull diadata/decentralized-feeder:<VERSION>
-     ```
-   - Apply fixes and redeploy.
-
- 
-
-## Conclusion
-
-The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
-
-If you encounter any issues or need further assistance, feel free to reach out to the team @ info [at] diadata.org
-
-
+To configure exchange pairs for the decentralized feeder, use the `EXCHANGEPAIRS`
