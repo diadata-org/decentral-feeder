@@ -330,99 +330,102 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
 
-	// Set the static contract label for Prometheus monitoring
-	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
+	// Only setup metrics collection if metrics are enabled
+	if metricsEnabled {
+		// Set the static contract label for Prometheus monitoring
+		m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
 
-	exchangePairsList := strings.Split(exchangePairsEnv, ",")
-	for _, pair := range exchangePairsList {
-		pair = strings.TrimSpace(pair) // Clean whitespace
-		if pair != "" {
-			m.exchangePairs.WithLabelValues(pair).Set(1)
+		exchangePairsList := strings.Split(exchangePairsEnv, ",")
+		for _, pair := range exchangePairsList {
+			pair = strings.TrimSpace(pair) // Clean whitespace
+			if pair != "" {
+				m.exchangePairs.WithLabelValues(pair).Set(1)
+			}
 		}
-	}
-	// Iterate through the pools slice and set values for the pools metric. Push only if pools are available.
-	if len(pools) > 0 {
-		for _, pool := range pools {
-			m.pools.WithLabelValues(pool.Exchange.Name, pool.Address).Set(1)
+		// Iterate through the pools slice and set values for the pools metric. Push only if pools are available.
+		if len(pools) > 0 {
+			for _, pool := range pools {
+				m.pools.WithLabelValues(pool.Exchange.Name, pool.Address).Set(1)
+			}
+		} else {
+			log.Info("No pools to push metrics for; POOLS environment variable is empty.")
 		}
-	} else {
-		log.Info("No pools to push metrics for; POOLS environment variable is empty.")
-	}
 
-	// Periodically update and push metrics to pushgateway
-	go func() {
-		const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
-		cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
+		// Periodically update and push metrics to pushgateway
+		go func() {
+			const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
+			cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
 
-		for {
-			uptime := time.Since(startTime).Hours()
-			m.uptime.Set(uptime)
+			for {
+				uptime := time.Since(startTime).Hours()
+				m.uptime.Set(uptime)
 
-			// Update memory usage
-			var memStats runtime.MemStats
-			runtime.ReadMemStats(&memStats)
-			memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
-			m.memoryUsage.Set(memoryUsageMB)
+				// Update memory usage
+				var memStats runtime.MemStats
+				runtime.ReadMemStats(&memStats)
+				memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
+				m.memoryUsage.Set(memoryUsageMB)
 
-			// Update CPU usage using gopsutil with smoothing
-			percent, err := cpu.Percent(0, false)
-			if err != nil {
-				log.Errorf("Error gathering CPU usage: %v", err)
-			} else if len(percent) > 0 {
-				// Add the new sample to the buffer
-				if len(cpuSamples) == sampleWindowSize {
-					cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
+				// Update CPU usage using gopsutil with smoothing
+				percent, err := cpu.Percent(0, false)
+				if err != nil {
+					log.Errorf("Error gathering CPU usage: %v", err)
+				} else if len(percent) > 0 {
+					// Add the new sample to the buffer
+					if len(cpuSamples) == sampleWindowSize {
+						cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
+					}
+					cpuSamples = append(cpuSamples, percent[0])
+
+					// Calculate the rolling average
+					var sum float64
+					for _, v := range cpuSamples {
+						sum += v
+					}
+					avgCPUUsage := sum / float64(len(cpuSamples))
+					m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
 				}
-				cpuSamples = append(cpuSamples, percent[0])
 
-				// Calculate the rolling average
-				var sum float64
-				for _, v := range cpuSamples {
-					sum += v
+				// Get the gas wallet balance
+				gasBalance, err := getAddressBalance(conn, privateKey)
+				if err != nil {
+					log.Errorf("Failed to fetch address balance: %v", err)
 				}
-				avgCPUUsage := sum / float64(len(cpuSamples))
-				m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
+				m.gasBalance.Set(gasBalance)
+
+				// Get the latest event timestamp
+				lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+				if err != nil {
+					log.Errorf("Error fetching latest event timestamp: %v", err)
+				}
+				m.lastUpdateTime.Set(lastUpdateTime)
+
+				// Push metrics to the Pushgateway
+				pushCollector := push.New(m.pushGatewayURL, m.jobName).
+					Collector(m.uptime).
+					Collector(m.cpuUsage).
+					Collector(m.memoryUsage).
+					Collector(m.contract).
+					Collector(m.exchangePairs).
+					Collector(m.gasBalance).
+					Collector(m.lastUpdateTime)
+
+				if len(pools) > 0 {
+					pushCollector = pushCollector.Collector(m.pools)
+				}
+
+				if err := pushCollector.
+					BasicAuth(m.authUser, m.authPassword).
+					Push(); err != nil {
+					log.Errorf("Could not push metrics to Pushgateway: %v", err)
+				} else {
+					log.Printf("Metrics pushed successfully to Pushgateway")
+				}
+
+				time.Sleep(30 * time.Second) // update metrics every 30 seconds
 			}
-
-			// Get the gas wallet balance
-			gasBalance, err := getAddressBalance(conn, privateKey)
-			if err != nil {
-				log.Errorf("Failed to fetch address balance: %v", err)
-			}
-			m.gasBalance.Set(gasBalance)
-
-			// Get the latest event timestamp
-			lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
-			if err != nil {
-				log.Errorf("Error fetching latest event timestamp: %v", err)
-			}
-			m.lastUpdateTime.Set(lastUpdateTime)
-
-			// Push metrics to the Pushgateway
-			pushCollector := push.New(m.pushGatewayURL, m.jobName).
-				Collector(m.uptime).
-				Collector(m.cpuUsage).
-				Collector(m.memoryUsage).
-				Collector(m.contract).
-				Collector(m.exchangePairs).
-				Collector(m.gasBalance).
-				Collector(m.lastUpdateTime)
-
-			if len(pools) > 0 {
-				pushCollector = pushCollector.Collector(m.pools)
-			}
-
-			if err := pushCollector.
-				BasicAuth(m.authUser, m.authPassword).
-				Push(); err != nil {
-				log.Errorf("Could not push metrics to Pushgateway: %v", err)
-			} else {
-				log.Printf("Metrics pushed successfully to Pushgateway")
-			}
-
-			time.Sleep(30 * time.Second) // update metrics every 30 seconds
-		}
-	}()
+		}()
+	}
 
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
