@@ -1,7 +1,6 @@
 package models
 
 import (
-	"log"
 	"strings"
 
 	"github.com/diadata-org/decentral-feeder/pkg/utils"

@@ -34,7 +34,7 @@ func LastPrice(trades []models.SimulatedTrade, USDPrice bool) (lastPrice float64
 			response []byte
 			aq       assetQuotation
 		)
-
+		// TO DO: We can change this to GetOnchainPrice in order to fetch price from Lumina.
 		baseString := "https://api.diadata.org/v1/assetQuotation/" + lastTrade.BaseToken.Blockchain + "/" + lastTrade.BaseToken.Address
 		response, _, err = utils.GetRequest(baseString)
 		if err != nil {

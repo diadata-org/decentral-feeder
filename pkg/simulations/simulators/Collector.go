@@ -43,6 +43,7 @@ func Collector(
 					tradesblockMap[poolIdentifier] = models.SimulatedTradesBlock{
 						Trades: []models.SimulatedTrade{trade},
 						Pool:   models.Pool{Blockchain: models.Blockchain{Name: trade.Exchange.Blockchain}, Address: trade.PoolAddress},
+						Pair:   models.Pair{QuoteToken: trade.QuoteToken, BaseToken: trade.BaseToken},
 					}
 				} else {
 					tradesblock := tradesblockMap[poolIdentifier]

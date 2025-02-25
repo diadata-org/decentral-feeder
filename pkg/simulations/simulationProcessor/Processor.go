@@ -32,7 +32,7 @@ func Processor(
 		var filterPoints []models.FilterPointPair
 
 		// --------------------------------------------------------------------------------------------
-		// 1. Compute an aggregated value for each pool using all collected trades.
+		// 1. Compute an aggregated value for each pair using all collected trades.
 		// --------------------------------------------------------------------------------------------
 		for _, tb := range tradesblocks {
 
@@ -40,20 +40,26 @@ func Processor(
 			var err error
 
 			switch filterType {
-			// TO DO: Write filter for simulation.
 			case "LastPrice":
 				atomicFilterValue, _, err = simulationfilters.LastPrice(tb.Trades, true)
 				if err != nil {
 					log.Errorf("Processor - GetLastPrice: %v.", err)
 					continue
 				}
-				log.Infof(
-					"Processor - Atomic filter value for market %s with %v trades: %v.",
-					tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
-					len(tb.Trades),
-					atomicFilterValue,
-				)
+			case "Average":
+				atomicFilterValue, _, err = simulationfilters.Average(tb.Trades, true)
+				if err != nil {
+					log.Errorf("Processor - Average: %v.", err)
+					continue
+				}
+
 			}
+			log.Infof(
+				"Processor - Atomic filter value for market %s with %v trades: %v.",
+				tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
+				len(tb.Trades),
+				atomicFilterValue,
+			)
 
 			// Identify @Pair and @SourceType from atomic tradesblock.
 			filterPoint := models.FilterPointPair{
@@ -62,7 +68,6 @@ func Processor(
 				Value: atomicFilterValue,
 				Time:  tb.EndTime,
 			}
-
 			filterPoints = append(filterPoints, filterPoint)
 
 		}

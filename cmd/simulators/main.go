@@ -37,9 +37,11 @@ var (
 	pairsEnv = utils.Getenv(
 		"DEX_PAIRS",
 		fmt.Sprintf(
-			"%s,%s",
+			"%s,%s,%s,%s",
 			"UniswapSimulation:Ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
 			"UniswapSimulation:Ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599-0xdAC17F958D2ee523a2206206994597C13D831ec7",
+			"UniswapSimulation:Ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+			"UniswapSimulation:Ethereum:0x50327c6c5a14DCaDE707ABad2E27eB517df87AB5-0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 		),
 	)
 	exchangePairs []models.ExchangePair
@@ -115,7 +117,7 @@ type metrics struct {
 func init() {
 	flag.Parse()
 
-	// Extract pools from env var.
+	// Extract exchangepairs from env var.
 	for _, p := range strings.Split(pairsEnv, ENV_SEPARATOR) {
 		var pair models.ExchangePair
 		pair.Exchange = strings.Split(p, EXCHANGE_SEPARATOR)[0]
@@ -226,13 +228,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "10640"), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", ""), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
 
 	// Frequency for the trigger ticker initiating the computation of filter values.
-	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
 	if err != nil {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}

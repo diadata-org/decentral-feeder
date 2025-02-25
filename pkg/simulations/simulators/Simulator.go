@@ -22,6 +22,6 @@ func RunSimulator(
 ) {
 	switch exchange {
 	case UNISWAP_SIMULATION:
-		NewUniswapSimulator(exchangePairs, tradesChannel, wg)
+		NewUniswapSimulator(exchangePairs, tradesChannel)
 	}
 }

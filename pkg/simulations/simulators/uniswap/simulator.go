@@ -31,7 +31,6 @@ type Simulator struct {
 func New(client *ethclient.Client, log *logrus.Logger) *Simulator {
 	c := Simulator{Eth: client, log: log}
 	return &c
-
 }
 
 func (c *Simulator) Execute(t1 models.Asset, t2 models.Asset, amountIn string, fees *big.Int) (string, error) {
@@ -61,7 +60,7 @@ func (c *Simulator) quoteTokens(input string, token0 *coreEntities.Token, token1
 	err = rawCaller.Call(&bind.CallOpts{}, &out, "quoteExactInputSingle", token0.Address, token1.Address,
 		fees, amountIn, sqrtPriceLimitX96)
 	if err != nil {
-		c.log.Errorln("failed to call quoteExactInputSingle")
+		c.log.Errorf("Failed to call quoteExactInputSingle for fee %s in pool %s-%s: %v", fees.String(), token0.Symbol(), token1.Symbol(), err)
 		return "", err
 	}
 
