@@ -246,28 +246,44 @@ func init() {
 }
 
 func main() {
-
 	// get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
 	if err != nil {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
-	// get pushgatewayURL variable from kubernetes env variables, if not, the default is https://pushgateway-auth.diadata.org
-	pushgatewayURL := utils.Getenv("PUSHGATEWAY_URL", "https://pushgateway-auth.diadata.org")
+
+	// Check if metrics pushing is enabled
+	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
 	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
+	metricsEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
 
-	// Get the node operator ID from the environment variable, with no default
+	// Get the node operator ID from the environment variable (optional)
 	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
-	if nodeOperatorName == "" {
-		log.Fatalf("NODE_OPERATOR_NAME environment variable is not set. Please specify a unique identifier for the node operator.")
+
+	// Create metrics object only if metrics are enabled
+	var m *metrics
+	if metricsEnabled {
+		// Create the dynamic jobName using the node operator ID (if provided) and hostname
+		jobName := hostname
+		if nodeOperatorName != "" {
+			jobName = nodeOperatorName + "_" + hostname
+			log.Info("Using node operator name: ", nodeOperatorName)
+		} else {
+			log.Info("NODE_OPERATOR_NAME not set, using hostname only for metrics job name")
+		}
+
+		// Default URL if not empty but was manually set to empty string
+		if pushgatewayURL == "" {
+			pushgatewayURL = "https://pushgateway-auth.diadata.org"
+		}
+
+		log.Info("Metrics pushing enabled. Pushing to: ", pushgatewayURL)
+		reg := prometheus.NewRegistry()
+		m = NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
+	} else {
+		log.Info("Metrics pushing disabled. Set PUSHGATEWAY_URL, PUSHGATEWAY_USER, and PUSHGATEWAY_PASSWORD to enable metrics.")
 	}
-
-	// Create the dynamic jobName using the node operator ID and hostname
-	jobName := nodeOperatorName + "_" + hostname
-
-	reg := prometheus.NewRegistry()
-	m := NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
 
 	// Record start time for uptime calculation
 	startTime := time.Now()
