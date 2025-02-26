@@ -4,7 +4,7 @@ go 1.23.4
 
 
 require (
-	github.com/diadata-org/decentral-feeder v0.0.0-20250128165737-957e2a3978dc
+	github.com/diadata-org/decentral-feeder v0.0.1-rc1
 	github.com/diadata-org/diadata v1.4.568
 	github.com/ethereum/go-ethereum v1.14.12
 	github.com/prometheus/client_golang v1.20.5
