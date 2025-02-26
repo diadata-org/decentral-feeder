@@ -125,7 +125,7 @@ jobs:
           cd lumina-infra/helmcharts/decentral-feeders/001
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
           
-          cd ../simulation
+          cd simulation
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-001 .
           
           # Clean up CA certificate 
