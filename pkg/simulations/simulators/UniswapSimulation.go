@@ -53,7 +53,7 @@ type UniV3PoolFee struct {
 }
 
 var (
-	restDial       = "https://ethereum-mainnet.core.chainstack.com/d8d52f82b117f60a2b73473fca94c0f6"
+	restDial       = ""
 	restDialLumina = "https://rpc-dia-lasernet-testnet-r00g2k2suq.t.conduit.xyz/BGDZv9W2Mkwh2hGbiyLLmFZXSPz5yUtNN"
 	// Amount in USD that is used to simulate trades.
 	amountIn_USD = float64(100)
