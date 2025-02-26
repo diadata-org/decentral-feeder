@@ -53,12 +53,12 @@ jobs:
           COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
 
-      # Checkout the cluster-backend repository
-      - name: Checkout cluster-backend repository
+      # Checkout the lumina-infra repository
+      - name: Checkout lumina-infra repository
         env:
-          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
-          git clone -q https://$TOKEN@github.com/diadata-org/cluster-backend cluster-backend
+          git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
 
       # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
