@@ -75,16 +75,18 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Build and Tag the Docker image with the commit hash
-      - name: Build and Tag Docker image
+      # Build and Tag the Docker images with the commit hash
+      - name: Build and Tag Docker images
         run: |
           docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
+          docker build -f build/Dockerfile-luminaSimulationFeeder -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }} .
 
-      # Push the Docker image to IBM Cloud Container Registry
-      - name: Push Docker image
+      # Push both Docker images to IBM Cloud Container Registry
+      - name: Push Docker images
         run: |
           ibmcloud cr login
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
+          docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }}
 
       # Install kubectl
       - name: Install kubectl
@@ -117,11 +119,15 @@ jobs:
           # Use context
           kubectl config use-context $CONTEXT
 
-      # Helm upgrade command with the commit hash tag
-      - name: Helm upgrade/install conduit-node-001
+      # Helm upgrade commands for both services
+      - name: Helm upgrade/install feeders
         run: |
-          cd cluster-backend/helmcharts/oracles/conduit-test/001
+          cd lumina-infra/helmcharts/decentral-feeders/001
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-001 .
+          
+          cd ../simulation
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-001 .
+          
           # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
