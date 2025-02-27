@@ -11,12 +11,10 @@ import (
 
 // For processing, all filters with timestamp older than time.Now()-toleranceSeconds are discarded.
 var (
-	toleranceSeconds         int64
-	log                      *logrus.Logger
-	filterTypeCEX            = utils.Getenv("FILTER_TYPE_CEX", "")
-	filterTypeSimulation     = utils.Getenv("FILTER_TYPE_SIMULATION", "")
-	metaFilterTypeCEX        = utils.Getenv("METAFILTER_TYPE_CEX", "")
-	metaFilterTypeSimulation = utils.Getenv("METAFILTER_TYPE_SIMULATION", "")
+	toleranceSeconds int64
+	log              *logrus.Logger
+	filterType       = utils.Getenv("FILTER_TYPE", string(FILTER_LAST_PRICE))
+	metaFilterType   = utils.Getenv("METAFILTER_TYPE", string(METAFILTER_MEDIAN))
 
 	FILTER_LAST_PRICE = models.FilterType("LastPrice")
 	METAFILTER_MEDIAN = models.MetafilterType("Median")

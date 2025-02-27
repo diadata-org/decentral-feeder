@@ -46,7 +46,7 @@ func Processor(
 
 			var atomicFilterValue float64
 
-			switch filterTypeCEX {
+			switch filterType {
 			case string(FILTER_LAST_PRICE):
 				atomicFilterValue, _, err = filters.LastPrice(tb.Trades, true)
 				if err != nil {
@@ -87,7 +87,7 @@ func Processor(
 		// metafilter set by environment variable. For instance Median, Average, Minimum, etc.
 		var filterPointsAggregated []models.FilterPointPair
 
-		switch metaFilterTypeCEX {
+		switch metaFilterType {
 		case string(METAFILTER_MEDIAN):
 			filterPointsAggregated = metafilters.Median(filterPoints)
 			for _, fpm := range filterPointsAggregated {
