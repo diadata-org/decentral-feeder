@@ -470,11 +470,6 @@ func StartMetricsServer() {
 
 	metricsEnabled := os.Getenv("ENABLE_METRICS_SERVER")
 
-	// Update log level
-	log.WithFields(log.Fields{
-		"ENABLE_METRICS_SERVER": metricsEnabled,
-	}).Info("Metrics server configuration")
-
 	if metricsEnabled != "true" {
 		log.Info("Metrics server is DISABLED. Set ENABLE_METRICS_SERVER=true to enable.")
 		return
@@ -485,7 +480,7 @@ func StartMetricsServer() {
 		metricsPort = "9185"
 	}
 
-	log.Info("Metrics server on port " + metricsPort)
+	log.Info("Metrics server exposed on port " + metricsPort)
 
 	http.Handle("/metrics", promhttp.Handler())
 
@@ -501,8 +496,6 @@ func StartMetricsServer() {
 			log.Error("Failed to start metrics server: " + err.Error())
 		}
 	}()
-
-	log.Info("Metrics server setup complete")
 
 	// Add periodic logging to show the server is still running
 	go func() {
