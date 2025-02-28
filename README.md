@@ -124,6 +124,7 @@ For the most recent Docker image tags, please refer to public docker hub:
      CHAIN_ID=
      PRIVATE_KEY=
      DEPLOYED_CONTRACT=
+     PUSHGATEWAY_URL=
      PUSHGATEWAY_USER=
      PUSHGATEWAY_PASSWORD=
      ```
@@ -472,3 +473,59 @@ Check the container logs to ensure everything is running correctly:
 The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
 
 If you encounter any issues or need further assistance, feel free to reach out to the team @ info [at] diadata.org
+
+## Metrics Server
+
+The DIA Decentral Feeder includes a built-in metrics server that exposes Prometheus metrics for monitoring and observability. This feature allows node operators and users to track the performance and status of their feeder instance.
+
+### Enabling the Metrics Server
+
+To enable the metrics server, set the following environment variables:
+
+ENABLE_METRICS_SERVER=true
+METRICS_PORT=9185  # Optional, defaults to 9185 if not specified
+
+### Available Endpoints
+
+The metrics server exposes the following endpoints:
+
+- `/metrics` - Standard Prometheus metrics endpoint
+- `/health` - Health check endpoint that returns HTTP 200 when the service is running
+
+### Configuring Prometheus
+
+To configure Prometheus to scrape metrics from your feeder instance, add the following to your `prometheus.yml` configuration:
+
+```yaml
+scrape_configs:
+  - job_name: 'decentral-feeder'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['your-feeder-host:9185']
+```
+
+### Kubernetes Integration
+
+If you're running in Kubernetes, add Prometheus annotations to your deployment:
+
+```yaml
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9185"
+    prometheus.io/path: "/metrics"
+```
+
+### Example Grafana Dashboard
+
+The metrics exposed can be visualized in Grafana. Key metrics to monitor include:
+- Feeder uptime
+- CPU and memory usage
+- Gas wallet balance
+- Last update time
+
+The metrics server emits these metrics in standard Prometheus format, making them easy to query and visualize using PromQL.
+
+### Further Customization
+
+Node operators can extend the metrics by modifying the `StartMetricsServer` function in the code to expose additional metrics relevant to their specific deployment needs.
