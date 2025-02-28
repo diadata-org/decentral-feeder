@@ -253,6 +253,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
+	// Start metrics server first for external user monitoring
+	StartMetricsServer()
 
 	// Check if metrics pushing is enabled
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
@@ -446,9 +448,6 @@ func main() {
 			triggerChannel <- tick
 		}
 	}()
-
-	// Start metrics server first
-	StartMetricsServer()
 
 	// Run Processor and subsequent routines.
 	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
