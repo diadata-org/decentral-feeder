@@ -459,9 +459,15 @@ func main() {
 }
 
 // StartMetricsServer initializes and starts an HTTP server for Prometheus metrics scraping
+// This is different from the Pushgateway metrics server, which is used for pushing metrics to a Pushgateway.
+// Prometheus metrics scraping is used for scraping metrics from the metrics server - so that external users and node operators can set up their own monitoring dashboards..
 // only if ENABLE_METRICS_SERVER=true environment variable is set
 func StartMetricsServer() {
 	metricsEnabled := os.Getenv("ENABLE_METRICS_SERVER")
+	log.WithFields(log.Fields{
+		"ENABLE_METRICS_SERVER": metricsEnabled,
+	}).Info("Checking metrics server configuration")
+
 	if metricsEnabled != "true" {
 		log.Info("Metrics server is disabled. Set ENABLE_METRICS_SERVER=true to enable.")
 		return
