@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -27,6 +28,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/shirou/gopsutil/cpu"
 	log "github.com/sirupsen/logrus"
@@ -450,4 +452,38 @@ func main() {
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+
+	// StartMetricsServer initializes and starts an HTTP server for Prometheus metrics scraping
+	// only if ENABLE_METRICS_SERVER=true environment variable is set
+	StartMetricsServer()
+}
+
+// StartMetricsServer initializes and starts an HTTP server for Prometheus metrics scraping
+// only if ENABLE_METRICS_SERVER=true environment variable is set
+func StartMetricsServer() {
+	metricsEnabled := os.Getenv("ENABLE_METRICS_SERVER")
+	if metricsEnabled != "true" {
+		log.Info("Metrics server is disabled. Set ENABLE_METRICS_SERVER=true to enable.")
+		return
+	}
+
+	metricsPort := os.Getenv("METRICS_PORT")
+	if metricsPort == "" {
+		metricsPort = "9185"
+	}
+
+	http.Handle("/metrics", promhttp.Handler())
+
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	// Start server in a goroutine
+	go func() {
+		log.Info("Starting metrics server on port " + metricsPort)
+		if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
+			log.Error("Failed to start metrics server: ", err)
+		}
+	}()
 }
