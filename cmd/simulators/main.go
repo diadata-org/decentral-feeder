@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"math/big"
 	"strconv"
 	"strings"
@@ -34,16 +33,7 @@ const (
 var (
 	// Comma separated list of DEX pairs.
 	// Format should be as follows: Exchange:Blockchain:AddressTokenOut-AddressTokenIn
-	pairsEnv = utils.Getenv(
-		"DEX_PAIRS",
-		fmt.Sprintf(
-			"%s,%s,%s,%s",
-			"UniswapSimulation:Ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-			"UniswapSimulation:Ethereum:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599-0xdAC17F958D2ee523a2206206994597C13D831ec7",
-			"UniswapSimulation:Ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-			"UniswapSimulation:Ethereum:0x50327c6c5a14DCaDE707ABad2E27eB517df87AB5-0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-		),
-	)
+	pairsEnv      = utils.Getenv("DEX_PAIRS", "")
 	exchangePairs []models.ExchangePair
 )
 
