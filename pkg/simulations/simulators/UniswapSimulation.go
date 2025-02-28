@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/big"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -52,9 +53,14 @@ type UniV3PoolFee struct {
 	amountIn float64
 }
 
+const (
+	// Maximal spacing in UniV3 pools with fees of 1%.
+	max_spacing = int32(200)
+)
+
 var (
 	restDial       = ""
-	restDialLumina = "https://rpc-dia-lasernet-testnet-r00g2k2suq.t.conduit.xyz/BGDZv9W2Mkwh2hGbiyLLmFZXSPz5yUtNN"
+	restDialLumina = ""
 	// Amount in USD that is used to simulate trades.
 	amountIn_USD = float64(100)
 	// fees are ints with precision 6.
@@ -63,32 +69,72 @@ var (
 	// TO DO: Put the following variables to environment variables.
 	DIA_Meta_Contract_Address   = "0x7Dd70B4B76130Bc29E33635d2d1F88e088dF84A6"
 	DIA_Meta_Contract_Precision = 8
-	PriceMap_Update_Seconds     = 30 * 60
-	Simulation_Update_Seconds   = 30
-	Liquidity_Threshold_USD     = float64(50000)
-	Liquidity_Threshold_Native  = float64(2)
-	Threshold_Price_Deviation   = float64(0.05)
-	Word_Range                  = int32(20)
-	Admissible_Count            = 10
+	priceMap_Update_Seconds     = 30 * 60
+	simulation_Update_Seconds   = 30
+	liquidity_Threshold_USD     = float64(50000)
+	liquidity_Threshold_Native  = float64(2)
+	threshold_Price_Deviation   = float64(0.05)
+	word_Range                  = int32(20)
+	// Minimal count of active ticks within tick range.
+	admissible_Count = 10
 	// tick range around the current tick that is taken into account for tick check.
-	considered_tick_range = max_spacing * int32(10)
-	// Maximal spacing in UniV3 pools with fees of 1%.
-	max_spacing = int32(200)
+	considered_tick_range int32
 
 	// minWordPosition = int16(-3466)
 	// maxWordPosition = int16(3465)
 )
+
+func init() {
+	var err error
+	// Import and cast environment variables.
+	DIA_Meta_Contract_Address = utils.Getenv("DIA_META_CONTRACT_ADDRESS", DIA_Meta_Contract_Address)
+	DIA_Meta_Contract_Precision, err = strconv.Atoi(utils.Getenv("DIA_META_CONTRACT_PRECISION", strconv.Itoa(DIA_Meta_Contract_Precision)))
+	if err != nil {
+		log.Errorf("DIA_META_CONTRACT_PRECISION: %v", err)
+	}
+	priceMap_Update_Seconds, err = strconv.Atoi(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_PRICE_MAP_UPDATE_SECONDS", strconv.Itoa(priceMap_Update_Seconds)))
+	if err != nil {
+		log.Errorf(strings.ToUpper(UNISWAP_SIMULATION)+"_PRICE_MAP_UPDATE_SECONDS: %v", err)
+	}
+	simulation_Update_Seconds, err = strconv.Atoi(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_SIMULATION_UPDATE_SECONDS", strconv.Itoa(simulation_Update_Seconds)))
+	if err != nil {
+		log.Errorf(strings.ToUpper(UNISWAP_SIMULATION)+"_SIMULATION_UPDATE_SECONDS: %v", err)
+	}
+	liquidity_Threshold_USD, err = strconv.ParseFloat(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_LIQUIDITY_THRESHOLD_USD", strconv.Itoa(int(liquidity_Threshold_USD))), 64)
+	if err != nil {
+		log.Errorf(strings.ToUpper(UNISWAP_SIMULATION)+"_LIQUIDITY_THRESHOLD_USD: %v", err)
+	}
+	liquidity_Threshold_Native, err = strconv.ParseFloat(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_LIQUIDITY_THRESHOLD_NATIVE", strconv.Itoa(int(liquidity_Threshold_Native))), 64)
+	if err != nil {
+		log.Errorf(strings.ToUpper(UNISWAP_SIMULATION)+"_LIQUIDITY_THRESHOLD_NATIVE: %v", err)
+	}
+	threshold_Price_Deviation, err = strconv.ParseFloat(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_THRESHOLD_PRICE_DEVIATION", strconv.Itoa(int(threshold_Price_Deviation))), 64)
+	if err != nil {
+		log.Errorf(strings.ToUpper(UNISWAP_SIMULATION)+"_THRESHOLD_PRICE_DEVIATION: %v", err)
+	}
+	admissible_Count, err = strconv.Atoi(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_ADMISSIBLE_COUNT", strconv.Itoa(admissible_Count)))
+	if err != nil {
+		log.Errorf(strings.ToUpper(UNISWAP_SIMULATION)+"_ADMISSIBLE_COUNT: %v", err)
+	}
+	ctr, err := strconv.Atoi(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_CONSIDERED_TICK_RANGE", "10"))
+	if err != nil {
+		log.Errorf(strings.ToUpper(UNISWAP_SIMULATION)+"_CONSIDERED_TICK_RANGE: %v", err)
+	}
+	considered_tick_range = int32(ctr) * max_spacing
+
+}
 
 func NewUniswapSimulator(exchangepairs []models.ExchangePair, tradesChannel chan models.SimulatedTrade) {
 	var (
 		err     error
 		scraper SimulationScraper
 	)
-	scraper.restClient, err = ethclient.Dial(utils.Getenv(UNISWAP_SIMULATION+"_URI_REST", restDial))
+
+	scraper.restClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_URI_REST", restDial))
 	if err != nil {
 		log.Error("init rest client: ", err)
 	}
-	scraper.luminaClient, err = ethclient.Dial(utils.Getenv(UNISWAP_SIMULATION+"_LUMINA_URI_REST", restDialLumina))
+	scraper.luminaClient, err = ethclient.Dial(utils.Getenv(strings.ToUpper(UNISWAP_SIMULATION)+"_LUMINA_URI_REST", restDialLumina))
 	if err != nil {
 		log.Error("init lumina client: ", err)
 	}
@@ -100,8 +146,7 @@ func NewUniswapSimulator(exchangepairs []models.ExchangePair, tradesChannel chan
 
 	var lock sync.RWMutex
 	scraper.updatePriceMap(&lock)
-	// map exchangepairs to list of fees corresponding to deployed pools such that
-	// all mapped pools are admissible.
+	// map exchangepairs to list of fees corresponding to deployed pools such that all mapped pools are admissible.
 	scraper.updateFeesMap(&lock)
 
 	for key, poolFee := range scraper.feesMap {
@@ -112,7 +157,7 @@ func NewUniswapSimulator(exchangepairs []models.ExchangePair, tradesChannel chan
 		log.Info("-------------------------------------------------------")
 	}
 
-	priceTicker := time.NewTicker(time.Duration(PriceMap_Update_Seconds) * time.Second)
+	priceTicker := time.NewTicker(time.Duration(priceMap_Update_Seconds) * time.Second)
 	go func() {
 		for range priceTicker.C {
 			scraper.updatePriceMap(&lock)
@@ -123,7 +168,7 @@ func NewUniswapSimulator(exchangepairs []models.ExchangePair, tradesChannel chan
 	for pair := range scraper.feesMap {
 		log.Infof("Start Simulation scraper for pair: %s-%s", pair.UnderlyingPair.QuoteToken.Symbol, pair.UnderlyingPair.BaseToken.Symbol)
 	}
-	ticker := time.NewTicker(time.Duration(Simulation_Update_Seconds) * time.Second)
+	ticker := time.NewTicker(time.Duration(simulation_Update_Seconds) * time.Second)
 	for range ticker.C {
 		log.Info("Simulate trades.")
 		scraper.simulateTrades(tradesChannel)
@@ -317,7 +362,7 @@ func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 				continue
 			}
 
-			ticksOk, currentTick := scraper.checkTicks(poolAddress, Word_Range, considered_tick_range, Admissible_Count)
+			ticksOk, currentTick := scraper.checkTicks(poolAddress, word_Range, considered_tick_range, admissible_Count)
 			if !ticksOk {
 				log.Warnf("ticks not ok for %s with fee %s", poolAddress.Hex(), fee.String())
 				continue
@@ -379,22 +424,22 @@ func (scraper *SimulationScraper) checkBalances(quoteToken models.Asset, baseTok
 	if err != nil {
 		log.Errorf("GetBalance of %s: %v", baseToken.Address, err)
 	}
-	if balance0 < Liquidity_Threshold_Native {
+	if balance0 < liquidity_Threshold_Native {
 		log.Warnf("native liquidity for %s in %s-%s with address %s not sufficient: %v", quoteToken.Symbol, quoteToken.Symbol, baseToken.Symbol, poolAddress.Hex(), balance0)
 		return false
 	}
-	if balance1 < Liquidity_Threshold_Native {
+	if balance1 < liquidity_Threshold_Native {
 		log.Warnf("native liquidity for %s in %s-%s  with address %s not sufficient: %v", baseToken.Symbol, quoteToken.Symbol, baseToken.Symbol, poolAddress.Hex(), balance1)
 		return false
 	}
 
 	balance0USD := balance0 * scraper.priceMap[quoteToken].Price
 	balance1USD := balance1 * scraper.priceMap[baseToken].Price
-	if 0 < balance0USD && balance0USD < Liquidity_Threshold_USD {
+	if 0 < balance0USD && balance0USD < liquidity_Threshold_USD {
 		log.Warnf("USD liquidity for %s in %s-%s  with address %s not sufficient: %v", quoteToken.Symbol, quoteToken.Symbol, baseToken.Symbol, poolAddress.Hex(), balance0USD)
 		return false
 	}
-	if 0 < balance1USD && balance1USD < Liquidity_Threshold_USD {
+	if 0 < balance1USD && balance1USD < liquidity_Threshold_USD {
 		log.Warnf("USD liquidity for %s in %s-%s  with address %s not sufficient: %v", baseToken.Symbol, quoteToken.Symbol, baseToken.Symbol, poolAddress.Hex(), balance1USD)
 		return false
 	}
@@ -438,11 +483,11 @@ func (scraper *SimulationScraper) checkPrices(prices []float64, ep models.Exchan
 	if len(prices) == 2 {
 		// If deviation too large store both and print warning.
 		dist := utils.AvgDistances(prices)
-		if dist[0] > Threshold_Price_Deviation {
+		if dist[0] > threshold_Price_Deviation {
 			log.Warnf("prices in pools %s and %s differ by more than %v: %v -- %v ",
 				"poolAddress",
 				"poolAddress",
-				Threshold_Price_Deviation,
+				threshold_Price_Deviation,
 				prices[0],
 				prices[1],
 			)
@@ -453,7 +498,7 @@ func (scraper *SimulationScraper) checkPrices(prices []float64, ep models.Exchan
 		}
 	}
 	if len(prices) > 2 {
-		_, indices := utils.RemoveOutliers(prices, Threshold_Price_Deviation)
+		_, indices := utils.RemoveOutliers(prices, threshold_Price_Deviation)
 		for _, ind := range indices {
 			scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: indexMap[ind], address: poolMap[ind]})
 		}
