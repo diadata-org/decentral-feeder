@@ -447,15 +447,18 @@ func main() {
 		}
 	}()
 
+	// Start metrics server first
+	StartMetricsServer()
+
 	// Run Processor and subsequent routines.
 	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
 
-	// StartMetricsServer initializes and starts an HTTP server for Prometheus metrics scraping
-	// only if ENABLE_METRICS_SERVER=true environment variable is set
-	StartMetricsServer()
+	// Note: The program will never reach here because OracleUpdateExecutor is blocking
+	// If OracleUpdateExecutor was made non-blocking (using a goroutine),
+	// you would need a select{} here to keep the program running
 }
 
 // StartMetricsServer initializes and starts an HTTP server for Prometheus metrics scraping
