@@ -465,18 +465,18 @@ func main() {
 // Prometheus metrics scraping is used for scraping metrics from the metrics server - so that external users and node operators can set up their own monitoring dashboards..
 // only if ENABLE_METRICS_SERVER=true environment variable is set
 func StartMetricsServer() {
-	// Always log this with error level to ensure it's visible
-	log.Error("StartMetricsServer function called - checking if metrics server should be enabled")
+	// Change log level from error to info
+	log.Info("StartMetricsServer function called - checking if metrics server should be enabled")
 
 	metricsEnabled := os.Getenv("ENABLE_METRICS_SERVER")
 
-	// Always log the environment variable value
+	// Update log level
 	log.WithFields(log.Fields{
 		"ENABLE_METRICS_SERVER": metricsEnabled,
-	}).Error("Metrics server configuration")
+	}).Info("Metrics server configuration")
 
 	if metricsEnabled != "true" {
-		log.Error("Metrics server is DISABLED. Set ENABLE_METRICS_SERVER=true to enable.")
+		log.Info("Metrics server is DISABLED. Set ENABLE_METRICS_SERVER=true to enable.")
 		return
 	}
 
@@ -485,7 +485,7 @@ func StartMetricsServer() {
 		metricsPort = "9185"
 	}
 
-	log.Error("Starting metrics server on port " + metricsPort)
+	log.Info("Metrics server on port " + metricsPort)
 
 	http.Handle("/metrics", promhttp.Handler())
 
@@ -496,11 +496,19 @@ func StartMetricsServer() {
 
 	// Start server in a goroutine
 	go func() {
-		log.Error("About to start HTTP server for metrics on port " + metricsPort)
+		log.Info("About to start HTTP server for metrics on port " + metricsPort)
 		if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
 			log.Error("Failed to start metrics server: " + err.Error())
 		}
 	}()
 
-	log.Error("Metrics server setup complete")
+	log.Info("Metrics server setup complete")
+
+	// Add periodic logging to show the server is still running
+	go func() {
+		for {
+			time.Sleep(5 * time.Minute) // Log every 5 minutes
+			log.Info("Metrics server status: running on port " + metricsPort)
+		}
+	}()
 }
