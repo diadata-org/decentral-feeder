@@ -482,40 +482,7 @@ func StartMetricsServer() {
 
 	log.Info("Metrics server exposed on port " + metricsPort)
 
-	// Create a custom registry for our application metrics
-	// This registry will be used by both the HTTP server and the Pushgateway pusher
-	registry := prometheus.NewRegistry()
-
-	// Register the Go collector (for runtime metrics)
-	registry.MustRegister(prometheus.NewGoCollector())
-	// Register the process collector (for process metrics)
-	registry.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
-
-	// Create a handler that exposes the metrics from our registry
-	handler := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
-
-	// If pushgateway metrics are enabled, register those metrics with this registry too
-	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
-	authUser := os.Getenv("PUSHGATEWAY_USER")
-	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
-	hostname, _ := os.Hostname()
-	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
-
-	// Get or create the jobName
-	jobName := hostname
-	if nodeOperatorName != "" {
-		jobName = nodeOperatorName + "_" + hostname
-	}
-
-	if pushgatewayURL != "" && authUser != "" && authPassword != "" {
-		// Create metrics with our registry
-		m := NewMetrics(registry, pushgatewayURL, jobName, authUser, authPassword)
-
-		// Set up the metrics collection and pushing in a goroutine
-		go collectAndPushMetrics(m, registry)
-	}
-
-	http.Handle("/metrics", handler)
+	http.Handle("/metrics", promhttp.Handler())
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -537,46 +504,4 @@ func StartMetricsServer() {
 			log.Info("Metrics server status: running on port " + metricsPort)
 		}
 	}()
-}
-
-// Move the metrics collection and pushing code to a separate function
-func collectAndPushMetrics(m *metrics, registry *prometheus.Registry) {
-	const sampleWindowSize = 5
-	cpuSamples := make([]float64, 0, sampleWindowSize)
-	startTime := time.Now()
-
-	// Get client and private key from main function (you may need to refactor to make these accessible)
-	// This is the code that's currently in your metrics push goroutine
-	for {
-		uptime := time.Since(startTime).Hours()
-		m.uptime.Set(uptime)
-
-		// Update memory usage
-		var memStats runtime.MemStats
-		runtime.ReadMemStats(&memStats)
-		memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024
-		m.memoryUsage.Set(memoryUsageMB)
-
-		// CPU usage collection and smoothing logic
-		// ... (keep existing code from your metrics push goroutine)
-
-		// Get the gas wallet balance
-		// ... (keep existing code)
-
-		// Get the latest event timestamp
-		// ... (keep existing code)
-
-		// Push metrics to the Pushgateway
-		pusher := push.New(m.pushGatewayURL, m.jobName).
-			Gatherer(registry). // Use the registry with all metrics
-			BasicAuth(m.authUser, m.authPassword)
-
-		if err := pusher.Push(); err != nil {
-			log.Errorf("Could not push metrics to Pushgateway: %v", err)
-		} else {
-			log.Printf("Metrics pushed successfully to Pushgateway")
-		}
-
-		time.Sleep(30 * time.Second) // update metrics every 30 seconds
-	}
 }
