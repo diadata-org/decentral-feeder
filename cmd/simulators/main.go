@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"math/big"
 	"strconv"
 	"strings"
@@ -105,7 +104,6 @@ type metrics struct {
 // }
 
 func init() {
-	flag.Parse()
 
 	// Extract exchangepairs from env var.
 	for _, p := range strings.Split(pairsEnv, ENV_SEPARATOR) {
@@ -115,6 +113,7 @@ func init() {
 		pair.UnderlyingPair.BaseToken.Address = strings.Split(strings.Split(p, EXCHANGE_SEPARATOR)[2], PAIR_SEPARATOR)[1]
 		pair.UnderlyingPair.QuoteToken.Blockchain = strings.Split(p, EXCHANGE_SEPARATOR)[1]
 		pair.UnderlyingPair.BaseToken.Blockchain = strings.Split(p, EXCHANGE_SEPARATOR)[1]
+		log.Infof("pair: %s:%s-%s:%s", pair.UnderlyingPair.QuoteToken.Blockchain, pair.UnderlyingPair.QuoteToken.Address, pair.UnderlyingPair.BaseToken.Symbol, pair.UnderlyingPair.BaseToken.Address)
 		exchangePairs = append(exchangePairs, pair)
 		log.Infof(
 			"exchange -- blockchain -- address0 -- address1: %s -- %s -- %s -- %s",
@@ -124,9 +123,9 @@ func init() {
 			strings.Split(strings.Split(p, EXCHANGE_SEPARATOR)[2], PAIR_SEPARATOR)[1],
 		)
 	}
-	log.Info("exchangepairs loaded from env var DEX_PAIRS: ...")
+	log.Infof(" %v exchangepairs loaded from env var DEX_PAIRS: ...", len(exchangePairs))
 	for _, ep := range exchangePairs {
-		log.Infof("%s-%s", ep.UnderlyingPair.QuoteToken.Symbol, ep.UnderlyingPair.BaseToken.Symbol)
+		log.Infof("%s-%s", ep.UnderlyingPair.QuoteToken.Address, ep.UnderlyingPair.BaseToken.Address)
 	}
 
 }
