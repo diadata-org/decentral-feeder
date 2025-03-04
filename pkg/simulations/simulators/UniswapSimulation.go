@@ -67,7 +67,7 @@ var (
 	allFees = []*big.Int{big.NewInt(100), big.NewInt(500), big.NewInt(3000), big.NewInt(10000)}
 
 	// TO DO: Put the following variables to environment variables.
-	DIA_Meta_Contract_Address   = "0x7Dd70B4B76130Bc29E33635d2d1F88e088dF84A6"
+	DIA_Meta_Contract_Address   = "0x90857994FA959d77728067A71EFA8dc154D89813"
 	DIA_Meta_Contract_Precision = 8
 	priceMap_Update_Seconds     = 30 * 60
 	simulation_Update_Seconds   = 30
@@ -282,6 +282,10 @@ func (scraper *SimulationScraper) initAssetsAndMaps() error {
 			if err != nil {
 				return err
 			}
+			// symbol in Maker contract is null string.
+			if quoteToken.Address == "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2" {
+				quoteToken.Symbol = "MKR"
+			}
 			scraper.exchangepairs[i].UnderlyingPair.QuoteToken = quoteToken
 			scraper.priceMap[quoteToken] = models.AssetQuotation{}
 			memoryMap[ep.UnderlyingPair.QuoteToken.Address] = quoteToken
@@ -329,6 +333,7 @@ func (scraper *SimulationScraper) updatePriceMap(lock *sync.RWMutex) {
 // updateFeesMap updates values in scraper.feesMap.
 func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 
+	// Remark: In case initial load is too slow, this loop can be parallelized. Not sure if it works with ETH requests though.
 	for _, ep := range scraper.exchangepairs {
 		quoteToken := ep.UnderlyingPair.QuoteToken
 		baseToken := ep.UnderlyingPair.BaseToken
@@ -348,7 +353,6 @@ func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 				continue
 			} else {
 				log.Infof("Start checking admissibility for pool %s-%s with fee %v%% and address %s ", ep.UnderlyingPair.QuoteToken.Symbol, ep.UnderlyingPair.BaseToken.Symbol, float64(fee.Int64())/float64(10000), poolAddress.Hex())
-				time.Sleep(4 * time.Second)
 			}
 
 			// Check if pool is admissible, i.e.
@@ -375,8 +379,7 @@ func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 			priceMin, _ := computeTickPrices(currentTick-considered_tick_range, int8(quoteToken.Decimals), int8(baseToken.Decimals))
 			priceMax, _ := computeTickPrices(currentTick+considered_tick_range, int8(quoteToken.Decimals), int8(baseToken.Decimals))
 			log.Infof("corresponding price range in tick range: %s -- %s", priceMin.String(), priceMax.String())
-			log.Infof("pool admitted %s ", poolAddress.Hex())
-			time.Sleep(5 * time.Second)
+			log.Infof("pool admitted %s for balances and ticks.", poolAddress.Hex())
 			// --------------------
 
 			p0, p1, err := scraper.getActivePrices(poolAddress, int8(quoteToken.Decimals), int8(baseToken.Decimals))
@@ -475,6 +478,7 @@ func (scraper *SimulationScraper) checkTicks(poolAddress common.Address, wordRan
 }
 
 func (scraper *SimulationScraper) checkPrices(prices []float64, ep models.ExchangePair, indexMap map[int]*big.Int, poolMap map[int]common.Address) {
+	log.Infof("checking price outliers for %v pools %s-%s ", len(prices), ep.UnderlyingPair.QuoteToken.Symbol, ep.UnderlyingPair.BaseToken.Symbol)
 	if len(prices) == 1 {
 		for index, fee := range indexMap {
 			scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: fee, address: poolMap[index]})
