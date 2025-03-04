@@ -124,6 +124,10 @@ func init() {
 			strings.Split(strings.Split(p, EXCHANGE_SEPARATOR)[2], PAIR_SEPARATOR)[1],
 		)
 	}
+	log.Info("exchangepairs loaded from env var DEX_PAIRS: ...")
+	for _, ep := range exchangePairs {
+		log.Infof("%s-%s", ep.UnderlyingPair.QuoteToken.Symbol, ep.UnderlyingPair.BaseToken.Symbol)
+	}
 
 }
 
