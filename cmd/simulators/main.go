@@ -113,7 +113,7 @@ func init() {
 		pair.UnderlyingPair.BaseToken.Address = strings.Split(strings.Split(p, EXCHANGE_SEPARATOR)[2], PAIR_SEPARATOR)[1]
 		pair.UnderlyingPair.QuoteToken.Blockchain = strings.Split(p, EXCHANGE_SEPARATOR)[1]
 		pair.UnderlyingPair.BaseToken.Blockchain = strings.Split(p, EXCHANGE_SEPARATOR)[1]
-		log.Infof("pair: %s:%s-%s:%s", pair.UnderlyingPair.QuoteToken.Blockchain, pair.UnderlyingPair.QuoteToken.Address, pair.UnderlyingPair.BaseToken.Symbol, pair.UnderlyingPair.BaseToken.Address)
+		log.Infof("pair: %s:%s-%s:%s", pair.UnderlyingPair.QuoteToken.Blockchain, pair.UnderlyingPair.QuoteToken.Address, pair.UnderlyingPair.BaseToken.Blockchain, pair.UnderlyingPair.BaseToken.Address)
 		exchangePairs = append(exchangePairs, pair)
 		log.Infof(
 			"exchange -- blockchain -- address0 -- address1: %s -- %s -- %s -- %s",
@@ -260,6 +260,10 @@ func main() {
 		}
 	}()
 
+	log.Infof(" %v exchangepairs in main.go: ...", len(exchangePairs))
+	for _, ep := range exchangePairs {
+		log.Infof("%s-%s", ep.UnderlyingPair.QuoteToken.Address, ep.UnderlyingPair.BaseToken.Address)
+	}
 	// Run Processor and subsequent routines.
 	go simulationprocessor.Processor(exchangePairs, tradesblockChannel, filtersChannel, triggerChannel, &wg)
 
