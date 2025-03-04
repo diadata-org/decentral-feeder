@@ -108,7 +108,7 @@ func init() {
 	// Extract exchangepairs from env var.
 	for _, p := range strings.Split(pairsEnv, ENV_SEPARATOR) {
 		var pair models.ExchangePair
-		pair.Exchange = strings.Split(p, EXCHANGE_SEPARATOR)[0]
+		pair.Exchange = strings.Trim(strings.Split(p, EXCHANGE_SEPARATOR)[0], " ")
 		pair.UnderlyingPair.QuoteToken.Address = strings.Split(strings.Split(p, EXCHANGE_SEPARATOR)[2], PAIR_SEPARATOR)[0]
 		pair.UnderlyingPair.BaseToken.Address = strings.Split(strings.Split(p, EXCHANGE_SEPARATOR)[2], PAIR_SEPARATOR)[1]
 		pair.UnderlyingPair.QuoteToken.Blockchain = strings.Split(p, EXCHANGE_SEPARATOR)[1]
