@@ -141,6 +141,9 @@ func NewUniswapSimulator(exchangepairs []models.ExchangePair, tradesChannel chan
 
 	scraper.simulator = simulation.New(scraper.restClient, log)
 	scraper.exchangepairs = exchangepairs
+	for _, ep := range exchangepairs {
+		log.Infof("exchangepair in Uni Simulator: %s:%s-%s:%s", ep.UnderlyingPair.QuoteToken.Blockchain, ep.UnderlyingPair.QuoteToken.Address, ep.UnderlyingPair.BaseToken.Blockchain, ep.UnderlyingPair.BaseToken.Address)
+	}
 
 	scraper.initAssetsAndMaps()
 
