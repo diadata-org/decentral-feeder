@@ -23,10 +23,6 @@ func Collector(
 
 	for exchange := range exchangepairMap {
 		wg.Add(1)
-		log.Infof("exchangepairMap[exchange] for %s in collector... ", exchange)
-		for _, ep := range exchangepairMap[exchange] {
-			log.Infof("exchangepair in collector: %s:%s-%s:%s ... ", ep.UnderlyingPair.QuoteToken.Blockchain, ep.UnderlyingPair.QuoteToken.Address, ep.UnderlyingPair.BaseToken.Blockchain, ep.UnderlyingPair.BaseToken.Address)
-		}
 		go RunSimulator(context.Background(), exchange, exchangepairMap[exchange], tradesChannelIn, wg)
 	}
 

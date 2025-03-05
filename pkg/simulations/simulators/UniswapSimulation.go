@@ -141,10 +141,6 @@ func NewUniswapSimulator(exchangepairs []models.ExchangePair, tradesChannel chan
 
 	scraper.simulator = simulation.New(scraper.restClient, log)
 	scraper.exchangepairs = exchangepairs
-	for _, ep := range exchangepairs {
-		log.Infof("exchangepair in Uni Simulator: %s:%s-%s:%s", ep.UnderlyingPair.QuoteToken.Blockchain, ep.UnderlyingPair.QuoteToken.Address, ep.UnderlyingPair.BaseToken.Blockchain, ep.UnderlyingPair.BaseToken.Address)
-	}
-
 	scraper.initAssetsAndMaps()
 
 	var lock sync.RWMutex
@@ -366,12 +362,24 @@ func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 			balanceOk := scraper.checkBalances(quoteToken, baseToken, poolAddress)
 			if !balanceOk {
 				log.Warnf("Balances not ok for pool with fee %v%%", float64(fee.Int64())/float64(10000))
+				// Remove from scraper.feesMap[ep] if existent.
+				if containsAddress(poolAddress, scraper.feesMap[ep]) {
+					log.Warn("low balance - remove pool from set of admissible pools: ", poolAddress)
+					cleanedFees := removeFeeByAddress(poolAddress, scraper.feesMap[ep])
+					scraper.feesMap[ep] = cleanedFees
+				}
 				continue
 			}
 
 			ticksOk, currentTick := scraper.checkTicks(poolAddress, word_Range, considered_tick_range, admissible_Count)
 			if !ticksOk {
 				log.Warnf("ticks not ok for %s with fee %s", poolAddress.Hex(), fee.String())
+				// Remove from scraper.feesMap[ep] if existent.
+				if containsAddress(poolAddress, scraper.feesMap[ep]) {
+					log.Warn("poor tick distribution - remove pool from set of admissible pools: ", poolAddress)
+					cleanedFees := removeFeeByAddress(poolAddress, scraper.feesMap[ep])
+					scraper.feesMap[ep] = cleanedFees
+				}
 				continue
 			}
 
@@ -482,9 +490,12 @@ func (scraper *SimulationScraper) checkTicks(poolAddress common.Address, wordRan
 
 func (scraper *SimulationScraper) checkPrices(prices []float64, ep models.ExchangePair, indexMap map[int]*big.Int, poolMap map[int]common.Address) {
 	log.Infof("checking price outliers for %v pools %s-%s ", len(prices), ep.UnderlyingPair.QuoteToken.Symbol, ep.UnderlyingPair.BaseToken.Symbol)
+	// TO DO: Only append if not existent yet.
 	if len(prices) == 1 {
 		for index, fee := range indexMap {
-			scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: fee, address: poolMap[index]})
+			if !containsFee(fee, scraper.feesMap[ep]) {
+				scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: fee, address: poolMap[index]})
+			}
 		}
 	}
 	if len(prices) == 2 {
@@ -500,14 +511,18 @@ func (scraper *SimulationScraper) checkPrices(prices []float64, ep models.Exchan
 			)
 		} else {
 			for index, fee := range indexMap {
-				scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: fee, address: poolMap[index]})
+				if !containsFee(fee, scraper.feesMap[ep]) {
+					scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: fee, address: poolMap[index]})
+				}
 			}
 		}
 	}
 	if len(prices) > 2 {
 		_, indices := utils.RemoveOutliers(prices, threshold_Price_Deviation)
 		for _, ind := range indices {
-			scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: indexMap[ind], address: poolMap[ind]})
+			if !containsFee(indexMap[ind], scraper.feesMap[ep]) {
+				scraper.feesMap[ep] = append(scraper.feesMap[ep], UniV3PoolFee{fee: indexMap[ind], address: poolMap[ind]})
+			}
 		}
 	}
 }
@@ -654,6 +669,33 @@ func extractActiveTicksFromBitmap(wordPosition int32, tickSpacing int32, tickBit
 	}
 
 	return activeTicks
+}
+
+func containsFee(fee *big.Int, fees []UniV3PoolFee) bool {
+	for _, f := range fees {
+		if fee.Cmp(f.fee) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func containsAddress(address common.Address, fees []UniV3PoolFee) bool {
+	for _, f := range fees {
+		if address == f.address {
+			return true
+		}
+	}
+	return false
+}
+
+func removeFeeByAddress(address common.Address, fees []UniV3PoolFee) []UniV3PoolFee {
+	for i, f := range fees {
+		if address == f.address {
+			return append(fees[:i], fees[i+1:]...)
+		}
+	}
+	return fees
 }
 
 // ------------------------------------------------------------------------------------------------------------------------
