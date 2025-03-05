@@ -80,10 +80,21 @@ jobs:
       # Build and Push multi-architecture Docker image with the commit hash
       - name: Build and Push multi-architecture Docker image
         run: |
+          echo "Building and pushing image with commit hash: ${{ env.COMMIT_HASH }}"
+          
+          # Make sure we're logged in to IBM Container Registry
+          ibmcloud cr login
+          
+          # Build and push with explicit tags
           docker buildx build --platform linux/amd64,linux/arm64 \
             -f build/Dockerfile-diaDecentralOracleService \
             -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} \
+            -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:latest \
             --push .
+          
+          # Verify the images were pushed and tagged correctly
+          echo "Verifying image tags in the registry:"
+          ibmcloud cr images --restrict us.icr.io/dia-registry/oracles/diadecentraloracleservice
 
       # Install kubectl
       - name: Install kubectl
