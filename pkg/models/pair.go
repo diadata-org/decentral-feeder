@@ -71,7 +71,6 @@ func ExchangePairsFromEnv(
 func MakeExchangepairMap(exchangePairs []ExchangePair) map[string][]ExchangePair {
 	exchangepairMap := make(map[string][]ExchangePair)
 	for _, ep := range exchangePairs {
-		log.Infof("exchangepair on %s in exchangepairMap: %s:%s-%s:%s ... ", ep.Exchange, ep.UnderlyingPair.QuoteToken.Blockchain, ep.UnderlyingPair.QuoteToken.Address, ep.UnderlyingPair.BaseToken.Blockchain, ep.UnderlyingPair.BaseToken.Address)
 		exchangepairMap[ep.Exchange] = append(exchangepairMap[ep.Exchange], ep)
 	}
 	return exchangepairMap

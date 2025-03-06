@@ -31,6 +31,7 @@ func (a *Asset) AssetIdentifier() string {
 func (a *Asset) GetOnchainPrice(metacontractAddress common.Address, precision int, client *ethclient.Client) (assetQuotation AssetQuotation, err error) {
 	var caller *luminametacontract.LuminametacontractCaller
 
+	// TO DO: Add fallback using DIA API.
 	caller, err = luminametacontract.NewLuminametacontractCaller(metacontractAddress, client)
 	if err != nil {
 		return
