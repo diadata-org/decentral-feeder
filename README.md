@@ -6,6 +6,7 @@
    - [Collector](#collector)
    - [Processor](#processor)
    - [Feeder](#feeder)
+   - [Monitoring](#monitoring)
  - [Smart Contract Documentation](contracts/README.md)
  - [Node Deployment Guide](#node-deployment-guide)
    - [Requirements](#requirements)
@@ -18,23 +19,28 @@
      - [Docker Run Deployment](#docker-run-deployment)
      - [Kubernetes Deployment](#kubernetes-deployment)
    - [Adding Exchange Pairs](#adding-exchange-pairs)
+   - [Watchdog environment variables](#watchdog-environment-variables)
    - [Error Handling](#error-handling)
+- [Migration guide to the new DIA testnet](#migration-guide-to-the-new-dia-testnet)
 - [Conclusion](#conclusion)
+
 
 
 ## Resources
 
+## Resources
+
+
 | **Field**         | **Value**                                                                                      |
 |--------------------|-----------------------------------------------------------------------------------------------|
 | **Chain name**     | DIA Lasernet Testnet                                                                          |
-| **Chain ID**       | 10640                                                                                         |
+| **Chain ID**       | 100640                                                                                        |
 | **Block explorer** | [https://testnet-explorer.diadata.org](https://testnet-explorer.diadata.org)                  |
 | **RPC URL**        | [https://testnet-rpc.diadata.org](https://testnet-rpc.diadata.org)                            |
 | **Websocket**      | [wss://testnet-rpc.diadata.org](wss://testnet-rpc.diadata.org)                                |
 | **Gas token**      | DIA on ETH Sepolia `0xa35a89390FcA5dB148859114DADe875280250Bd1`                               |
 | **Faucet**         | [https://faucet.diadata.org](https://faucet.diadata.org)                                      |
 | **Documentation**  | [https://docs.diadata.org](https://docs.diadata.org)                                          |
-
 
 # Overview
 
@@ -67,6 +73,9 @@ The obtained scalar value is sent to the Oracle feeder.
 ## Feeder
 The feeder is feeding a simple key value oracle. It publishes the value obtained from the Processor. It is worth mentioning that the feeder can contain the trigger mechanism that initiates an iteration of the data flow diagram.
 
+## Monitoring
+For monitoring, we use Prometheus client libraries for Go to create, manage, and expose metrics. A metrics struct is defined to track uptime (using a Prometheus gauge) and store Pushgateway details like URL, job name, and authentication credentials. The uptime metric is initialized, registered, and updated periodically based on the application's runtime. Metrics are pushed to the Pushgateway every 30 seconds, with authentication and error handling in place.
+
 ## Smart Contract Documentation
 For more details about the contracts, refer to the following documentation:
 
@@ -75,8 +84,10 @@ For more details about the contracts, refer to the following documentation:
 
 # Node Deployment Guide
 
-This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g., `v0.0.4`, `v0.0.5`, etc.) when deploying.
+This document outlines the procedures for deploying the `diadata/decentralized-feeder:<VERSION>` containerized application. Replace `<VERSION>` with the desired version (e.g.`v0.0.5`) when deploying.
 
+For the most recent Docker image tags, please refer to public docker hub:
+[https://hub.docker.com/r/diadata/decentralized-feeder/tags](https://hub.docker.com/r/diadata/decentralized-feeder/tags)
 ## Requirements
 
 - Ensure that Docker or Docker Compose is installed on your machine.
@@ -89,7 +100,6 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 - DIA tokens in your wallet (you can use faucet for this [https://faucet.diadata.org](https://faucet.diadata.org))   
 
-
 ## Docker Compose Deployment
 
 ###  Navigate to the Docker Compose Folder
@@ -98,16 +108,24 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
 ###  Configure Environment Variables
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
+     - `NODE_OPERATOR_NAME`: A unique and descriptive name identifying the organization or entity running the node. This name is used for monitoring and should be chosen carefully to ensure it is both meaningful and recognizable (e.g., include your organization name or geographical region). Providing a clear name helps distinguish your node in dashboards and logs.
+     - `CHAIN_ID`: set the chain ID value
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
      - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials, info [at] diadata.org
      - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials,  info [at] diadata.org
      
+     For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
+
 
    - Example `.env` file:
      ```plaintext
-     PRIVATE_KEY=myprivatekey
+     NODE_OPERATOR_NAME=
+     CHAIN_ID=
+     PRIVATE_KEY=
      DEPLOYED_CONTRACT=
+     PUSHGATEWAY_USER=
+     PUSHGATEWAY_PASSWORD=
      ```
 
    - Open a terminal in the `docker-compose` folder and start the deployment by running:
@@ -124,7 +142,6 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
 
    - Update your `.env` file with `DEPLOYED_CONTRACT` variable mentioned above. Redeployed the container with  `docker-compose up -d`
      ```plaintext
-     PRIVATE_KEY=myprivatekey
      DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx
      ```
 
@@ -144,7 +161,8 @@ This document outlines the procedures for deploying the `diadata/decentralized-f
      │ time="2024-10-29T13:39:35Z" level=info msg="Processor - filter median for WETH: 2626.9564003841315."   
      ```
     
-   - Cleanup the deployment:
+   - You can optionally cleanup the deployment once you're done by running:
+
       ```
       docker rm -f <container_name>
       ```
@@ -166,8 +184,12 @@ This method is suitable for simple setups without orchestration.
    - Deploy the feeder with `DEPLOYED_CONTRACT` initially empty:
      ```bash
      docker run -d \
-       -e PRIVATE_KEY=myprivatekey \
+       -e NODE_OPERATOR_NAME= \
+       -e PRIVATE_KEY= \
+       -e CHAIN_ID= \
        -e DEPLOYED_CONTRACT= \
+       -e PUSHGATEWAY_USER= \
+       -e PUSHGATEWAY_PASSWORD= \
        --name decentralized-feeder \
        diadata/decentralized-feeder:<VERSION>
      ```
@@ -179,8 +201,13 @@ This method is suitable for simple setups without orchestration.
      ```bash
      docker stop <container_name>
      docker run -d \
-       -e PRIVATE_KEY=myprivatekey \
-       -e DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx \
+       -e NODE_OPERATOR_NAME= \
+       -e PRIVATE_KEY= \
+       -e CHAIN_ID= \
+       -e DEPLOYED_CONTRACT= \
+       -e PUSHGATEWAY_USER= \
+       -e PUSHGATEWAY_PASSWORD= \
+       -e EXCHANGEPAIRS= \ 
        --name decentralized-feeder \
        diadata/decentralized-feeder:<VERSION>
      ```
@@ -188,6 +215,7 @@ This method is suitable for simple setups without orchestration.
       ```bash
       docker logs <container_name>
       ```
+   -  For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
 
 
 ###  Kubernetes Deployment
@@ -217,16 +245,29 @@ Kubernetes is ideal for production environments requiring scalability and high a
              image: diadata/decentralized-feeder:<VERSION>
              env:
              - name: PRIVATE_KEY
-               value: "myprivatekey"
+               valueFrom:
+                 secretKeyRef: {key: private_key_secret, name: private_key_secret}
+             - name: NODE_OPERATOR_NAME
+               value: ""
              - name: DEPLOYED_CONTRACT
+               value: ""
+             - name: CHAIN_ID
                value: ""
              - name: EXCHANGEPAIRS
                value: ""
+             - name: PUSHGATEWAY_USER= 
+               value: ""
+             - name: PUSHGATEWAY_PASSWORD= 
+               value: ""
              - containerPort: 8080
-     ```
+
+For additional environment variable configurations, refer to [Adding Exchange Pairs](#adding-exchange-pairs) and [Watchdog environment variables](#watchdog-environment-variables)
 
 #### Steps to Deploy
    1. Deploy the feeder with `DEPLOYED_CONTRACT` set to an empty string (`""`) in the Kubernetes manifest.
+      ```bash
+      kubectl apply -f deployment.yaml
+      ```
    2. Monitor the logs for the deployed contract address:
       ```bash
       kubectl logs <pod-name>
@@ -263,14 +304,8 @@ Locate the environment configuration file or section for your deployment method:
      KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
      Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
      "
-     ```
-     start the container with:
-     ```
-     docker compose up 
-     ```
 
    - Example in Kubernetes manifest:
-     Modify the environment variables in the env section of the  Deployment specification.
        ```yaml
       spec:
         containers:
@@ -284,24 +319,25 @@ Locate the environment configuration file or section for your deployment method:
           - name: EXCHANGEPAIRS
             value: "
             Binance:TON-USDT, Binance:TRX-USDT, Binance:UNI-USDT, Binance:USDC-USDT, Binance:WIF-USDT,
-            CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD
+            CoinBase:AAVE-USD, CoinBase:ADA-USD, CoinBase:AERO-USD, CoinBase:APT-USD, CoinBase:ARB-USD,
+            GateIO:ARB-USDT, GateIO:ATOM-USDT, GateIO:AVAX-USDT, GateIO:BNB-USDT, GateIO:BONK-USDT,
+            Kraken:AAVE-USD, Kraken:ADA-USD, Kraken:ADA-USDT, Kraken:APT-USD, Kraken:ARB-USD,
+            KuCoin:AAVE-USDT, KuCoin:ADA-USDT, KuCoin:AERO-USDT, KuCoin:APT-USDT, KuCoin:AR-USDT,
+            Crypto.com:BONK-USD, Crypto.com:BTC-USDT, Crypto.com:BTC-USD, Crypto.com:CRV-USD
             "
           ports:
           - containerPort: 8080
-       ```
-     - Apply the changes with:
-       ```bash
-       kubectl apply -f `manifest.yaml` 
-       ```
+
+
    - Example in Docker Run:
      ```bash
      docker run -d \
+      -e NODE_OPERATOR_NAME= \
       -e PRIVATE_KEY=your-private-key \
       -e DEPLOYED_CONTRACT=your-contrract \
-      -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT" \
+      -e EXCHANGEPAIRS="Binance:TON-USDT, Binance:TRX-USDT, ....." \
       --name decentralized-feeder \
       diadata/decentralized-feeder:<VERSION>
-
      ```
 
  ### Verify the configuration:
@@ -334,8 +370,29 @@ Locate the environment configuration file or section for your deployment method:
       ....
       ```
 
-## Error Handling
+## Watchdog environment variables
+The decentralized feeders contain two different types of watchdog variables that monitor the liveliness of WebSocket connections used for subscribing to trades in exchange pairs.
+1. Exchange-wide watchdogs, such as `BINANCE_WATCHDOG` If no trades are recorded by a scraper for any pair on the given exchange within `BINANCE_WATCHDOG` seconds, the scraper is restarted and will resubscribe to all pairs specified in the feeder's configuration.
+2. Pairwise watchdogs such as `BINANCE_WATCHDOG_BTC_USDT`:  If no trades are recorded by a scraper for a specific pair within `EXCHANGE_WATCHDOG_ASSET1_ASSET2` seconds, the scraper will unsubscribe and subsequently resubscribe to the corresponding pair. All other subscriptions of this scraper will remain untouched.
+The first type of watchdog applies to cases where the scraper fails, for instance due to server-side issues, and require a restart.
+The second type of watchdog applies to dropping websocket subscriptions. These ocurr in websocket connections and are often "silent", i.e. there is no error message that allows for a proper handling. 
+An example of how watchdog variable could look like in the context of kubernetes manifest.
+```
+  - name: COINBASE_WATCHDOG
+    value: "240"
+  - name: CRYPTODOTOCOM_WATCHDOG
+    value: "240"
+  - name: GATEIO_WATCHDOG
+    value: "240"
+  - name: BINANCE_WATCHDOG_BTC_USDTs
+    value: "300"
+  - name: CRYPTODOTCOM_WATCHDOG_BTC_USDT
+    value: "300"
+  - name: KUCOIN_WATCHDOG_BTC_USDC
+    value: "300"
+```
 
+## Error Handling
 If any issues arise during deployment, follow these steps based on your deployment method:
 
  #### Check Logs:
@@ -373,12 +430,45 @@ If any issues arise during deployment, follow these steps based on your deployme
      ```
    - Apply fixes and redeploy.
 
- 
+
+## Migration guide to the new DIA testnet
+
+We've migrated DIA lasernet from Optimism to Arbitrum. This guide provides step-by-step instructions for data feeders to transition their DIA Lasernet node to the new DIA testnet.
+
+### Prerequisites
+- **Latest DIA Docker Image**: Use the most recent image version. Check the latest tags [here](https://hub.docker.com/r/diadata/decentralized-feeder/tags).
+- **DIA Tokens**: Verify that you have DIA tokens in your wallet on the new testnet. You can obtain tokens via the [DIA Faucet](https://faucet.diadata.org) or by contacting the team.
+
+### Steps
+1. **Set the DEPLOYED_CONTRACT to an Empty String**:  
+   In your deployment configuration (or `.env` file), update the variable as follows:  
+   `DEPLOYED_CONTRACT=""`
+
+2. **Set the CHAIN_ID to 100640 (new testnet id)**:  
+   `CHAIN_ID="100640"`
+
+3. **Deploy the Container**:
+  When deployed with an empty `DEPLOYED_CONTRACT`, the logs will display a message like: 
+  ``` 
+  time="2024-11-25T11:30:08Z" level=info msg="Contract pending deploy: 0xxxxxxxxxxxxxxxxxxxxxxxxxx."
+  ```
+
+4. **Stop the Running Container**:
+    Stop the container using your preferred method (e.g., docker rm -f <container_name>).
+
+5. **Update Your Configuration File**:
+    Open your .env file and update the DEPLOYED_CONTRACT variable with the copied address:
+    `DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx`
+
+6. **Redeploy the Container**:
+  Bring up the container again with the updated configuration (e.g., using docker-compose up -d).
+
+7. **Verify the Deployment**:
+Check the container logs to ensure everything is running correctly:
+`docker-compose logs -f`
 
 ## Conclusion
 
 The `diadata/decentralized-feeder:<VERSION>` image can be deployed using various methods to accommodate different use cases. For production environments, Kubernetes or Helm is recommended for scalability and flexibility. For simpler setups or local testing, Docker Compose or Docker Run is sufficient.
 
 If you encounter any issues or need further assistance, feel free to reach out to the team @ info [at] diadata.org
-
-

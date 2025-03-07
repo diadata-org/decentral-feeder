@@ -2,7 +2,6 @@ module github.com/diadata-org/decentral-feeder/cmd/scrapers
 
 go 1.23.4
 
-
 require (
 	github.com/diadata-org/decentral-feeder v0.0.1-rc2
 	github.com/diadata-org/diadata v1.4.568
@@ -21,8 +20,6 @@ require (
 	github.com/consensys/gnark-crypto v0.15.0 // indirect
 	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
 	github.com/crate-crypto/go-kzg-4844 v1.1.0 // indirect
-	github.com/daoleno/uniswap-sdk-core v0.1.7 // indirect
-	github.com/daoleno/uniswapv3-sdk v0.4.0 // indirect
 	github.com/deckarep/golang-set/v2 v2.6.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
 	github.com/ethereum/c-kzg-4844 v1.0.3 // indirect
@@ -38,7 +35,6 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/supranational/blst v0.3.13 // indirect
 	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
