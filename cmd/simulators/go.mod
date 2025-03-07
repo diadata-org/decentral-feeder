@@ -12,8 +12,6 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 )
 
-replace github.com/diadata-org/decentral-feeder => /home/philipp/go/src/github.com/diadata-org/decentral-feeder
-
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
