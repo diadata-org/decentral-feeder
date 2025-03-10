@@ -83,6 +83,19 @@ jobs:
           ibmcloud cr login
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
 
+      # Build and Tag the Docker images for simulation feeders with the commit hash
+      - name: Build and Tag Docker images for simulation feeders
+        run: |
+          docker build -f build/Dockerfile-luminaScraperFeeder -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
+          docker build -f build/Dockerfile-luminaSimulationFeeder -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }} .
+
+      # Push both Docker images to IBM Cloud Container Registry
+      - name: Push Docker images for simulation feeders
+        run: |
+          ibmcloud cr login
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
+          docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }}
+
       # Install kubectl
       - name: Install kubectl
         run: |
@@ -108,7 +121,6 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           kubectl config use-context $CONTEXT
 
-
       - name: Helm upgrade/install 02-06 conduit nodes to IBM Cluster
         run: |
           for i in $(seq -w 002 006); do
@@ -117,6 +129,12 @@ jobs:
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
             cd -
           done
+
+      - name: Helm upgrade/install simulation feeder 02 to IBM Cluster
+        run: |
+          echo "Deploying simulation feeder 02"
+          cd lumina-infra/helmcharts/decentral-feeders/002
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-002 .
           cd
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
@@ -139,12 +157,24 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
-      - name: Helm upgrade/install 07-011 conduit nodes to IBM Cluster
+      - name: Helm upgrade/install 07-011 conduit nodes to Hetzner Cluster
         run: |
           for i in $(seq -w 007 011); do
             echo "Deploying node $i"
             cd cluster-backend/helmcharts/oracles/conduit-test/$i
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
+            cd -
+          done
+          cd
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+
+      - name: Helm upgrade/install simulation feeders 07 and 08 to Hetzner Cluster
+        run: |
+          for i in 007 008; do
+            echo "Deploying simulation feeder $i"
+            cd lumina-infra/helmcharts/decentral-feeders/$i
+            helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-$i .
             cd -
           done
           cd
@@ -175,6 +205,18 @@ jobs:
             echo "Deploying node $i"
             cd cluster-backend/helmcharts/oracles/conduit-test/$i
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" diaoracleservice-conduit-$i .
+            cd -
+          done
+          cd
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+
+      - name: Helm upgrade/install simulation feeders 012 and 013 to Civo Cluster
+        run: |
+          for i in 012 013; do
+            echo "Deploying simulation feeder $i"
+            cd lumina-infra/helmcharts/decentral-feeders/$i
+            helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-$i .
             cd -
           done
           cd
