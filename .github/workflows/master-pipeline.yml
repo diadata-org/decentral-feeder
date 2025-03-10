@@ -122,7 +122,7 @@ jobs:
       - name: Helm upgrade/install simulation feeder 02 to IBM Cluster
         run: |
           echo "Deploying simulation feeder 02"
-          cd lumina-infra/helmcharts/decentral-feeders/002
+          cd lumina-infra/helmcharts/decentral-feeders/002/simulation
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-002 .
           cd
           # Clean up CA certificate immediately
@@ -162,7 +162,7 @@ jobs:
         run: |
           for i in 007 008; do
             echo "Deploying simulation feeder $i"
-            cd lumina-infra/helmcharts/decentral-feeders/$i
+            cd lumina-infra/helmcharts/decentral-feeders/$i/simulation
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-$i .
             cd -
           done
@@ -204,7 +204,7 @@ jobs:
         run: |
           for i in 012 013; do
             echo "Deploying simulation feeder $i"
-            cd lumina-infra/helmcharts/decentral-feeders/$i
+            cd lumina-infra/helmcharts/decentral-feeders/$i/simulation
             helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" lumina-simulation-feeder-$i .
             cd -
           done
