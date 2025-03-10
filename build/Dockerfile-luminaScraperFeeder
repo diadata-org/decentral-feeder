@@ -1,0 +1,24 @@
+FROM golang:1.23 as build
+
+ARG GITHUB_TOKEN
+
+RUN git config --global --add url."https://${GITHUB_TOKEN}":@github.com/diadata-org/diaprotocol.insteadOf "https://github.com/diadata-org/diaprotocol"
+
+ENV GOPRIVATE=github.com/diadata-org/diaprotocol
+
+WORKDIR $GOPATH/src/diadata-org/decentral-feeder
+COPY ./cmd/scrapers ./ 
+
+RUN go mod download
+RUN go mod tidy
+
+RUN go install
+
+
+FROM gcr.io/distroless/base
+
+
+COPY --from=build /go/bin/scrapers /bin/luminaScraperFeeder
+COPY config/ /config/
+
+CMD ["luminaScraperFeeder"]

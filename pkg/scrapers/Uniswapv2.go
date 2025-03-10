@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/diadata-org/decentral-feeder/pkg/contracts/uniswap"
+	uniswap "github.com/diadata-org/decentral-feeder/pkg/contracts/uniswap/pair"
 	"github.com/diadata-org/decentral-feeder/pkg/models"
 	"github.com/diadata-org/decentral-feeder/pkg/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"

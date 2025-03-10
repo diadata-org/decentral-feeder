@@ -17,11 +17,11 @@ var (
 
 func TestMedian(t *testing.T) {
 	cases := []struct {
-		filterPoints           []models.FilterPointExtended
-		medianizedFilterPoints []models.FilterPointExtended
+		filterPoints           []models.FilterPointPair
+		medianizedFilterPoints []models.FilterPointPair
 	}{
 		{
-			[]models.FilterPointExtended{
+			[]models.FilterPointPair{
 				{
 					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
 					Value: 3388.34,
@@ -35,7 +35,7 @@ func TestMedian(t *testing.T) {
 					Value: 3179.78,
 				},
 			},
-			[]models.FilterPointExtended{
+			[]models.FilterPointPair{
 				{
 					Pair:  models.Pair{QuoteToken: ETH},
 					Value: 3381.11,
@@ -45,7 +45,7 @@ func TestMedian(t *testing.T) {
 		},
 
 		{
-			[]models.FilterPointExtended{
+			[]models.FilterPointPair{
 				{
 					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
 					Value: 3143.3,
@@ -63,7 +63,7 @@ func TestMedian(t *testing.T) {
 					Value: 3179.78,
 				},
 			},
-			[]models.FilterPointExtended{
+			[]models.FilterPointPair{
 				{
 					Pair:  models.Pair{QuoteToken: ETH},
 					Value: 3179.78,
@@ -78,7 +78,7 @@ func TestMedian(t *testing.T) {
 		},
 
 		{
-			[]models.FilterPointExtended{
+			[]models.FilterPointPair{
 				{
 					Pair:  models.Pair{QuoteToken: ETH, BaseToken: USDC},
 					Value: 3143.3,
@@ -92,7 +92,7 @@ func TestMedian(t *testing.T) {
 					Value: 3179.78,
 				},
 			},
-			[]models.FilterPointExtended{
+			[]models.FilterPointPair{
 				{
 					Pair:  models.Pair{QuoteToken: ETH},
 					Value: 3179.78,
@@ -106,7 +106,7 @@ func TestMedian(t *testing.T) {
 		medianizedFilterPoints := Median(c.filterPoints)
 
 		// Make maps from slices in order to deep compare.
-		if !reflect.DeepEqual(models.GroupFilterByAsset(medianizedFilterPoints), models.GroupFilterByAsset(c.medianizedFilterPoints)) {
+		if !reflect.DeepEqual(models.GroupFiltersByAsset(medianizedFilterPoints), models.GroupFiltersByAsset(c.medianizedFilterPoints)) {
 			t.Errorf("Median was incorrect, got: %v, expected: %v for set:%d", medianizedFilterPoints, c.medianizedFilterPoints, i)
 		}
 

@@ -156,7 +156,7 @@ func (scraper *krakenScraper) fetchTrades(lock *sync.RWMutex) {
 					Price:          price,
 					Volume:         volume,
 					Time:           timestamp,
-					Exchange:       models.Exchange{Name: KRAKEN_EXCHANGE},
+					Exchange:       Exchanges[KRAKEN_EXCHANGE],
 					ForeignTradeID: foreignTradeID,
 				}
 				log.Tracef("Kraken - got trade: %s -- %v -- %v -- %s.", trade.QuoteToken.Symbol+"-"+trade.BaseToken.Symbol, trade.Price, trade.Volume, trade.ForeignTradeID)

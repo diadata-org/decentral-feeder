@@ -65,7 +65,7 @@ func (c *Simulator) quoteTokens(input string, token0 *coreEntities.Token, token1
 	err = rawCaller.Call(&bind.CallOpts{}, &out, "quoteExactInputSingle", token0.Address, token1.Address,
 		fee, amountIn, sqrtPriceLimitX96)
 	if err != nil {
-		c.log.Errorln("failed to call quoteExactInputSingle")
+		c.log.Errorln("failed to call quoteExactInputSingle: ", err)
 		return "", err
 	}
 

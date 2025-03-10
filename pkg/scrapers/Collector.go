@@ -9,7 +9,6 @@ import (
 )
 
 // Collector starts scrapers for all exchanges given by @exchangePairs.
-// Outlook: Collector starts a dedicated pod for each scraper.
 func Collector(
 	exchangePairs []models.ExchangePair,
 	pools []models.Pool,
@@ -69,6 +68,7 @@ func Collector(
 				log.Debugf("Collector - triggered at %v.", timestamp)
 				for id := range tradesblockMap {
 					tb := tradesblockMap[id]
+					tb.Atomic = true
 					tb.EndTime = timestamp
 					tradesblockMap[id] = tb
 				}
