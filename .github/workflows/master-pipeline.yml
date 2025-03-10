@@ -72,17 +72,6 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Build and Tag the Docker image with the commit hash
-      - name: Build and Tag Docker image
-        run: |
-          docker build -f build/Dockerfile-diaDecentralOracleService -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
-
-      # Push the Docker image to IBM Cloud Container Registry
-      - name: Push Docker image
-        run: |
-          ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
-
       # Build and Tag the Docker images for simulation feeders with the commit hash
       - name: Build and Tag Docker images for simulation feeders
         run: |
@@ -90,7 +79,7 @@ jobs:
           docker build -f build/Dockerfile-luminaSimulationFeeder -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }} .
 
       # Push both Docker images to IBM Cloud Container Registry
-      - name: Push Docker images for simulation feeders
+      - name: Push Docker images for simulation and scraper feeders
         run: |
           ibmcloud cr login
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
