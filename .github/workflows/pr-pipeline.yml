@@ -44,7 +44,7 @@ jobs:
     environment:
       name: dia-testspace  # BEFORE GOING PUBLIC CHANGE THE ENV PROTENTIOC RULES TO INCLUDE THIS 
     steps:
-      # Checkout the repository
+      # Checkout decentralized feeder repo
       - uses: actions/checkout@v4
 
       # Get Short Commit Hash of the Merge Commit
@@ -139,5 +139,5 @@ jobs:
       # Cleanup the cloned repository
       - name: Cleanup cloned repository and log out from IBM
         run: |
-          rm -rf cluster-backend
+          rm -rf lumina-infra
           ibmcloud logout

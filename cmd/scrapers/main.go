@@ -263,7 +263,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "10640"), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
