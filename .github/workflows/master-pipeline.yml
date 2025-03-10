@@ -155,8 +155,6 @@ jobs:
             cd -
           done
           cd
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Helm upgrade/install simulation feeders 07 and 08 to Hetzner Cluster
         run: |
@@ -197,8 +195,6 @@ jobs:
             cd -
           done
           cd
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Helm upgrade/install simulation feeders 012 and 013 to Civo Cluster
         run: |
@@ -211,6 +207,7 @@ jobs:
           cd
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+          
       - name: Update Helm manifests for nodes 017-021 (repository.tag)
         run: |
           # Navigate to the helm-deployments/apps directory in the cloned repository
