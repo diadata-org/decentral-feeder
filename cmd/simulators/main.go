@@ -37,8 +37,9 @@ const (
 var (
 	// Comma separated list of DEX pairs.
 	// Format should be as follows: Exchange:Blockchain:AddressTokenOut-AddressTokenIn
-	pairsEnv      = utils.Getenv("DEX_PAIRS", "")
-	exchangePairs []models.ExchangePair
+	pairsEnv = utils.Getenv("DEX_PAIRS", "")
+	//	exchangePairs []models.ExchangePair
+	dexPairs []models.ExchangePair
 )
 
 type metrics struct {
@@ -103,32 +104,32 @@ func init() {
 
 	// Extract dexpairs from env var.
 	for _, p := range strings.Split(pairsEnv, ENV_SEPARATOR) {
-		var pair models.ExchangePair
+		var dexpair models.ExchangePair
 		parts := strings.Split(p, EXCHANGE_SEPARATOR)
 		if len(parts) < 3 {
 			log.Warnf("Invalid DEX pair format: %s", p)
 			continue
 		}
-		pair.Exchange = strings.TrimSpace(parts[0])
-		pair.UnderlyingPair.QuoteToken.Blockchain = parts[1]
+		dexpair.Exchange = strings.TrimSpace(parts[0])
+		dexpair.UnderlyingPair.QuoteToken.Blockchain = parts[1]
 		addresses := strings.Split(parts[2], PAIR_SEPARATOR)
 		if len(addresses) < 2 {
 			log.Warnf("Invalid address format in DEX pair: %s", p)
 			continue
 		}
-		pair.UnderlyingPair.QuoteToken.Address = addresses[0]
-		pair.UnderlyingPair.BaseToken.Address = addresses[1]
-		pair.UnderlyingPair.BaseToken.Blockchain = parts[1]
-		exchangePairs = append(exchangePairs, pair)
+		dexpair.UnderlyingPair.QuoteToken.Address = addresses[0]
+		dexpair.UnderlyingPair.BaseToken.Address = addresses[1]
+		dexpair.UnderlyingPair.BaseToken.Blockchain = parts[1]
+		dexPairs = append(dexPairs, dexpair)
 		log.Infof(
 			"dex -- blockchain -- address0 -- address1: %s -- %s -- %s -- %s",
-			pair.Exchange,
+			dexpair.Exchange,
 			parts[1],
 			addresses[0],
 			addresses[1],
 		)
 	}
-	for _, ep := range exchangePairs {
+	for _, ep := range dexPairs {
 		log.Infof("%s-%s", ep.UnderlyingPair.QuoteToken.Address, ep.UnderlyingPair.BaseToken.Address)
 	}
 
@@ -251,7 +252,7 @@ func main() {
 	}()
 
 	// Run Processor and subsequent routines.
-	go simulationprocessor.Processor(exchangePairs, tradesblockChannel, filtersChannel, triggerChannel, &wg)
+	go simulationprocessor.Processor(dexPairs, tradesblockChannel, filtersChannel, triggerChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
