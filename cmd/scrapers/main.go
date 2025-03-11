@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	env = flag.Bool("env", true, "Get pairs from env variable if set to true. Otherwise, pairs are read from config file.")
+	env = flag.Bool("env", true, "Get pairs and pools from env variable if set to true. Otherwise, pairs are read from config file.")
 
 	// Comma separated list of exchanges. Only used in case pairs are read from config files.
 	exchanges = utils.Getenv("EXCHANGES", "UniswapV2,Binance,Simulation")
@@ -43,7 +43,15 @@ var (
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
 	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Crypto.com:BTC-USDT,Crypto.com:BTC-USD")
-	exchangePairs    []models.ExchangePair
+
+	// Comma separated list of pools.
+	// The binary digit in the third position controls the order of the trades in the pool:
+	// TO DO: For 0 the original order is taken into consideration, while for 1 the order of all trades in the pool is reversed.
+	// Format should be as follows: UniswapV2:0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852:0,UniswapV2:0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c:0
+	poolsEnv = utils.Getenv("POOLS", "")
+
+	exchangePairs []models.ExchangePair
+	pools         []models.Pool
 )
 
 type metrics struct {
@@ -52,6 +60,7 @@ type metrics struct {
 	memoryUsage    prometheus.Gauge
 	contract       *prometheus.GaugeVec
 	exchangePairs  *prometheus.GaugeVec
+	pools          *prometheus.GaugeVec
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -91,6 +100,14 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 			},
 			[]string{"exchange_pair"}, // Label to store each exchange pair
 		),
+		pools: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: "feeder",
+				Name:      "pools",
+				Help:      "List of pools to be pushed as labels for each Feeder.",
+			},
+			[]string{"exchange", "pool_address"}, // Labels for the exchange and pool address
+		),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
 		authUser:       authUser,
@@ -100,6 +117,7 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.cpuUsage)
 	reg.MustRegister(m.memoryUsage)
 	reg.MustRegister(m.contract)
+	reg.MustRegister(m.pools)
 	return m
 }
 
@@ -109,9 +127,21 @@ func init() {
 	if *env {
 		exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR)
 
+		// Extract pools from env var.
+		if poolsEnv != "" {
+			for _, p := range strings.Split(poolsEnv, ENV_SEPARATOR) {
+				var pool models.Pool
+				pool.Exchange = scrapers.Exchanges[strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[0]]
+				pool.Address = strings.Split(p, EXCHANGE_PAIR_SEPARATOR)[1]
+				pool.Blockchain = models.Blockchain{Name: pool.Exchange.Blockchain}
+				pools = append(pools, pool)
+			}
+		}
+
 	} else {
-		// Collect all CEX pairs for subsequent scraping.
+		// Collect all CEX pairs and DEX pools for subsequent scraping.
 		// CEX pairs are mapped onto the underlying assets as well.
+		// It's the responsability of the corresponding DEX scraper to fetch pool asset information.
 		for _, exchange := range strings.Split(exchanges, ",") {
 			if _, ok := scrapers.Exchanges[exchange]; !ok {
 				log.Fatalf("Scraper for %s not available.", exchange)
@@ -124,6 +154,12 @@ func init() {
 				exchangePairs = append(exchangePairs, ep...)
 				continue
 			}
+
+			p, err := models.GetPoolsFromConfig(exchange)
+			if err != nil {
+				log.Fatalf("GetPoolsFromConfig for %s: %v", exchange, err)
+			}
+			pools = append(pools, p...)
 		}
 	}
 }
@@ -158,6 +194,14 @@ func main() {
 			m.exchangePairs.WithLabelValues(pair).Set(1)
 		}
 	}
+	// Iterate through the pools slice and set values for the pools metric. Push only if pools are available.
+	if len(pools) > 0 {
+		for _, pool := range pools {
+			m.pools.WithLabelValues(pool.Exchange.Name, pool.Address).Set(1)
+		}
+	} else {
+		log.Info("No pools to push metrics for; POOLS environment variable is empty.")
+	}
 
 	// Periodically update and push metrics to pushgateway
 	go func() {
@@ -184,6 +228,10 @@ func main() {
 				Collector(m.memoryUsage).
 				Collector(m.contract).
 				Collector(m.exchangePairs)
+
+			if len(pools) > 0 {
+				pushCollector = pushCollector.Collector(m.pools)
+			}
 
 			if err := pushCollector.
 				BasicAuth(m.authUser, m.authPassword).
@@ -255,7 +303,7 @@ func main() {
 	}()
 
 	// Run Processor and subsequent routines.
-	go processor.Processor(exchangePairs, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
