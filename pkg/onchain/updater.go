@@ -3,6 +3,7 @@ package onchain
 import (
 	"context"
 	"io/ioutil"
+	"math"
 	"math/big"
 	"net/http"
 	"time"
@@ -14,6 +15,10 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+)
+
+const (
+	DECIMALS_ORACLE_VALUE = 8
 )
 
 var (
@@ -29,6 +34,40 @@ func init() {
 	log.SetLevel(loglevel)
 }
 
+func OracleUpdateExecutorSimulation(
+	auth *bind.TransactOpts,
+	contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService,
+	conn *ethclient.Client,
+	chainId int64,
+	filtersChannel <-chan []models.FilterPointPair,
+) {
+
+	for filterPoints := range filtersChannel {
+		timestamp := time.Now().Unix()
+		var keys []string
+		var values []int64
+		for _, fp := range filterPoints {
+			log.Infof(
+				"updater - filterPoint received at %v: %v -- %v -- %v.",
+				time.Unix(timestamp, 0),
+				fp.Pair.QuoteToken.Symbol,
+				fp.Value,
+				fp.Time,
+			)
+
+			key := models.GetOracleKeySimulation(fp.Pair)
+			keys = append(keys, key)
+			values = append(values, int64(fp.Value*math.Pow10(int(DECIMALS_ORACLE_VALUE))))
+		}
+		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, values, timestamp)
+		if err != nil {
+			log.Warnf("updater - Failed to update Oracle: %v.", err)
+			return
+		}
+	}
+
+}
+
 func OracleUpdateExecutor(
 	// publishedPrices map[string]float64,
 	// newPrices map[string]float64,
@@ -38,7 +77,7 @@ func OracleUpdateExecutor(
 	conn *ethclient.Client,
 	chainId int64,
 	// compatibilityMode bool,
-	filtersChannel <-chan []models.FilterPointExtended,
+	filtersChannel <-chan []models.FilterPointPair,
 ) {
 
 	for filterPoints := range filtersChannel {
@@ -47,15 +86,17 @@ func OracleUpdateExecutor(
 		var values []int64
 		for _, fp := range filterPoints {
 			log.Infof(
-				"updater - filterPoint received at %v: %v -- %v -- %v -- %v.",
+				"updater - filterPoint received at %v: %v -- %v -- %v.",
 				time.Unix(timestamp, 0),
-				fp.Source,
 				fp.Pair.QuoteToken.Symbol,
 				fp.Value,
 				fp.Time,
 			)
-			keys = append(keys, fp.Pair.QuoteToken.Symbol+"/USD")
-			values = append(values, int64(fp.Value*100000000))
+
+			key := models.GetOracleKey(fp.SourceType, fp.Pair)
+			keys = append(keys, key)
+			// keys = append(keys, fp.Pair.QuoteToken.Symbol+"/USD")
+			values = append(values, int64(fp.Value*math.Pow10(int(DECIMALS_ORACLE_VALUE))))
 		}
 		err := updateOracleMultiValues(conn, contract, auth, chainId, keys, values, timestamp)
 		if err != nil {

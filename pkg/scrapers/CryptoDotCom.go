@@ -262,7 +262,7 @@ func cryptodotcomParseTradeMessage(message cryptodotcomWSResponse) (trades []mod
 			Price:          price,
 			Volume:         volume,
 			Time:           timestamp,
-			Exchange:       models.Exchange{Name: CRYPTODOTCOM_EXCHANGE},
+			Exchange:       Exchanges[CRYPTODOTCOM_EXCHANGE],
 			ForeignTradeID: foreignTradeID,
 		}
 		trades = append(trades, trade)

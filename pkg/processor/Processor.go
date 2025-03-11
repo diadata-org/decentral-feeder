@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"strings"
 	"sync"
 	"time"
 
@@ -19,7 +18,7 @@ func Processor(
 	exchangePairs []models.ExchangePair,
 	pools []models.Pool,
 	tradesblockChannel chan map[string]models.TradesBlock,
-	filtersChannel chan []models.FilterPointExtended,
+	filtersChannel chan []models.FilterPointPair,
 	triggerChannel chan time.Time,
 	failoverChannel chan string,
 	wg *sync.WaitGroup,
@@ -32,33 +31,44 @@ func Processor(
 	// As soon as the trigger channel receives input a processing step is initiated.
 	for tradesblocks := range tradesblockChannel {
 
-		var filterPoints []models.FilterPointExtended
+		var filterPoints []models.FilterPointPair
 
 		// --------------------------------------------------------------------------------------------
 		// 1. Compute an aggregated value for each pair on a given exchange using all collected trades.
 		// --------------------------------------------------------------------------------------------
-		for exchangepairIdentifier, tb := range tradesblocks {
+		for _, tb := range tradesblocks {
 
-			// TO DO: Set flag for trades' filter switch. For instance Median, Average, Minimum, etc.
-			atomicFilterValue, _, err := filters.LastPrice(tb.Trades, true)
+			// filter switch, for instance LastPrice, Median, Average, Minimum, etc.
+			sourceType, err := tb.GetSourceType()
 			if err != nil {
-				log.Errorf("Processor - GetLastPrice: %v.", err)
-				continue
+				log.Warn(err)
 			}
-			log.Infof(
-				"Processor - Atomic filter value for market %s with %v trades: %v.",
-				tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
-				len(tb.Trades),
-				atomicFilterValue,
-			)
 
-			// Identify Pair from tradesblock
-			filterPoint := models.FilterPointExtended{
-				Pair:   tb.Pair,
-				Value:  atomicFilterValue,
-				Time:   tb.EndTime,
-				Source: strings.Split(exchangepairIdentifier, "-")[0],
+			var atomicFilterValue float64
+
+			switch filterType {
+			case string(FILTER_LAST_PRICE):
+				atomicFilterValue, _, err = filters.LastPrice(tb.Trades, true)
+				if err != nil {
+					log.Errorf("Processor - GetLastPrice: %v.", err)
+					continue
+				}
+				log.Infof(
+					"Processor - Atomic filter value for market %s with %v trades: %v.",
+					tb.Trades[0].Exchange.Name+":"+tb.Trades[0].QuoteToken.Symbol+"-"+tb.Trades[0].BaseToken.Symbol,
+					len(tb.Trades),
+					atomicFilterValue,
+				)
 			}
+
+			// Identify @Pair and @SourceType from atomic tradesblock.
+			filterPoint := models.FilterPointPair{
+				Pair:       tb.Pair,
+				Value:      atomicFilterValue,
+				Time:       tb.EndTime,
+				SourceType: sourceType,
+			}
+
 			filterPoints = append(filterPoints, filterPoint)
 
 		}
@@ -73,13 +83,19 @@ func Processor(
 		// 2. Compute an aggregated value across exchanges for each asset obtained from the aggregated
 		// filter values in Step 1.
 		// --------------------------------------------------------------------------------------------
-		// TO DO: Set flag for metafilter switch. For instance Median, Average, Minimum, etc.
-		filterPointsMedianized := metafilters.Median(filterPoints)
-		for _, fpm := range filterPointsMedianized {
-			log.Infof("Processor - filter %s for %s: %v.", fpm.Name, fpm.Pair.QuoteToken.Symbol, fpm.Value)
+
+		// metafilter set by environment variable. For instance Median, Average, Minimum, etc.
+		var filterPointsAggregated []models.FilterPointPair
+
+		switch metaFilterType {
+		case string(METAFILTER_MEDIAN):
+			filterPointsAggregated = metafilters.Median(filterPoints)
+			for _, fpm := range filterPointsAggregated {
+				log.Infof("Processor - filter %s for %s: %v.", fpm.Name, fpm.Pair.QuoteToken.Symbol, fpm.Value)
+			}
 		}
 
-		filtersChannel <- filterPointsMedianized
+		filtersChannel <- filterPointsAggregated
 	}
 
 }

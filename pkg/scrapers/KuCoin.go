@@ -160,7 +160,7 @@ func (scraper *kucoinScraper) handleWSResponse(message kuCoinWSResponse, lock *s
 		Price:          price,
 		Volume:         volume,
 		Time:           timestamp,
-		Exchange:       models.Exchange{Name: KUCOIN_EXCHANGE},
+		Exchange:       Exchanges[KUCOIN_EXCHANGE],
 		ForeignTradeID: foreignTradeID,
 	}
 
