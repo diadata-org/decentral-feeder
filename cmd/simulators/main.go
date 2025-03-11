@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/big"
 	"os"
 	"runtime"
@@ -160,6 +161,22 @@ func main() {
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	//Set the static contract label for Prometheus monitoring
 	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
+
+	// Add this code to expose exchangePairs for monitoring
+	if len(exchangePairs) > 0 {
+		for _, pair := range exchangePairs {
+			pairLabel := fmt.Sprintf("%s:%s:%s-%s",
+				pair.Exchange,
+				pair.UnderlyingPair.QuoteToken.Blockchain,
+				pair.UnderlyingPair.QuoteToken.Address,
+				pair.UnderlyingPair.BaseToken.Address)
+
+			m.exchangePairs.WithLabelValues(pairLabel).Set(1)
+			log.Infof("Added exchange pair to metrics: %s", pairLabel)
+		}
+	} else {
+		log.Info("No exchange pairs to monitor; DEX_PAIRS environment variable is empty or improperly formatted")
+	}
 
 	// Comment out the pool metrics code block in main()
 	// Iterate through the pools slice and set values for the pools metric. Push only if pools are available.
