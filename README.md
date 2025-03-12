@@ -1,6 +1,6 @@
-<div style="text-align: center;">
+<p align="center">
     <img src="./assets/DIA_logo.png" alt="Dia logo" width="200" height="auto" style="padding: 20px;">
-</div>
+</p>
 
 # decentral-feeder
 ![Docker Image Version](https://img.shields.io/docker/v/diadata/decentralized-feeder?sort=semver)
