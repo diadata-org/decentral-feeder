@@ -92,8 +92,26 @@ jobs:
           
           # Make sure we're logged in to IBM Container Registry first
           ibmcloud cr login
+<<<<<<< HEAD
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
           docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }}
+=======
+          
+          # Build for both AMD64 and ARM64 and push directly
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -f build/Dockerfile-diaDecentralOracleService \
+            -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} \
+            -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:pr-latest \
+            --push .
+          
+          # Verify the images were pushed and tagged correctly
+          echo "Verifying image tags in the registry:"
+          ibmcloud cr images --restrict us.icr.io/dia-registry/oracles/diadecentraloracleservice
+          
+          echo "Multi-architecture image built and pushed successfully"
+
+      # No need for separate push step as buildx --push handles it
+>>>>>>> 1e100732c4e0fa54104bfafda3943742a25c54c5
 
       # Install kubectl
       - name: Install kubectl
