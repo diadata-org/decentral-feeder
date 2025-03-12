@@ -85,11 +85,18 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -f build/Dockerfile-luminaScraperFeeder \
             -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} \
-            --push .
+            --load .
           docker buildx build --platform linux/amd64,linux/arm64 \
             -f build/Dockerfile-luminaSimulationFeeder \
             -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }} \
-            --push .
+            --load .
+
+      # Log in to IBM Cloud Container Registry and push both Docker images
+      - name: Log in and Push Docker images
+        run: |
+          ibmcloud cr login
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
+          docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }}
 
       # Install kubectl
       - name: Install kubectl
