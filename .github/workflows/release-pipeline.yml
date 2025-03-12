@@ -52,6 +52,12 @@ jobs:
           ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
           ibmcloud cr login
 
+          # Check if login was successful
+          if [ $? -ne 0 ]; then
+            echo "IBM Cloud login failed"
+            exit 1
+          fi
+
           # Build and push to IBM Cloud Container Registry
           docker build -f build/Dockerfile-luminaScraperFeeder \
             -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ github.event.release.tag_name }} .
