@@ -43,24 +43,15 @@ jobs:
           curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
           ibmcloud plugin install container-registry -f
 
-      # Log in to IBM Cloud Container Registry
-      - name: Log in to IBM Cloud Container Registry
+      # Build and Push Docker images to IBM Cloud Container Registry
+      - name: Build and Push to IBM Cloud Container Registry
         env:
           IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
         run: |
+          # Log in to IBM Cloud Container Registry
           ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
           ibmcloud cr login
 
-      # Log in to Docker Hub
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      # Build and Push Docker images for amd64 architecture
-      - name: Build and Push Docker images
-        run: |
           # Build and push to IBM Cloud Container Registry
           docker build -f build/Dockerfile-luminaScraperFeeder \
             -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ github.event.release.tag_name }} .
@@ -69,8 +60,18 @@ jobs:
           docker build -f build/Dockerfile-luminaSimulationFeeder \
             -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ github.event.release.tag_name }} .
           docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ github.event.release.tag_name }}
+          ibmcloud cr logout
 
-          # Build and push to Docker Hub
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      # Build and Push Docker images to Docker Hub
+      - name: Build and Push to Docker Hub
+        run: |
           docker build -f build/Dockerfile-luminaScraperFeeder \
             -t diadata/decentralized-feeder:${{ github.event.release.tag_name }} .
           docker push diadata/decentralized-feeder:${{ github.event.release.tag_name }}
