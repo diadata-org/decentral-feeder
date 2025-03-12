@@ -17,7 +17,7 @@ This repository hosts a self-contained containerized application for running a d
 <p align="center">
     <img src="assets/Feeder_Architecture_v2.png" alt="Feeder Architecture v2" width="800">
     <br>
-    <em>Decentralized feeders components</em>
+    <em>Decentralized feeder's components</em>
 </p>
 
 ## Documentation
