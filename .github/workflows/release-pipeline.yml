@@ -62,7 +62,7 @@ jobs:
           docker build -f build/Dockerfile-luminaSimulationFeeder \
             -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ github.event.release.tag_name }} .
           docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ github.event.release.tag_name }}
-          ibmcloud cr logout
+          ibmcloud logout
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
