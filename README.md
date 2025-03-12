@@ -10,14 +10,15 @@
 ![GitHub stars](https://img.shields.io/github/stars/diadata-org/decentral-feeder?style=social)
 [![Twitter Follow](https://img.shields.io/twitter/follow/DIAdata_org?style=social)](https://twitter.com/your-twitter-handle)
 
-The node setup instructions are available in our [Wiki]() page!
+The node setup instructions are available in our [Wiki](https://github.com/diadata-org/decentral-feeder/wiki) page!
 
 This repository hosts a self-contained containerized application for running a data feeder in the Lumina oracle network. It comprises of three main components: scraper, collector, and processor. The scraper collects trade data from various CEXs and DEXs. The collector and processor aggregate the data through a two-step process to produce a scalar value associated with an asset, which is subsequently published on-chain. In most cases, this value represents the asset's price in USD.
 
-<div style="text-align: center;">
-    <img src="assets/Feeder_Architecture_v2.png" alt="Feeder Architecture v2" width="800" height="auto">
-    <p style="font-style: italic;">Decentralized feeders components</p>
-</div>
+<p align="center">
+    <img src="assets/Feeder_Architecture_v2.png" alt="Feeder Architecture v2" width="800">
+    <br>
+    <em>Decentralized feeders components</em>
+</p>
 
 ## Documentation
 For node deployment instructions, you can visit our [Wiki](https://github.com/diadata-org/decentral-feeder/wiki) page. 
