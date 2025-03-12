@@ -37,16 +37,26 @@ jobs:
       - name: Test
         run: go test -v ./...
 
+      # Install IBM Cloud CLI and Container Registry CLI
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud plugin install container-registry -f
+
       # Log in to IBM Cloud Container Registry
       - name: Log in to IBM Cloud Container Registry
-        run: ibmcloud cr login
+        env:
+          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
+        run: |
+          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
+          ibmcloud cr login
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       # Build and Push Docker images for amd64 architecture
       - name: Build and Push Docker images
@@ -66,8 +76,8 @@ jobs:
           docker push diadata/decentralized-feeder:${{ github.event.release.tag_name }}
 
           docker build -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation:${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:simulation:${{ github.event.release.tag_name }}
+            -t diadata/decentralized-feeder-simulation:${{ github.event.release.tag_name }} .
+          docker push diadata/decentralized-feeder-simulation:${{ github.event.release.tag_name }}
 
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
@@ -75,21 +85,6 @@ jobs:
           LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
           git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
-
-      # Install IBM Cloud CLI and Container Registry CLI
-      - name: Install IBM Cloud CLI
-        run: |
-          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-          ibmcloud plugin install container-registry -f
-
-      # Log in to IBM Cloud
-      - name: Log in to IBM Cloud
-        env:
-          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
-        run: |
-          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
-          ibmcloud target -r us-south
-          ibmcloud target -g Default
 
       # Install kubectl
       - name: Install kubectl
