@@ -141,7 +141,10 @@ func NewUniswapSimulator(exchangepairs []models.ExchangePair, tradesChannel chan
 
 	scraper.simulator = simulation.New(scraper.restClient, log)
 	scraper.exchangepairs = exchangepairs
-	scraper.initAssetsAndMaps()
+	err = scraper.initAssetsAndMaps()
+	if err != nil {
+		log.Fatal("initAssetsAndMaps: ", err)
+	}
 
 	var lock sync.RWMutex
 	scraper.updatePriceMap(&lock)
