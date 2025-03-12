@@ -79,12 +79,12 @@ jobs:
 
           # Build and push to Docker Hub
           docker build -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper:${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:scraper:${{ github.event.release.tag_name }}
+            -t diadata/decentralized-feeder-scraper:${{ github.event.release.tag_name }} .
+          docker push diadata/decentralized-feeder-scraper:${{ github.event.release.tag_name }}
 
           docker build -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation:${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:simulation:${{ github.event.release.tag_name }}
+            -t diadata/decentralized-feeder-simulation:${{ github.event.release.tag_name }} .
+          docker push diadata/decentralized-feeder-simulation:${{ github.event.release.tag_name }}
 
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
