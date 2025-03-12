@@ -75,18 +75,21 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Build and Tag the Docker images with the commit hash
+      # Set up Docker buildx
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Build and Tag the Docker images with the commit hash for multiple architectures
       - name: Build and Tag Docker images
         run: |
-          docker build -f build/Dockerfile-luminaScraperFeeder -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
-          docker build -f build/Dockerfile-luminaSimulationFeeder -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }} .
-
-      # Push both Docker images to IBM Cloud Container Registry
-      - name: Push Docker images
-        run: |
-          ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
-          docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }}
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -f build/Dockerfile-luminaScraperFeeder \
+            -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} \
+            --push .
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -f build/Dockerfile-luminaSimulationFeeder \
+            -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }} \
+            --push .
 
       # Install kubectl
       - name: Install kubectl
