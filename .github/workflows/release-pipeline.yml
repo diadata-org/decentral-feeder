@@ -74,13 +74,17 @@ jobs:
       # Build and Push Docker images to Docker Hub
       - name: Build and Push to Docker Hub
         run: |
+          # Debugging: Check Docker login status
+          docker info
+
+          # Build and push to Docker Hub
           docker build -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:${{ github.event.release.tag_name }}
+            -t your-organization/decentralized-feeder:${{ github.event.release.tag_name }} .
+          docker push your-organization/decentralized-feeder:${{ github.event.release.tag_name }}
 
           docker build -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder-simulation:${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder-simulation:${{ github.event.release.tag_name }}
+            -t your-organization/decentralized-feeder-simulation:${{ github.event.release.tag_name }} .
+          docker push your-organization/decentralized-feeder-simulation:${{ github.event.release.tag_name }}
 
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
@@ -153,7 +157,7 @@ jobs:
     #       kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
     #       kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
     #       kubectl config use-context $CONTEXT
-    #
+  
     #   # Helm upgrade/install 07-011 conduit nodes to Hetzner Cluster
     #   - name: Helm upgrade/install 07-011 conduit nodes to Hetzner Cluster
     #     run: |
@@ -164,7 +168,7 @@ jobs:
     #         cd -
     #       done
     #       cd
-    #
+
     #   # Helm upgrade/install simulation feeders 07 and 08 to Hetzner Cluster
     #   - name: Helm upgrade/install simulation feeders 07 and 08 to Hetzner Cluster
     #     run: |
@@ -177,7 +181,7 @@ jobs:
     #       cd
     #       # Clean up CA certificate immediately
     #       if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
-    #
+
     #   # Civo Cluster kubectl config
     #   - name: Civo Cluster kubectl config
     #     env:
@@ -196,7 +200,7 @@ jobs:
     #       kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
     #       kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
     #       kubectl config use-context $CONTEXT
-    #
+  
     #   # Helm upgrade/install conduit-node-012 and conduit-node-016 to Civo Cluster
     #   - name: Helm upgrade/install conduit-node-012 and conduit-node-016 to Civo Cluster
     #     run: |
@@ -207,7 +211,7 @@ jobs:
     #         cd -
     #       done
     #       cd
-    #
+
     #   # Helm upgrade/install simulation feeders 012 and 013 to Civo Cluster
     #   - name: Helm upgrade/install simulation feeders 012 and 013 to Civo Cluster
     #     run: |
@@ -220,22 +224,22 @@ jobs:
     #       cd
     #       # Clean up CA certificate immediately
     #       if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
-    #       
+          
     #   - name: Update Helm manifests for nodes 017-021 (repository.tag)
     #     run: |
     #       # Navigate to the helm-deployments/apps directory in the cloned repository
     #       cd lumina-infra/argocd/helm-deployments/apps
-    #       
+      
     #       # Loop over each node file and update the repository.tag line
     #       for node in 017 018 019 020 021; do
     #         echo "Updating values-node${node}.yaml"
     #         sed -i "s/^\(\s*tag:\s*\)commit-hash-[a-zA-Z0-9]\+/\1${{ github.event.release.tag_name }}/" values-node${node}.yaml
     #       done
-    #       
+      
     #       # Configure Git with a generic identity for the commit
     #       git config user.email "github_actions@github.com"
     #       git config user.name "github_actions"
-    #       
+      
     #       # Check if there are any changes; if yes, commit and push them.
     #       if [ -n "$(git status --porcelain)" ]; then
     #         git add values-node*.yaml
