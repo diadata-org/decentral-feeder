@@ -83,15 +83,13 @@ jobs:
             -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }} .
           docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}
 
-          # Build and push to Docker Hub for luminaScraperFeeder arm64 image
-          docker build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-arm64 .
-          docker push diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-arm64
+          # Build and push to Docker Hub for luminaScraperFeeder arm64 image using Buildx
+          docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
+            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-arm64 --push .
 
-          # Build and push to Docker Hub for luminaSimulationFeeder arm64 image
-          docker build --platform linux/arm64 -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-arm64 .
-          docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-arm64
+          # Build and push to Docker Hub for luminaSimulationFeeder arm64 image using Buildx
+          docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaSimulationFeeder \
+            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-arm64 --push .
           docker logout
 
       # Checkout the lumina-infra repository
