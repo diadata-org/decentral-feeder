@@ -74,9 +74,6 @@ jobs:
       # Build and Push Docker images to Docker Hub
       - name: Build and Push to Docker Hub
         run: |
-          # Debugging: Check Docker login status
-          docker info
-
           # Build and push to Docker Hub
           docker build -f build/Dockerfile-luminaScraperFeeder \
             -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }} .
