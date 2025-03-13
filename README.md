@@ -8,7 +8,7 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/diadata-org/decentral-feeder)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/diadata-org/decentral-feeder)
 ![GitHub stars](https://img.shields.io/github/stars/diadata-org/decentral-feeder?style=social)
-[![Twitter Follow](https://img.shields.io/twitter/follow/DIAdata_org?style=social)](https://twitter.com/your-twitter-handle)
+[![Twitter Follow](https://img.shields.io/twitter/follow/DIAdata_org?style=social)](https://twitter.com/DIAdata_org)
 
 The node setup instructions are available in our [Wiki](https://github.com/diadata-org/decentral-feeder/wiki) page!
 
