@@ -45,9 +45,11 @@ This repository hosts a self-contained containerized application for running a d
      - `CHAIN_ID`: set the chain ID value
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
+
      > 
      > **NOTE:**  The following pushgateway vars are **mandatory** for official DIA node operators. If you're an official operator, please reach out to the team to get these credentials. For developers testing the system, these credentials are **optional** and can be skipped.
      >
+     
      - `PUSHGATEWAY_URL`: The Pushgateway endpoint used for pushing metrics to Prometheus.
      - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server.
      - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server.
