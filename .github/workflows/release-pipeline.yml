@@ -83,6 +83,17 @@ jobs:
             -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }} .
           docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}
 
+          # Build and push to Docker Hub for luminaScraperFeeder arm64 image
+          docker build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
+            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-arm64 .
+          docker push diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-arm64
+
+          # Build and push to Docker Hub for luminaSimulationFeeder arm64 image
+          docker build --platform linux/arm64 -f build/Dockerfile-luminaSimulationFeeder \
+            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-arm64 .
+          docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-arm64
+          docker logout
+
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
         env:
@@ -254,20 +265,3 @@ jobs:
             shred -u /tmp/ca.pem
           fi
           ibmcloud logout 
-
-      # Build and Push Docker arm64 images to Docker Hub
-      - name: Build and Push to Docker Hub
-        run: |
-          # Debugging: Check Docker login status
-          docker info
-
-          # Build and push to Docker Hub for luminaScraperFeeder
-          docker build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}
-
-          # Build and push to Docker Hub for luminaSimulationFeeder
-          docker build --platform linux/arm64 -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}
-          docker logout
