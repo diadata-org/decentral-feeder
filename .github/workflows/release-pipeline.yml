@@ -80,12 +80,12 @@ jobs:
         run: |
           # Build and push to Docker Hub
           docker build -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}
+            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-amd64 .
+          docker push diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-amd64
 
           docker build -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }} .
-          docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}
+            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64 .
+          docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64
 
           # Build and push to Docker Hub for luminaScraperFeeder arm64 image using Buildx
           docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
