@@ -7,6 +7,8 @@ lib
 cache
 .vscode
 out
+coverage-report
+lcov.info
 
 
 

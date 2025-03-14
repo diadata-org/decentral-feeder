@@ -57,6 +57,16 @@ contract DIAOracleV2MetaTest is Test {
         vm.stopPrank();
     }
 
+    function testAddDuplicateOracle() public {
+        vm.startPrank(admin);
+
+        oracleMeta.addOracle(address(oracle1));
+        vm.expectRevert();
+        oracleMeta.addOracle(address(oracle1));
+
+        vm.stopPrank();
+    }
+
     function testRemoveOracle() public {
         vm.startPrank(admin);
 
@@ -71,6 +81,14 @@ contract DIAOracleV2MetaTest is Test {
         vm.stopPrank();
     }
 
+    function testRemoveNonExistentOracle() public {
+        vm.startPrank(admin);
+        vm.expectRevert("Oracle not found because it was not in the registry.");
+        oracleMeta.removeOracle(address(oracle2));
+
+        vm.stopPrank();
+    }
+
     function testSetThreshold() public {
         vm.startPrank(admin);
 
@@ -80,11 +98,29 @@ contract DIAOracleV2MetaTest is Test {
         vm.stopPrank();
     }
 
+    function testZeroSetThreshold() public {
+        vm.startPrank(admin);
+
+        vm.expectRevert();
+        oracleMeta.setThreshold(0);
+
+        vm.stopPrank();
+    }
+
     function testSetTimeout() public {
         vm.startPrank(admin);
 
         oracleMeta.setTimeoutSeconds(100);
         assertEq(oracleMeta.getTimeoutSeconds(), 100);
+
+        vm.stopPrank();
+    }
+
+    function testZeroSetTimeout() public {
+        vm.startPrank(admin);
+
+        vm.expectRevert();
+        oracleMeta.setTimeoutSeconds(0);
 
         vm.stopPrank();
     }
@@ -105,6 +141,7 @@ contract DIAOracleV2MetaTest is Test {
         oracle1.setValue("BTC", 100, uint128(block.timestamp));
         oracle2.setValue("BTC", 200, uint128(block.timestamp));
         oracle3.setValue("BTC", 300, uint128(block.timestamp));
+        oracle3.setValue("BTC", 400, uint128(block.timestamp + 2000)); //timeout
 
         // Fetch median value
         (uint128 value, uint128 timestamp) = oracleMeta.getValue("BTC");
@@ -116,7 +153,6 @@ contract DIAOracleV2MetaTest is Test {
             "Timestamp should match current time"
         );
     }
-
 
     function testGetValueFailsWithoutEnoughOracles() public {
         vm.startPrank(admin);
