@@ -58,15 +58,16 @@ func GetAsset(address common.Address, blockchain string, client *ethclient.Clien
 
 	asset.Symbol, err = contract.Symbol(&bind.CallOpts{})
 	if err != nil {
-		log.Warnf("Get Symbol from on-chain for address %s", address)
+		log.Errorf("Get Symbol from on-chain for address %s: %v", address, err)
+		return
 	}
 	asset.Name, err = contract.Name(&bind.CallOpts{})
 	if err != nil {
-		log.Warnf("Get Name from on-chain for address %s", address)
+		log.Warnf("Get Name from on-chain for address %s: %v", address, err)
 	}
 	asset.Decimals, err = contract.Decimals(&bind.CallOpts{})
 	if err != nil {
-		log.Errorf("Get Decimals from on-chain for address %s", address)
+		log.Errorf("Get Decimals from on-chain for address %s: %v", address, err)
 		return
 	}
 	asset.Address = address.Hex()
