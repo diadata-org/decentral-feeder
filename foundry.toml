@@ -2,7 +2,7 @@
 src = "contracts"           
 out = "out"                 
 libs = [ "lib"]     
-solc_version = "0.8.28"     
+solc_version = "0.8.29"     
 test = "test-foundry"
 gas_price = 10
 gas_reports = ["*"]
