@@ -15,6 +15,7 @@ interface IDIAOracleV2 {
  */
 contract DIAOracleV2 is IDIAOracleV2, AccessControl {
     bytes32 public constant UPDATER_ROLE = keccak256("UPDATER_ROLE");
+ 
     /// @notice Mapping to store compressed values of assets (price and timestamp).
     /// @dev The stored value is a 256-bit integer where the upper 128 bits store the price and the lower 128 bits store the timestamp.
     mapping (string => uint256) public values;
@@ -35,9 +36,8 @@ contract DIAOracleV2 is IDIAOracleV2, AccessControl {
      * @param value The price value to set.
      * @param timestamp The timestamp associated with the value.
      */
-    function setValue(string memory key, uint128 value, uint128 timestamp) public {
-        require(hasRole(UPDATER_ROLE, msg.sender), "Only the oracleUpdater role can update the oracle.");
-        uint256 cValue = (((uint256)(value)) << 128) + timestamp;
+    function setValue(string memory key, uint128 value, uint128 timestamp) public onlyRole(UPDATER_ROLE) {
+         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
         emit OracleUpdate(key, value, timestamp);
     }
@@ -51,9 +51,8 @@ contract DIAOracleV2 is IDIAOracleV2, AccessControl {
      * @param compressedValues The array of compressed values (price and timestamp combined).
      */
 
-    function setMultipleValues(string[] memory keys, uint256[] memory compressedValues) public {
-        require(hasRole(UPDATER_ROLE, msg.sender), "Only the oracleUpdater role can update the oracle.");
-        require(keys.length == compressedValues.length);
+    function setMultipleValues(string[] memory keys, uint256[] memory compressedValues) public  onlyRole(UPDATER_ROLE){
+         require(keys.length == compressedValues.length,"mismatch values");
         
         for (uint128 i = 0; i < keys.length; i++) {
             string memory currentKey = keys[i];

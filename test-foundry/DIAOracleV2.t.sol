@@ -62,7 +62,7 @@ contract DIAOracleV2Test is Test {
         address attacker = address(0x1234);
 
         vm.prank(attacker);
-        vm.expectRevert("Only the oracleUpdater role can update the oracle.");
+        vm.expectRevert();
         oracle.setValue("BTC/USD", 60000, 1710000002);
     }
 
