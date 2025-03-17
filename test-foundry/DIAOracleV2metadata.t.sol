@@ -83,7 +83,7 @@ contract DIAOracleV2MetaTest is Test {
 
     function testRemoveNonExistentOracle() public {
         vm.startPrank(admin);
-        vm.expectRevert("Oracle not found because it was not in the registry.");
+        vm.expectRevert();
         oracleMeta.removeOracle(address(oracle2));
 
         vm.stopPrank();

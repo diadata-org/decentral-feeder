@@ -2,60 +2,19 @@
 pragma solidity 0.8.28;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-
-interface IDIAOracleV2 {                                                           
-    function setValue(string memory key, uint128 value, uint128 timestamp) external;
-    function getValue(string memory key) external view returns (uint128, uint128);
-    function updateOracleUpdaterAddress(address newOracleUpdaterAddress) external;
-}
-
-/**
-* @title sort given array using Quick sort.
-* @author [Priyda](https://github.com/priyda)
-*/
-library QuickSort {
-    function sort(uint128[] memory data) public returns (uint128[] memory) {
-        quickSort(data, int256(0), int256(data.length - 1));
-        return data;
-    }
-
-    /** Quicksort is a sorting algorithm based on the divide and conquer approach **/
-    function quickSort(
-        uint128[] memory _arr,
-        int256 left,
-        int256 right
-    ) internal {
-        int256 i = left;
-        int256 j = right;
-        if (i == j) return;
-        uint256 pivot = _arr[uint256(left + (right - left) / 2)];
-        while (i <= j) {
-            while (_arr[uint256(i)] < pivot) i++;
-            while (pivot < _arr[uint256(j)]) j--;
-            if (i <= j) {
-                (_arr[uint256(i)], _arr[uint256(j)]) = (
-                    _arr[uint256(j)],
-                    _arr[uint256(i)]
-                );
-                i++;
-                j--;
-            }
-        }
-        if (left < j) quickSort(_arr, left, j);
-        if (i < right) quickSort(_arr, i, right);
-    }
-}
+import "./IDIAORacleV2.sol";
+import "./QuickSort.sol";
 
 /**
  * @title DIAOracleV2Meta
  */
 contract DIAOracleV2Meta is Ownable(msg.sender) {
     /// @notice Mapping of registered oracle addresses.
-    mapping (uint256 => address) oracles;
+    mapping(uint256 => address) public oracles;
 
     /// @notice Number of registered oracles.
     uint256 private numOracles;
-    
+
     /// @notice Minimum number of valid values required to return a result.
     uint256 private threshold;
 
@@ -65,16 +24,31 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
     event OracleAdded(address newOracleAddress);
     event OracleRemoved(address removedOracleAddress);
 
+    error OracleNotFound();
+    error ZeroAddress();
+    error InvalidThreshold(uint256 value);
+    error InvalidTimeOut(uint256 value);
+    error TimeoutExceedsLimit(uint256 value);
+    error OracleExists();
+    error ThresholdNotMet(uint256 validValues, uint256 threshold);
+
+
+    modifier validateAddress(address _address) {
+        if (_address == address(0)) revert ZeroAddress();
+        _;
+    }
+
     /**
      * @notice Adds a new oracle to the registry.
      * @dev Only the administrator can call this function.
      * @param newOracleAddress The address of the oracle contract to add.
      */
-    function addOracle(address newOracleAddress) onlyOwner public {
-        require(newOracleAddress != address(0));
+    function addOracle(
+        address newOracleAddress
+    ) public onlyOwner validateAddress(newOracleAddress) {
         for (uint256 i = 0; i < numOracles; i++) {
             if (oracles[i] == newOracleAddress) {
-                revert("Oracle already added.");
+                revert OracleExists();
             }
         }
         oracles[numOracles] = newOracleAddress;
@@ -82,14 +56,13 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
         emit OracleAdded(newOracleAddress);
     }
 
-
     /**
      * @notice Removes an oracle from the registry.
      * @dev Only the administrator can call this function.
      * @param oracleToRemove The address of the oracle contract to remove.
      */
 
-    function removeOracle(address oracleToRemove) onlyOwner public {
+    function removeOracle(address oracleToRemove) public onlyOwner {
         for (uint256 i = 0; i < numOracles; i++) {
             if (oracles[i] == oracleToRemove) {
                 oracles[i] = oracles[numOracles - 1];
@@ -99,17 +72,19 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
                 return;
             }
         }
-        revert("Oracle not found because it was not in the registry.");
+        revert OracleNotFound();
     }
 
-     /**
+    /**
      * @notice Sets the required threshold of valid oracle values.
      * @dev Only the administrator can call this function.
      * @param newThreshold The new threshold value.
      */
 
-    function setThreshold(uint256 newThreshold) onlyOwner public {
-        require(newThreshold > 0);
+    function setThreshold(uint256 newThreshold) public onlyOwner {
+        if (newThreshold == 0) {
+            revert InvalidThreshold(newThreshold);
+        }
         threshold = newThreshold;
     }
 
@@ -118,10 +93,15 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
      * @dev Only the administrator can call this function.
      * @param newTimeoutSeconds The new timeout period in seconds.
      */
-    function setTimeoutSeconds(uint256 newTimeoutSeconds) onlyOwner public {
-        require(newTimeoutSeconds > 0);
+    function setTimeoutSeconds(uint256 newTimeoutSeconds) public onlyOwner {
+        if (newTimeoutSeconds == 0) {
+            revert InvalidTimeOut(newTimeoutSeconds);
+        }
+        if (newTimeoutSeconds > 86400) {
+            revert TimeoutExceedsLimit(newTimeoutSeconds);
+        }
+
         // Timeout should be at most one day
-        require(newTimeoutSeconds <= 86400);
         timeoutSeconds = newTimeoutSeconds;
     }
 
@@ -134,8 +114,13 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
      */
 
     function getValue(string memory key) external returns (uint128, uint128) {
-        require(timeoutSeconds > 0);
-        require(threshold > 0);
+         
+         if (timeoutSeconds == 0) {
+        revert InvalidTimeOut(timeoutSeconds);
+    }
+    if (threshold == 0) {
+        revert InvalidThreshold(threshold);
+    }
 
         uint128[] memory values = new uint128[](numOracles);
 
@@ -162,15 +147,19 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
         values = QuickSort.sort(values);
 
         // Check that we have enough values
-        require(validValues >= threshold);
-        
+        // require(validValues >= threshold,"threshold not met");
+
+        if (validValues < threshold) {
+        revert ThresholdNotMet(validValues, threshold);
+    }
+
         // Get median value and timestamp
         uint256 medianIndex = validValues / 2;
 
         return (values[medianIndex], uint128(block.timestamp));
     }
 
-     function getNumOracles() external view returns (uint256) {
+    function getNumOracles() external view returns (uint256) {
         return numOracles;
     }
 

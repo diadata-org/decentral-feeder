@@ -23,10 +23,13 @@ contract DIAOracleV2 is IDIAOracleV2, AccessControl {
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
     event UpdaterAddressChange(address newUpdater);
     
-    constructor() {
+    constructor()  {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
+
+    error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
+
 
      
      /**
@@ -52,8 +55,9 @@ contract DIAOracleV2 is IDIAOracleV2, AccessControl {
      */
 
     function setMultipleValues(string[] memory keys, uint256[] memory compressedValues) public  onlyRole(UPDATER_ROLE){
-         require(keys.length == compressedValues.length,"mismatch values");
-        
+ if (keys.length != compressedValues.length) {
+        revert MismatchedArrayLengths(keys.length, compressedValues.length);
+    }        
         for (uint128 i = 0; i < keys.length; i++) {
             string memory currentKey = keys[i];
             uint256 currentCvalue = compressedValues[i];
