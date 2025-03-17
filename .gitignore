@@ -9,6 +9,6 @@ cache
 out
 coverage-report
 lcov.info
-
+node_modules
 
 
