@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.26;
+pragma solidity 0.8.28;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
@@ -23,9 +23,11 @@ contract DIAOracleV2 is IDIAOracleV2, AccessControl {
     event UpdaterAddressChange(address newUpdater);
     
     constructor() {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
-    
+
+     
      /**
      * @notice Updates the price and timestamp for a given asset key.
      * @dev Only callable by the `oracleUpdater`.
@@ -76,4 +78,7 @@ contract DIAOracleV2 is IDIAOracleV2, AccessControl {
         uint128 value = (uint128)(cValue >> 128);
         return (value, timestamp);
     }
+
+
+    
 }
