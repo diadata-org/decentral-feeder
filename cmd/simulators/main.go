@@ -212,6 +212,7 @@ func main() {
 				continue
 			}
 			privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
+			privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
 			privateKey, err := crypto.HexToECDSA(privateKeyHex)
 			if err != nil {
 				log.Fatalf("Failed to load private key: %v", err)
