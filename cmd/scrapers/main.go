@@ -420,7 +420,7 @@ func main() {
 
 		wg := sync.WaitGroup{}
 		tradesblockChannel := make(chan map[string]models.TradesBlock)
-		filtersChannel := make(chan []models.FilterPointExtended)
+		filtersChannel := make(chan []models.FilterPointPair)
 		triggerChannel := make(chan time.Time)
 		failoverChannel := make(chan string)
 
