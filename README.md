@@ -3,7 +3,7 @@
 </p>
 
 # decentral-feeder
-![Docker Image Version](https://img.shields.io/docker/v/diadata/decentralized-feeder?sort=semver)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/diadata-org/decentral-feeder)
 ![Build Status](https://img.shields.io/github/actions/workflow/status/diadata-org/decentral-feeder/master-pipeline.yml?branch=master)
 ![GitHub contributors](https://img.shields.io/github/contributors/diadata-org/decentral-feeder)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/diadata-org/decentral-feeder)
@@ -45,10 +45,15 @@ This repository hosts a self-contained containerized application for running a d
      - `CHAIN_ID`: set the chain ID value
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
+
+     >
+     > **NOTE:**  The following pushgateway vars are **mandatory** for official DIA node operators. If you're an official operator, please reach out to the team to get these credentials.         For developers testing the system, these credentials are **optional** and can be skipped.
+     >
+
      - `PUSHGATEWAY_URL`: The Pushgateway endpoint used for pushing metrics to Prometheus.
-     - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials, info [at] diadata.org
-     - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server. Reach out to the team to get hold of these credentials,  info [at] diadata.org.
-     
+     - `PUSHGATEWAY_USER`:  to allow decentralized-feeder authenticate towards the monitoring server.
+     - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server.
+
      For additional environment variable configurations, refer to [Adding Exchange Pairs](https://github.com/diadata-org/decentral-feeder/wiki/Adding-exchange-pairs) and [Watchdog environment variables](https://github.com/diadata-org/decentral-feeder/wiki/Enabling-watchdogs)
 
 
