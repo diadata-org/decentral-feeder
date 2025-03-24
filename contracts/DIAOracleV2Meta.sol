@@ -2,7 +2,7 @@
 pragma solidity 0.8.29;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import "./IDIAORacleV2.sol";
+import "./IDIAOracleV2.sol";
 import "./QuickSort.sol";
 
 /**
@@ -113,14 +113,13 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
      * @return timestamp The current block timestamp.
      */
 
-    function getValue(string memory key) external returns (uint128, uint128) {
-         
-         if (timeoutSeconds == 0) {
-        revert InvalidTimeOut(timeoutSeconds);
-    }
-    if (threshold == 0) {
-        revert InvalidThreshold(threshold);
-    }
+    function getValue(string memory key) external returns (uint128, uint128) { 
+        if (timeoutSeconds == 0) {
+            revert InvalidTimeOut(timeoutSeconds);
+        }
+        if (threshold == 0) {
+            revert InvalidThreshold(threshold);
+        }
 
         uint128[] memory values = new uint128[](numOracles);
 
@@ -144,14 +143,11 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
         }
 
         // Sort by value to retrieve the median
-        values = QuickSort.sort(values);
-
-        // Check that we have enough values
-        // require(validValues >= threshold,"threshold not met");
+        values = QuickSort.sort(values, 0, validValues - 1);
 
         if (validValues < threshold) {
-        revert ThresholdNotMet(validValues, threshold);
-    }
+            revert ThresholdNotMet(validValues, threshold);
+        }
 
         // Get median value and timestamp
         uint256 medianIndex = validValues / 2;
@@ -171,3 +167,4 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
         return timeoutSeconds;
     }
 }
+

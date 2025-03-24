@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.29;
 
 /**
@@ -5,8 +6,8 @@ pragma solidity 0.8.29;
  * @author [Priyda](https://github.com/priyda)
  */
 library QuickSort {
-    function sort(uint128[] memory data) public returns (uint128[] memory) {
-        quickSort(data, int256(0), int256(data.length - 1));
+    function sort(uint128[] memory data, uint256 lValue, uint256 rValue) public returns (uint128[] memory) {
+        quickSort(data, int256(lValue), int256(rValue));
         return data;
     }
 
