@@ -12,8 +12,4 @@ interface IDIAOracleV2 {
     function getValue(
         string memory key
     ) external view returns (uint128, uint128);
-
-    function updateOracleUpdaterAddress(
-        address newOracleUpdaterAddress
-    ) external;
 }
