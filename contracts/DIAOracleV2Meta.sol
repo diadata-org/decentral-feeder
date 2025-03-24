@@ -66,7 +66,7 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
         for (uint256 i = 0; i < numOracles; i++) {
             if (oracles[i] == oracleToRemove) {
                 oracles[i] = oracles[numOracles - 1];
-                oracles[numOracles] = address(0);
+                oracles[numOracles - 1] = address(0);
                 numOracles--;
                 emit OracleRemoved(oracleToRemove);
                 return;
