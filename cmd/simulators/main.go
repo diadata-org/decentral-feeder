@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
+	"crypto/ecdsa"
 	"fmt"
+	"math"
 	"math/big"
 	"os"
 	"runtime"
@@ -15,7 +18,9 @@ import (
 	simulationprocessor "github.com/diadata-org/decentral-feeder/pkg/simulations/simulationProcessor"
 	utils "github.com/diadata-org/decentral-feeder/pkg/utils"
 	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
@@ -39,16 +44,16 @@ var (
 	// Format should be as follows: Exchange:Blockchain:AddressTokenOut-AddressTokenIn
 	pairsEnv      = utils.Getenv("DEX_PAIRS", "")
 	exchangePairs []models.ExchangePair
-	// pools         []models.Pool   // Commented out for now
 )
 
 type metrics struct {
-	uptime        prometheus.Gauge
-	cpuUsage      prometheus.Gauge
-	memoryUsage   prometheus.Gauge
-	contract      *prometheus.GaugeVec
-	exchangePairs *prometheus.GaugeVec
-	// pools          *prometheus.GaugeVec  // Commented out for now
+	uptime         prometheus.Gauge
+	cpuUsage       prometheus.Gauge
+	memoryUsage    prometheus.Gauge
+	contract       *prometheus.GaugeVec
+	exchangePairs  *prometheus.GaugeVec
+	gasBalance     prometheus.Gauge
+	lastUpdateTime prometheus.Gauge
 	pushGatewayURL string
 	jobName        string
 	authUser       string
@@ -88,14 +93,16 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 			},
 			[]string{"exchange_pair"}, // Label to store each exchange pair
 		),
-		// pools: prometheus.NewGaugeVec(  // Commented out for now
-		// 	prometheus.GaugeOpts{
-		// 		Namespace: "feeder",
-		// 		Name:      "pools",
-		// 		Help:      "List of pools to be pushed as labels for each Feeder.",
-		// 	},
-		// 	[]string{"exchange", "pool_address"}, // Labels for the exchange and pool address
-		// ),
+		gasBalance: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "gas_balance",
+			Help:      "Gas wallet balance in DIA.",
+		}),
+		lastUpdateTime: prometheus.NewGauge(prometheus.GaugeOpts{
+			Namespace: "feeder",
+			Name:      "last_update_time",
+			Help:      "Last update time in UTC timestamp.'",
+		}),
 		pushGatewayURL: pushGatewayURL,
 		jobName:        jobName,
 		authUser:       authUser,
@@ -105,7 +112,9 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.cpuUsage)
 	reg.MustRegister(m.memoryUsage)
 	reg.MustRegister(m.contract)
-	// reg.MustRegister(m.pools)  // Commented out for now
+	reg.MustRegister(m.exchangePairs)
+	reg.MustRegister(m.gasBalance)
+	reg.MustRegister(m.lastUpdateTime)
 	return m
 }
 
@@ -178,16 +187,6 @@ func main() {
 		log.Info("No exchange pairs to monitor; DEX_PAIRS environment variable is empty or improperly formatted")
 	}
 
-	// Comment out the pool metrics code block in main()
-	// Iterate through the pools slice and set values for the pools metric. Push only if pools are available.
-	// if len(pools) > 0 {
-	// 	for _, pool := range pools {
-	// 		m.pools.WithLabelValues(pool.Exchange.Name, pool.Address).Set(1)
-	// 	}
-	// } else {
-	// 	log.Info("No pools to push metrics for; POOLS environment variable is empty.")
-	// }
-
 	// Periodically update and push metrics to pushgateway
 	go func() {
 		for {
@@ -206,18 +205,40 @@ func main() {
 				m.cpuUsage.Set(percent[0])
 			}
 
+			// Get the gas wallet balance
+			conn, err := ethclient.Dial(utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org"))
+			if err != nil {
+				log.Errorf("Failed to connect to the Ethereum client: %v", err)
+				continue
+			}
+			privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
+			privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
+			privateKey, err := crypto.HexToECDSA(privateKeyHex)
+			if err != nil {
+				log.Fatalf("Failed to load private key: %v", err)
+			}
+			gasBalance, err := getAddressBalance(conn, privateKey)
+			if err != nil {
+				log.Errorf("Failed to fetch address balance: %v", err)
+			}
+			m.gasBalance.Set(gasBalance)
+
+			// Get the latest event timestamp
+			lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+			if err != nil {
+				log.Errorf("Error fetching latest event timestamp: %v", err)
+			}
+			m.lastUpdateTime.Set(lastUpdateTime)
+
 			// Push metrics to the Pushgateway
 			pushCollector := push.New(m.pushGatewayURL, m.jobName).
 				Collector(m.uptime).
 				Collector(m.cpuUsage).
 				Collector(m.memoryUsage).
 				Collector(m.contract).
-				Collector(m.exchangePairs)
-
-			// Comment out pools collector section
-			// if len(pools) > 0 {
-			// 	pushCollector = pushCollector.Collector(m.pools)
-			// }
+				Collector(m.exchangePairs).
+				Collector(m.gasBalance).
+				Collector(m.lastUpdateTime)
 
 			if err := pushCollector.
 				BasicAuth(m.authUser, m.authPassword).
@@ -292,4 +313,63 @@ func main() {
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+}
+
+func getAddressBalance(client *ethclient.Client, privateKey *ecdsa.PrivateKey) (float64, error) {
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return math.NaN(), fmt.Errorf("Failed to cast public key to ECDSA")
+	}
+
+	address := crypto.PubkeyToAddress(*publicKeyECDSA)
+	balance, err := client.BalanceAt(context.Background(), address, nil)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("Failed to get balance: %w", err)
+	}
+
+	balanceInDIA, _ := new(big.Float).Quo(new(big.Float).SetInt(balance), big.NewFloat(1e18)).Float64()
+	return balanceInDIA, nil
+}
+
+func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (float64, error) {
+	// Get the latest block number
+	header, err := client.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch latest block header: %v", err)
+	}
+	latestBlock := header.Number.Int64()
+
+	// Calculate the start block for the query
+	startBlock := latestBlock - 1000
+	if startBlock < 0 {
+		startBlock = 0 // Ensure the start block is not negative
+	}
+
+	// Define filter query for the last 'blockRange' blocks
+	query := ethereum.FilterQuery{
+		Addresses: []common.Address{common.HexToAddress(contractAddress)},
+		FromBlock: big.NewInt(startBlock),
+		ToBlock:   big.NewInt(latestBlock),
+	}
+
+	// Fetch logs for the specified block range
+	logs, err := client.FilterLogs(context.Background(), query)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch logs: %v", err)
+	}
+
+	// Check if logs are empty
+	if len(logs) == 0 {
+		return math.NaN(), fmt.Errorf("no events found in the last 1000 blocks")
+	}
+
+	// Get the latest timestamp from the last log
+	lastLog := logs[len(logs)-1]
+	blockHeader, err := client.HeaderByHash(context.Background(), lastLog.BlockHash)
+	if err != nil {
+		return math.NaN(), fmt.Errorf("failed to fetch block header for log: %v", err)
+	}
+
+	return float64(blockHeader.Time), nil
 }
