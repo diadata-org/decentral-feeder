@@ -289,8 +289,8 @@ func main() {
 	// Initialize feeder env variables
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
-	backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org")
+	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.diadata.org")
 	conn, err := ethclient.Dial(blockchainNode)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
@@ -299,7 +299,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
+	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1050"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chainId: %v", err)
 	}
