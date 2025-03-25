@@ -56,10 +56,15 @@ func GetAsset(address common.Address, blockchain string, client *ethclient.Clien
 		return
 	}
 
-	asset.Symbol, err = contract.Symbol(&bind.CallOpts{})
-	if err != nil {
-		log.Errorf("Get Symbol from on-chain for address %s: %v", address, err)
-		return
+	// symbol in Maker contract is null string.
+	if address == common.HexToAddress("0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2") && blockchain == utils.ETHEREUM {
+		asset.Symbol = "MKR"
+	} else {
+		asset.Symbol, err = contract.Symbol(&bind.CallOpts{})
+		if err != nil {
+			log.Errorf("Get Symbol from on-chain for address %s: %v", address, err)
+			return
+		}
 	}
 	asset.Name, err = contract.Name(&bind.CallOpts{})
 	if err != nil {
