@@ -142,12 +142,12 @@ contract DIAOracleV2Meta is Ownable(msg.sender) {
             validValues += 1;
         }
 
-        // Sort by value to retrieve the median
-        values = QuickSort.sort(values, 0, validValues - 1);
-
         if (validValues < threshold) {
             revert ThresholdNotMet(validValues, threshold);
         }
+
+        // Sort by value to retrieve the median
+        values = QuickSort.sort(values, 0, validValues - 1);
 
         // Get median value and timestamp
         uint256 medianIndex = validValues / 2;
