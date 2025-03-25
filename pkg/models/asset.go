@@ -66,9 +66,13 @@ func GetAsset(address common.Address, blockchain string, client *ethclient.Clien
 			return
 		}
 	}
-	asset.Name, err = contract.Name(&bind.CallOpts{})
-	if err != nil {
-		log.Warnf("Get Name from on-chain for address %s: %v", address, err)
+	if address == common.HexToAddress("0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2") && blockchain == utils.ETHEREUM {
+		asset.Name = "Maker"
+	} else {
+		asset.Name, err = contract.Name(&bind.CallOpts{})
+		if err != nil {
+			log.Warnf("Get Name from on-chain for address %s: %v", address, err)
+		}
 	}
 	asset.Decimals, err = contract.Decimals(&bind.CallOpts{})
 	if err != nil {
