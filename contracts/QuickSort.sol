@@ -6,7 +6,7 @@ pragma solidity 0.8.29;
  * @author [Priyda](https://github.com/priyda)
  */
 library QuickSort {
-    function sort(uint128[] memory data, uint256 lValue, uint256 rValue) public returns (uint128[] memory) {
+    function sort(uint128[] memory data, uint256 lValue, uint256 rValue) public view returns (uint128[] memory) {
         quickSort(data, int256(lValue), int256(rValue));
         return data;
     }
@@ -16,7 +16,7 @@ library QuickSort {
         uint128[] memory _arr,
         int256 left,
         int256 right
-    ) internal {
+    ) internal view {
         int256 i = left;
         int256 j = right;
         if (i == j) return;
