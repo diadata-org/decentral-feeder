@@ -209,6 +209,8 @@ func (scraper *SimulationScraper) simulateTrades(tradesChannel chan models.Simul
 						address = pf.address
 					}
 				}
+				slippage, err := scraper.getSlippage(address)
+				log.Infof("Slippage: ")
 
 				t := models.SimulatedTrade{
 					Price:       poolFee.amountIn / amountOut,
@@ -227,6 +229,33 @@ func (scraper *SimulationScraper) simulateTrades(tradesChannel chan models.Simul
 		}
 	}
 	wg.Wait()
+
+}
+
+func (scraper *SimulationScraper) getSlippage(poolAddress common.Address, amountIn *big.Int) (slippage float64, err error) {
+
+	poolCaller, err := univ3pool.NewUniv3poolCaller(poolAddress, scraper.restClient)
+	if err != nil {
+		log.Error("NewUniswapV3PairCaller: ", err)
+	}
+
+	result, err := poolCaller.Slot0(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+	sqrtPriceX96 := result.SqrtPriceX96
+
+	liquidity, err := poolCaller.Liquidity(&bind.CallOpts{})
+	if err != nil {
+		return
+	}
+
+	price := new(big.Float).Quo(big.NewFloat(0).SetInt(sqrtPriceX96), new(big.Float).SetFloat64(math.Pow(2, 96)))
+	// TO DO: it's always token1 = tokenIn. So slippage is computed as amount1 / (sqrtPriceX96 * liquidity)
+	numerator := big.NewFloat(0).SetInt(big.NewInt(0).Abs(amountIn))
+	denominator := big.NewFloat(0).Mul(big.NewFloat(0).SetInt(liquidity), price)
+	slippage, _ = new(big.Float).Quo(numerator, denominator).Float64()
+	return
 
 }
 
