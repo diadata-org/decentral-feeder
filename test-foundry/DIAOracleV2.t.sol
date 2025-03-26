@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity 0.8.29;
 
 import "forge-std/Test.sol";
 import "../contracts/DIAOracleV2.sol";
@@ -67,7 +67,9 @@ contract DIAOracleV2Test is Test {
     }
 
     function testUpdateOracleUpdaterAddress() public {
-        oracle.updateOracleUpdaterAddress(newUpdater);
+        // oracle.grantRole(newUpdater);
+        oracle.grantRole(keccak256("UPDATER_ROLE"), newUpdater);
+
         vm.prank(newUpdater);
         oracle.setValue("BTC/USD", 65000, 1710000003);
 
@@ -79,11 +81,11 @@ contract DIAOracleV2Test is Test {
         );
     }
 
-    function testOnlyUpdaterCanChangeUpdaterAddress() public {
-        address attacker = address(0x9999);
-
-        vm.prank(attacker);
+    function testUnauthorizedGrantRole() public {
+        address user = address(0x987);
+        vm.startPrank(user);
         vm.expectRevert();
-        oracle.updateOracleUpdaterAddress(address(0x1234));
+        oracle.grantRole(keccak256("UPDATER_ROLE"), user);
+        vm.stopPrank();
     }
 }

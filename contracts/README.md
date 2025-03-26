@@ -8,7 +8,7 @@ The DIA Lumina oracle consists of a two major components:
 
 An exemplary Lumina data flow can be seen here.
 Oracle feeders fetch trades from exchanges and submit an aggregated price point to their respective oracle contracts. A minimum of 5 of such oracles have to report the same price in order for the meta contract to assume consensus on the provided price points.
-![plot of the Lumina system](abstract_flow.png)
+![plot of the Lumina system](../assets/abstract_flow.png)
 
 ## DIA Feeder contracts
 Each decentralized Lumina feeder writes data into its own oracle contract.
