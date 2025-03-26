@@ -338,6 +338,8 @@ func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 	whitelistedPools, err := models.GetWhitelistedPoolsFromConfig(UNISWAP_SIMULATION)
 	if err != nil {
 		log.Error("GetWhitelistedPoolsFromConfig: ", err)
+	} else {
+		log.Info("whitelisted pool addresses: ", whitelistedPools)
 	}
 
 	// Remark: In case initial load is too slow, this loop can be parallelized. Not sure if it works with ETH requests though.
