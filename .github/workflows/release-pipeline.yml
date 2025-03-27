@@ -45,20 +45,8 @@ jobs:
           curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
           ibmcloud plugin install container-registry -f
 
-      # Determine if this is a pre-release or a full release
-      - name: Set deployment scope
-        run: |
-          if [ "${{ github.event.release.prerelease }}" == "true" ]; then
-            echo "DEPLOY_SCOPE=pre-release" >> $GITHUB_ENV
-            echo "This is a pre-release build. Will only deploy to test nodes (001)."
-          else
-            echo "DEPLOY_SCOPE=full-release" >> $GITHUB_ENV
-            echo "This is a full release. Will deploy to all production nodes."
-          fi
-
-      # Build and Push to IBM Cloud Container Registry (only for pre-releases)
+      # Build and Push to IBM Cloud Container Registry
       - name: Build and Push to IBM Cloud Container Registry
-        if: env.DEPLOY_SCOPE == 'pre-release'
         env:
           IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
         run: |
@@ -82,17 +70,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Log in to Docker Hub (needed for full releases)
+      # Log in to Docker Hub
       - name: Log in to Docker Hub
-        if: env.DEPLOY_SCOPE == 'full-release'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Build and Push Docker AMD64 images to Docker Hub (only for full releases)
+      # Build and Push Docker AMD64 images to Docker Hub
       - name: Build and Push AMD64 images to Docker Hub
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           # Build and push AMD64 images to Docker Hub
           docker build -f build/Dockerfile-luminaScraperFeeder \
@@ -103,9 +89,8 @@ jobs:
             -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64 .
           docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64
 
-      # Build and Push Docker ARM64 images to Docker Hub (skip for pre-releases)
+      # Build and Push Docker ARM64 images to Docker Hub
       - name: Build and Push ARM64 images to Docker Hub
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           # Build and push ARM64 images to Docker Hub
           docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
@@ -116,7 +101,6 @@ jobs:
           
       # Logout from Docker Hub
       - name: Logout from Docker Hub
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: docker logout
 
       # Checkout the lumina-infra repository
@@ -152,9 +136,8 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           kubectl config use-context $CONTEXT
 
-      # Helm upgrade/install 02-06 conduit nodes to IBM Cluster (skip for pre-releases)
+      # Helm upgrade/install 02-06 conduit nodes to IBM Cluster
       - name: Helm upgrade/install 02-06 conduit nodes to IBM Cluster
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           for i in $(seq -w 002 006); do
             echo "Deploying node $i"
@@ -163,7 +146,7 @@ jobs:
             cd -
           done
 
-      # Helm upgrade/install 001 nodes (always deploy these for pre-releases and full releases)
+      # Helm upgrade/install 001 nodes
       - name: Helm upgrade/install 001 conduit nodes
         run: |
           echo "Deploying node 001"
@@ -171,7 +154,7 @@ jobs:
           helm upgrade --install -n dia-lumina --set repository.tag="${{ github.event.release.tag_name }}" diaoracleservice-conduit-001 .
           cd -
 
-      # Helm upgrade/install simulation feeder 001 (always deploy for pre-releases and full releases)
+      # Helm upgrade/install simulation feeder 001
       - name: Helm upgrade/install simulation feeder 001
         run: |
           echo "Deploying simulation feeder 001"
@@ -179,9 +162,8 @@ jobs:
           helm upgrade --install -n dia-lumina --set repository.tag="${{ github.event.release.tag_name }}" lumina-simulation-feeder-001 .
           cd -
 
-      # Helm upgrade/install simulation feeder 02 to IBM Cluster (skip for pre-releases)
+      # Helm upgrade/install simulation feeder 02 to IBM Cluster
       - name: Helm upgrade/install simulation feeder 02 to IBM Cluster
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           echo "Deploying simulation feeder 02"
           cd lumina-infra/helmcharts/decentral-feeders/002/simulation
@@ -192,7 +174,6 @@ jobs:
 
       # Hetzner Cluster kubectl config
       - name: Hetzner Cluster kubectl config
-        if: env.DEPLOY_SCOPE == 'full-release'
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_HETZNER }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_HETZNER }}
@@ -210,9 +191,8 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
-      # Helm upgrade/install 07-011 conduit nodes to Hetzner Cluster (skip for pre-releases)
+      # Helm upgrade/install 07-011 conduit nodes to Hetzner Cluster
       - name: Helm upgrade/install 07-011 conduit nodes to Hetzner Cluster
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           for i in $(seq -w 007 011); do
             echo "Deploying node $i"
@@ -222,9 +202,8 @@ jobs:
           done
           cd
 
-      # Helm upgrade/install simulation feeders 07 and 08 to Hetzner Cluster (skip for pre-releases)
+      # Helm upgrade/install simulation feeders 07 and 08 to Hetzner Cluster
       - name: Helm upgrade/install simulation feeders 07 and 08 to Hetzner Cluster
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           for i in 007 008; do
             echo "Deploying simulation feeder $i"
@@ -236,9 +215,8 @@ jobs:
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
-      # Civo Cluster kubectl config (skip for pre-releases)
+      # Civo Cluster kubectl config
       - name: Civo Cluster kubectl config
-        if: env.DEPLOY_SCOPE == 'full-release'
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_CIVO }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_CIVO }}
@@ -256,9 +234,8 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
   
-      # Helm upgrade/install conduit-node-012 and conduit-node-016 to Civo Cluster (skip for pre-releases)
+      # Helm upgrade/install conduit-node-012 and conduit-node-016 to Civo Cluster
       - name: Helm upgrade/install conduit-node-012 and conduit-node-016 to Civo Cluster
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           for i in $(seq -w 012 016); do
             echo "Deploying node $i"
@@ -268,9 +245,8 @@ jobs:
           done
           cd
 
-      # Helm upgrade/install simulation feeders 012 and 013 to Civo Cluster (skip for pre-releases)
+      # Helm upgrade/install simulation feeders 012 and 013 to Civo Cluster
       - name: Helm upgrade/install simulation feeders 012 and 013 to Civo Cluster
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           for i in 012 013; do
             echo "Deploying simulation feeder $i"
@@ -282,9 +258,8 @@ jobs:
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
           
-      # Update Helm manifests for nodes 017-021 (repository.tag) (skip for pre-releases)
+      # Update Helm manifests for nodes 017-021 (repository.tag)
       - name: Update Helm manifests for nodes 017-021 (repository.tag)
-        if: env.DEPLOY_SCOPE == 'full-release'
         run: |
           # Navigate to the helm-deployments/apps directory in the cloned repository
           cd lumina-infra/argocd/helm-deployments/apps
