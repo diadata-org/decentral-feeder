@@ -71,6 +71,32 @@ jobs:
           LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
           git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
+     
+      # Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      # IBM Cluster kubectl config
+      - name: IBM Cluster kubectl config 
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
+        run: |
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
+          kubectl config use-context $CONTEXT
 
       # Helm upgrade/install 001 nodes (always deploy these for pre-releases)
       - name: Helm upgrade/install 001 conduit nodes
