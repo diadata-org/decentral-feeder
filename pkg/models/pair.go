@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/diadata-org/decentral-feeder/pkg/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/tkanos/gonfig"
 )
 
@@ -159,4 +160,23 @@ func GetSymbolIdentificationMap(exchange string) (map[string]Asset, error) {
 
 func ExchangeSymbolIdentifier(symbol string, exchange string) string {
 	return symbol + "_" + exchange
+}
+
+func GetWhitelistedPoolsFromConfig(exchange string) (whitelistedPools []common.Address, err error) {
+	path := utils.GetPath("whitelisted_pools/", exchange)
+	type pool struct {
+		Address string
+	}
+	type pools struct {
+		Pools []pool
+	}
+	var p pools
+	err = gonfig.GetConf(path, &p)
+	if err != nil {
+		return
+	}
+	for _, pool := range p.Pools {
+		whitelistedPools = append(whitelistedPools, common.HexToAddress(pool.Address))
+	}
+	return
 }
