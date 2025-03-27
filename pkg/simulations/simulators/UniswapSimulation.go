@@ -284,10 +284,6 @@ func (scraper *SimulationScraper) initAssetsAndMaps() error {
 			if err != nil {
 				return err
 			}
-			// symbol in Maker contract is null string.
-			if quoteToken.Address == "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2" {
-				quoteToken.Symbol = "MKR"
-			}
 			scraper.exchangepairs[i].UnderlyingPair.QuoteToken = quoteToken
 			scraper.priceMap[quoteToken] = models.AssetQuotation{}
 			memoryMap[ep.UnderlyingPair.QuoteToken.Address] = quoteToken
