@@ -331,6 +331,13 @@ func (scraper *SimulationScraper) updatePriceMap(lock *sync.RWMutex) {
 // updateFeesMap updates values in scraper.feesMap.
 func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 
+	whitelistedPools, err := models.GetWhitelistedPoolsFromConfig(UNISWAP_SIMULATION)
+	if err != nil {
+		log.Error("GetWhitelistedPoolsFromConfig: ", err)
+	} else {
+		log.Info("whitelisted pool addresses: ", whitelistedPools)
+	}
+
 	// Remark: In case initial load is too slow, this loop can be parallelized. Not sure if it works with ETH requests though.
 	for _, ep := range scraper.exchangepairs {
 		quoteToken := ep.UnderlyingPair.QuoteToken
@@ -359,6 +366,9 @@ func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 			// 3. check prices in current tick across pools/fees.
 
 			balanceOk := scraper.checkBalances(quoteToken, baseToken, poolAddress)
+			if utils.ContainsAddress(whitelistedPools, poolAddress) {
+				balanceOk = true
+			}
 			if !balanceOk {
 				log.Warnf("Balances not ok for pool with fee %v%%", float64(fee.Int64())/float64(10000))
 				// Remove from scraper.feesMap[ep] if existent.
@@ -371,6 +381,9 @@ func (scraper *SimulationScraper) updateFeesMap(lock *sync.RWMutex) {
 			}
 
 			ticksOk, currentTick := scraper.checkTicks(poolAddress, word_Range, considered_tick_range, admissible_Count)
+			if utils.ContainsAddress(whitelistedPools, poolAddress) {
+				ticksOk = true
+			}
 			if !ticksOk {
 				log.Warnf("ticks not ok for %s with fee %s", poolAddress.Hex(), fee.String())
 				// Remove from scraper.feesMap[ep] if existent.
