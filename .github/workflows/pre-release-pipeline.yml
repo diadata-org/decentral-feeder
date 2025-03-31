@@ -1,0 +1,121 @@
+name: decentralized-feeder-pre-release-pipeline
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:  # Allows manual triggering
+
+permissions:
+  contents: read
+  packages: write
+  deployments: write
+  id-token: none
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    if: github.event.release.prerelease == true
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v4
+
+      # Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      # Get dependencies
+      - name: Get dependencies
+        run: go mod tidy
+
+      # Build the Go application
+      - name: Build
+        run: go build -v ./...
+
+      # Test the Go application
+      - name: Test
+        run: go test -v ./...
+
+      # Install IBM Cloud CLI and Container Registry CLI
+      - name: Install IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud plugin install container-registry -f
+
+      # Build and Push to IBM Cloud Container Registry (only for pre-releases)
+      - name: Build and Push to IBM Cloud Container Registry
+        if: ${{ github.event.release.prerelease }}  # Check if it's a pre-release
+        env:
+          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
+        run: |
+          # Log in to IBM Cloud Container Registry
+          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
+          ibmcloud target -r us-south
+          ibmcloud target -g Default
+          ibmcloud cr login
+
+          # Build and push to IBM Cloud Container Registry
+          docker build -f build/Dockerfile-luminaScraperFeeder \
+            -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ github.event.release.tag_name }} .
+          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ github.event.release.tag_name }}
+
+          docker build -f build/Dockerfile-luminaSimulationFeeder \
+            -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ github.event.release.tag_name }} .
+          docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ github.event.release.tag_name }}
+          ibmcloud logout
+
+      # Checkout the lumina-infra repository
+      - name: Checkout lumina-infra repository
+        env:
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
+        run: |
+          git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
+     
+      # Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      # IBM Cluster kubectl config
+      - name: IBM Cluster kubectl config 
+        env:
+          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
+          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
+          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
+          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
+          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
+          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
+        run: |
+          TOKEN=$(echo "$TOKEN" | tr -d '\n')
+          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
+          kubectl config set-cluster "$CLUSTER_NAME" \
+            --server="$API_SERVER" \
+            --certificate-authority=/tmp/ca.pem
+          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
+          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
+          kubectl config use-context $CONTEXT
+
+      # Helm upgrade/install 001 nodes (always deploy these for pre-releases)
+      - name: Helm upgrade/install 001 conduit nodes
+        run: |
+          echo "Deploying node 001"
+          cd lumina-infra/helmcharts/decentral-feeders/001
+          helm upgrade --install -n dia-lumina --set repository.tag="${{ github.event.release.tag_name }}" diaoracleservice-conduit-001 .
+          cd -
+
+      # Helm upgrade/install simulation feeder 001 (always deploy for pre-releases)
+      - name: Helm upgrade/install simulation feeder 001
+        run: |
+          echo "Deploying simulation feeder 001"
+          cd lumina-infra/helmcharts/decentral-feeders/001/simulation
+          helm upgrade --install -n dia-lumina --set repository.tag="${{ github.event.release.tag_name }}" lumina-simulation-feeder-001 .
+          cd -
+
+      # Cleanup the cloned repository
+      - name: Cleanup cloned repository and logout from IBM
+        run: |
+          rm -rf lumina-infra
+          ibmcloud logout 

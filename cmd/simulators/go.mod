@@ -5,7 +5,7 @@ go 1.23.4
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 require (
-	github.com/diadata-org/decentral-feeder v0.0.9
+	github.com/diadata-org/decentral-feeder v0.1.2-rc2
 	github.com/diadata-org/diadata v1.4.568
 	github.com/ethereum/go-ethereum v1.14.12
 	github.com/prometheus/client_golang v1.20.5

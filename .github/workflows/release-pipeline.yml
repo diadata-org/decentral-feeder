@@ -15,6 +15,8 @@ permissions:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    # Only run this workflow for full releases, not pre-releases
+    if: github.event.release.prerelease == false
     steps:
       # Checkout the repository
       - uses: actions/checkout@v4
@@ -43,7 +45,7 @@ jobs:
           curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
           ibmcloud plugin install container-registry -f
 
-      # Build and Push Docker images to IBM Cloud Container Registry
+      # Build and Push to IBM Cloud Container Registry
       - name: Build and Push to IBM Cloud Container Registry
         env:
           IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
@@ -64,6 +66,10 @@ jobs:
           docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ github.event.release.tag_name }}
           ibmcloud logout
 
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       # Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -71,14 +77,10 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Build and Push Docker images to Docker Hub
-      - name: Build and Push to Docker Hub
+      # Build and Push Docker AMD64 images to Docker Hub
+      - name: Build and Push AMD64 images to Docker Hub
         run: |
-          # Build and push to Docker Hub
+          # Build and push AMD64 images to Docker Hub
           docker build -f build/Dockerfile-luminaScraperFeeder \
             -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-amd64 .
           docker push diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-amd64
@@ -87,14 +89,19 @@ jobs:
             -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64 .
           docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64
 
-          # Build and push to Docker Hub for luminaScraperFeeder arm64 image using Buildx
+      # Build and Push Docker ARM64 images to Docker Hub
+      - name: Build and Push ARM64 images to Docker Hub
+        run: |
+          # Build and push ARM64 images to Docker Hub
           docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
             -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-arm64 --push .
 
-          # Build and push to Docker Hub for luminaSimulationFeeder arm64 image using Buildx
           docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaSimulationFeeder \
             -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-arm64 --push .
-          docker logout
+          
+      # Logout from Docker Hub
+      - name: Logout from Docker Hub
+        run: docker logout
 
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
@@ -139,13 +146,29 @@ jobs:
             cd -
           done
 
+      # Helm upgrade/install 001 nodes
+      - name: Helm upgrade/install 001 conduit nodes
+        run: |
+          echo "Deploying node 001"
+          cd lumina-infra/helmcharts/decentral-feeders/001
+          helm upgrade --install -n dia-lumina --set repository.tag="${{ github.event.release.tag_name }}" diaoracleservice-conduit-001 .
+          cd -
+
+      # Helm upgrade/install simulation feeder 001
+      - name: Helm upgrade/install simulation feeder 001
+        run: |
+          echo "Deploying simulation feeder 001"
+          cd lumina-infra/helmcharts/decentral-feeders/001/simulation
+          helm upgrade --install -n dia-lumina --set repository.tag="${{ github.event.release.tag_name }}" lumina-simulation-feeder-001 .
+          cd -
+
       # Helm upgrade/install simulation feeder 02 to IBM Cluster
       - name: Helm upgrade/install simulation feeder 02 to IBM Cluster
         run: |
           echo "Deploying simulation feeder 02"
           cd lumina-infra/helmcharts/decentral-feeders/002/simulation
           helm upgrade --install -n dia-lumina --set repository.tag="${{ github.event.release.tag_name }}" lumina-simulation-feeder-002 .
-          cd
+          cd -
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
@@ -235,6 +258,7 @@ jobs:
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
           
+      # Update Helm manifests for nodes 017-021 (repository.tag)
       - name: Update Helm manifests for nodes 017-021 (repository.tag)
         run: |
           # Navigate to the helm-deployments/apps directory in the cloned repository
