@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -24,6 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/shirou/gopsutil/cpu"
 	log "github.com/sirupsen/logrus"
@@ -249,6 +251,30 @@ func main() {
 			}
 
 			time.Sleep(30 * time.Second) // update metrics every 30 seconds
+		}
+	}()
+
+	// Get metrics port from environment variable
+	metricsPort := utils.Getenv("METRICS_PORT", "9090")
+
+	// Setup the /metrics endpoint for Prometheus scraping
+	go func() {
+		// Register metrics with the default registry for direct scraping
+		prometheus.DefaultRegisterer.MustRegister(m.uptime)
+		prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
+		prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
+		prometheus.DefaultRegisterer.MustRegister(m.contract)
+		prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
+		prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
+		prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
+
+		// Set up HTTP handler for /metrics endpoint
+		http.Handle("/metrics", promhttp.Handler())
+
+		// Start the HTTP server
+		log.Infof("Starting metrics server on :%s", metricsPort)
+		if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
+			log.Errorf("Failed to start metrics server: %v", err)
 		}
 	}()
 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -26,6 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/shirou/gopsutil/cpu"
 	log "github.com/sirupsen/logrus"
@@ -426,8 +428,8 @@ func main() {
 
 		// Feeder mechanics
 		privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-		blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
-		backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
+		blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org")
+		backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.diadata.org")
 		conn, err := ethclient.Dial(blockchainNode)
 		if err != nil {
 			log.Fatalf("Failed to connect to the Ethereum client: %v", err)
@@ -436,7 +438,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 		}
-		chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
+		chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1050"), 10, 64)
 		if err != nil {
 			log.Fatalf("Failed to parse chainId: %v", err)
 		}
@@ -480,5 +482,33 @@ func main() {
 
 		// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 		onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+	}
+
+	// Get metrics port from environment variable
+	metricsPort := utils.Getenv("METRICS_PORT", "9090")
+
+	// Setup the /metrics endpoint for Prometheus scraping
+	if metricsEnabled {
+		// Start HTTP server for metrics
+		go func() {
+			// Register metrics with the default registry as well for direct scraping
+			prometheus.DefaultRegisterer.MustRegister(m.uptime)
+			prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
+			prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
+			prometheus.DefaultRegisterer.MustRegister(m.contract)
+			prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
+			prometheus.DefaultRegisterer.MustRegister(m.pools)
+			prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
+			prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
+
+			// Set up HTTP handler for /metrics endpoint
+			http.Handle("/metrics", promhttp.Handler())
+
+			// Start the HTTP server
+			log.Infof("Starting metrics server on :%s", metricsPort)
+			if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
+				log.Errorf("Failed to start metrics server: %v", err)
+			}
+		}()
 	}
 }
