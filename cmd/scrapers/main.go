@@ -509,6 +509,16 @@ func main() {
 			if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
 				log.Errorf("Failed to start metrics server: %v", err)
 			}
+
+			// Log every 10 seconds while the server is running
+			ticker := time.NewTicker(10 * time.Second)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-ticker.C:
+					log.Infof("Metrics server is running on :%s", metricsPort)
+				}
+			}
 		}()
 	}
 }
