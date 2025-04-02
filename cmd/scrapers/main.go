@@ -142,6 +142,7 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.lastUpdateTime)
 	return m
 }
+
 func getAddressBalance(client *ethclient.Client, privateKey *ecdsa.PrivateKey) (float64, error) {
 
 	publicKey := privateKey.Public()
@@ -265,28 +266,39 @@ func main() {
 	// Get the node operator ID from the environment variable (optional)
 	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
 
-	// Create metrics object only if metrics are enabled
+	// Create metrics object regardless of where we'll expose them
 	var m *metrics
-	if metricsEnabled {
-		// Create the dynamic jobName using the node operator ID (if provided) and hostname
-		jobName := hostname
-		if nodeOperatorName != "" {
-			jobName = nodeOperatorName + "_" + hostname
-			log.Info("Using node operator name: ", nodeOperatorName)
-		} else {
-			log.Info("NODE_OPERATOR_NAME not set, using hostname only for metrics job name")
-		}
+	reg := prometheus.NewRegistry()
 
-		// Default URL if not empty but was manually set to empty string
+	// Create the job name for metrics (used for both modes)
+	jobName := hostname
+	if nodeOperatorName != "" {
+		jobName = nodeOperatorName + "_" + hostname
+		log.Info("Using node operator name: ", nodeOperatorName)
+	} else {
+		log.Info("NODE_OPERATOR_NAME not set, using hostname only for metrics job name")
+	}
+
+	// Set default pushgateway URL if enabled
+	if metricsEnabled {
 		if pushgatewayURL == "" {
 			pushgatewayURL = "https://pushgateway-auth.diadata.org"
 		}
-
 		log.Info("Metrics pushing enabled. Pushing to: ", pushgatewayURL)
-		reg := prometheus.NewRegistry()
-		m = NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
 	} else {
-		log.Info("Metrics pushing disabled. Set PUSHGATEWAY_URL, PUSHGATEWAY_USER, and PUSHGATEWAY_PASSWORD to enable metrics.")
+		log.Info("Metrics pushing to Pushgateway disabled")
+	}
+
+	// Create metrics object
+	m = NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
+
+	// Start HTTP server if enabled
+	if metricsServerEnabled {
+		metricsPort := utils.Getenv("METRICS_PORT", "9090")
+		go startMetricsServer(m, metricsPort)
+		log.Info("Metrics HTTP server enabled on port:", metricsPort)
+	} else {
+		log.Info("Metrics HTTP server disabled")
 	}
 
 	// Record start time for uptime calculation
@@ -328,10 +340,10 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
 
-	// Only setup metrics collection if metrics are enabled
-	if metricsEnabled {
+	// Only setup metrics collection if metrics are enabled and metrics object exists
+	if metricsEnabled && m != nil {
 		// Set the static contract label for Prometheus monitoring
-		m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
+		m.contract.WithLabelValues(deployedContract).Set(1)
 
 		exchangePairsList := strings.Split(exchangePairsEnv, ",")
 		for _, pair := range exchangePairsList {
@@ -487,48 +499,27 @@ func main() {
 		// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 		onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
 	}
+}
 
-	// Get metrics port from environment variable
-	metricsPort := utils.Getenv("METRICS_PORT", "9090")
+func startMetricsServer(m *metrics, port string) {
+	if m == nil {
+		log.Errorf("Cannot start metrics server: metrics object is nil")
+		return
+	}
 
-	// Setup the /metrics endpoint for Prometheus scraping
-	if metricsServerEnabled {
-		// Start HTTP server for metrics
-		go func() {
-			// Register metrics with the default registry
-			prometheus.DefaultRegisterer.MustRegister(m.uptime)
-			prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
-			prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
-			prometheus.DefaultRegisterer.MustRegister(m.contract)
-			prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
-			prometheus.DefaultRegisterer.MustRegister(m.pools)
-			prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
-			prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
+	// Register metrics with the default registry
+	prometheus.DefaultRegisterer.MustRegister(m.uptime)
+	prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.contract)
+	prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
+	prometheus.DefaultRegisterer.MustRegister(m.pools)
+	prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
+	prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
 
-			// Set up HTTP handler for /metrics endpoint
-			http.Handle("/metrics", promhttp.Handler())
-
-			// Start logging in a separate goroutine
-			go func() {
-				ticker := time.NewTicker(10 * time.Second)
-				defer ticker.Stop()
-
-				// Log once immediately
-				log.Printf("Metrics server is running on :%s", metricsPort)
-
-				for {
-					select {
-					case <-ticker.C:
-						log.Printf("Metrics server is running on :%s", metricsPort)
-					}
-				}
-			}()
-
-			// Start the HTTP server (this is blocking)
-			log.Printf("Starting metrics server on :%s", metricsPort)
-			if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
-				log.Printf("Failed to start metrics server: %v", err)
-			}
-		}()
+	log.Printf("Starting metrics server on :%s", port)
+	http.Handle("/metrics", promhttp.Handler())
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Printf("Failed to start metrics server: %v", err)
 	}
 }
