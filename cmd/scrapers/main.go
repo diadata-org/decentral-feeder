@@ -491,7 +491,7 @@ func main() {
 	if metricsEnabled {
 		// Start HTTP server for metrics
 		go func() {
-			// Register metrics with the default registry as well for direct scraping
+			// Register metrics with the default registry
 			prometheus.DefaultRegisterer.MustRegister(m.uptime)
 			prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
 			prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
@@ -504,20 +504,26 @@ func main() {
 			// Set up HTTP handler for /metrics endpoint
 			http.Handle("/metrics", promhttp.Handler())
 
-			// Start the HTTP server
+			// Start logging in a separate goroutine
+			go func() {
+				ticker := time.NewTicker(10 * time.Second)
+				defer ticker.Stop()
+
+				// Log once immediately
+				log.Printf("Metrics server is running on :%s", metricsPort)
+
+				for {
+					select {
+					case <-ticker.C:
+						log.Printf("Metrics server is running on :%s", metricsPort)
+					}
+				}
+			}()
+
+			// Start the HTTP server (this is blocking)
 			log.Printf("Starting metrics server on :%s", metricsPort)
 			if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
-				log.Errorf("Failed to start metrics server: %v", err)
-			}
-
-			// Log every 10 seconds while the server is running
-			ticker := time.NewTicker(10 * time.Second)
-			defer ticker.Stop()
-			for {
-				select {
-				case <-ticker.C:
-					log.Printf("Metrics server is running on :%s", metricsPort)
-				}
+				log.Printf("Failed to start metrics server: %v", err)
 			}
 		}()
 	}
