@@ -505,7 +505,7 @@ func main() {
 			http.Handle("/metrics", promhttp.Handler())
 
 			// Start the HTTP server
-			log.Infof("Starting metrics server on :%s", metricsPort)
+			log.Printf("Starting metrics server on :%s", metricsPort)
 			if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
 				log.Errorf("Failed to start metrics server: %v", err)
 			}
