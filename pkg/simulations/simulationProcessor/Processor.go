@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/diadata-org/decentral-feeder/pkg/filters"
 	"github.com/diadata-org/decentral-feeder/pkg/metafilters"
 	models "github.com/diadata-org/decentral-feeder/pkg/models"
 	simulationfilters "github.com/diadata-org/decentral-feeder/pkg/simulations/simulationFilters"
@@ -30,6 +31,8 @@ func Processor(
 	for tradesblocks := range tradesblockChannel {
 
 		var filterPoints []models.FilterPointPair
+		// Renew the price cache in each iteration. Could be refined by adjusting to the frequency of the source.
+		priceCacheMap := make(map[string]float64)
 
 		// --------------------------------------------------------------------------------------------
 		// 1. Compute an aggregated value for each pair using all collected trades.
@@ -37,15 +40,18 @@ func Processor(
 		for _, tb := range tradesblocks {
 
 			var atomicFilterValue float64
-			var err error
+			reducedTradesBlock := models.SimulatedTradesBlockToTradesBlock(tb)
+
+			basePrice, err := models.GetPriceBaseAsset(reducedTradesBlock, priceCacheMap)
+			if err != nil {
+				log.Errorf("Processor - GetPriceBaseAsset: %v", err)
+				continue
+			}
 
 			switch filterType {
 			case "LastPrice":
-				atomicFilterValue, _, err = simulationfilters.LastPrice(tb.Trades, true)
-				if err != nil {
-					log.Errorf("Processor - GetLastPrice: %v.", err)
-					continue
-				}
+				atomicFilterValue, _ = filters.LastPrice(reducedTradesBlock.Trades, basePrice)
+
 			case "Average":
 				atomicFilterValue, _, err = simulationfilters.Average(tb.Trades, true)
 				if err != nil {
