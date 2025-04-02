@@ -516,7 +516,7 @@ func main() {
 			for {
 				select {
 				case <-ticker.C:
-					log.Infof("Metrics server is running on :%s", metricsPort)
+					log.Printf("Metrics server is running on :%s", metricsPort)
 				}
 			}
 		}()
