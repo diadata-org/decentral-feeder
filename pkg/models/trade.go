@@ -96,3 +96,16 @@ func SimulatedTradeToTrade(st SimulatedTrade) Trade {
 		EstimatedUSDPrice: st.EstimatedUSDPrice,
 	}
 }
+
+func SimulatedTradesBlockToTradesBlock(stb SimulatedTradesBlock) (tb TradesBlock) {
+	tb.Pair = stb.Pair
+	for _, simulatedTrade := range stb.Trades {
+		trade := SimulatedTradeToTrade(simulatedTrade)
+		tb.Trades = append(tb.Trades, trade)
+	}
+	tb.StartTime = stb.StartTime
+	tb.EndTime = stb.EndTime
+	tb.Atomic = stb.Atomic
+	tb.ScraperID = stb.ScraperID
+	return
+}
