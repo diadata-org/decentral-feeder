@@ -258,6 +258,10 @@ func main() {
 	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
 	metricsEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
 
+	// Check if metrics server is enabled via environment variable
+	enableMetricsServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
+	metricsServerEnabled := strings.ToLower(enableMetricsServer) == "true"
+
 	// Get the node operator ID from the environment variable (optional)
 	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
 
@@ -488,7 +492,7 @@ func main() {
 	metricsPort := utils.Getenv("METRICS_PORT", "9090")
 
 	// Setup the /metrics endpoint for Prometheus scraping
-	if metricsEnabled {
+	if metricsServerEnabled {
 		// Start HTTP server for metrics
 		go func() {
 			// Register metrics with the default registry
