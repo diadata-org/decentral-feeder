@@ -151,27 +151,33 @@ func init() {
 }
 
 func main() {
-
 	//get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
 	if err != nil {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
-	// get pushgatewayURL variable from kubernetes env variables, if not, the default is https://pushgateway-auth.diadata.org
-	pushgatewayURL := utils.Getenv("PUSHGATEWAY_URL", "https://pushgateway-auth.diadata.org")
+
+	// Check if metrics pushing is enabled
+	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
 	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
+	metricsEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
 
+	// Check if metrics server is enabled via environment variable
+	enableMetricsServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
+	metricsServerEnabled := strings.ToLower(enableMetricsServer) == "true"
+
+	// Create metrics object
 	reg := prometheus.NewRegistry()
 	m := NewMetrics(reg, pushgatewayURL, "df_"+hostname, authUser, authPassword)
 
-	//Record start time for uptime calculation
+	// Record start time for uptime calculation
 	startTime := time.Now()
 
 	// Get deployed contract and set the metric
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
-	//Set the static contract label for Prometheus monitoring
-	m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
+	// Set the static contract label for Prometheus monitoring
+	m.contract.WithLabelValues(deployedContract).Set(1)
 
 	// Add this code to expose exchangePairs for monitoring
 	if len(exchangePairs) > 0 {
@@ -189,94 +195,81 @@ func main() {
 		log.Info("No exchange pairs to monitor; DEX_PAIRS environment variable is empty or improperly formatted")
 	}
 
+	// Start metrics server if enabled
+	if metricsServerEnabled {
+		metricsPort := utils.Getenv("METRICS_PORT", "9090")
+		go startMetricsServer(m, metricsPort)
+		log.Info("Metrics HTTP server enabled on port:", metricsPort)
+	} else {
+		log.Info("Metrics HTTP server disabled")
+	}
+
 	// Periodically update and push metrics to pushgateway
-	go func() {
-		for {
-			uptime := time.Since(startTime).Hours()
-			m.uptime.Set(uptime)
+	if metricsEnabled {
+		go func() {
+			for {
+				uptime := time.Since(startTime).Hours()
+				m.uptime.Set(uptime)
 
-			// Update memory usage
-			var memStats runtime.MemStats
-			runtime.ReadMemStats(&memStats)
-			memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
-			m.memoryUsage.Set(memoryUsageMB)
+				// Update memory usage
+				var memStats runtime.MemStats
+				runtime.ReadMemStats(&memStats)
+				memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
+				m.memoryUsage.Set(memoryUsageMB)
 
-			// Update CPU usage using gopsutil
-			percent, _ := cpu.Percent(0, false)
-			if len(percent) > 0 {
-				m.cpuUsage.Set(percent[0])
+				// Update CPU usage using gopsutil
+				percent, _ := cpu.Percent(0, false)
+				if len(percent) > 0 {
+					m.cpuUsage.Set(percent[0])
+				}
+
+				// Get the gas wallet balance
+				conn, err := ethclient.Dial(utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org"))
+				if err != nil {
+					log.Errorf("Failed to connect to the Ethereum client: %v", err)
+					continue
+				}
+				privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
+				privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
+				privateKey, err := crypto.HexToECDSA(privateKeyHex)
+				if err != nil {
+					log.Fatalf("Failed to load private key: %v", err)
+				}
+				gasBalance, err := getAddressBalance(conn, privateKey)
+				if err != nil {
+					log.Errorf("Failed to fetch address balance: %v", err)
+				}
+				m.gasBalance.Set(gasBalance)
+
+				// Get the latest event timestamp
+				lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+				if err != nil {
+					log.Errorf("Error fetching latest event timestamp: %v", err)
+				}
+				m.lastUpdateTime.Set(lastUpdateTime)
+
+				// Push metrics to the Pushgateway
+				pushCollector := push.New(m.pushGatewayURL, m.jobName).
+					Collector(m.uptime).
+					Collector(m.cpuUsage).
+					Collector(m.memoryUsage).
+					Collector(m.contract).
+					Collector(m.exchangePairs).
+					Collector(m.gasBalance).
+					Collector(m.lastUpdateTime)
+
+				if err := pushCollector.
+					BasicAuth(m.authUser, m.authPassword).
+					Push(); err != nil {
+					log.Errorf("Could not push metrics to Pushgateway: %v", err)
+				} else {
+					log.Printf("Metrics pushed successfully to Pushgateway")
+				}
+
+				time.Sleep(30 * time.Second) // update metrics every 30 seconds
 			}
-
-			// Get the gas wallet balance
-			conn, err := ethclient.Dial(utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org"))
-			if err != nil {
-				log.Errorf("Failed to connect to the Ethereum client: %v", err)
-				continue
-			}
-			privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-			privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
-			privateKey, err := crypto.HexToECDSA(privateKeyHex)
-			if err != nil {
-				log.Fatalf("Failed to load private key: %v", err)
-			}
-			gasBalance, err := getAddressBalance(conn, privateKey)
-			if err != nil {
-				log.Errorf("Failed to fetch address balance: %v", err)
-			}
-			m.gasBalance.Set(gasBalance)
-
-			// Get the latest event timestamp
-			lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
-			if err != nil {
-				log.Errorf("Error fetching latest event timestamp: %v", err)
-			}
-			m.lastUpdateTime.Set(lastUpdateTime)
-
-			// Push metrics to the Pushgateway
-			pushCollector := push.New(m.pushGatewayURL, m.jobName).
-				Collector(m.uptime).
-				Collector(m.cpuUsage).
-				Collector(m.memoryUsage).
-				Collector(m.contract).
-				Collector(m.exchangePairs).
-				Collector(m.gasBalance).
-				Collector(m.lastUpdateTime)
-
-			if err := pushCollector.
-				BasicAuth(m.authUser, m.authPassword).
-				Push(); err != nil {
-				log.Errorf("Could not push metrics to Pushgateway: %v", err)
-			} else {
-				log.Printf("Metrics pushed successfully to Pushgateway")
-			}
-
-			time.Sleep(30 * time.Second) // update metrics every 30 seconds
-		}
-	}()
-
-	// Get metrics port from environment variable
-	metricsPort := utils.Getenv("METRICS_PORT", "9090")
-
-	// Setup the /metrics endpoint for Prometheus scraping
-	go func() {
-		// Register metrics with the default registry for direct scraping
-		prometheus.DefaultRegisterer.MustRegister(m.uptime)
-		prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
-		prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
-		prometheus.DefaultRegisterer.MustRegister(m.contract)
-		prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
-		prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
-		prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
-
-		// Set up HTTP handler for /metrics endpoint
-		http.Handle("/metrics", promhttp.Handler())
-
-		// Start the HTTP server
-		log.Infof("Starting metrics server on :%s", metricsPort)
-		if err := http.ListenAndServe(":"+metricsPort, nil); err != nil {
-			log.Errorf("Failed to start metrics server: %v", err)
-		}
-	}()
+		}()
+	}
 
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.SimulatedTradesBlock)
@@ -398,4 +391,26 @@ func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (
 	}
 
 	return float64(blockHeader.Time), nil
+}
+
+func startMetricsServer(m *metrics, port string) {
+	if m == nil {
+		log.Errorf("Cannot start metrics server: metrics object is nil")
+		return
+	}
+
+	// Register metrics with the default registry
+	prometheus.DefaultRegisterer.MustRegister(m.uptime)
+	prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.contract)
+	prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
+	prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
+	prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
+
+	log.Printf("Starting metrics server on :%s", port)
+	http.Handle("/metrics", promhttp.Handler())
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Printf("Failed to start metrics server: %v", err)
+	}
 }
