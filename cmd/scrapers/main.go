@@ -253,15 +253,15 @@ func main() {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
 
-	// Check if metrics pushing is enabled
+	// Check if metrics pushing to Pushgateway is enabled
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
 	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
-	metricsEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
+	pushgatewayEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
 
-	// Check if metrics server is enabled via environment variable
-	enableMetricsServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
-	metricsServerEnabled := strings.ToLower(enableMetricsServer) == "true"
+	// Check if Prometheus HTTP server is enabled
+	enablePrometheusServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
+	prometheusServerEnabled := strings.ToLower(enablePrometheusServer) == "true"
 
 	// Get the node operator ID from the environment variable (optional)
 	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
@@ -280,7 +280,7 @@ func main() {
 	}
 
 	// Set default pushgateway URL if enabled
-	if metricsEnabled {
+	if pushgatewayEnabled {
 		if pushgatewayURL == "" {
 			pushgatewayURL = "https://pushgateway-auth.diadata.org"
 		}
@@ -292,13 +292,13 @@ func main() {
 	// Create metrics object
 	m = NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
 
-	// Start HTTP server if enabled
-	if metricsServerEnabled {
+	// Start Prometheus HTTP server if enabled
+	if prometheusServerEnabled {
 		metricsPort := utils.Getenv("METRICS_PORT", "9090")
-		go startMetricsServer(m, metricsPort)
-		log.Info("Metrics HTTP server enabled on port:", metricsPort)
+		go startPrometheusServer(m, metricsPort)
+		log.Info("Prometheus HTTP server enabled on port:", metricsPort)
 	} else {
-		log.Info("Metrics HTTP server disabled")
+		log.Info("Prometheus HTTP server disabled")
 	}
 
 	// Record start time for uptime calculation
@@ -341,7 +341,7 @@ func main() {
 	}
 
 	// Only setup metrics collection if metrics are enabled and metrics object exists
-	if metricsEnabled && m != nil {
+	if pushgatewayEnabled && m != nil {
 		// Set the static contract label for Prometheus monitoring
 		m.contract.WithLabelValues(deployedContract).Set(1)
 
@@ -361,76 +361,103 @@ func main() {
 			log.Info("No pools to push metrics for; POOLS environment variable is empty.")
 		}
 
-		// Periodically update and push metrics to pushgateway
-		go func() {
-			const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
-			cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
+		// Push metrics to Pushgateway if enabled
+		go pushMetricsToPushgateway(m, startTime)
+	}
+}
 
-			for {
-				uptime := time.Since(startTime).Hours()
-				m.uptime.Set(uptime)
+func startPrometheusServer(m *metrics, port string) {
+	if m == nil {
+		log.Errorf("Cannot start metrics server: metrics object is nil")
+		return
+	}
 
-				// Update memory usage
-				var memStats runtime.MemStats
-				runtime.ReadMemStats(&memStats)
-				memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
-				m.memoryUsage.Set(memoryUsageMB)
+	// Register metrics with the default registry
+	prometheus.DefaultRegisterer.MustRegister(m.uptime)
+	prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.contract)
+	prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
+	prometheus.DefaultRegisterer.MustRegister(m.pools)
+	prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
+	prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
 
-				// Update CPU usage using gopsutil with smoothing
-				percent, err := cpu.Percent(0, false)
-				if err != nil {
-					log.Errorf("Error gathering CPU usage: %v", err)
-				} else if len(percent) > 0 {
-					// Add the new sample to the buffer
-					if len(cpuSamples) == sampleWindowSize {
-						cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
-					}
-					cpuSamples = append(cpuSamples, percent[0])
+	log.Printf("Starting metrics server on :%s", port)
+	http.Handle("/metrics", promhttp.Handler())
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Printf("Failed to start metrics server: %v", err)
+	}
+}
 
-					// Calculate the rolling average
-					var sum float64
-					for _, v := range cpuSamples {
-						sum += v
-					}
-					avgCPUUsage := sum / float64(len(cpuSamples))
-					m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
-				}
+func pushMetricsToPushgateway(m *metrics, startTime time.Time) {
+	const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
+	cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
 
-				// Get the gas wallet balance
-				gasBalance, err := getAddressBalance(conn, privateKey)
-				if err != nil {
-					log.Errorf("Failed to fetch address balance: %v", err)
-				}
-				m.gasBalance.Set(gasBalance)
+	for {
+		uptime := time.Since(startTime).Hours()
+		m.uptime.Set(uptime)
 
-				// Get the latest event timestamp
-				lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
-				if err != nil {
-					log.Errorf("Error fetching latest event timestamp: %v", err)
-				}
-				m.lastUpdateTime.Set(lastUpdateTime)
+		// Update memory usage
+		var memStats runtime.MemStats
+		runtime.ReadMemStats(&memStats)
+		memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
+		m.memoryUsage.Set(memoryUsageMB)
 
-				// Push metrics to the Pushgateway
-				pushCollector := push.New(m.pushGatewayURL, m.jobName).
-					Collector(m.uptime).
-					Collector(m.cpuUsage).
-					Collector(m.memoryUsage).
-					Collector(m.contract).
-					Collector(m.exchangePairs).
-					Collector(m.gasBalance).
-					Collector(m.lastUpdateTime)
+		// Update CPU usage using gopsutil with smoothing
+		percent, err := cpu.Percent(0, false)
+		if err != nil {
+			log.Errorf("Error gathering CPU usage: %v", err)
+		} else if len(percent) > 0 {
+			// Add the new sample to the buffer
+			if len(cpuSamples) == sampleWindowSize {
+				cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
+			}
+			cpuSamples = append(cpuSamples, percent[0])
 
-				if len(pools) > 0 {
-					pushCollector = pushCollector.Collector(m.pools)
-				}
+			// Calculate the rolling average
+			var sum float64
+			for _, v := range cpuSamples {
+				sum += v
+			}
+			avgCPUUsage := sum / float64(len(cpuSamples))
+			m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
+		}
 
-				if err := pushCollector.
-					BasicAuth(m.authUser, m.authPassword).
-					Push(); err != nil {
-					log.Errorf("Could not push metrics to Pushgateway: %v", err)
-				} else {
-					log.Printf("Metrics pushed successfully to Pushgateway")
-				}
+		// Get the gas wallet balance
+		gasBalance, err := getAddressBalance(conn, privateKey)
+		if err != nil {
+			log.Errorf("Failed to fetch address balance: %v", err)
+		}
+		m.gasBalance.Set(gasBalance)
+
+		// Get the latest event timestamp
+		lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+		if err != nil {
+			log.Errorf("Error fetching latest event timestamp: %v", err)
+		}
+		m.lastUpdateTime.Set(lastUpdateTime)
+
+		// Push metrics to the Pushgateway
+		pushCollector := push.New(m.pushGatewayURL, m.jobName).
+			Collector(m.uptime).
+			Collector(m.cpuUsage).
+			Collector(m.memoryUsage).
+			Collector(m.contract).
+			Collector(m.exchangePairs).
+			Collector(m.gasBalance).
+			Collector(m.lastUpdateTime)
+
+		if len(pools) > 0 {
+			pushCollector = pushCollector.Collector(m.pools)
+		}
+
+		if err := pushCollector.
+			BasicAuth(m.authUser, m.authPassword).
+			Push(); err != nil {
+			log.Errorf("Could not push metrics to Pushgateway: %v", err)
+		} else {
+			log.Printf("Metrics pushed successfully to Pushgateway")
+		}
 
 				time.Sleep(30 * time.Second) // update metrics every 30 seconds
 			}
@@ -501,25 +528,4 @@ func main() {
 	}
 }
 
-func startMetricsServer(m *metrics, port string) {
-	if m == nil {
-		log.Errorf("Cannot start metrics server: metrics object is nil")
-		return
-	}
 
-	// Register metrics with the default registry
-	prometheus.DefaultRegisterer.MustRegister(m.uptime)
-	prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
-	prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
-	prometheus.DefaultRegisterer.MustRegister(m.contract)
-	prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
-	prometheus.DefaultRegisterer.MustRegister(m.pools)
-	prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
-	prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
-
-	log.Printf("Starting metrics server on :%s", port)
-	http.Handle("/metrics", promhttp.Handler())
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Printf("Failed to start metrics server: %v", err)
-	}
-}
