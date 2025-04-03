@@ -340,6 +340,33 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
 
+	// Create channels and set up blockchain connections
+	wg := sync.WaitGroup{}
+	tradesblockChannel := make(chan map[string]models.TradesBlock)
+	filtersChannel := make(chan []models.FilterPointPair)
+	triggerChannel := make(chan time.Time)
+	failoverChannel := make(chan string)
+
+	// Frequency for the trigger ticker initiating the computation of filter values.
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
+	if err != nil {
+		log.Fatalf("Failed to parse frequencySeconds: %v", err)
+	}
+
+	// Use a ticker for triggering the processing.
+	// This is for testing purposes for now. Could also be request based or other trigger types.
+	triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
+	go func() {
+		for tick := range triggerTick.C {
+			// log.Info("Trigger - tick at: ", tick)
+			triggerChannel <- tick
+		}
+	}()
+
+	// Run processor
+	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+
+	// Move metrics setup here, right before the blocking call
 	// Only setup metrics collection if metrics are enabled and metrics object exists
 	if pushgatewayEnabled && m != nil {
 		// Set the static contract label for Prometheus monitoring
@@ -362,8 +389,11 @@ func main() {
 		}
 
 		// Push metrics to Pushgateway if enabled
-		go pushMetricsToPushgateway(m, startTime)
+		go pushMetricsToPushgateway(m, startTime, conn, privateKey, deployedContract)
 	}
+
+	// This should be the final line of main (blocking call)
+	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
 }
 
 func startPrometheusServer(m *metrics, port string) {
@@ -389,7 +419,7 @@ func startPrometheusServer(m *metrics, port string) {
 	}
 }
 
-func pushMetricsToPushgateway(m *metrics, startTime time.Time) {
+func pushMetricsToPushgateway(m *metrics, startTime time.Time, conn *ethclient.Client, privateKey *ecdsa.PrivateKey, deployedContract string) {
 	const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
 	cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
 
@@ -459,75 +489,6 @@ func pushMetricsToPushgateway(m *metrics, startTime time.Time) {
 			log.Printf("Metrics pushed successfully to Pushgateway")
 		}
 
-				time.Sleep(30 * time.Second) // update metrics every 30 seconds
-			}
-		}()
-
-		wg := sync.WaitGroup{}
-		tradesblockChannel := make(chan map[string]models.TradesBlock)
-		filtersChannel := make(chan []models.FilterPointPair)
-		triggerChannel := make(chan time.Time)
-		failoverChannel := make(chan string)
-
-		// Feeder mechanics
-		privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-		blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org")
-		backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.diadata.org")
-		conn, err := ethclient.Dial(blockchainNode)
-		if err != nil {
-			log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-		}
-		connBackup, err := ethclient.Dial(backupNode)
-		if err != nil {
-			log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
-		}
-		chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1050"), 10, 64)
-		if err != nil {
-			log.Fatalf("Failed to parse chainId: %v", err)
-		}
-
-		// Frequency for the trigger ticker initiating the computation of filter values.
-		frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
-		if err != nil {
-			log.Fatalf("Failed to parse frequencySeconds: %v", err)
-		}
-
-		privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
-
-		privateKey, err := crypto.HexToECDSA(privateKeyHex)
-		if err != nil {
-			log.Fatalf("Failed to load private key: %v", err)
-		}
-
-		auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
-		if err != nil {
-			log.Fatalf("Failed to create authorized transactor: %v", err)
-		}
-
-		var contract, contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-		err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
-		if err != nil {
-			log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
-		}
-
-		// Use a ticker for triggering the processing.
-		// This is for testing purposes for now. Could also be request based or other trigger types.
-		triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
-		go func() {
-			for tick := range triggerTick.C {
-				// log.Info("Trigger - tick at: ", tick)
-				triggerChannel <- tick
-			}
-		}()
-
-		// Run Processor and subsequent routines.
-		go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
-
-		// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
-		onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+		time.Sleep(30 * time.Second) // update metrics every 30 seconds
 	}
 }
-
-
-
-
