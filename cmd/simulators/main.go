@@ -157,15 +157,15 @@ func main() {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
 
-	// Check if metrics pushing is enabled
+	// Change variable names for consistency
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
 	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
-	metricsEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
+	pushgatewayEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
 
-	// Check if metrics server is enabled via environment variable
-	enableMetricsServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
-	metricsServerEnabled := strings.ToLower(enableMetricsServer) == "true"
+	// Check if Prometheus HTTP server is enabled
+	enablePrometheusServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
+	prometheusServerEnabled := strings.ToLower(enablePrometheusServer) == "true"
 
 	// Create metrics object
 	reg := prometheus.NewRegistry()
@@ -195,80 +195,13 @@ func main() {
 		log.Info("No exchange pairs to monitor; DEX_PAIRS environment variable is empty or improperly formatted")
 	}
 
-	// Start metrics server if enabled
-	if metricsServerEnabled {
+	// Start Prometheus HTTP server if enabled
+	if prometheusServerEnabled {
 		metricsPort := utils.Getenv("METRICS_PORT", "9090")
-		go startMetricsServer(m, metricsPort)
-		log.Info("Metrics HTTP server enabled on port:", metricsPort)
+		go startPrometheusServer(m, metricsPort)
+		log.Info("Prometheus HTTP server enabled on port:", metricsPort)
 	} else {
-		log.Info("Metrics HTTP server disabled")
-	}
-
-	// Periodically update and push metrics to pushgateway
-	if metricsEnabled {
-		go func() {
-			for {
-				uptime := time.Since(startTime).Hours()
-				m.uptime.Set(uptime)
-
-				// Update memory usage
-				var memStats runtime.MemStats
-				runtime.ReadMemStats(&memStats)
-				memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
-				m.memoryUsage.Set(memoryUsageMB)
-
-				// Update CPU usage using gopsutil
-				percent, _ := cpu.Percent(0, false)
-				if len(percent) > 0 {
-					m.cpuUsage.Set(percent[0])
-				}
-
-				// Get the gas wallet balance
-				conn, err := ethclient.Dial(utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org"))
-				if err != nil {
-					log.Errorf("Failed to connect to the Ethereum client: %v", err)
-					continue
-				}
-				privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-				privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
-				privateKey, err := crypto.HexToECDSA(privateKeyHex)
-				if err != nil {
-					log.Fatalf("Failed to load private key: %v", err)
-				}
-				gasBalance, err := getAddressBalance(conn, privateKey)
-				if err != nil {
-					log.Errorf("Failed to fetch address balance: %v", err)
-				}
-				m.gasBalance.Set(gasBalance)
-
-				// Get the latest event timestamp
-				lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
-				if err != nil {
-					log.Errorf("Error fetching latest event timestamp: %v", err)
-				}
-				m.lastUpdateTime.Set(lastUpdateTime)
-
-				// Push metrics to the Pushgateway
-				pushCollector := push.New(m.pushGatewayURL, m.jobName).
-					Collector(m.uptime).
-					Collector(m.cpuUsage).
-					Collector(m.memoryUsage).
-					Collector(m.contract).
-					Collector(m.exchangePairs).
-					Collector(m.gasBalance).
-					Collector(m.lastUpdateTime)
-
-				if err := pushCollector.
-					BasicAuth(m.authUser, m.authPassword).
-					Push(); err != nil {
-					log.Errorf("Could not push metrics to Pushgateway: %v", err)
-				} else {
-					log.Printf("Metrics pushed successfully to Pushgateway")
-				}
-
-				time.Sleep(30 * time.Second) // update metrics every 30 seconds
-			}
-		}()
+		log.Info("Prometheus HTTP server disabled")
 	}
 
 	wg := sync.WaitGroup{}
@@ -330,8 +263,14 @@ func main() {
 	// Run Processor and subsequent routines.
 	go simulationprocessor.Processor(exchangePairs, tradesblockChannel, filtersChannel, triggerChannel, &wg)
 
+	// Periodically update and push metrics to pushgateway
+	if pushgatewayEnabled {
+		go pushMetricsToPushgateway(m, startTime, conn, privateKey, deployedContract)
+	}
+
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
 	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+
 }
 
 func getAddressBalance(client *ethclient.Client, privateKey *ecdsa.PrivateKey) (float64, error) {
@@ -393,7 +332,7 @@ func getLatestEventTimestamp(client *ethclient.Client, contractAddress string) (
 	return float64(blockHeader.Time), nil
 }
 
-func startMetricsServer(m *metrics, port string) {
+func startPrometheusServer(m *metrics, port string) {
 	if m == nil {
 		log.Errorf("Cannot start metrics server: metrics object is nil")
 		return
@@ -412,5 +351,75 @@ func startMetricsServer(m *metrics, port string) {
 	http.Handle("/metrics", promhttp.Handler())
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Printf("Failed to start metrics server: %v", err)
+	}
+}
+
+func pushMetricsToPushgateway(m *metrics, startTime time.Time, conn *ethclient.Client, privateKey *ecdsa.PrivateKey, deployedContract string) {
+	const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
+	cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
+
+	for {
+		uptime := time.Since(startTime).Hours()
+		m.uptime.Set(uptime)
+
+		// Update memory usage
+		var memStats runtime.MemStats
+		runtime.ReadMemStats(&memStats)
+		memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
+		m.memoryUsage.Set(memoryUsageMB)
+
+		// Update CPU usage using gopsutil with smoothing
+		percent, err := cpu.Percent(0, false)
+		if err != nil {
+			log.Errorf("Error gathering CPU usage: %v", err)
+		} else if len(percent) > 0 {
+			// Add the new sample to the buffer
+			if len(cpuSamples) == sampleWindowSize {
+				cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
+			}
+			cpuSamples = append(cpuSamples, percent[0])
+
+			// Calculate the rolling average
+			var sum float64
+			for _, v := range cpuSamples {
+				sum += v
+			}
+			avgCPUUsage := sum / float64(len(cpuSamples))
+			m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
+		}
+
+		// Get the gas wallet balance
+		gasBalance, err := getAddressBalance(conn, privateKey)
+		if err != nil {
+			log.Errorf("Failed to fetch address balance: %v", err)
+		}
+		m.gasBalance.Set(gasBalance)
+
+		// Get the latest event timestamp
+		lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+		if err != nil {
+			log.Errorf("Error fetching latest event timestamp: %v", err)
+		}
+		m.lastUpdateTime.Set(lastUpdateTime)
+
+		// Push metrics to the Pushgateway
+		pushCollector := push.New(m.pushGatewayURL, m.jobName).
+			Collector(m.uptime).
+			Collector(m.cpuUsage).
+			Collector(m.memoryUsage).
+			Collector(m.contract).
+			Collector(m.exchangePairs).
+			Collector(m.gasBalance).
+			Collector(m.lastUpdateTime)
+
+		if err := pushCollector.
+			BasicAuth(m.authUser, m.authPassword).
+			Push(); err != nil {
+			log.Errorf("Could not push metrics to Pushgateway: %v", err)
+		} else {
+			log.Printf("Metrics pushed successfully to Pushgateway")
+		}
+
+		time.Sleep(30 * time.Second) // update metrics every 30 seconds
 	}
 }
