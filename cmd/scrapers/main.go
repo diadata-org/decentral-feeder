@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -26,6 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/shirou/gopsutil/cpu"
 	log "github.com/sirupsen/logrus"
@@ -140,6 +142,7 @@ func NewMetrics(reg prometheus.Registerer, pushGatewayURL, jobName, authUser, au
 	reg.MustRegister(m.lastUpdateTime)
 	return m
 }
+
 func getAddressBalance(client *ethclient.Client, privateKey *ecdsa.PrivateKey) (float64, error) {
 
 	publicKey := privateKey.Public()
@@ -250,37 +253,52 @@ func main() {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
 
-	// Check if metrics pushing is enabled
+	// Check if metrics pushing to Pushgateway is enabled
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
 	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
-	metricsEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
+	pushgatewayEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
+
+	// Check if Prometheus HTTP server is enabled
+	enablePrometheusServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
+	prometheusServerEnabled := strings.ToLower(enablePrometheusServer) == "true"
 
 	// Get the node operator ID from the environment variable (optional)
 	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
 
-	// Create metrics object only if metrics are enabled
+	// Create metrics object regardless of where we'll expose them
 	var m *metrics
-	if metricsEnabled {
-		// Create the dynamic jobName using the node operator ID (if provided) and hostname
-		jobName := hostname
-		if nodeOperatorName != "" {
-			jobName = nodeOperatorName + "_" + hostname
-			log.Info("Using node operator name: ", nodeOperatorName)
-		} else {
-			log.Info("NODE_OPERATOR_NAME not set, using hostname only for metrics job name")
-		}
+	reg := prometheus.NewRegistry()
 
-		// Default URL if not empty but was manually set to empty string
+	// Create the job name for metrics (used for both modes)
+	jobName := hostname
+	if nodeOperatorName != "" {
+		jobName = nodeOperatorName + "_" + hostname
+		log.Info("Using node operator name: ", nodeOperatorName)
+	} else {
+		log.Info("NODE_OPERATOR_NAME not set, using hostname only for metrics job name")
+	}
+
+	// Set default pushgateway URL if enabled
+	if pushgatewayEnabled {
 		if pushgatewayURL == "" {
 			pushgatewayURL = "https://pushgateway-auth.diadata.org"
 		}
-
 		log.Info("Metrics pushing enabled. Pushing to: ", pushgatewayURL)
-		reg := prometheus.NewRegistry()
-		m = NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
 	} else {
-		log.Info("Metrics pushing disabled. Set PUSHGATEWAY_URL, PUSHGATEWAY_USER, and PUSHGATEWAY_PASSWORD to enable metrics.")
+		log.Info("Metrics pushing to Pushgateway disabled")
+	}
+
+	// Create metrics object
+	m = NewMetrics(reg, pushgatewayURL, jobName, authUser, authPassword)
+
+	// Start Prometheus HTTP server if enabled
+	if prometheusServerEnabled {
+		metricsPort := utils.Getenv("METRICS_PORT", "9090")
+		go startPrometheusServer(m, metricsPort)
+		log.Info("Prometheus HTTP server enabled on port:", metricsPort)
+	} else {
+		log.Info("Prometheus HTTP server disabled")
 	}
 
 	// Record start time for uptime calculation
@@ -322,10 +340,37 @@ func main() {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
 
-	// Only setup metrics collection if metrics are enabled
-	if metricsEnabled {
+	// Create channels and set up blockchain connections
+	wg := sync.WaitGroup{}
+	tradesblockChannel := make(chan map[string]models.TradesBlock)
+	filtersChannel := make(chan []models.FilterPointPair)
+	triggerChannel := make(chan time.Time)
+	failoverChannel := make(chan string)
+
+	// Frequency for the trigger ticker initiating the computation of filter values.
+	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
+	if err != nil {
+		log.Fatalf("Failed to parse frequencySeconds: %v", err)
+	}
+
+	// Use a ticker for triggering the processing.
+	// This is for testing purposes for now. Could also be request based or other trigger types.
+	triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
+	go func() {
+		for tick := range triggerTick.C {
+			// log.Info("Trigger - tick at: ", tick)
+			triggerChannel <- tick
+		}
+	}()
+
+	// Run processor
+	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+
+	// Move metrics setup here, right before the blocking call
+	// Only setup metrics collection if metrics are enabled and metrics object exists
+	if pushgatewayEnabled && m != nil {
 		// Set the static contract label for Prometheus monitoring
-		m.contract.WithLabelValues(deployedContract).Set(1) // The value is arbitrary; the label holds the address
+		m.contract.WithLabelValues(deployedContract).Set(1)
 
 		exchangePairsList := strings.Split(exchangePairsEnv, ",")
 		for _, pair := range exchangePairsList {
@@ -343,142 +388,107 @@ func main() {
 			log.Info("No pools to push metrics for; POOLS environment variable is empty.")
 		}
 
-		// Periodically update and push metrics to pushgateway
-		go func() {
-			const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
-			cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
+		// Push metrics to Pushgateway if enabled
+		go pushMetricsToPushgateway(m, startTime, conn, privateKey, deployedContract)
+	}
 
-			for {
-				uptime := time.Since(startTime).Hours()
-				m.uptime.Set(uptime)
+	// This should be the final line of main (blocking call)
+	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+}
 
-				// Update memory usage
-				var memStats runtime.MemStats
-				runtime.ReadMemStats(&memStats)
-				memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
-				m.memoryUsage.Set(memoryUsageMB)
+func startPrometheusServer(m *metrics, port string) {
+	if m == nil {
+		log.Errorf("Cannot start metrics server: metrics object is nil")
+		return
+	}
 
-				// Update CPU usage using gopsutil with smoothing
-				percent, err := cpu.Percent(0, false)
-				if err != nil {
-					log.Errorf("Error gathering CPU usage: %v", err)
-				} else if len(percent) > 0 {
-					// Add the new sample to the buffer
-					if len(cpuSamples) == sampleWindowSize {
-						cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
-					}
-					cpuSamples = append(cpuSamples, percent[0])
+	// Register metrics with the default registry
+	prometheus.DefaultRegisterer.MustRegister(m.uptime)
+	prometheus.DefaultRegisterer.MustRegister(m.cpuUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.memoryUsage)
+	prometheus.DefaultRegisterer.MustRegister(m.contract)
+	prometheus.DefaultRegisterer.MustRegister(m.exchangePairs)
+	prometheus.DefaultRegisterer.MustRegister(m.pools)
+	prometheus.DefaultRegisterer.MustRegister(m.gasBalance)
+	prometheus.DefaultRegisterer.MustRegister(m.lastUpdateTime)
 
-					// Calculate the rolling average
-					var sum float64
-					for _, v := range cpuSamples {
-						sum += v
-					}
-					avgCPUUsage := sum / float64(len(cpuSamples))
-					m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
-				}
+	log.Printf("Starting metrics server on :%s", port)
+	http.Handle("/metrics", promhttp.Handler())
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Printf("Failed to start metrics server: %v", err)
+	}
+}
 
-				// Get the gas wallet balance
-				gasBalance, err := getAddressBalance(conn, privateKey)
-				if err != nil {
-					log.Errorf("Failed to fetch address balance: %v", err)
-				}
-				m.gasBalance.Set(gasBalance)
+func pushMetricsToPushgateway(m *metrics, startTime time.Time, conn *ethclient.Client, privateKey *ecdsa.PrivateKey, deployedContract string) {
+	const sampleWindowSize = 5                         // Number of samples to calculate the rolling average
+	cpuSamples := make([]float64, 0, sampleWindowSize) // Circular buffer for CPU usage samples
 
-				// Get the latest event timestamp
-				lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
-				if err != nil {
-					log.Errorf("Error fetching latest event timestamp: %v", err)
-				}
-				m.lastUpdateTime.Set(lastUpdateTime)
+	for {
+		uptime := time.Since(startTime).Hours()
+		m.uptime.Set(uptime)
 
-				// Push metrics to the Pushgateway
-				pushCollector := push.New(m.pushGatewayURL, m.jobName).
-					Collector(m.uptime).
-					Collector(m.cpuUsage).
-					Collector(m.memoryUsage).
-					Collector(m.contract).
-					Collector(m.exchangePairs).
-					Collector(m.gasBalance).
-					Collector(m.lastUpdateTime)
+		// Update memory usage
+		var memStats runtime.MemStats
+		runtime.ReadMemStats(&memStats)
+		memoryUsageMB := float64(memStats.Alloc) / 1024 / 1024 // Convert bytes to megabytes
+		m.memoryUsage.Set(memoryUsageMB)
 
-				if len(pools) > 0 {
-					pushCollector = pushCollector.Collector(m.pools)
-				}
-
-				if err := pushCollector.
-					BasicAuth(m.authUser, m.authPassword).
-					Push(); err != nil {
-					log.Errorf("Could not push metrics to Pushgateway: %v", err)
-				} else {
-					log.Printf("Metrics pushed successfully to Pushgateway")
-				}
-
-				time.Sleep(30 * time.Second) // update metrics every 30 seconds
+		// Update CPU usage using gopsutil with smoothing
+		percent, err := cpu.Percent(0, false)
+		if err != nil {
+			log.Errorf("Error gathering CPU usage: %v", err)
+		} else if len(percent) > 0 {
+			// Add the new sample to the buffer
+			if len(cpuSamples) == sampleWindowSize {
+				cpuSamples = cpuSamples[1:] // Remove the oldest sample if buffer is full
 			}
-		}()
+			cpuSamples = append(cpuSamples, percent[0])
 
-		wg := sync.WaitGroup{}
-		tradesblockChannel := make(chan map[string]models.TradesBlock)
-		filtersChannel := make(chan []models.FilterPointPair)
-		triggerChannel := make(chan time.Time)
-		failoverChannel := make(chan string)
-
-		// Feeder mechanics
-		privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-		blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://testnet-rpc.diadata.org")
-		backupNode := utils.Getenv("BACKUP_NODE", "https://testnet-rpc.diadata.org")
-		conn, err := ethclient.Dial(blockchainNode)
-		if err != nil {
-			log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-		}
-		connBackup, err := ethclient.Dial(backupNode)
-		if err != nil {
-			log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
-		}
-		chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
-		if err != nil {
-			log.Fatalf("Failed to parse chainId: %v", err)
-		}
-
-		// Frequency for the trigger ticker initiating the computation of filter values.
-		frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
-		if err != nil {
-			log.Fatalf("Failed to parse frequencySeconds: %v", err)
-		}
-
-		privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
-
-		privateKey, err := crypto.HexToECDSA(privateKeyHex)
-		if err != nil {
-			log.Fatalf("Failed to load private key: %v", err)
-		}
-
-		auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
-		if err != nil {
-			log.Fatalf("Failed to create authorized transactor: %v", err)
-		}
-
-		var contract, contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-		err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
-		if err != nil {
-			log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
-		}
-
-		// Use a ticker for triggering the processing.
-		// This is for testing purposes for now. Could also be request based or other trigger types.
-		triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
-		go func() {
-			for tick := range triggerTick.C {
-				// log.Info("Trigger - tick at: ", tick)
-				triggerChannel <- tick
+			// Calculate the rolling average
+			var sum float64
+			for _, v := range cpuSamples {
+				sum += v
 			}
-		}()
+			avgCPUUsage := sum / float64(len(cpuSamples))
+			m.cpuUsage.Set(avgCPUUsage) // Update the metric with the smoothed value
+		}
 
-		// Run Processor and subsequent routines.
-		go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+		// Get the gas wallet balance
+		gasBalance, err := getAddressBalance(conn, privateKey)
+		if err != nil {
+			log.Errorf("Failed to fetch address balance: %v", err)
+		}
+		m.gasBalance.Set(gasBalance)
 
-		// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
-		onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+		// Get the latest event timestamp
+		lastUpdateTime, err := getLatestEventTimestamp(conn, deployedContract)
+		if err != nil {
+			log.Errorf("Error fetching latest event timestamp: %v", err)
+		}
+		m.lastUpdateTime.Set(lastUpdateTime)
+
+		// Push metrics to the Pushgateway
+		pushCollector := push.New(m.pushGatewayURL, m.jobName).
+			Collector(m.uptime).
+			Collector(m.cpuUsage).
+			Collector(m.memoryUsage).
+			Collector(m.contract).
+			Collector(m.exchangePairs).
+			Collector(m.gasBalance).
+			Collector(m.lastUpdateTime)
+
+		if len(pools) > 0 {
+			pushCollector = pushCollector.Collector(m.pools)
+		}
+
+		if err := pushCollector.
+			BasicAuth(m.authUser, m.authPassword).
+			Push(); err != nil {
+			log.Errorf("Could not push metrics to Pushgateway: %v", err)
+		} else {
+			log.Printf("Metrics pushed successfully to Pushgateway")
+		}
+
+		time.Sleep(30 * time.Second) // update metrics every 30 seconds
 	}
 }
