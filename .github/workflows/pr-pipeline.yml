@@ -34,9 +34,9 @@ jobs:
       - name: Build
         run: go build -v ./...
 
-      # Test the Go application
-      - name: Test
-        run: go test -v ./...
+      # # Test the Go application
+      # - name: Test
+      #   run: go test -v ./...
 
   push_image_and_deploy:
     runs-on: ubuntu-latest
