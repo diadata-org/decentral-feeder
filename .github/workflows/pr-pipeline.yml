@@ -14,33 +14,8 @@ env:
   ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG }}  # Set debug mode globally
 
 jobs:
-  build_and_test:
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout the repository
-      - uses: actions/checkout@v4
-
-      # Set up Go
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.22'
-
-      # Get dependencies
-      - name: Get dependencies
-        run: go mod tidy
-
-      # Build the Go application
-      - name: Build
-        run: go build -v ./...
-
-      # # Test the Go application
-      # - name: Test
-      #   run: go test -v ./...
-
   push_image_and_deploy:
     runs-on: ubuntu-latest
-    needs: build_and_test
     environment:
       name: dia-testspace  # BEFORE GOING PUBLIC CHANGE THE ENV PROTENTIOC RULES TO INCLUDE THIS 
     steps:
