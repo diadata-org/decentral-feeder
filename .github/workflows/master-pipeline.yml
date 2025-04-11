@@ -88,12 +88,20 @@ jobs:
       # IBM Mainnet Scrapers
       - name: Helm upgrade/install scraper mainnet feeders to IBM Cluster
         run: |
-          for i in 002 004; do
+          for i in 002 003; do
             echo "Deploying scraper mainnet node $i"
             cd lumina-infra/helmcharts/decentral-feeders/${i}-scraper-mainnet-ibm
             helm upgrade --install -n lumina-mainnet --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" $i-scraper-mainnet .
             cd -
           done
+
+      # IBM Testnet Scraper
+      - name: Helm upgrade/install scraper testnet feeder to IBM Cluster
+        run: |
+          echo "Deploying scraper testnet node 004"
+          cd lumina-infra/helmcharts/decentral-feeders/004-scraper-testnet-ibm
+          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 004-scraper-testnet .
+          cd -
 
       # IBM Testnet Simulation
       - name: Helm upgrade/install simulation feeders to IBM Cluster
