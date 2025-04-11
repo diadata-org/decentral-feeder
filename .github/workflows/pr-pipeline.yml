@@ -97,9 +97,9 @@ jobs:
       # Helm upgrade commands for both services
       - name: Helm upgrade/install feeders
         run: |
-          cd lumina-infra/helmcharts/decentral-feeders/001-scraper-testnet
+          cd lumina-infra/helmcharts/decentral-feeders/001-scraper-testnet-ibm
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 001-scraper-testnet .
-          cd ../101-simulation-testnet
+          cd ../101-simulation-testnet-ibm
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 101-simulation-testnet .
           
           # Clean up CA certificate 
