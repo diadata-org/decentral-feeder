@@ -93,7 +93,11 @@ func main() {
 	jobName := metrics.MakeJobName(hostname, nodeOperatorName)
 
 	// Get chain ID for metrics
-	chainID := utils.Getenv("CHAIN_ID", "1050")
+	chainIDStr := utils.Getenv("CHAIN_ID", "1050")
+	chainID, err := strconv.ParseInt(chainIDStr, 10, 64)
+	if err != nil {
+		log.Fatalf("Failed to parse chain ID: %v", err)
+	}
 
 	// Set default pushgateway URL if enabled
 	if pushgatewayEnabled {
@@ -165,10 +169,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1050"), 10, 64)
-	if err != nil {
-		log.Fatalf("Failed to parse chainId: %v", err)
-	}
 
 	// Frequency for the trigger ticker initiating the computation of filter values.
 	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "120"))
@@ -183,7 +183,7 @@ func main() {
 		log.Fatalf("Failed to load private key: %v", err)
 	}
 
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainID))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
@@ -213,6 +213,6 @@ func main() {
 	}
 
 	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
-	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+	onchain.OracleUpdateExecutor(auth, contract, conn, chainID, filtersChannel)
 
 }

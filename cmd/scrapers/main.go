@@ -70,7 +70,11 @@ func main() {
 	jobName := metrics.MakeJobName(hostname, nodeOperatorName)
 
 	// Get chain ID for metrics
-	chainID := utils.Getenv("CHAIN_ID", "1050")
+	chainIDStr := utils.Getenv("CHAIN_ID", "1050")
+	chainID, err := strconv.ParseInt(chainIDStr, 10, 64)
+	if err != nil {
+		log.Fatalf("Failed to parse chain ID: %v", err)
+	}
 
 	// Set default pushgateway URL if enabled
 	if pushgatewayEnabled {
