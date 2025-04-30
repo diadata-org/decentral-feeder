@@ -69,6 +69,9 @@ func main() {
 	// Create the job name for metrics (used for both modes)
 	jobName := metrics.MakeJobName(hostname, nodeOperatorName)
 
+	// Get chain ID for metrics
+	chainID := utils.Getenv("CHAIN_ID", "1050")
+
 	// Set default pushgateway URL if enabled
 	if pushgatewayEnabled {
 		if pushgatewayURL == "" {
@@ -80,7 +83,14 @@ func main() {
 	}
 
 	// Create metrics object
-	m := metrics.NewMetrics(prometheus.NewRegistry(), pushgatewayURL, jobName, authUser, authPassword)
+	m := metrics.NewMetrics(
+		prometheus.NewRegistry(),
+		pushgatewayURL,
+		jobName,
+		authUser,
+		authPassword,
+		chainID,
+	)
 
 	// Start Prometheus HTTP server if enabled
 	if prometheusServerEnabled {
@@ -107,10 +117,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
 	}
-	chainId, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "1050"), 10, 64)
-	if err != nil {
-		log.Fatalf("Failed to parse chainId: %v", err)
-	}
 
 	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
 
@@ -119,7 +125,7 @@ func main() {
 		log.Fatalf("Failed to load private key: %v", err)
 	}
 
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainId))
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainID))
 	if err != nil {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
@@ -175,7 +181,7 @@ func main() {
 	}
 
 	// This should be the final line of main (blocking call)
-	onchain.OracleUpdateExecutor(auth, contract, conn, chainId, filtersChannel)
+	onchain.OracleUpdateExecutor(auth, contract, conn, chainID, filtersChannel)
 }
 
 func getPath2Config() string {

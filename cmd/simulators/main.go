@@ -92,6 +92,9 @@ func main() {
 	// Create the job name for metrics (used for both modes)
 	jobName := metrics.MakeJobName(hostname, nodeOperatorName)
 
+	// Get chain ID for metrics
+	chainID := utils.Getenv("CHAIN_ID", "1050")
+
 	// Set default pushgateway URL if enabled
 	if pushgatewayEnabled {
 		if pushgatewayURL == "" {
@@ -103,7 +106,14 @@ func main() {
 	}
 
 	// Create metrics object
-	m := metrics.NewMetrics(prometheus.NewRegistry(), pushgatewayURL, jobName, authUser, authPassword)
+	m := metrics.NewMetrics(
+		prometheus.NewRegistry(),
+		pushgatewayURL,
+		jobName,
+		authUser,
+		authPassword,
+		chainID,
+	)
 
 	// Start Prometheus HTTP server if enabled
 	if prometheusServerEnabled {
