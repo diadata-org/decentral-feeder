@@ -116,6 +116,7 @@ func main() {
 		jobName,
 		authUser,
 		authPassword,
+		chainID,
 	)
 
 	// Start Prometheus HTTP server if enabled
