@@ -31,12 +31,13 @@ jobs:
         run: |
           git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
 
-      # IBM Cloud Setup
+      # Install IBM Cloud CLI and Container Registry CLI
       - name: Install IBM Cloud CLI
         run: |
           curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
           ibmcloud plugin install container-registry -f
 
+      # Log in to IBM Cloud
       - name: Log in to IBM Cloud
         env:
           IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
@@ -45,58 +46,62 @@ jobs:
           ibmcloud target -r us-south
           ibmcloud target -g Default
 
-      # Build and Push to IBM Cloud Registry
+      # Build and Tag Docker images
       - name: Build and Tag Docker images
         run: |
           docker build -f build/Dockerfile-luminaScraperFeeder -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.RELEASE_TAG }} .
           docker build -f build/Dockerfile-luminaSimulationFeeder -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ env.RELEASE_TAG }} .
 
-      - name: Push Docker images to IBM
+      # Push Docker images
+      - name: Push Docker images
         run: |
           ibmcloud cr login
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.RELEASE_TAG }}
           docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ env.RELEASE_TAG }}
-
-      # Docker Hub Setup and Push
+      # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      # Build and Push Docker AMD64 images to Docker Hub
       - name: Build and Push AMD64 images to Docker Hub
         run: |
           docker build -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-amd64 .
-          docker push diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-amd64
+            -t diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-amd64 .
+          docker push diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-amd64
 
           docker build -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64 .
-          docker push diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-amd64
+            -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-amd64 .
+          docker push diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-amd64
 
+      # Build and Push Docker ARM64 images to Docker Hub
       - name: Build and Push ARM64 images to Docker Hub
         run: |
           docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper-${{ github.event.release.tag_name }}-arm64 --push .
+            -t diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-arm64 --push .
 
           docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation-${{ github.event.release.tag_name }}-arm64 --push .
-
+            -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-arm64 --push .
+          
+      # Logout from Docker Hub
       - name: Logout from Docker Hub
         run: docker logout
 
-      # Kubernetes Setup
+      # Install kubectl
       - name: Install kubectl
         run: |
           curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
 
-      # IBM Cluster Deployment
-      - name: IBM Cluster kubectl config
+      # IBM Cluster Configuration
+      - name: IBM Cluster kubectl config 
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
           CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
@@ -114,7 +119,8 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
           kubectl config use-context $CONTEXT
 
-      - name: Deploy IBM Mainnet Scrapers
+      # IBM Mainnet Scrapers
+      - name: Helm upgrade/install scraper mainnet feeders to IBM Cluster
         run: |
           for i in 002 003; do
             echo "Deploying scraper mainnet node $i"
@@ -123,7 +129,8 @@ jobs:
             cd -
           done
 
-      - name: Deploy IBM Testnet Simulation
+      # IBM Testnet Simulation
+      - name: Helm upgrade/install simulation feeders to IBM Cluster
         run: |
           for i in 102 103; do
             echo "Deploying simulation feeder $i"
@@ -131,9 +138,10 @@ jobs:
             helm upgrade --install -n dia-lumina --set repository.tag="${{ env.RELEASE_TAG }}" $i-simulation-testnet .
             cd -
           done
+          # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
-      # Hetzner Cluster Deployment
+      # Hetzner Cluster Configuration
       - name: Hetzner Cluster kubectl config
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_HETZNER }}
@@ -152,22 +160,25 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
 
-      - name: Deploy Hetzner Testnet Scraper
+      # Hetzner Testnet Scraper
+      - name: Helm upgrade/install scraper feeder 005 to Hetzner Cluster
         run: |
           echo "Deploying scraper feeder 005"
           cd lumina-infra/helmcharts/decentral-feeders/005-scraper-testnet-hetzner
           helm upgrade --install -n dia-lumina --set repository.tag="${{ env.RELEASE_TAG }}" 005-scraper-testnet .
           cd -
 
-      - name: Deploy Hetzner Testnet Simulation
+      # Hetzner Testnet Simulation
+      - name: Helm upgrade/install simulation feeder to Hetzner Cluster
         run: |
           echo "Deploying simulation feeder 104"
           cd lumina-infra/helmcharts/decentral-feeders/104-simulation-testnet-hetzner
           helm upgrade --install -n dia-lumina --set repository.tag="${{ env.RELEASE_TAG }}" 104-simulation-testnet .
           cd -
+          # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
-      # Civo Cluster Deployment
+      # Civo Cluster Configuration
       - name: Civo Cluster kubectl config
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_CIVO }}
@@ -186,23 +197,26 @@ jobs:
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
 
-      - name: Deploy Civo Testnet Scraper
+      # Civo Testnet Scraper
+      - name: Helm upgrade/install scraper feeder to Civo Cluster
         run: |
           echo "Deploying scraper feeder 006"
           cd lumina-infra/helmcharts/decentral-feeders/006-scraper-testnet-civo
           helm upgrade --install -n dia-lumina --set repository.tag="${{ env.RELEASE_TAG }}" 006-scraper-testnet .
           cd -
 
-      - name: Deploy Civo Testnet Simulation
+      # Civo Testnet Simulation
+      - name: Helm upgrade/install simulation feeder to Civo Cluster
         run: |
           echo "Deploying simulation feeder 105"
           cd lumina-infra/helmcharts/decentral-feeders/105-simulation-testnet-civo
           helm upgrade --install -n dia-lumina --set repository.tag="${{ env.RELEASE_TAG }}" 105-simulation-testnet .
           cd -
+          # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup
-      - name: Cleanup
+      - name: Cleanup cloned repository and logout from IBM
         run: |
           rm -rf lumina-infra
           if [ -f /tmp/ca.pem ]; then
