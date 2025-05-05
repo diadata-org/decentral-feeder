@@ -80,14 +80,25 @@ jobs:
             -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-amd64 .
           docker push diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-amd64
 
-      # Build and Push Docker ARM64 images to Docker Hub
+      # Build and Push ARM64 images to Docker Hub
       - name: Build and Push ARM64 images to Docker Hub
+        timeout-minutes: 20
         run: |
-          docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-arm64 --push .
-
-          docker buildx build --platform linux/arm64 -f build/Dockerfile-luminaSimulationFeeder \
-            -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-arm64 --push .
+          docker buildx create --use --name arm64-builder || true
+          # Build scraper image
+            docker buildx build --platform linux/arm64 \
+              --cache-from type=registry,ref=diadata/decentralized-feeder:scraper-cache \
+              --cache-to type=registry,ref=diadata/decentralized-feeder:scraper-cache,mode=max \
+              -f build/Dockerfile-luminaScraperFeeder \
+              -t diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-arm64 \
+              --push .
+            # Build simulation image
+            docker buildx build --platform linux/arm64 \
+              --cache-from type=registry,ref=diadata/decentralized-feeder:simulation-cache \
+              --cache-to type=registry,ref=diadata/decentralized-feeder:simulation-cache,mode=max \
+              -f build/Dockerfile-luminaSimulationFeeder \
+              -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-arm64 \
+              --push .
           
       # Logout from Docker Hub
       - name: Logout from Docker Hub
