@@ -88,12 +88,10 @@ jobs:
       # IBM Mainnet Scrapers
       - name: Helm upgrade/install scraper mainnet feeders to IBM Cluster
         run: |
-          for i in 002 003; do
-            echo "Deploying scraper mainnet node $i"
-            cd lumina-infra/helmcharts/decentral-feeders/${i}-scraper-mainnet-ibm
-            helm upgrade --install -n lumina-mainnet --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" $i-scraper-mainnet .
-            cd -
-          done
+          echo "Deploying scraper mainnet node 003"
+          cd lumina-infra/helmcharts/decentral-feeders/003-scraper-mainnet-ibm
+          helm upgrade --install -n lumina-mainnet --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 003-scraper-mainnet .
+          cd -
 
       # # IBM Testnet Scraper #### MOVE TO ANOTHER CLUSTER
       # - name: Helm upgrade/install scraper testnet feeder to IBM Cluster
@@ -172,11 +170,16 @@ jobs:
   
   
       # Civo Testnet Scraper
-      - name: Helm upgrade/install scraper feeder to Civo Cluster
+      - name: Helm upgrade/install scraper feeders to Civo Cluster
         run: |
           echo "Deploying scraper feeder 006"
           cd lumina-infra/helmcharts/decentral-feeders/006-scraper-testnet-civo
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 006-scraper-testnet .
+          cd -
+
+          echo "Deploying scraper mainnet node 002"
+          cd lumina-infra/helmcharts/decentral-feeders/002-scraper-mainnet-civo
+          helm upgrade --install -n lumina-mainnet --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 002-scraper-mainnet .
           cd -
 
       # Civo Testnet Simulation
@@ -186,6 +189,7 @@ jobs:
           cd lumina-infra/helmcharts/decentral-feeders/105-simulation-testnet-civo
           helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 105-simulation-testnet .
           cd -
+
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
