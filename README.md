@@ -43,6 +43,7 @@ This repository hosts a self-contained containerized application for running a d
    - Create a `.env` file in the same directory as `docker-compose.yaml`. This file should contain the following variables:
      - `NODE_OPERATOR_NAME`: A unique and descriptive name identifying the organization or entity running the node. This name is used for monitoring and should be chosen carefully to ensure it is both meaningful and recognizable (e.g., include your organization name or geographical region). Providing a clear name helps distinguish your node in dashboards and logs.
      - `CHAIN_ID`: set the chain ID value
+     - `BLOCKCHAIN_NODE`: set the RPC Endpoint # https://testnet-rpc.diadata.org for testnet, https://rpc.diadata.org for mainnet
      - `PRIVATE_KEY`: Your private key for the deployment.
      - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
      - `ENABLE_METRICS_SERVER`: Set to `true` to enable the metrics server. This will start a local server that serves the metrics of the feeder node.
@@ -62,6 +63,7 @@ This repository hosts a self-contained containerized application for running a d
      ```plaintext
      NODE_OPERATOR_NAME=
      CHAIN_ID=
+     BLOCKCHAIN_NODE=
      PRIVATE_KEY=
      DEPLOYED_CONTRACT=
      PUSHGATEWAY_URL=
