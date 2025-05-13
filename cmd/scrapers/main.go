@@ -76,8 +76,9 @@ func main() {
 		log.Fatalf("Failed to parse chain ID: %v", err)
 	}
 
-	// Get image version from environment variable
-	imageVersion := utils.Getenv("IMAGE_VERSION", "unknown")
+	// Get image version using the library function
+	imageVersion := utils.GetImageVersion()
+	log.Infof("Image version: %s", imageVersion)
 
 	// Set default pushgateway URL if enabled
 	if pushgatewayEnabled {
