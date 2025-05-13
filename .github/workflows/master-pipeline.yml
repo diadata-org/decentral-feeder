@@ -24,6 +24,7 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          echo "IMAGE_TAG=commit-hash-$COMMIT_HASH" >> $GITHUB_ENV
 
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
@@ -90,7 +91,10 @@ jobs:
         run: |
           echo "Deploying scraper mainnet node 003"
           cd lumina-infra/helmcharts/decentral-feeders/003-scraper-mainnet-ibm
-          helm upgrade --install -n lumina-mainnet --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 003-scraper-mainnet .
+          helm upgrade --install -n lumina-mainnet \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set env.IMAGE_TAG="commit-hash-${{ env.COMMIT_HASH }}" \
+            003-scraper-mainnet .
           cd -
 
       # # IBM Testnet Scraper #### MOVE TO ANOTHER CLUSTER
@@ -107,7 +111,10 @@ jobs:
           for i in 102 103; do
             echo "Deploying simulation feeder $i"
             cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
-            helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" $i-simulation-testnet .
+            helm upgrade --install -n dia-lumina \
+              --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+              --set env.IMAGE_TAG="commit-hash-${{ env.COMMIT_HASH }}" \
+              $i-simulation-testnet .
             cd -
           done
           # Clean up CA certificate immediately
@@ -137,7 +144,10 @@ jobs:
         run: |
           echo "Deploying scraper feeder 005"
           cd lumina-infra/helmcharts/decentral-feeders/005-scraper-testnet-hetzner
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 005-scraper-testnet .
+          helm upgrade --install -n dia-lumina \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set env.IMAGE_TAG="commit-hash-${{ env.COMMIT_HASH }}" \
+            005-scraper-testnet .
           cd -
 
       # Hetzner Testnet Simulation
@@ -145,7 +155,10 @@ jobs:
         run: |
           echo "Deploying simulation feeder 104"
           cd lumina-infra/helmcharts/decentral-feeders/104-simulation-testnet-hetzner
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 104-simulation-testnet .
+          helm upgrade --install -n dia-lumina \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set env.IMAGE_TAG="commit-hash-${{ env.COMMIT_HASH }}" \
+            104-simulation-testnet .
           cd -
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
@@ -174,12 +187,18 @@ jobs:
         run: |
           echo "Deploying scraper feeder 006"
           cd lumina-infra/helmcharts/decentral-feeders/006-scraper-testnet-civo
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 006-scraper-testnet .
+          helm upgrade --install -n dia-lumina \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set env.IMAGE_TAG="commit-hash-${{ env.COMMIT_HASH }}" \
+            006-scraper-testnet .
           cd -
 
           echo "Deploying scraper mainnet node 002"
           cd lumina-infra/helmcharts/decentral-feeders/002-scraper-mainnet-civo
-          helm upgrade --install -n lumina-mainnet --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 002-scraper-mainnet .
+          helm upgrade --install -n lumina-mainnet \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set env.IMAGE_TAG="commit-hash-${{ env.COMMIT_HASH }}" \
+            002-scraper-mainnet .
           cd -
 
       # Civo Testnet Simulation
@@ -187,7 +206,10 @@ jobs:
         run: |
           echo "Deploying simulation feeder 105"
           cd lumina-infra/helmcharts/decentral-feeders/105-simulation-testnet-civo
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 105-simulation-testnet .
+          helm upgrade --install -n dia-lumina \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set env.IMAGE_TAG="commit-hash-${{ env.COMMIT_HASH }}" \
+            105-simulation-testnet .
           cd -
 
           # Clean up CA certificate immediately
