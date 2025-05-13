@@ -75,23 +75,6 @@ func GetImageVersion() string {
 	}
 
 	if version == "" {
-		// Try to get it from the pod's image name
-		// The pod name is in the format: 001-scraper-testnet-55dc54f897-4zcjf
-		podName := os.Getenv("HOSTNAME")
-		log.Infof("HOSTNAME: %s", podName)
-
-		if podName != "" {
-			// Extract the commit hash from the pod name
-			// The pod name format is: <name>-<hash>-<random>
-			parts := strings.Split(podName, "-")
-			if len(parts) >= 3 {
-				version = "commit-hash-" + parts[len(parts)-2]
-				log.Infof("Extracted version from pod name: %s", version)
-			}
-		}
-	}
-
-	if version == "" {
 		version = "unknown" // fallback if not set
 		log.Info("No version found, using 'unknown'")
 	}
