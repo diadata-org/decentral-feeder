@@ -76,6 +76,9 @@ func main() {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
 
+	// Get image version from environment variable
+	imageVersion := utils.Getenv("IMAGE_VERSION", "unknown")
+
 	// Change variable names for consistency
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
@@ -117,6 +120,7 @@ func main() {
 		authUser,
 		authPassword,
 		chainID,
+		imageVersion,
 	)
 
 	// Start Prometheus HTTP server if enabled

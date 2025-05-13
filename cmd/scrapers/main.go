@@ -76,6 +76,9 @@ func main() {
 		log.Fatalf("Failed to parse chain ID: %v", err)
 	}
 
+	// Get image version from environment variable
+	imageVersion := utils.Getenv("IMAGE_VERSION", "unknown")
+
 	// Set default pushgateway URL if enabled
 	if pushgatewayEnabled {
 		if pushgatewayURL == "" {
@@ -94,6 +97,7 @@ func main() {
 		authUser,
 		authPassword,
 		chainID,
+		imageVersion,
 	)
 
 	// Start Prometheus HTTP server if enabled
