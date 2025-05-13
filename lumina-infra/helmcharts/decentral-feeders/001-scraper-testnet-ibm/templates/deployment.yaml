@@ -1,0 +1,6 @@
+  {{ if .Values.app.env | default false }}
+  env:
+    - name: IMAGE_TAG
+      value: {{ .Values.repository.tag }}
+{{ toYaml .Values.app.env | indent 12 }}
+  {{ end }} 
