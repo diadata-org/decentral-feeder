@@ -69,6 +69,20 @@ func init() {
 	}
 }
 
+// GetImageVersion returns the Docker image version from environment variable
+func GetImageVersion() string {
+	// First check IMAGE_TAG (for docker-compose)
+	version := os.Getenv("IMAGE_TAG")
+	if version == "" {
+		// If not found, check REPOSITORY_TAG (for helm)
+		version = os.Getenv("REPOSITORY_TAG")
+	}
+	if version == "" {
+		version = "unknown" // fallback if not set
+	}
+	return version
+}
+
 func main() {
 	//get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
@@ -76,8 +90,9 @@ func main() {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
 
-	// Get image version from environment variable
-	imageVersion := utils.Getenv("IMAGE_VERSION", "unknown")
+	// Get image version using our local function
+	imageVersion := GetImageVersion()
+	log.Infof("Image version: %s", imageVersion)
 
 	// Change variable names for consistency
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")

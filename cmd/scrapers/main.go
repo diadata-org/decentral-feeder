@@ -46,6 +46,20 @@ func init() {
 	exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR, getPath2Config())
 }
 
+// GetImageVersion returns the Docker image version from environment variable
+func GetImageVersion() string {
+	// First check IMAGE_TAG (for docker-compose)
+	version := os.Getenv("IMAGE_TAG")
+	if version == "" {
+		// If not found, check REPOSITORY_TAG (for helm)
+		version = os.Getenv("REPOSITORY_TAG")
+	}
+	if version == "" {
+		version = "unknown" // fallback if not set
+	}
+	return version
+}
+
 func main() {
 	// get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
@@ -76,8 +90,8 @@ func main() {
 		log.Fatalf("Failed to parse chain ID: %v", err)
 	}
 
-	// Get image version using the library function
-	imageVersion := utils.GetImageVersion()
+	// Get image version using our local function
+	imageVersion := GetImageVersion()
 	log.Infof("Image version: %s", imageVersion)
 
 	// Set default pushgateway URL if enabled
