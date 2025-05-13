@@ -71,31 +71,9 @@ func init() {
 
 // GetImageVersion returns the Docker image version from environment variable
 func GetImageVersion() string {
-	// First check IMAGE_TAG (for docker-compose)
+	// Get version from IMAGE_TAG environment variable
 	version := os.Getenv("IMAGE_TAG")
 	log.Infof("IMAGE_TAG: %s", version)
-
-	if version == "" {
-		// If not found, check REPOSITORY_TAG (for helm)
-		version = os.Getenv("REPOSITORY_TAG")
-		log.Infof("REPOSITORY_TAG: %s", version)
-	}
-
-	if version == "" {
-		// If still not found, try to get it from the container's image name
-		// This will work in Kubernetes where the image name is available
-		containerImage := os.Getenv("KUBERNETES_CONTAINER_IMAGE")
-		log.Infof("KUBERNETES_CONTAINER_IMAGE: %s", containerImage)
-
-		if containerImage != "" {
-			// The image name is in the format: us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-de693c7
-			parts := strings.Split(containerImage, ":")
-			if len(parts) > 1 {
-				version = parts[1]
-				log.Infof("Extracted version from container image: %s", version)
-			}
-		}
-	}
 
 	if version == "" {
 		version = "unknown" // fallback if not set
