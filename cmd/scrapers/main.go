@@ -55,6 +55,18 @@ func GetImageVersion() string {
 		version = os.Getenv("REPOSITORY_TAG")
 	}
 	if version == "" {
+		// If still not found, try to get it from the container's image name
+		// This will work in Kubernetes where the image name is available
+		containerImage := os.Getenv("KUBERNETES_CONTAINER_IMAGE")
+		if containerImage != "" {
+			// The image name is in the format: us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-de693c7
+			parts := strings.Split(containerImage, ":")
+			if len(parts) > 1 {
+				version = parts[1]
+			}
+		}
+	}
+	if version == "" {
 		version = "unknown" // fallback if not set
 	}
 	return version
