@@ -101,14 +101,14 @@ jobs:
           cd lumina-infra/helmcharts/decentral-feeders/001-scraper-testnet-ibm
           helm upgrade --install -n dia-lumina \
             --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            --set-string app.env[0].name=IMAGE_TAG \
-            --set-string app.env[0].value="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set-string app.env[+].name=IMAGE_TAG \
+            --set-string app.env[+].value="commit-hash-${{ env.COMMIT_HASH }}" \
             001-scraper-testnet .
           cd ../101-simulation-testnet-ibm
           helm upgrade --install -n dia-lumina \
             --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            --set-string app.env[0].name=IMAGE_TAG \
-            --set-string app.env[0].value="commit-hash-${{ env.COMMIT_HASH }}" \
+            --set-string app.env[+].name=IMAGE_TAG \
+            --set-string app.env[+].value="commit-hash-${{ env.COMMIT_HASH }}" \
             101-simulation-testnet .
           
           # Clean up CA certificate 
