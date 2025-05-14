@@ -88,21 +88,21 @@ jobs:
         run: |
           docker buildx create --use --name arm64-builder || true
           
-          # Build scraper ARM64 (for manifest and SemVer)
+          # Build scraper ARM64 as single-arch image
           docker buildx build --platform linux/arm64 \
             --cache-from type=registry,ref=diadata/decentralized-feeder:scraper-cache \
             --cache-to type=registry,ref=diadata/decentralized-feeder:scraper-cache,mode=max \
             -f build/Dockerfile-luminaScraperFeeder \
             -t diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-arm64 \
-            --push .
+            --output type=registry .
             
-          # Build simulation ARM64 (with release tag)
+          # Build simulation ARM64 as single-arch image
           docker buildx build --platform linux/arm64 \
             --cache-from type=registry,ref=diadata/decentralized-feeder:simulation-cache \
             --cache-to type=registry,ref=diadata/decentralized-feeder:simulation-cache,mode=max \
             -f build/Dockerfile-luminaSimulationFeeder \
             -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-arm64 \
-            --push .
+            --output type=registry .
 
       # Create multi-arch manifests (only SemVer for scraper)
       - name: Create multi-arch manifests
