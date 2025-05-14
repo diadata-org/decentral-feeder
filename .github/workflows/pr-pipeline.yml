@@ -27,7 +27,6 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
           echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
-          echo "IMAGE_TAG=commit-hash-$COMMIT_HASH" >> $GITHUB_ENV
 
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
