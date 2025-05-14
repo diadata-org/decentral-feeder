@@ -69,7 +69,13 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Build & push multi-arch scraper with SemVer and latest
+      # Extract semantic version (remove 'v' prefix)
+      - name: Set SemVer tag
+        run: |
+          SEMVER_TAG=${RELEASE_TAG#v}
+          echo "SEMVER_TAG=$SEMVER_TAG" >> $GITHUB_ENV
+
+      # Build & push multi-arch scraper
       - name: Build & Push Scraper Multi-arch
         uses: docker/build-push-action@v4
         with:
@@ -78,8 +84,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            diadata/decentralized-feeder:${{ env.RELEASE_TAG }}
-            diadata/decentralized-feeder:latest
+            diadata/decentralized-feeder:${{ env.SEMVER_TAG }}
+            diadata/decentralized-feeder:scraper-${{ env.SEMVER_TAG }}
+            ${{ !contains(env.SEMVER_TAG, '-') && 'diadata/decentralized-feeder:latest' || '' }}
+            ${{ !contains(env.SEMVER_TAG, '-') && 'diadata/decentralized-feeder:scraper-latest' || '' }}
           cache-from: type=registry,ref=diadata/decentralized-feeder:buildcache
           cache-to: type=registry,ref=diadata/decentralized-feeder:buildcache,mode=max
 
