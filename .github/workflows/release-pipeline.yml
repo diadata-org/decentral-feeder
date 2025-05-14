@@ -72,10 +72,12 @@ jobs:
       # Build and Push Docker AMD64 images to Docker Hub
       - name: Build and Push AMD64 images to Docker Hub
         run: |
+          # Build scraper AMD64 (for manifest and SemVer)
           docker build -f build/Dockerfile-luminaScraperFeeder \
-            -t diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-amd64 .
-          docker push diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-amd64
+            -t diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-amd64 .
+          docker push diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-amd64
 
+          # Build simulation AMD64 (with release tag)
           docker build -f build/Dockerfile-luminaSimulationFeeder \
             -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-amd64 .
           docker push diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-amd64
@@ -85,21 +87,44 @@ jobs:
         timeout-minutes: 20
         run: |
           docker buildx create --use --name arm64-builder || true
-          # Build scraper image
-            docker buildx build --platform linux/arm64 \
-              --cache-from type=registry,ref=diadata/decentralized-feeder:scraper-cache \
-              --cache-to type=registry,ref=diadata/decentralized-feeder:scraper-cache,mode=max \
-              -f build/Dockerfile-luminaScraperFeeder \
-              -t diadata/decentralized-feeder:scraper-${{ env.RELEASE_TAG }}-arm64 \
-              --push .
-            # Build simulation image
-            docker buildx build --platform linux/arm64 \
-              --cache-from type=registry,ref=diadata/decentralized-feeder:simulation-cache \
-              --cache-to type=registry,ref=diadata/decentralized-feeder:simulation-cache,mode=max \
-              -f build/Dockerfile-luminaSimulationFeeder \
-              -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-arm64 \
-              --push .
           
+          # Build scraper ARM64 (for manifest and SemVer)
+          docker buildx build --platform linux/arm64 \
+            --cache-from type=registry,ref=diadata/decentralized-feeder:scraper-cache \
+            --cache-to type=registry,ref=diadata/decentralized-feeder:scraper-cache,mode=max \
+            -f build/Dockerfile-luminaScraperFeeder \
+            -t diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-arm64 \
+            --push .
+            
+          # Build simulation ARM64 (with release tag)
+          docker buildx build --platform linux/arm64 \
+            --cache-from type=registry,ref=diadata/decentralized-feeder:simulation-cache \
+            --cache-to type=registry,ref=diadata/decentralized-feeder:simulation-cache,mode=max \
+            -f build/Dockerfile-luminaSimulationFeeder \
+            -t diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-arm64 \
+            --push .
+
+      # Create multi-arch manifests (only SemVer for scraper)
+      - name: Create multi-arch manifests
+        run: |
+          # Plain SemVer tag (for Renovate) - scraper multi-arch
+          docker manifest create diadata/decentralized-feeder:${{ env.RELEASE_TAG }} \
+            diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-amd64 \
+            diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-arm64
+          docker manifest push diadata/decentralized-feeder:${{ env.RELEASE_TAG }}
+          
+          # Latest tag - scraper multi-arch
+          docker manifest create diadata/decentralized-feeder:latest \
+            diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-amd64 \
+            diadata/decentralized-feeder:${{ env.RELEASE_TAG }}-arm64
+          docker manifest push diadata/decentralized-feeder:latest
+          
+          # Simulation with release tag (for internal deployment)
+          docker manifest create diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }} \
+            diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-amd64 \
+            diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}-arm64
+          docker manifest push diadata/decentralized-feeder:simulation-${{ env.RELEASE_TAG }}
+
       # Logout from Docker Hub
       - name: Logout from Docker Hub
         run: docker logout
