@@ -79,8 +79,6 @@ func GetImageVersion() string {
 		version = "unknown" // fallback if not set
 		log.Info("No version found, using 'unknown'")
 	}
-
-	log.Infof("Final image version: %s", version)
 	return version
 }
 
@@ -90,10 +88,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
-
-	// Get image version using our local function
-	imageVersion := GetImageVersion()
-	log.Infof("Image version: %s", imageVersion)
 
 	// Change variable names for consistency
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
