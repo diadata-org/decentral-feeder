@@ -89,6 +89,9 @@ func main() {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
 
+	// Get image version using our local function
+	imageVersion := GetImageVersion()
+
 	// Change variable names for consistency
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
