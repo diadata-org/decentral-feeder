@@ -5,3 +5,5 @@ services:
     env_file:
       - .env
     restart: always
+    volumes:
+      - /absolute/path/to/your/local/repo:/app/repository  # Mount your local repo in the container

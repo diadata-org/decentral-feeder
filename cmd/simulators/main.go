@@ -73,7 +73,6 @@ func init() {
 func GetImageVersion() string {
 	// Get version from IMAGE_TAG environment variable
 	version := os.Getenv("IMAGE_TAG")
-	log.Infof("IMAGE_TAG: %s", version)
 
 	if version == "" {
 		version = "unknown" // fallback if not set
