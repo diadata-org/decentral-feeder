@@ -69,12 +69,27 @@ func init() {
 	}
 }
 
+// GetImageVersion returns the Docker image version from environment variable
+func GetImageVersion() string {
+	// Get version from IMAGE_TAG environment variable
+	version := os.Getenv("IMAGE_TAG")
+
+	if version == "" {
+		version = "unknown" // fallback if not set
+		log.Info("No version found, using 'unknown'")
+	}
+	return version
+}
+
 func main() {
 	//get hostname of the container so that we can display it in monitoring dashboards
 	hostname, err := os.Hostname()
 	if err != nil {
 		log.Fatalf("Failed to get hostname: %v", err)
 	}
+
+	// Get image version using our local function
+	imageVersion := GetImageVersion()
 
 	// Change variable names for consistency
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
@@ -117,6 +132,7 @@ func main() {
 		authUser,
 		authPassword,
 		chainID,
+		imageVersion,
 	)
 
 	// Start Prometheus HTTP server if enabled
