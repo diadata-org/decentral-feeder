@@ -103,19 +103,19 @@ jobs:
       #     helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 004-scraper-testnet .
       #     cd -
 
-      # IBM Testnet Simulation
-      - name: Helm upgrade/install simulation feeders to IBM Cluster
-        run: |
-          for i in 102 103; do
-            echo "Deploying simulation feeder $i"
-            cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
-            helm upgrade --install -n dia-lumina \
-              --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-              $i-simulation-testnet .
-            cd -
-          done
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+      # IBM Testnet Simulation -- Curently disabled
+      # - name: Helm upgrade/install simulation feeders to IBM Cluster
+      #   run: |
+      #     for i in 102 103; do
+      #       echo "Deploying simulation feeder $i"
+      #       cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
+      #       helm upgrade --install -n dia-lumina \
+      #         --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+      #         $i-simulation-testnet .
+      #       cd -
+      #     done
+      #     # Clean up CA certificate immediately
+      #     if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Hetzner Cluster kubectl config
         env:
@@ -146,17 +146,17 @@ jobs:
             005-scraper-testnet .
           cd -
 
-      # Hetzner Testnet Simulation
-      - name: Helm upgrade/install simulation feeder to Hetzner Cluster
-        run: |
-          echo "Deploying simulation feeder 104"
-          cd lumina-infra/helmcharts/decentral-feeders/104-simulation-testnet-hetzner
-          helm upgrade --install -n dia-lumina \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            104-simulation-testnet .
-          cd -
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+      # # Hetzner Testnet Simulation -- currently disabled
+      # - name: Helm upgrade/install simulation feeder to Hetzner Cluster
+      #   run: |
+      #     echo "Deploying simulation feeder 104"
+      #     cd lumina-infra/helmcharts/decentral-feeders/104-simulation-testnet-hetzner
+      #     helm upgrade --install -n dia-lumina \
+      #       --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+      #       104-simulation-testnet .
+      #     cd -
+      #     # Clean up CA certificate immediately
+      #     if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Civo Cluster kubectl config
         env:
@@ -194,18 +194,18 @@ jobs:
             002-scraper-mainnet .
           cd -
 
-      # Civo Testnet Simulation
-      - name: Helm upgrade/install simulation feeder to Civo Cluster
-        run: |
-          echo "Deploying simulation feeder 105"
-          cd lumina-infra/helmcharts/decentral-feeders/105-simulation-testnet-civo
-          helm upgrade --install -n dia-lumina \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            105-simulation-testnet .
-          cd -
+      # # Civo Testnet Simulation -- Currently disabled
+      # - name: Helm upgrade/install simulation feeder to Civo Cluster
+      #   run: |
+      #     echo "Deploying simulation feeder 105"
+      #     cd lumina-infra/helmcharts/decentral-feeders/105-simulation-testnet-civo
+      #     helm upgrade --install -n dia-lumina \
+      #       --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+      #       105-simulation-testnet .
+      #     cd -
 
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+      #     # Clean up CA certificate immediately
+      #     if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
       - name: Cleanup cloned repository and logout from IBM
