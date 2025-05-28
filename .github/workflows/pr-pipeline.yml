@@ -33,6 +33,7 @@ jobs:
         env:
           LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
         run: |
+          rm -rf lumina-infra
           git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
 
       # Install IBM Cloud CLI and Container Registry CLI
@@ -98,9 +99,13 @@ jobs:
       - name: Helm upgrade/install feeders
         run: |
           cd lumina-infra/helmcharts/decentral-feeders/001-scraper-testnet-ibm
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 001-scraper-testnet .
+          helm upgrade --install -n dia-lumina \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            001-scraper-testnet .
           cd ../101-simulation-testnet-ibm
-          helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 101-simulation-testnet .
+          helm upgrade --install -n dia-lumina \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            101-simulation-testnet .
           
           # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
