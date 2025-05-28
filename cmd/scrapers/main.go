@@ -166,17 +166,17 @@ func main() {
 	failoverChannel := make(chan string)
 
 	// Frequency for the trigger ticker initiating the computation of filter values.
-	frequencySeconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_SECONDS", "20"))
+	frequencyMilliseconds, err := strconv.Atoi(utils.Getenv("FREQUENCY_MILLISECONDS", "300"))
 	if err != nil {
-		log.Fatalf("Failed to parse frequencySeconds: %v", err)
+		log.Fatalf("Failed to parse frequencyMilliseconds: %v", err)
 	}
 
 	// Use a ticker for triggering the processing.
 	// This is for testing purposes for now. Could also be request based or other trigger types.
-	triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
+	triggerTick := time.NewTicker(time.Duration(frequencyMilliseconds) * time.Millisecond)
 	go func() {
 		for tick := range triggerTick.C {
-			// log.Info("Trigger - tick at: ", tick)
+			log.Info("Trigger - tick at: ", tick)
 			triggerChannel <- tick
 		}
 	}()
