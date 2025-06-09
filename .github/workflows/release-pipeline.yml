@@ -72,7 +72,7 @@ jobs:
       # Build & push multi-arch scraper to Docker Hub
       - name: Build & Push Decentralized Feeder Scraper Multi-arch to Docker Hub
         uses: docker/build-push-action@v4
-        timeout-minutes: 10
+        timeout-minutes: 30
         with:
           context: .
           file: build/Dockerfile-luminaScraperFeeder
