@@ -17,7 +17,6 @@ import (
 	utils "github.com/diadata-org/lumina-library/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 )
@@ -131,13 +130,9 @@ func main() {
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org")
 	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.diadata.org")
-	conn, err := ethclient.Dial(blockchainNode)
+	conn, err := utils.MakeEthClient(blockchainNode, backupNode)
 	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	}
-	connBackup, err := ethclient.Dial(backupNode)
-	if err != nil {
-		log.Fatalf("Failed to connect to the backup Ethereum client: %v", err)
+		log.Fatalf("MakeEthClient: %v", err)
 	}
 
 	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
@@ -152,8 +147,8 @@ func main() {
 		log.Fatalf("Failed to create authorized transactor: %v", err)
 	}
 
-	var contract, contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
+	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
+	err = onchain.DeployOrBindContract(deployedContract, conn, auth, &contract)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
