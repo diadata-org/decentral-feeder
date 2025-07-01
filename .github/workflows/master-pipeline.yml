@@ -103,19 +103,19 @@ jobs:
       #     helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 004-scraper-testnet .
       #     cd -
 
-      # IBM Testnet Simulation -- Curently disabled
-      # - name: Helm upgrade/install simulation feeders to IBM Cluster
-      #   run: |
-      #     for i in 102 103; do
-      #       echo "Deploying simulation feeder $i"
-      #       cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
-      #       helm upgrade --install -n dia-lumina \
-      #         --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-      #         $i-simulation-testnet .
-      #       cd -
-      #     done
-      #     # Clean up CA certificate immediately
-      #     if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+      #IBM Testnet Simulation -- 102 active, 103 Curently disabled, check for loop
+      - name: Helm upgrade/install simulation feeders to IBM Cluster
+        run: |
+          for i in 102; do 
+            echo "Deploying simulation feeder $i"
+            cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
+            helm upgrade --install -n dia-lumina \
+              --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+              $i-simulation-testnet .
+            cd -
+          done
+          # Clean up CA certificate immediately
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Hetzner Cluster kubectl config
         env:
