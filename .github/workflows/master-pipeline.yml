@@ -106,7 +106,7 @@ jobs:
       #IBM Testnet Simulation -- 102 active, 103 Curently disabled, check for loop
       - name: Helm upgrade/install simulation feeders to IBM Cluster
         run: |
-          for i in 102 102; do 
+          for i in 102; do 
             echo "Deploying simulation feeder $i"
             cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
             helm upgrade --install -n dia-lumina \
