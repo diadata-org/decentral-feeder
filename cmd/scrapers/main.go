@@ -42,7 +42,7 @@ var (
 	// 0: original pool order
 	// 1: reversed pool order
 	// 2: both directions
-	poolsEnv = utils.Getenv("POOLS", "")
+	poolsEnv = utils.Getenv("POOLS", "PancakeswapV3:0xac0fe1c4126e4a9b644adfc1303827e3bb5dddf3:1,PancakeswapV3:0x36696169C63e42cd08ce11f5deeBbCeBae652050:1")
 
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
