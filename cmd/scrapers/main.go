@@ -35,7 +35,14 @@ var (
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
-	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "Crypto.com:BTC-USDT,Crypto.com:BTC-USD")
+	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "")
+	// Comma separated list of pools on an exchange.
+	// Format should be as follows PancakeswapV3:0xac0fe1c4126e4a9b644adfc1303827e3bb5dddf3:i
+	// where 0<=i<=2 determines the order of the returned swaps.
+	// 0: original pool order
+	// 1: reversed pool order
+	// 2: both directions
+	poolsEnv = utils.Getenv("POOLS", "")
 
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
@@ -43,6 +50,12 @@ var (
 
 func init() {
 	exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR, getPath2Config())
+	var err error
+	pools, err = models.PoolsFromEnv(poolsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR)
+	if err != nil {
+		log.Fatal("Read pools from ENV var: ", err)
+	}
+
 }
 
 // GetImageVersion returns the Docker image version from environment variable
