@@ -174,9 +174,13 @@ func main() {
 
 	// Feeder mechanics
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org")
-	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.diadata.org")
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	backupNode := utils.Getenv("BACKUP_NODE", "")
 	conn, err := utils.MakeEthClient(blockchainNode, backupNode)
+	if err != nil {
+		log.Fatalf("MakeEthClient: %v", err)
+	}
+	connBackup, err := utils.MakeEthClient(backupNode, blockchainNode)
 	if err != nil {
 		log.Fatalf("MakeEthClient: %v", err)
 	}
@@ -200,7 +204,8 @@ func main() {
 	}
 
 	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	err = onchain.DeployOrBindContract(deployedContract, conn, auth, &contract)
+	var contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
+	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
@@ -210,7 +215,6 @@ func main() {
 	triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
 	go func() {
 		for tick := range triggerTick.C {
-			// log.Info("Trigger - tick at: ", tick)
 			triggerChannel <- tick
 		}
 	}()
@@ -223,7 +227,7 @@ func main() {
 		go metrics.PushMetricsToPushgateway(m, startTime, conn, privateKey, deployedContract)
 	}
 
-	// Outlook/Alternative: The triggerChannel can also be filled by the oracle updater by any other mechanism.
-	onchain.OracleUpdateExecutor(auth, contract, conn, chainID, filtersChannel)
+	// Update the oracle. Use backup node if it fails.
+	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
 
 }

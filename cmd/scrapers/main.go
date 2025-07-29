@@ -134,6 +134,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("MakeEthClient: %v", err)
 	}
+	connBackup, err := utils.MakeEthClient(backupNode, blockchainNode)
+	if err != nil {
+		log.Fatalf("MakeEthClient: %v", err)
+	}
 
 	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
 
@@ -148,7 +152,8 @@ func main() {
 	}
 
 	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	err = onchain.DeployOrBindContract(deployedContract, conn, auth, &contract)
+	var contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
+	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
@@ -198,7 +203,7 @@ func main() {
 	}
 
 	// This should be the final line of main (blocking call)
-	onchain.OracleUpdateExecutor(auth, contract, conn, chainID, filtersChannel)
+	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
 }
 
 func getPath2Config() string {
