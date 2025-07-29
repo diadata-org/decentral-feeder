@@ -4,12 +4,11 @@ go 1.23.4
 
 require (
 	github.com/diadata-org/diadata v1.4.568
-	github.com/diadata-org/lumina-library v0.1.17
+	github.com/diadata-org/lumina-library v0.1.21
 	github.com/ethereum/go-ethereum v1.15.7
 	github.com/prometheus/client_golang v1.20.5
 	github.com/sirupsen/logrus v1.9.3
 )
-
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
