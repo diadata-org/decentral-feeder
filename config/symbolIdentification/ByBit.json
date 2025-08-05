@@ -1,0 +1,123 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "1INCH",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x111111111117dc0aa78b770fa6a738034120c302",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AAVE",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ADA",
+            "Exchange": "ByBit",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AIXBT",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x0D37aF9D8AE74F35F3A38bD2a08FcB29890Ca6d2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ALGO",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x5D55058185314e2f80f3D5B2f82f7358c7e82079",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ALICE",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xac51066d7bec65dc4589368da368b212745d63e8",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ANKR",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x8290333cef9e6d528dd5618fb97a76f268f3edd4",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ANT",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xa78d8321b20c4ef90ecd72f2588aa985a4bdb684",
+            "Decimals": 18        
+        },
+        {
+            "Symbol": "APT",
+            "Exchange": "ByBit",
+            "Blockchain": "Aptos",
+            "Address": "0x1::aptos_coin::AptosCoin",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "AR",
+            "Exchange": "ByBit",
+            "Blockchain": "Arweave",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "ARB",
+            "Exchange": "ByBit",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ATOM",
+            "Exchange": "ByBit",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "ByBit",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "BTC",
+            "Exchange": "ByBit",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "Decimals": 6
+        }
+    ]
+}
