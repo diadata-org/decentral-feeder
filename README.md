@@ -114,6 +114,12 @@ This repository hosts a self-contained containerized application for running a d
       docker ps -a
       ```
 
+## Supported Assets
+
+The feeder currently supports sourcing two asset types:
+- Exchange pairs (default setup)
+- Real-World Assets (RWAs)
+  - To add RWA assets to your feeder, follow the instructions in [Adding RWA Assets](https://github.com/diadata-org/decentral-feeder/wiki/Adding-RWA-Assets) page.
 
 ## Error Handling
 > 
