@@ -1,5 +1,5 @@
 services:
-  app:
+  decentralized-feeder:
     image: ${IMAGE_TAG}
     # for latest image versios see https://hub.docker.com/r/diadata/decentralized-feeder/tags
     env_file:

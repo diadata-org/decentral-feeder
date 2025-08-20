@@ -103,10 +103,10 @@ jobs:
       #     helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 004-scraper-testnet .
       #     cd -
 
-      #IBM Testnet Simulation -- 102 active, 103 Curently disabled, check for loop
+      #IBM Testnet Simulation -- 102, 103 active
       - name: Helm upgrade/install simulation feeders to IBM Cluster
         run: |
-          for i in 102; do 
+          for i in 102 103; do 
             echo "Deploying simulation feeder $i"
             cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
             helm upgrade --install -n dia-lumina \
