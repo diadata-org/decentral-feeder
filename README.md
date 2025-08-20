@@ -121,7 +121,7 @@ The feeder currently supports sourcing two asset types:
 - Real-World Assets (RWAs)
 
 ### Adding RWA Assets
-To add RWA assets to your feeder, follow the instructions in [Adding RWA Assets](https://github.com/diadata-org/decentral-feeder/wiki/Adding-RWA-Assets) page. If you're running a feeder for exchange pairs, then you can structure both services in your `docker-compose.yaml` file as follows:
+To add RWA assets to your feeder, follow the instructions in [Adding RWA Assets](https://github.com/diadata-org/decentral-data-feeder/wiki/Adding-RWA-Assets) page. If you're running a feeder for exchange pairs, then you can structure both services in your `docker-compose.yaml` file as follows:
 
 ```yaml
 services:
