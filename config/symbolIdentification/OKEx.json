@@ -386,6 +386,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "USD",
+            "Exchange": "OKEx",
+            "Blockchain": "Fiat",
+            "Address": "840",
+            "Decimals": 2
+        },
+        {
             "Symbol": "USDC",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
