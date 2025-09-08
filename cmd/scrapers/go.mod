@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/diadata-org/diadata v1.4.568
-	github.com/diadata-org/lumina-library v0.1.26
+	github.com/diadata-org/lumina-library v0.1.27
 	github.com/ethereum/go-ethereum v1.15.7
 	github.com/prometheus/client_golang v1.20.5
 	github.com/sirupsen/logrus v1.9.3
