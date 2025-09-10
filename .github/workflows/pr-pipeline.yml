@@ -95,7 +95,6 @@ jobs:
           # Use context
           kubectl config use-context $CONTEXT
 
-      # Helm upgrade commands for all feeders
       - name: Helm upgrade/install feeders
         run: |
           cd lumina-infra/helmcharts/decentral-feeders/001-scraper-testnet-ibm
@@ -106,22 +105,18 @@ jobs:
           helm upgrade --install -n dia-lumina \
             --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
             101-simulation-testnet .
-          cd ../106-uniswapv2-testnet-ibm
-          helm upgrade --install -n dia-lumina \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            106-uniswapv2-testnet .
-          cd ../107-uniswapv3-testnet-ibm
-          helm upgrade --install -n dia-lumina \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            107-uniswapv3-testnet .
-          cd ../108-pancakeswapv3-testnet-ibm
-          helm upgrade --install -n dia-lumina \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            108-pancakeswapv3-testnet .
-          cd ../109-curvefi-testnet-ibm
-          helm upgrade --install -n dia-lumina \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            109-curvefi-testnet .
+          cd ../007-scraper-testnet-ibm
+            helm upgrade --install -n dia-lumina \
+              --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+              007-scraper-testnet .
+            cd ../008-scraper-testnet-ibm
+            helm upgrade --install -n dia-lumina \
+              --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+              008-scraper-testnet .
+            cd ../009-scraper-testnet-ibm
+            helm upgrade --install -n dia-lumina \
+              --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+              009-scraper-testnet .
           
           # Clean up CA certificate 
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
