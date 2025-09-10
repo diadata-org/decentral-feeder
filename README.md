@@ -114,6 +114,30 @@ This repository hosts a self-contained containerized application for running a d
       docker ps -a
       ```
 
+## Supported Assets
+
+The feeder currently supports sourcing two asset types:
+- Exchange pairs (default setup)
+- Real-World Assets (RWAs)
+
+### Adding RWA Assets
+To add RWA assets to your feeder, follow the instructions in [Adding RWA Assets](https://github.com/diadata-org/decentral-data-feeder/wiki/Adding-RWA-Assets) page. If you're running a feeder for exchange pairs, then you can structure both services in your `docker-compose.yaml` file as follows:
+
+```yaml
+services:
+  twelvedata-data-feeder:
+    image: diadata/decentralized-data-feeder:<VERSION>
+    # for latest image versions see https://hub.docker.com/r/diadata/decentralized-data-feeder/tags
+    env_file:
+      - .env-twelvedata
+    restart: always
+  decentralized-feeder:
+    image: diadata/decentralized-feeder:scraper-<VERSION>
+    # for latest image versions see https://hub.docker.com/r/diadata/decentralized-feeder/tags
+    env_file:
+      - .env.decentralized-feeder
+    restart: always
+```
 
 ## Error Handling
 > 
