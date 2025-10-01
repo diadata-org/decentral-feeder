@@ -145,11 +145,11 @@ func main() {
 	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.diadata.org")
 	conn, err := utils.MakeEthClient(blockchainNode, backupNode)
 	if err != nil {
-		log.Fatalf("MakeEthClient: %v", err)
+		log.Fatalf("MakeEthClient for main connection: %v", err)
 	}
 	connBackup, err := utils.MakeEthClient(backupNode, blockchainNode)
 	if err != nil {
-		log.Fatalf("MakeEthClient: %v", err)
+		log.Fatalf("MakeEthClient for backup connection: %v", err)
 	}
 
 	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
