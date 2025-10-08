@@ -295,6 +295,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SKI",
+            "Exchange": "MEXC",
+            "Blockchain": "Base",
+            "Address": "0x768BE13e1680b5ebE0024C42c896E3dB59ec0149",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SNX",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
