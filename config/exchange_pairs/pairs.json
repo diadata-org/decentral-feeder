@@ -1,0 +1,24 @@
+{
+    "ExchangePairs": [
+        {
+            "Binance": [
+                "AAVE-USDT", "ADA-USDT", "APT-USDT", "AR-USDT", "ARB-USDT", "ATOM-USDT", "AVAX-USDT", "BNB-USDT",
+                "BONK-USDT", "BONK-USDT", "BTC-USDT", "CRV-USDT", "DIA-USDT", "DOGE-USDT", "DOGE-FDUSD", "DOT-USDT",
+                "DYDX-USDT", "ENA-USDT", "ETH-USDT", "ETH-USDC", "ETH-FDUSD", "FET-USDT", "FIL-USDT", "FLOW-USDT",
+                "FTM-USDT", "GRT-USDT", "ICP-USDT", "LDO-USDT", "MKR-USDT", "NEAR-USDT", "OP-USDT", "PENDLE-USDT",
+                "POL-USDT", "RENDER-USDT", "SAND-USDT", "SEI-USDT", "SHIB-USDT", "SNX-USDT", "SOL-USDT", "SOL-USDC",
+                "SOL-FDUSD", "STRK-USDT", "STX-USDT", "SUI-USDT", "SUI-USDC", "TAO-USDT", "TIA-USDT", "TIA-USDC",
+                "TON-USDT", "TRX-USDT", "UNI-USDT", "USDC-USDT", "WIF-USDT", "WLD-USDT", "XLM-USDT", "XRP-USDT"
+            ],
+            "OKEx": [
+                "AAVE-USDT", "ADA-USDT", "APT-USDT", "AR-USDT", "ARB-USDT", "ATOM-USDT", "AVAX-USDT", "BNB-USDT",
+                "BONK-USDT", "BONK-USDT", "BTC-USDT", "CRV-USDT", "DIA-USDT", "DOGE-USDT", "DOGE-FDUSD", "DOT-USDT",
+                "DYDX-USDT", "ENA-USDT", "ETH-USDT", "ETH-USDC", "ETH-FDUSD", "FET-USDT", "FIL-USDT", "FLOW-USDT",
+                "FTM-USDT", "GRT-USDT", "ICP-USDT", "LDO-USDT", "MKR-USDT", "NEAR-USDT", "OP-USDT", "PENDLE-USDT",
+                "POL-USDT", "RENDER-USDT", "SAND-USDT", "SEI-USDT", "SHIB-USDT", "SNX-USDT", "SOL-USDT", "SOL-USDC",
+                "SOL-FDUSD", "STRK-USDT", "STX-USDT", "SUI-USDT", "SUI-USDC", "TAO-USDT", "TIA-USDT", "TIA-USDC",
+                "TON-USDT", "TRX-USDT", "UNI-USDT", "USDC-USDT", "WIF-USDT", "WLD-USDT", "XLM-USDT", "XRP-USDT"
+            ]
+        }
+    ]
+}
