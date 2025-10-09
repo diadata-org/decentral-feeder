@@ -178,11 +178,11 @@ func main() {
 	backupNode := utils.Getenv("BACKUP_NODE", "")
 	conn, err := utils.MakeEthClient(blockchainNode, backupNode)
 	if err != nil {
-		log.Fatalf("MakeEthClient: %v", err)
+		log.Fatalf("MakeEthClient for main connection: %v", err)
 	}
 	connBackup, err := utils.MakeEthClient(backupNode, blockchainNode)
 	if err != nil {
-		log.Fatalf("MakeEthClient: %v", err)
+		log.Fatalf("MakeEthClient for backup connection: %v", err)
 	}
 
 	// Frequency for the trigger ticker initiating the computation of filter values.

@@ -1,11 +1,9 @@
 package main
 
 import (
-	"math/big"
 	"os"
 	"os/user"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -15,9 +13,6 @@ import (
 	"github.com/diadata-org/lumina-library/onchain"
 	"github.com/diadata-org/lumina-library/processor"
 	utils "github.com/diadata-org/lumina-library/utils"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -58,111 +53,42 @@ func init() {
 
 }
 
-// GetImageVersion returns the Docker image version from environment variable
-func GetImageVersion() string {
-	// Get version from IMAGE_TAG environment variable
-	version := os.Getenv("IMAGE_TAG")
-
-	if version == "" {
-		version = "unknown" // fallback if not set
-		log.Info("No version found, using 'unknown'")
-	}
-
-	return version
-}
-
 func main() {
-	// get hostname of the container so that we can display it in monitoring dashboards
-	hostname, err := os.Hostname()
-	if err != nil {
-		log.Fatalf("Failed to get hostname: %v", err)
-	}
 
-	// Check if metrics pushing to Pushgateway is enabled
-	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
-	authUser := os.Getenv("PUSHGATEWAY_USER")
-	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
-	pushgatewayEnabled := pushgatewayURL != "" && authUser != "" && authPassword != ""
-
-	// Check if Prometheus HTTP server is enabled
-	enablePrometheusServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
-	prometheusServerEnabled := strings.ToLower(enablePrometheusServer) == "true"
-
-	// Get the node operator ID from the environment variable (optional)
-	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
-
-	// Create the job name for metrics (used for both modes)
-	jobName := metrics.MakeJobName(hostname, nodeOperatorName)
-
-	// Get chain ID for metrics
-	chainIDStr := utils.Getenv("CHAIN_ID", "1050")
-	chainID, err := strconv.ParseInt(chainIDStr, 10, 64)
+	chainID, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chain ID: %v", err)
 	}
 
-	// Get image version using our local function
-	imageVersion := GetImageVersion()
-	log.Infof("Image version: %s", imageVersion)
-
-	// Set default pushgateway URL if enabled
-	if pushgatewayEnabled {
-		if pushgatewayURL == "" {
-			pushgatewayURL = "https://pushgateway-auth.diadata.org"
-		}
-		log.Info("Metrics pushing enabled. Pushing to: ", pushgatewayURL)
-	} else {
-		log.Info("Metrics pushing to Pushgateway disabled")
-	}
-
-	// Create metrics object
-	m := metrics.NewMetrics(
-		prometheus.NewRegistry(),
-		pushgatewayURL,
-		jobName,
-		authUser,
-		authPassword,
-		chainID,
-		imageVersion,
-	)
-
-	// Start Prometheus HTTP server if enabled
-	if prometheusServerEnabled {
-		metricsPort := utils.Getenv("METRICS_PORT", "9090")
-		go metrics.StartPrometheusServer(m, metricsPort)
-		log.Info("Prometheus HTTP server enabled on port:", metricsPort)
-	} else {
-		log.Info("Prometheus HTTP server disabled")
-	}
-
-	// Record start time for uptime calculation
-	startTime := time.Now()
-
-	// Initialize feeder env variables
+	// Initialize env variables for on-chain setup.
 	deployedContract := utils.Getenv("DEPLOYED_CONTRACT", "")
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
-	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "https://rpc.diadata.org")
-	backupNode := utils.Getenv("BACKUP_NODE", "https://rpc.diadata.org")
-	conn, err := utils.MakeEthClient(blockchainNode, backupNode)
-	if err != nil {
-		log.Fatalf("MakeEthClient: %v", err)
-	}
-	connBackup, err := utils.MakeEthClient(backupNode, blockchainNode)
-	if err != nil {
-		log.Fatalf("MakeEthClient: %v", err)
-	}
+	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
+	backupNode := utils.Getenv("BACKUP_NODE", "")
+	conn, connBackup, privateKey, auth := utils.SetupOnchain(blockchainNode, backupNode, privateKeyHex, chainID)
 
-	privateKeyHex = strings.TrimPrefix(privateKeyHex, "0x")
-
-	privateKey, err := crypto.HexToECDSA(privateKeyHex)
-	if err != nil {
-		log.Fatalf("Failed to load private key: %v", err)
-	}
-
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(chainID))
-	if err != nil {
-		log.Fatalf("Failed to create authorized transactor: %v", err)
-	}
+	// Initialize env variables for metrics server.
+	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
+	authUser := os.Getenv("PUSHGATEWAY_USER")
+	authPassword := os.Getenv("PUSHGATEWAY_PASSWORD")
+	enablePrometheusServer := utils.Getenv("ENABLE_METRICS_SERVER", "false")
+	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
+	metricsPort := utils.Getenv("METRICS_PORT", "9090")
+	imageVersion := os.Getenv("IMAGE_TAG")
+	metrics.StartMetrics(
+		conn,
+		privateKey,
+		deployedContract,
+		pushgatewayURL,
+		authUser,
+		authPassword,
+		enablePrometheusServer,
+		nodeOperatorName,
+		metricsPort,
+		imageVersion,
+		chainID,
+		exchangePairsEnv,
+	)
 
 	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
 	var contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
@@ -184,36 +110,17 @@ func main() {
 		log.Fatalf("Failed to parse frequencySeconds: %v", err)
 	}
 
-	// Use a ticker for triggering the processing.
-	// This is for testing purposes for now. Could also be request based or other trigger types.
+	// Use a ticker for triggering the processing. Could also be request based or other trigger types.
 	triggerTick := time.NewTicker(time.Duration(frequencySeconds) * time.Second)
 	go func() {
 		for tick := range triggerTick.C {
-			// log.Info("Trigger - tick at: ", tick)
+			log.Debug("Trigger - tick at: ", tick)
 			triggerChannel <- tick
 		}
 	}()
 
 	// Run processor
 	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
-
-	// Move metrics setup here, right before the blocking call
-	// Only setup metrics collection if metrics are enabled and metrics object exists
-	if pushgatewayEnabled && m != nil {
-		// Set the static contract label for Prometheus monitoring
-		m.Contract.WithLabelValues(deployedContract).Set(1)
-
-		exchangePairsList := strings.Split(exchangePairsEnv, ",")
-		for _, pair := range exchangePairsList {
-			pair = strings.TrimSpace(pair) // Clean whitespace
-			if pair != "" {
-				m.ExchangePairs.WithLabelValues(pair).Set(1)
-			}
-		}
-
-		// Push metrics to Pushgateway if enabled
-		go metrics.PushMetricsToPushgateway(m, startTime, conn, privateKey, deployedContract)
-	}
 
 	// This should be the final line of main (blocking call)
 	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
