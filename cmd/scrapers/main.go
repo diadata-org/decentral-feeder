@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"math/big"
+	"net/http"
 	"os"
 	"os/user"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -28,10 +32,11 @@ const (
 	PAIR_TICKER_SEPARATOR = "-"
 	// Separator for a pair on a given exchange, i.e. Binance:BTC-USDT.
 	EXCHANGE_PAIR_SEPARATOR = ":"
+	remoteConfigURL         = "https://github.com/diadata-org/decentral-feeder/tree/master/config/exchange_pairs/pairs.json"
+	localConfigPath         = "config/exchange_pairs/pairs.json"
 )
 
 var (
-
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
@@ -48,14 +53,64 @@ var (
 	pools         []models.Pool
 )
 
+type ExchangePairsConfig struct {
+	ExchangePairs map[string][]string `json:"ExchangePairs"`
+}
+
 func init() {
-	exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR, getPath2Config())
-	var err error
+	configData, err := fetchRemoteConfig()
+	if err != nil {
+		log.Warnf("Failed to fetch remote config: %v. Falling back to local config.", err)
+		configData, err = os.ReadFile(filepath.Clean(localConfigPath))
+		if err != nil {
+			log.Fatalf("Failed to read local config file: %v", err)
+		}
+	}
+
+	var cfg ExchangePairsConfig
+	if err := json.Unmarshal(configData, &cfg); err != nil {
+		log.Fatalf("Failed to parse config JSON: %v", err)
+	}
+
+	for exchange, pairs := range cfg.ExchangePairs {
+		for _, pair := range pairs {
+			tokens := strings.Split(pair, "-")
+			if len(tokens) != 2 {
+				log.Warnf("Invalid pair format: %s", pair)
+				continue
+			}
+			ex := models.ExchangePair{
+				Exchange: exchange,
+			}
+			ex.UnderlyingPair.QuoteToken.Symbol = tokens[0]
+			ex.UnderlyingPair.BaseToken.Symbol = tokens[1]
+			exchangePairs = append(exchangePairs, ex)
+			log.Infof("Loaded pair: %s -- %s-%s", exchange, tokens[0], tokens[1])
+		}
+	}
+
+	log.Infof("Total %d exchange pairs loaded", len(exchangePairs))
+
+	// exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR, getPath2Config())
+	// var err error
 	pools, err = models.PoolsFromEnv(poolsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR)
 	if err != nil {
 		log.Fatal("Read pools from ENV var: ", err)
 	}
 
+}
+
+func fetchRemoteConfig() ([]byte, error) {
+	resp, err := http.Get(remoteConfigURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, io.ErrUnexpectedEOF
+	}
+	return io.ReadAll(resp.Body)
 }
 
 // GetImageVersion returns the Docker image version from environment variable
