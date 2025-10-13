@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"io"
 	"math/big"
@@ -8,6 +10,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -18,6 +21,7 @@ import (
 	models "github.com/diadata-org/lumina-library/models"
 	"github.com/diadata-org/lumina-library/onchain"
 	"github.com/diadata-org/lumina-library/processor"
+	"github.com/diadata-org/lumina-library/scrapers"
 	utils "github.com/diadata-org/lumina-library/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -26,21 +30,22 @@ import (
 )
 
 const (
+	CONFIG_RELOAD_SECONDS = 300
 	// Separator for entries in the environment variables, i.e. Binance:BTC-USDT,KuCoin:BTC-USDT.
 	ENV_SEPARATOR = ","
 	// Separator for a pair ticker's assets, i.e. BTC-USDT.
 	PAIR_TICKER_SEPARATOR = "-"
 	// Separator for a pair on a given exchange, i.e. Binance:BTC-USDT.
 	EXCHANGE_PAIR_SEPARATOR = ":"
-	remoteConfigURL         = "https://github.com/diadata-org/decentral-feeder/tree/master/config/exchange_pairs/pairs.json"
-	localConfigPath         = "config/exchange_pairs/pairs.json"
+	remoteConfigURL         = "https://raw.githubusercontent.com/diadata-org/decentral-feeder/master/config/exchange_pairs/pairs.json"
+	localConfigPath         = "../../config/exchange_pairs/pairs.json"
 )
 
 var (
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
-	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "")
+	// exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "")
 	// Comma separated list of pools on an exchange.
 	// Format should be as follows PancakeswapV3:0xac0fe1c4126e4a9b644adfc1303827e3bb5dddf3:i
 	// where 0<=i<=2 determines the order of the returned swaps.
@@ -49,12 +54,19 @@ var (
 	// 2: both directions
 	poolsEnv = utils.Getenv("POOLS", "")
 
-	exchangePairs []models.ExchangePair
-	pools         []models.Pool
+	exchangePairs     []models.ExchangePair
+	pools             []models.Pool
+	initialConfigHash string
 )
 
-type ExchangePairsConfig struct {
-	ExchangePairs map[string][]string `json:"ExchangePairs"`
+type pairEntry struct {
+	Pair          string `json:"Pair"`
+	WatchDogDelay int    `json:"WatchDogDelay"`
+}
+
+type RawConfig struct {
+	// e.g. [{"Binance": [{"Pair": "AAVE-USDT", "WatchDogDelay": 300}]}, {"OKEx": [{"Pair": "AAVE-USDT", "WatchDogDelay": 60}]}]
+	ExchangePairs []map[string][]pairEntry `json:"ExchangePairs"`
 }
 
 func init() {
@@ -67,37 +79,43 @@ func init() {
 		}
 	}
 
-	var cfg ExchangePairsConfig
+	var cfg RawConfig
 	if err := json.Unmarshal(configData, &cfg); err != nil {
 		log.Fatalf("Failed to parse config JSON: %v", err)
 	}
 
-	for exchange, pairs := range cfg.ExchangePairs {
-		for _, pair := range pairs {
-			tokens := strings.Split(pair, "-")
-			if len(tokens) != 2 {
-				log.Warnf("Invalid pair format: %s", pair)
-				continue
-			}
-			ex := models.ExchangePair{
-				Exchange: exchange,
-			}
-			ex.UnderlyingPair.QuoteToken.Symbol = tokens[0]
-			ex.UnderlyingPair.BaseToken.Symbol = tokens[1]
-			exchangePairs = append(exchangePairs, ex)
-			log.Infof("Loaded pair: %s -- %s-%s", exchange, tokens[0], tokens[1])
-		}
-	}
+	exchangePairs = buildPairsFromConfig(cfg)
+	initialConfigHash = hashConfig(cfg)
 
 	log.Infof("Total %d exchange pairs loaded", len(exchangePairs))
 
 	// exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR, getPath2Config())
-	// var err error
-	pools, err = models.PoolsFromEnv(poolsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR)
-	if err != nil {
-		log.Fatal("Read pools from ENV var: ", err)
+	var poolErr error
+	pools, poolErr = models.PoolsFromEnv(poolsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR)
+	if poolErr != nil {
+		log.Fatal("Read pools from ENV var: ", poolErr)
 	}
 
+}
+
+func buildPairsFromConfig(cfg RawConfig) []models.ExchangePair {
+	epMap := make(map[string][]string)
+	wdMap := make(map[string]int)
+	for _, exchObj := range cfg.ExchangePairs {
+		for exchange, entries := range exchObj {
+			for _, entry := range entries {
+				p := strings.TrimSpace(entry.Pair)
+				if p == "" || !strings.Contains(p, PAIR_TICKER_SEPARATOR) {
+					log.Warnf("Invalid pair format: %s", p)
+					continue
+				}
+				epMap[exchange] = append(epMap[exchange], p)
+				wdMap[exchange+":"+p] = entry.WatchDogDelay
+			}
+		}
+	}
+
+	return models.ExchangePairsFromPairs(epMap, PAIR_TICKER_SEPARATOR, getPath2Config(), wdMap)
 }
 
 func fetchRemoteConfig() ([]byte, error) {
@@ -252,18 +270,26 @@ func main() {
 	// Run processor
 	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
+	go watchConfigFileWithSeed(localConfigPath, time.Duration(CONFIG_RELOAD_SECONDS)*time.Second, initialConfigHash, func(newCfg RawConfig) {
+		newPairs := buildPairsFromConfig(newCfg)
+		log.Infof("Detected config change: %d pairs", len(newPairs))
+		scrapers.UpdateExchangePairs(newPairs) // -> Collector hot update
+		exchangePairs = newPairs
+	})
+
 	// Move metrics setup here, right before the blocking call
 	// Only setup metrics collection if metrics are enabled and metrics object exists
 	if pushgatewayEnabled && m != nil {
 		// Set the static contract label for Prometheus monitoring
 		m.Contract.WithLabelValues(deployedContract).Set(1)
 
-		exchangePairsList := strings.Split(exchangePairsEnv, ",")
-		for _, pair := range exchangePairsList {
-			pair = strings.TrimSpace(pair) // Clean whitespace
-			if pair != "" {
-				m.ExchangePairs.WithLabelValues(pair).Set(1)
-			}
+		for _, ep := range exchangePairs {
+			// build label like Binance:AAVE-USDT
+			label := ep.Exchange + ":" +
+				ep.UnderlyingPair.QuoteToken.Symbol + "-" +
+				ep.UnderlyingPair.BaseToken.Symbol
+
+			m.ExchangePairs.WithLabelValues(label).Set(1)
 		}
 
 		// Push metrics to Pushgateway if enabled
@@ -272,6 +298,67 @@ func main() {
 
 	// This should be the final line of main (blocking call)
 	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
+}
+
+func watchConfigFileWithSeed(path string, interval time.Duration, seed string, onChange func(RawConfig)) {
+	var lastHash string = seed
+	for {
+		data, err := os.ReadFile(filepath.Clean(path))
+		if err != nil {
+			log.Warnf("Watcher: failed to load config: %v", err)
+			time.Sleep(interval)
+			continue
+		}
+		var cfg RawConfig
+		if err := json.Unmarshal(data, &cfg); err != nil {
+			log.Warnf("Watcher: failed to parse config: %v", err)
+			time.Sleep(interval)
+			continue
+		}
+		h := hashConfig(cfg)
+		if h != lastHash {
+			onChange(cfg)
+			lastHash = h
+		}
+		time.Sleep(interval)
+	}
+}
+
+// hashConfig for RawConfig create a hash of the config: flatten it into a list of (exchange, pair, watchdog), sort it, and hash it
+func hashConfig(cfg RawConfig) string {
+	type flat struct {
+		Exchange string `json:"ex"`
+		Pair     string `json:"pair"`
+		WD       int    `json:"wd"`
+	}
+
+	flatList := make([]flat, 0, 64)
+	for _, exchObj := range cfg.ExchangePairs {
+		for ex, entries := range exchObj {
+			for _, e := range entries {
+				flatList = append(flatList, flat{
+					Exchange: strings.TrimSpace(ex),
+					Pair:     strings.TrimSpace(e.Pair),
+					WD:       e.WatchDogDelay,
+				})
+			}
+		}
+	}
+
+	// sort by Exchange, Pair, WD to make it order-independent
+	sort.Slice(flatList, func(i, j int) bool {
+		if flatList[i].Exchange != flatList[j].Exchange {
+			return flatList[i].Exchange < flatList[j].Exchange
+		}
+		if flatList[i].Pair != flatList[j].Pair {
+			return flatList[i].Pair < flatList[j].Pair
+		}
+		return flatList[i].WD < flatList[j].WD
+	})
+
+	b, _ := json.Marshal(flatList)
+	sum := sha1.Sum(b)
+	return hex.EncodeToString(sum[:])
 }
 
 func getPath2Config() string {
