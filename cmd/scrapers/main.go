@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
@@ -30,7 +31,7 @@ import (
 )
 
 const (
-	CONFIG_RELOAD_SECONDS = 300
+	CONFIG_RELOAD_SECONDS = 30
 	// Separator for entries in the environment variables, i.e. Binance:BTC-USDT,KuCoin:BTC-USDT.
 	ENV_SEPARATOR = ","
 	// Separator for a pair ticker's assets, i.e. BTC-USDT.
@@ -267,14 +268,23 @@ func main() {
 		}
 	}()
 
+	ctx, cancel := context.WithCancel(context.Background())
 	// Run processor
-	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+	go processor.Processor(ctx, exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
 	go watchConfigFileWithSeed(localConfigPath, time.Duration(CONFIG_RELOAD_SECONDS)*time.Second, initialConfigHash, func(newCfg RawConfig) {
 		newPairs := buildPairsFromConfig(newCfg)
 		log.Infof("Detected config change: %d pairs", len(newPairs))
 		scrapers.UpdateExchangePairs(newPairs) // -> Collector hot update
 		exchangePairs = newPairs
+		cancel()
+		close(tradesblockChannel)
+		{
+			time.Sleep(2 * time.Second)
+			tradesblockChannel = make(chan map[string]models.TradesBlock)
+			ctx, cancel = context.WithCancel(context.Background())
+			go processor.Processor(ctx, exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+		}
 	})
 
 	// Move metrics setup here, right before the blocking call
