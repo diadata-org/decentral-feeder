@@ -119,7 +119,7 @@ jobs:
           done
 
           # Update image registry and tag for testnet simulation feeders
-          SIMULATION_FEEDERS="102-simulation-testnet-aws"
+          SIMULATION_FEEDERS="102-simulation-testnet-aws 103-simulation-testnet-aws"
           for feeder in $SIMULATION_FEEDERS; do
             VALUES_FILE="helmcharts/decentral-feeders-aws/${feeder}/values.yaml"
             if [ -f "$VALUES_FILE" ]; then
