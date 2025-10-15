@@ -270,11 +270,11 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	// Run processor
-	go processor.Processor(ctx, exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+	go processor.Processor(ctx, cancel, exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 
 	go watchConfigFileWithSeed(localConfigPath, time.Duration(CONFIG_RELOAD_SECONDS)*time.Second, initialConfigHash, func(newCfg RawConfig) {
 		newPairs := buildPairsFromConfig(newCfg)
-		log.Infof("Detected config change: %d pairs", len(newPairs))
+		log.Infof("Detected config change, reloading %d pairs from new config", len(newPairs))
 		scrapers.UpdateExchangePairs(newPairs) // -> Collector hot update
 		exchangePairs = newPairs
 		cancel()
@@ -283,7 +283,7 @@ func main() {
 			time.Sleep(2 * time.Second)
 			tradesblockChannel = make(chan map[string]models.TradesBlock)
 			ctx, cancel = context.WithCancel(context.Background())
-			go processor.Processor(ctx, exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+			go processor.Processor(ctx, cancel, exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
 		}
 	})
 
@@ -325,10 +325,10 @@ func watchConfigFileWithSeed(path string, interval time.Duration, seed string, o
 			time.Sleep(interval)
 			continue
 		}
-		h := hashConfig(cfg)
-		if h != lastHash {
+		newHash := hashConfig(cfg)
+		if newHash != lastHash {
 			onChange(cfg)
-			lastHash = h
+			lastHash = newHash
 		}
 		time.Sleep(interval)
 	}
