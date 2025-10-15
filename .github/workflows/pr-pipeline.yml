@@ -64,6 +64,37 @@ jobs:
           docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
           docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }}
 
+      # Configure AWS credentials and push to ECR
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push images to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: commit-hash-${{ env.COMMIT_HASH }}
+        run: |
+          # Tag and push scraper image to ECR
+          docker tag us.icr.io/dia-registry/oracles/diadecentraloracleservice:${IMAGE_TAG} \
+            ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
+
+          # Tag and push simulation image to ECR
+          docker tag us.icr.io/dia-registry/oracles/luminasimulationfeeder:${IMAGE_TAG} \
+            ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}
+
+          echo "✅ Pushed images to AWS ECR:"
+          echo "  ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}"
+          echo "  ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}"
+
       # Install kubectl
       - name: Install kubectl
         run: |
