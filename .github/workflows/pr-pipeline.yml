@@ -95,6 +95,56 @@ jobs:
           echo "  ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}"
           echo "  ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}"
 
+      # Update AWS testnet feeder image tags in lumina-infra
+      - name: Update AWS testnet feeder values and push to lumina-infra
+        env:
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          cd lumina-infra
+
+          # Configure git
+          git config user.name "DIA Lumina Bot"
+          git config user.email "infrastructure@diadata.org"
+
+          # Update image registry and tag for testnet scraper feeders
+          SCRAPER_FEEDERS="001-scraper-testnet-aws 007-scraper-testnet-aws 008-scraper-testnet-aws 009-scraper-testnet-aws"
+          for feeder in $SCRAPER_FEEDERS; do
+            VALUES_FILE="helmcharts/decentral-feeders-aws/${feeder}/values.yaml"
+            if [ -f "$VALUES_FILE" ]; then
+              echo "Updating $VALUES_FILE"
+              sed -i "s|image: [^,]*|image: ${ECR_REGISTRY}/lumina/decentralized-feeder|" "$VALUES_FILE"
+              sed -i "s|tag: [^}]*|tag: commit-hash-${{ env.COMMIT_HASH }}|" "$VALUES_FILE"
+            fi
+          done
+
+          # Update image registry and tag for testnet simulation feeders
+          SIMULATION_FEEDERS="102-simulation-testnet-aws"
+          for feeder in $SIMULATION_FEEDERS; do
+            VALUES_FILE="helmcharts/decentral-feeders-aws/${feeder}/values.yaml"
+            if [ -f "$VALUES_FILE" ]; then
+              echo "Updating $VALUES_FILE"
+              sed -i "s|image: [^,]*|image: ${ECR_REGISTRY}/lumina/simulation-feeder|" "$VALUES_FILE"
+              sed -i "s|tag: [^}]*|tag: commit-hash-${{ env.COMMIT_HASH }}|" "$VALUES_FILE"
+            fi
+          done
+
+          # Show what changed
+          echo "Changes to be committed:"
+          git diff helmcharts/decentral-feeders-aws/*/values.yaml
+
+          # Commit and push if there are changes
+          if ! git diff --quiet; then
+            git add helmcharts/decentral-feeders-aws/*/values.yaml
+            git commit -m "PR #${{ github.event.pull_request.number }}: Update AWS testnet feeders to commit-hash-${{ env.COMMIT_HASH }}"
+            git push https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra.git HEAD:master
+            echo "✅ Pushed updates to lumina-infra. ArgoCD will sync AWS testnet feeders automatically."
+          else
+            echo "ℹ️  No changes to commit"
+          fi
+
+          cd ..
+
       # Install kubectl
       - name: Install kubectl
         run: |
