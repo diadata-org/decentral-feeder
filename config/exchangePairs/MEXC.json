@@ -1,7 +1,231 @@
 {
     "ExchangePairs": [
         {
+            "Pair": "AAVE-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AAVE-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ADA-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ADA-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ADA-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "APT-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AR-ETH", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ARB-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ATOM-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ATOM-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ATOM-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AVAX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AVAX-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BNB-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BNB-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BONK-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BTC-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BTC-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CAKE-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CRV-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CRV-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CRV-ETH", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DAI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOGE-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOGE-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOT-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOT-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DYDX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ENA-USDT", 
+            "WatchDogDelay": 300
+        },  
+        {
+            "Pair": "ENA-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ETH-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ETH-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ETH-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "FET-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "FET-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "FIL-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "FIL-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "FLOW-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "GRT-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ICP-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ICP-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LDO-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "MKR-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEAR-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEAR-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "OP-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "OP-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PENDLE-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "POL-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "RENDER-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "RENDER-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SAND-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SEI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SHIB-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SHIB-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SNX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SNX-ETH", 
             "WatchDogDelay": 300
         },
         {
@@ -9,7 +233,115 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "BTC-USDT", 
+            "Pair": "SOL-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SOL-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "STETH-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "STRK-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "STX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SUI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SUI-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TIA-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TIA-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TON-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TON-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TRX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TRX-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TRX-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UNI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UNI-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UNI-ETH", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "USDC-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WIF-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WIF-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WLD-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XLM-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XLM-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XLM-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XRP-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XRP-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XRP-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XRP-ETH", 
             "WatchDogDelay": 300
         }
     ]

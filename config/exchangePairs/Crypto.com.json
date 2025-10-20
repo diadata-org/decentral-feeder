@@ -1,15 +1,15 @@
 {
     "ExchangePairs": [
         {
-            "Pair": "ETH-USDT", 
+            "Pair": "ENA-USDT", 
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SOL-USDT", 
+            "Pair": "BNB-USDT", 
             "WatchDogDelay": 300
         },
         {
-            "Pair": "BTC-USDT", 
+            "Pair": "XRP-USDT", 
             "WatchDogDelay": 300
         }
     ]
