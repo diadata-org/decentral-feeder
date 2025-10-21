@@ -17,19 +17,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ADA-BTC", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "APT-USDT", 
             "WatchDogDelay": 300
         },
         {
             "Pair": "AR-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "AR-ETH", 
             "WatchDogDelay": 300
         },
         {
@@ -46,10 +38,6 @@
         },
         {
             "Pair": "ATOM-USDC", 
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ATOM-BTC", 
             "WatchDogDelay": 300
         },
         {
@@ -90,10 +78,6 @@
         },
         {
             "Pair": "CRV-USDC", 
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "CRV-ETH", 
             "WatchDogDelay": 300
         },
         {
@@ -233,10 +217,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SNX-ETH", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "SOL-USDT", 
             "WatchDogDelay": 300
         },
@@ -298,10 +278,6 @@
         },
         {
             "Pair": "UNI-USDC", 
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "UNI-ETH", 
             "WatchDogDelay": 300
         },
         {
