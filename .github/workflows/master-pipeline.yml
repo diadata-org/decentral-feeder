@@ -178,47 +178,6 @@ jobs:
           # Clean up CA certificate immediately
           if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
-      - name: Hetzner Cluster kubectl config
-        env:
-          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_HETZNER }}
-          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_HETZNER }}
-          CONTEXT: ${{ secrets.K8s_CONTEXT_HETZNER }}
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_HETZNER }}
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_HETZNER }}
-          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
-        run: |
-          TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
-          kubectl config set-cluster "$CLUSTER_NAME" \
-            --server="$API_SERVER" \
-            --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
-          kubectl config use-context $CONTEXT
-  
-
-      # Hetzner Testnet Scraper
-      - name: Helm upgrade/install scraper feeder 005 to Hetzner Cluster
-        run: |
-          echo "Deploying scraper feeder 005"
-          cd lumina-infra/helmcharts/decentral-feeders/005-scraper-testnet-hetzner
-          helm upgrade --install -n dia-lumina \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            005-scraper-testnet .
-          cd -
-
-      # # Hetzner Testnet Simulation -- currently disabled
-      # - name: Helm upgrade/install simulation feeder to Hetzner Cluster
-      #   run: |
-      #     echo "Deploying simulation feeder 104"
-      #     cd lumina-infra/helmcharts/decentral-feeders/104-simulation-testnet-hetzner
-      #     helm upgrade --install -n dia-lumina \
-      #       --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-      #       104-simulation-testnet .
-      #     cd -
-      #     # Clean up CA certificate immediately
-      #     if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
-
       - name: Civo Cluster kubectl config
         env:
           TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_CIVO }}
@@ -241,6 +200,13 @@ jobs:
       # Civo Testnet Scraper
       - name: Helm upgrade/install scraper feeders to Civo Cluster
         run: |
+          echo "Deploying scraper feeder 005"
+          cd lumina-infra/helmcharts/decentral-feeders/005-scraper-testnet-civo
+          helm upgrade --install -n dia-lumina \
+            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
+            005-scraper-testnet .
+          cd -
+
           echo "Deploying scraper feeder 006"
           cd lumina-infra/helmcharts/decentral-feeders/006-scraper-testnet-civo
           helm upgrade --install -n dia-lumina \
