@@ -28,32 +28,33 @@ var (
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
-	exchanges = utils.Getenv("EXCHANGES", "")
+	exchanges = utils.Getenv("CEX_LIST", "")
 	// Comma separated list of pools on an exchange.
 	// Format should be as follows PancakeswapV3:0xac0fe1c4126e4a9b644adfc1303827e3bb5dddf3:i
 	// where 0<=i<=2 determines the order of the returned swaps.
 	// 0: original pool order
 	// 1: reversed pool order
 	// 2: both directions
-	poolsEnv = utils.Getenv("POOLS", "")
+	dexEnv = utils.Getenv("DEX_LIST", "")
 
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
 )
 
 func init() {
-	exchangeLists := strings.Split(exchanges, ENV_SEPARATOR)
+	cexLists := strings.Split(exchanges, ENV_SEPARATOR)
 	var epErr error
-	exchangePairs, epErr = models.ExchangePairsFromConfigFiles(exchangeLists)
+	exchangePairs, epErr = models.ExchangePairsFromConfigFiles(cexLists)
 	if epErr != nil {
 		log.Fatal("Read exchange pairs from files: ", epErr)
 	}
-	var err error
-	pools, err = models.PoolsFromEnv(poolsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR)
-	if err != nil {
-		log.Fatal("Read pools from ENV var: ", err)
-	}
 
+	dexLists := strings.Split(dexEnv, ENV_SEPARATOR)
+	var err error
+	pools, err = models.PoolsFromConfigFiles(dexLists)
+	if err != nil {
+		log.Fatal("Read pools from Config files: ", err)
+	}
 }
 
 func main() {
