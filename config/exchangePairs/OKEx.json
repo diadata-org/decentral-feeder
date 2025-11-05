@@ -33,10 +33,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ARB-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "ATOM-USDT", 
             "WatchDogDelay": 300
         },
@@ -66,6 +62,14 @@
         },
         {
             "Pair": "BONK-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BTC-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BTC-USDC", 
             "WatchDogDelay": 300
         },
         {   
