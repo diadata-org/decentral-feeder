@@ -62,22 +62,12 @@
         },
         {
             "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
             "Order": "10",
             "WatchDogDelay": 300
         },
         {
             "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
             "Order": "20",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
-            "Order": "02",
             "WatchDogDelay": 300
         },
         {
@@ -122,11 +112,6 @@
         },
         {
             "Address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
             "Order": "10",
             "WatchDogDelay": 300
         },
@@ -138,11 +123,6 @@
         {
             "Address": "0x971add32Ea87f10bD192671630be3BE8A11b8623",
             "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46",
-            "Order": "01",
             "WatchDogDelay": 300
         },
         {
@@ -153,11 +133,6 @@
         {
             "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46",
             "Order": "20",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46",
-            "Order": "02",
             "WatchDogDelay": 300
         },
         {
@@ -181,68 +156,8 @@
             "WatchDogDelay": 300
         },
         {
-            "Address": "0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2",
-            "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
             "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
             "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "20",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "02",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2",
-            "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
-            "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "01",
             "WatchDogDelay": 300
         },
         {
@@ -316,58 +231,13 @@
             "WatchDogDelay": 300
         },
         {
-            "Address": "0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2",
+            "Address": "0xB7ECB2AA52AA64a717180E030241bC75Cd946726",
             "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
-            "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "10",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "20",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "02",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "12",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "21",
             "WatchDogDelay": 300
         },
         {
             "Address": "0xB7ECB2AA52AA64a717180E030241bC75Cd946726",
             "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0xB7ECB2AA52AA64a717180E030241bC75Cd946726",
-            "Order": "10",
             "WatchDogDelay": 300
         },
         {
@@ -413,11 +283,6 @@
         {
             "Address": "0x618788357D0EBd8A37e763ADab3bc575D54c2C7d",
             "Order": "01",
-            "WatchDogDelay": 300
-        },
-        {
-            "Address": "0x618788357D0EBd8A37e763ADab3bc575D54c2C7d",
-            "Order": "10",
             "WatchDogDelay": 300
         },
         {
