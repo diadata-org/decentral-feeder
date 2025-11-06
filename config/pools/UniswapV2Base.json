@@ -1,0 +1,9 @@
+{
+    "Pools": [
+        {
+            "Address": "0x6d6391B9bD02Eefa00FA711fB1Cb828A6471d283",
+            "Order": "1",
+            "WatchDogDelay": 300
+        }
+    ]
+}
