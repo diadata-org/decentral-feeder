@@ -1,16 +1,8 @@
 {
     "ExchangePairs": [
         {
-            "Pair": "AAVE-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "AAVE-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "ADA-USD",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 30
         },
         {
             "Pair": "ADA-USDT",
