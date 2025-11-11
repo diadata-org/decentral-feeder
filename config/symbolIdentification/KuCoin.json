@@ -162,6 +162,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "GIZA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774",
+            "Decimals": 18
+        },
+        {
             "Symbol": "GRT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -407,6 +414,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "WMTX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xDBB5Cf12408a3Ac17d668037Ce289f9eA75439D7",
+            "Decimals": 6
+        },
+        {
             "Symbol": "XLM",
             "Exchange": "KuCoin",
             "Blockchain": "Stellar",
@@ -425,6 +439,13 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZEN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229",
             "Decimals": 18
         }
     ]

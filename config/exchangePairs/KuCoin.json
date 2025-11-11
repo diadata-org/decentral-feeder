@@ -109,6 +109,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "GIZA-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "GRT-USDT",
             "WatchDogDelay": 300
         },
@@ -233,6 +237,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "WMTX-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "XLM-USDT",
             "WatchDogDelay": 300
         },
@@ -242,6 +250,10 @@
         },
         {
             "Pair": "XRP-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEN-USDT", 
             "WatchDogDelay": 300
         }
     ]
