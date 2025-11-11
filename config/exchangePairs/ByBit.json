@@ -315,6 +315,10 @@
         {
             "Pair": "XRP-BTC", 
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEN-USDT", 
+            "WatchDogDelay": 300
         }
     ]
 }

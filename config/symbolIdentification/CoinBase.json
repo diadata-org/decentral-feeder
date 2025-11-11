@@ -99,6 +99,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "DOGINME",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0x6921B130D297cc43754afba22e5EAc0FBf8Db75b",
+            "Decimals": 18
+        },
+        {
             "Symbol": "DOT",
             "Exchange": "CoinBase",
             "Blockchain": "Polkadot",

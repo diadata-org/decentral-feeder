@@ -101,6 +101,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "DOGINME-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "DOT-USDT", 
             "WatchDogDelay": 300
         },
@@ -150,6 +154,10 @@
         },
         {
             "Pair": "FLOW-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "GIZA-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -314,6 +322,10 @@
         },
         {
             "Pair": "WLD-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WMTX-USDT",
             "WatchDogDelay": 300
         },
         {

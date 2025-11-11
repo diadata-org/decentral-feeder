@@ -197,6 +197,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "WMTX-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "XLM-USD", 
             "WatchDogDelay": 300
         },
