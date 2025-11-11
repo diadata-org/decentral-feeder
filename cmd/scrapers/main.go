@@ -2,8 +2,8 @@ package main
 
 import (
 	"os"
-	"os/user"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,8 +19,6 @@ import (
 const (
 	// Separator for entries in the environment variables, i.e. Binance:BTC-USDT,KuCoin:BTC-USDT.
 	ENV_SEPARATOR = ","
-	// Separator for a pair ticker's assets, i.e. BTC-USDT.
-	PAIR_TICKER_SEPARATOR = "-"
 	// Separator for a pair on a given exchange, i.e. Binance:BTC-USDT.
 	EXCHANGE_PAIR_SEPARATOR = ":"
 )
@@ -30,27 +28,33 @@ var (
 	// Comma separated list of exchangepairs. Pairs must be capitalized and symbols separated by hyphen.
 	// It is the responsability of each exchange scraper to determine the correct format for the corresponding API calls.
 	// Format should be as follows Binance:ETH-USDT,Binance:BTC-USDT
-	exchangePairsEnv = utils.Getenv("EXCHANGEPAIRS", "")
+	exchanges = utils.Getenv("CEX_LIST", "")
 	// Comma separated list of pools on an exchange.
 	// Format should be as follows PancakeswapV3:0xac0fe1c4126e4a9b644adfc1303827e3bb5dddf3:i
 	// where 0<=i<=2 determines the order of the returned swaps.
 	// 0: original pool order
 	// 1: reversed pool order
 	// 2: both directions
-	poolsEnv = utils.Getenv("POOLS", "")
+	dexEnv = utils.Getenv("DEX_LIST", "")
 
 	exchangePairs []models.ExchangePair
 	pools         []models.Pool
 )
 
 func init() {
-	exchangePairs = models.ExchangePairsFromEnv(exchangePairsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR, PAIR_TICKER_SEPARATOR, getPath2Config())
-	var err error
-	pools, err = models.PoolsFromEnv(poolsEnv, ENV_SEPARATOR, EXCHANGE_PAIR_SEPARATOR)
-	if err != nil {
-		log.Fatal("Read pools from ENV var: ", err)
+	cexLists := strings.Split(exchanges, ENV_SEPARATOR)
+	var epErr error
+	exchangePairs, epErr = models.ExchangePairsFromConfigFiles(cexLists)
+	if epErr != nil {
+		log.Fatal("Read exchange pairs from files: ", epErr)
 	}
 
+	dexLists := strings.Split(dexEnv, ENV_SEPARATOR)
+	var err error
+	pools, err = models.PoolsFromConfigFiles(dexLists)
+	if err != nil {
+		log.Fatal("Read pools from Config files: ", err)
+	}
 }
 
 func main() {
@@ -75,6 +79,7 @@ func main() {
 	nodeOperatorName := utils.Getenv("NODE_OPERATOR_NAME", "")
 	metricsPort := utils.Getenv("METRICS_PORT", "9090")
 	imageVersion := os.Getenv("IMAGE_TAG")
+	exchangePairString := models.MakeExchangePairString(exchangePairs)
 	metrics.StartMetrics(
 		conn,
 		privateKey,
@@ -87,7 +92,7 @@ func main() {
 		metricsPort,
 		imageVersion,
 		chainID,
-		exchangePairsEnv,
+		exchangePairString,
 	)
 
 	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
@@ -124,13 +129,4 @@ func main() {
 
 	// This should be the final line of main (blocking call)
 	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
-}
-
-func getPath2Config() string {
-	usr, _ := user.Current()
-	dir := usr.HomeDir
-	if dir == "/root" || dir == "/home" {
-		return "/config/symbolIdentification/"
-	}
-	return os.Getenv("GOPATH") + "/src/github.com/diadata-org/decentral-feeder/config/symbolIdentification/"
 }

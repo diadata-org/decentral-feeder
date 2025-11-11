@@ -134,6 +134,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "FDUSD",
+            "Exchange": "GateIO",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409",
+            "Decimals": 18
+        },
+        {
             "Symbol": "FET",
             "Exchange": "GateIO",
             "Blockchain": "Fetch",
@@ -250,6 +257,13 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RNDR",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
             "Decimals": 18
         },
         {
