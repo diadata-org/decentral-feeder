@@ -69,7 +69,20 @@ func main() {
 	privateKeyHex := utils.Getenv("PRIVATE_KEY", "")
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	backupNode := utils.Getenv("BACKUP_NODE", "")
-	conn, connBackup, privateKey, auth := utils.SetupOnchain(blockchainNode, backupNode, privateKeyHex, chainID)
+	metacontractNode := utils.Getenv("METACONTRACT_NODE", "")
+	conn, connBackup, metacontractClient, privateKey, auth := utils.SetupOnchain(
+		blockchainNode,
+		backupNode,
+		metacontractNode,
+		privateKeyHex,
+		chainID,
+	)
+	metacontractAddress := utils.Getenv("METACONTRACT_ADDRESS", "")
+	metacontractPrecision, err := strconv.Atoi(utils.Getenv("METACONTRACT_PRECISION", "8"))
+	if err != nil {
+		log.Error("parse METACONTRACT_PRECISION: ", err)
+		metacontractPrecision = 8
+	}
 
 	// Initialize env variables for metrics server.
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
@@ -125,7 +138,18 @@ func main() {
 	}()
 
 	// Run processor
-	go processor.Processor(exchangePairs, pools, tradesblockChannel, filtersChannel, triggerChannel, failoverChannel, &wg)
+	go processor.Processor(
+		exchangePairs,
+		pools,
+		tradesblockChannel,
+		filtersChannel,
+		triggerChannel,
+		failoverChannel,
+		metacontractClient,
+		metacontractAddress,
+		metacontractPrecision,
+		&wg,
+	)
 
 	// This should be the final line of main (blocking call)
 	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
