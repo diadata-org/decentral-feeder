@@ -229,6 +229,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "SKI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "SNX-USDT", 
             "WatchDogDelay": 300
         },
