@@ -169,10 +169,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "MKR-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "NEAR-USDT", 
             "WatchDogDelay": 300
         },
@@ -223,6 +219,10 @@
         {
             "Pair": "SHIB-USDC", 
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SKY-USD", 
+            "WatchDogDelay": 1200
         },
         {
             "Pair": "SNX-USDT", 

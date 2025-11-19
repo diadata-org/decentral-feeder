@@ -295,6 +295,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SKY",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SNX",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",

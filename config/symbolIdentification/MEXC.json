@@ -316,6 +316,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SKY",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SNX",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
