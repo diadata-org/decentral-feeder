@@ -129,6 +129,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "PRIME-USD", 
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "RNDR-USDT", 
             "WatchDogDelay": 300
         },

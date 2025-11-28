@@ -1,6 +1,11 @@
 {
     "Pools": [
         {
+            "Address": "0xCD423F3ab39a11ff1D9208B7D37dF56E902C932B",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
             "Address": "0x44C95bf226A6A1385beacED2bb3328D6aFb044a3",
             "Order": "0",
             "WatchDogDelay": 300

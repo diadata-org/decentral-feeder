@@ -114,7 +114,7 @@
         },
         {
             "Pair": "PRIME-USD", 
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1200
         },
         {
             "Pair": "RENDER-USD", 
