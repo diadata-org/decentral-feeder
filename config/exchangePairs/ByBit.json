@@ -185,6 +185,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "PRIME-USDT", 
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "RENDER-USDT", 
             "WatchDogDelay": 300
         },
