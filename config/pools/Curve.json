@@ -193,7 +193,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "",
+            "ForeignName": "crvUSD-WETH",
             "Address": "0x4eBdF703948ddCEA3B11f675B4D1Fba9d2414A14",
             "Order": "01",
             "WatchDogDelay": 3600
