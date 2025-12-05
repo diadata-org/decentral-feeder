@@ -1,310 +1,299 @@
 {
     "Pools": [
         {
-            "ForeignName": "stETH-WETH",
+            "Address": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
+            "Order": "01",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-USDT",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "12",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDT-USDC",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "21",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-DAI",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "DAI-USDC",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDT-DAI",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "20",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "DAI-USDT",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "02",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "stETH-WETH",
+            "Address": "0x21E27a5E5513D6e65C4f830167390997aA84843a",
+            "Order": "10",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x21E27a5E5513D6e65C4f830167390997aA84843a",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "MIM-3Crv",
             "Address": "0x5a6A4D54456819380173272A5E8E9B9904BdF41B",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "3Crv-MIM",
             "Address": "0x5a6A4D54456819380173272A5E8E9B9904BdF41B",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-USDT",
             "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-USDT",
             "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
             "Order": "20",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-WETH",
             "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
             "Order": "12",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-WBTC",
             "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4",
             "Order": "21",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-USDC",
+            "Address": "0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B",
+            "Order": "01",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-USDC",
+            "Address": "0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B",
+            "Order": "02",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B",
             "Order": "20",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-WETH",
             "Address": "0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B",
             "Order": "12",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-WBTC",
             "Address": "0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B",
             "Order": "21",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "crvUSD-USDC",
             "Address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "CRV-cvxCRX",
             "Address": "0x971add32Ea87f10bD192671630be3BE8A11b8623",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "cvxCRV-CRV",
             "Address": "0x971add32Ea87f10bD192671630be3BE8A11b8623",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-USDT",
             "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-USDT",
             "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46",
             "Order": "20",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-WETH",
             "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46",
             "Order": "12",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-WBTC",
             "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46",
             "Order": "21",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "CVX-WETH",
+            "Address": "0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4",
+            "Order": "01",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "crvUSD-USDT",
             "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "aUSDC-aDAI",
             "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "aUSDT-aDAI",
             "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
             "Order": "20",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "aDAI-aUSDT",
             "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
             "Order": "02",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "aUSDC-aUSDT",
             "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
             "Order": "12",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "aUSDT-aUSDC",
             "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
             "Order": "21",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "",
             "Address": "0x4eBdF703948ddCEA3B11f675B4D1Fba9d2414A14",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "crvUSD-CRV",
+            "Address": "0x4eBdF703948ddCEA3B11f675B4D1Fba9d2414A14",
+            "Order": "10",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x4eBdF703948ddCEA3B11f675B4D1Fba9d2414A14",
             "Order": "02",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "CRV-crvUSD",
             "Address": "0x4eBdF703948ddCEA3B11f675B4D1Fba9d2414A14",
             "Order": "20",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "CRV-WETH",
+            "Address": "0x4eBdF703948ddCEA3B11f675B4D1Fba9d2414A14",
+            "Order": "12",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x4eBdF703948ddCEA3B11f675B4D1Fba9d2414A14",
             "Order": "21",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "LINK-stLINK",
             "Address": "0x7E13876B92F1a62C599C231f783f682E96B91761",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "stLINK-LINK",
             "Address": "0x7E13876B92F1a62C599C231f783f682E96B91761",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "FRAX-USDC",
             "Address": "0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "tBTC-WBTC",
             "Address": "0xB7ECB2AA52AA64a717180E030241bC75Cd946726",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-USDT",
+            "Address": "0xB7ECB2AA52AA64a717180E030241bC75Cd946726",
+            "Order": "01",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x4f493B7dE8aAC7d55F71853688b1F7C8F0243C85",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDT-USDC",
             "Address": "0x4f493B7dE8aAC7d55F71853688b1F7C8F0243C85",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "iDAI-iUSDC",
             "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "iUSDC-iDAI",
             "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "iUSDT-iDAI",
             "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
             "Order": "20",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "iDAI-iUSDT",
             "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
             "Order": "02",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "iUSDC-iUSDT",
             "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
             "Order": "12",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "iUSDT-iUSDC",
             "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
             "Order": "21",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "RAI-3Crv",
             "Address": "0x618788357D0EBd8A37e763ADab3bc575D54c2C7d",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "GUSD-3Crv",
             "Address": "0x4f062658EaAF2C1ccf8C8e36D6824CDf41167956",
             "Order": "01",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "3Crv-GUSD",
             "Address": "0x4f062658EaAF2C1ccf8C8e36D6824CDf41167956",
             "Order": "10",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         }
     ]
 }

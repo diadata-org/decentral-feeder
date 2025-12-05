@@ -1,214 +1,194 @@
 {
     "Pools": [
         {
-            "ForeignName": "PRIME-WETH",
             "Address": "0xCD423F3ab39a11ff1D9208B7D37dF56E902C932B",
             "Order": "1",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "PEAS-WETH",
             "Address": "0x44C95bf226A6A1385beacED2bb3328D6aFb044a3",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "PEAS-DAI",
             "Address": "0xAe750560b09aD1F5246f3b279b3767AfD1D79160",
             "Order": "0",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-USDT",
             "Address": "0x99ac8cA7087fA4A2A1FB6357269965A2014ABc35",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-USDT",
             "Address": "0x4e68Ccd3E89f51C3074ca5072bbAC773960dFa36",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-WETH",
+            "Address": "0xCBCdF9626bC03E24f779434178A73a0B4bad62eD",
+            "Order": "2",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640",
             "Order": "1",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-WETH",
             "Address": "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
             "Order": "1",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "DAI-USDC",
             "Address": "0x5777d92f208679DB4b9778590Fa3CAB3aC9e2168",
             "Order": "2",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-cbBTC",
             "Address": "0xe8f7c89C5eFa061e340f2d2F206EC78FD8f7e124",
-            "Order": "1",
-            "WatchDogDelay": 43200
+            "Order": "2",
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "TRX-WETH",
             "Address": "0x99950bAE3d0b79b8BeE86A8A208Ae1b087b9Dcb0",
             "Order": "0",
-            "WatchDogDelay": 1800
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "LINK-WETH",
             "Address": "0xa6Cc3C2531FdaA6Ae1A3CA84c2855806728693e8",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "UNI-WETH",
             "Address": "0x1d42064Fc4Beb5F8aAF85F4617AE8b3b5B8Bd801",
             "Order": "0",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-USDT",
             "Address": "0x11b815efB8f581194ae79006d24E0d814B7697F6",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },  
         {
-            "ForeignName": "wstETH-WETH",
             "Address": "0x109830a1AAaD605BbF02a9dFA7B0B92EC2FB7dAa",
             "Order": "2",
-            "WatchDogDelay": 1800
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-USDT",
+            "Address": "0x4585FE77225b41b697C938B018E2Ac67Ac5a20c0",
+            "Order": "2",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x9Db9e0e53058C89e5B94e29621a205198648425B",
             "Order": "0",
-            "WatchDogDelay": 1800
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-USDT",
             "Address": "0x56534741CD8B152df6d48AdF7ac51f75169A83b2",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-USDT",
             "Address": "0x3416cF6C708Da44DB2624D63ea0AAef7113527C6",
             "Order": "2",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-EIGEN",
             "Address": "0xC2C390c6CD3C4e6c2b70727d35a45e8a072F18cA",
             "Order": "1",
-            "WatchDogDelay": 1800
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "AAVE-WETH",
             "Address": "0x5aB53EE1d50eeF2C1DD3d5402789cd27bB52c1bB",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "DAI-USDC",
             "Address": "0x6c6Bc977E13Df9b0de53b251522280BB72383700",
             "Order": "2",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-USDT",
             "Address": "0xc7bBeC68d12a0d1830360F8Ec58fA599bA1b0e9b",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-SEI",
             "Address": "0xf8e349d1d827a6EdF17eE673664CFAd4ca78C533",
             "Order": "1",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-WETH",
             "Address": "0xE0554a476A092703abdB3Ef35c80e0D76d32939F",
             "Order": "1",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "DAI-USDT",
             "Address": "0x48DA0965ab2d2cbf1C17C09cFB5Cbe67Ad5B1406",
             "Order": "2",
-            "WatchDogDelay": 1200
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "PEPE-WETH",
+            "Address": "0x59c38b6775Ded821f010DbD30eCabdCF84E04756",
+            "Order": "2",
+            "WatchDogDelay": 300
+        },
+        {
             "Address": "0x11950d141EcB863F01007AdD7D1A342041227b58",
             "Order": "0",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "UNI-WETH",
             "Address": "0x360b9726186C0F62cc719450685ce70280774Dc8",
             "Order": "0",
-            "WatchDogDelay": 21600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-ONDO",
             "Address": "0x7b1E5D984A43eE732de195628d20d05CFaBc3cC7",
             "Order": "1",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "ENA-WETH",
             "Address": "0xc3Db44ADC1fCdFd5671f555236eae49f4A8EEa18",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-WLFI",
             "Address": "0x6e5930d139A848e0446FF11e0D30F964eEC8Df76",
             "Order": "1",
-            "WatchDogDelay": 10800
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WLFI-USDT",
             "Address": "0x238f00fcFD4f0C5930028237C6A1b395f4c0Fc74",
             "Order": "0",
-            "WatchDogDelay": 10800
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WETH-SOL",
             "Address": "0x127452F3f9cDc0389b0Bf59ce6131aA3Bd763598",
             "Order": "1",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "USDC-EIGEN",
             "Address": "0xd640333b71b015092D9b3AFcff3E427036304370",
             "Order": "1",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "LDO-WETH",
             "Address": "0xa3f558aebAecAf0e11cA4b2199cC5Ed341edfd74",
             "Order": "0",
-            "WatchDogDelay": 1800
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "WBTC-USDC",
             "Address": "0x9a772018FbD77fcD2d25657e5C547BAfF3Fd7D16",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 300
         },
         {
-            "ForeignName": "DAI-WETH",
             "Address": "0xC2e9F25Be6257c210d7Adf0D4Cd6E3E881ba25f8",
             "Order": "1",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 300
         }
     ]
 }
