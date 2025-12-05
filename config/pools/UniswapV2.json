@@ -46,7 +46,7 @@
             "ForeignName": "USDC-USDT",
             "Address": "0x3041CbD36888bECc7bbCBc0045E3B1f144466f5f",
             "Order": "2",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 3600
         },
         {
             "ForeignName": "LINK-WETH",
@@ -64,7 +64,7 @@
             "ForeignName": "DOGE-WETH",
             "Address": "0x308C6fbD6a14881Af333649f17f2FdE9cd75e2a6",
             "Order": "0",
-            "WatchDogDelay": 600
+            "WatchDogDelay": 1800
         }
     ]
 }
