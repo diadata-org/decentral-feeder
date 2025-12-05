@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/diadata-org/diadata v1.4.568
-	github.com/diadata-org/lumina-library v0.1.34-rc1
+	github.com/diadata-org/lumina-library v1.0.0
 	github.com/sirupsen/logrus v1.9.3
 )
 
