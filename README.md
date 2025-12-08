@@ -137,6 +137,12 @@ services:
     env_file:
       - .env.decentralized-feeder
     restart: always
+  fair-value-feeder:
+    image: diadata/fair-value-feeder:scraper-<VERSION>
+    # for latest image versions see https://hub.docker.com/r/diadata/fair-value-feeder/tags
+    env_file:
+      - .env.fair-value-feeder
+    restart: always
 ```
 
 ## Error Handling
