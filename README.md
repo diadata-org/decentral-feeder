@@ -121,7 +121,12 @@ The feeder currently supports sourcing two asset types:
 - Real-World Assets (RWAs)
 
 ### Adding RWA Assets
-To add RWA assets to your feeder, follow the instructions in [Adding RWA Assets](https://github.com/diadata-org/decentral-data-feeder/wiki/Adding-RWA-Assets) page. If you're running a feeder for exchange pairs, then you can structure both services in your `docker-compose.yaml` file as follows:
+To add RWA assets to your feeder, follow the instructions in [Adding RWA Assets](https://github.com/diadata-org/decentral-data-feeder/wiki/Adding-RWA-Assets) page.
+
+### Adding fair-value feeds
+To add fair-value feeds to your feeder, follow the instructions in [Adding fair-value feeds](https://github.com/diadata-org/fair-value/wiki)
+
+If you're running a feeder for exchange pairs, then you can structure the deployment of all services at once in your `docker-compose.yaml` file as follows:
 
 ```yaml
 services:
@@ -136,6 +141,12 @@ services:
     # for latest image versions see https://hub.docker.com/r/diadata/decentralized-feeder/tags
     env_file:
       - .env.decentralized-feeder
+    restart: always
+  fair-value-feeder:
+    image: diadata/fair-value-feeder:scraper-<VERSION>
+    # for latest image versions see https://hub.docker.com/r/diadata/fair-value-feeder/tags
+    env_file:
+      - .env.fair-value-feeder
     restart: always
 ```
 
