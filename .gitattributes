@@ -1,3 +1,6 @@
 # Syntax highlighting for .env example files
-*.env.example* linguist-language=Shell
-.env.example* linguist-language=Shell
+docker-compose/*.env.example* linguist-language=INI
+docker-compose/.env.example* linguist-language=INI
+*.env.example* linguist-language=INI
+.env.example* linguist-language=INI
+
