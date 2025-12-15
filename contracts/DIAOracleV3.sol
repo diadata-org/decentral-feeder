@@ -130,10 +130,6 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
             revert InvalidHistoryIndex(index, count);
         }
         
-        if (count == 0) {
-            return (0, 0);
-        }
-        
         uint256 currentWriteIndex = writeIndex[key];
         
  
