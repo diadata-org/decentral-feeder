@@ -123,10 +123,13 @@ This repository hosts a self-contained containerized application for running a d
 
 ## Supported Assets
 
-The feeder currently supports sourcing two asset types:
+The feeder currently supports sourcing the following asset feeds:
 
-- Exchange pairs (default setup)
-- Real-World Assets (RWAs)
+- Token Price Feeds (default setup)
+- Real-World Assets (RWAs) Feeds
+- Fundamental (or Fair-value) Feeds
+
+> **NOTE:** For the complete list of environment variables required for each service, see [here](/docker-compose/).
 
 ### Adding RWA Assets
 
@@ -134,7 +137,7 @@ To add RWA assets to your feeder, follow the instructions in [Adding RWA Assets]
 
 ### Adding fair-value feeds
 
-To add fair-value feeds to your feeder, follow the instructions in [Adding fair-value feeds](https://github.com/diadata-org/fair-value/wiki)
+To add fair-value feeds to your feeder, follow the instructions in [Adding fair-value feeds](https://github.com/diadata-org/fair-value/wiki/Adding-Fair%E2%80%90value-Feeds) page.
 
 If you're running a feeder for exchange pairs, then you can structure the deployment of all services at once in your `docker-compose.yaml` file as follows:
 
