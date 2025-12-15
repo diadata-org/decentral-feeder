@@ -1,0 +1,3 @@
+# Syntax highlighting for .env example files
+*.env.example* linguist-language=Shell
+.env.example* linguist-language=Shell
