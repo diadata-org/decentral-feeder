@@ -50,7 +50,7 @@ This repository hosts a self-contained containerized application for running a d
   - `PRIVATE_KEY`: Your private key for the deployment.
   - `DEPLOYED_CONTRACT`: The contract address. Initially, leave this empty during the first deployment to retrieve the deployed contract.
   - `ENABLE_METRICS_SERVER`: Set to `true` to enable the metrics server. This will start a local server that serves the metrics of the feeder node.
-  - `METRICS_PORT`: The port on which the metrics server will run, defaults to `9090`. for more monotiring info refer to [Monitoring](https://github.com/diadata-org/decentral-feeder/wiki/Monitoring)
+  - `METRICS_PORT`: The port on which the metrics server will run, defaults to `9090`. for more monitoring info refer to [Monitoring](https://github.com/diadata-org/decentral-feeder/wiki/Monitoring)
 
     > **NOTE:** The following pushgateway vars are **mandatory** for official DIA node operators. If you're an official operator, please reach out to the team to get these credentials. For developers testing the system, these credentials are **optional** and can be skipped.
 
@@ -58,7 +58,7 @@ This repository hosts a self-contained containerized application for running a d
   - `PUSHGATEWAY_USER`: to allow decentralized-feeder authenticate towards the monitoring server.
   - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server.
 
-  For additional environment variable configurations, refer to [Adding Exchange Pairs](https://github.com/diadata-org/decentral-feeder/wiki/Adding-exchange-pairs) and [Watchdog environment variables](https://github.com/diadata-org/decentral-feeder/wiki/Enabling-watchdogs)
+  For additional environment variable configurations, refer to [Adding Exchange Pairs](https://github.com/diadata-org/decentral-feeder/wiki/Adding-New-Markets) and [Watchdog environment variables](https://github.com/diadata-org/decentral-feeder/wiki/Enabling-watchdogs)
 
 - Example `.env` file:
 
