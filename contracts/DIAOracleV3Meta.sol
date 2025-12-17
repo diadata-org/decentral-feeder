@@ -23,6 +23,9 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     /// @notice The timeout period in seconds for oracle values.
     uint256 private timeoutSeconds;
 
+    /// @notice Maximum number of recent historical values to consider per oracle.
+    uint256 private windowSize;
+
     /// @notice The price calculation methodology contract.
     IPriceMethodology public priceMethodology;
 
@@ -39,6 +42,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     error ThresholdNotMet(uint256 validValues, uint256 threshold);
     error InvalidHistoryIndex(uint256 index);
     error InvalidMethodology();
+    error InvalidWindowSize(uint256 value);
 
     modifier validateAddress(address _address) {
         if (_address == address(0)) revert ZeroAddress();
@@ -134,12 +138,23 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     }
 
     /**
-     * @notice Retrieves the median price value for a given asset key from registered oracles.
-     * @dev Gets all historical values from each V3 oracle using getValueHistory(),
-     *      calculates the average for each oracle, then returns the median of those averages.
+     * @notice Sets the window size for historical values.
+     * @dev Only the administrator can call this function.
+     * @param newWindowSize The new window size value.
+     */
+    function setWindowSize(uint256 newWindowSize) public onlyOwner {
+        if (newWindowSize == 0) {
+            revert InvalidWindowSize(newWindowSize);
+        }
+        windowSize = newWindowSize;
+    }
+
+    /**
+     * @notice Retrieves the price value for a given asset key from registered oracles.
+     * @dev Uses the configured methodology and windowSize to calculate the aggregated value.
      *      Only considers values that are not older than the timeout period.
      * @param key The asset identifier (e.g., "BTC/USD").
-     * @return value The median of the average prices from available oracles.
+     * @return value The aggregated price value from available oracles.
      * @return timestamp The current block timestamp.
      */
     function getValue(string memory key) external view returns (uint128, uint128) {
@@ -148,6 +163,9 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         }
         if (threshold == 0) {
             revert InvalidThreshold(threshold);
+        }
+        if (windowSize == 0) {
+            revert InvalidWindowSize(windowSize);
         }
 
          address[] memory oracleAddresses = new address[](numOracles);
@@ -159,7 +177,56 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             key,
             oracleAddresses,
             timeoutSeconds,
-            threshold
+            threshold,
+            windowSize
+        );
+
+        return (value, timestamp);
+    }
+
+    /**
+     * @notice Retrieves the price value with custom configuration parameters.
+     * @dev Allows overriding the default windowSize, methodology, timeoutSeconds, and threshold for this call.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @param windowSize Maximum number of recent historical values to consider per oracle.
+     * @param methodology Address of the methodology contract to use (must implement IPriceMethodology).
+     * @param timeoutSeconds Timeout in seconds for value validity.
+     * @param threshold Minimum number of valid values required.
+     * @return value The aggregated price value from available oracles.
+     * @return timestamp The current block timestamp.
+     */
+    function getValueByConfig(
+        string memory key,
+        uint256 windowSize,
+        address methodology,
+        uint256 timeoutSeconds,
+        uint256 threshold
+    ) external view returns (uint128 value, uint128 timestamp) {
+        if (timeoutSeconds == 0) {
+            revert InvalidTimeOut(timeoutSeconds);
+        }
+        if (threshold == 0) {
+            revert InvalidThreshold(threshold);
+        }
+        if (windowSize == 0) {
+            revert InvalidWindowSize(windowSize);
+        }
+        if (methodology == address(0)) {
+            revert InvalidMethodology();
+        }
+
+        address[] memory oracleAddresses = new address[](numOracles);
+        for (uint256 i = 0; i < numOracles; i++) {
+            oracleAddresses[i] = oracles[i];
+        }
+
+        IPriceMethodology priceMethodology = IPriceMethodology(methodology);
+        (value, timestamp) = priceMethodology.calculateValue(
+            key,
+            oracleAddresses,
+            timeoutSeconds,
+            threshold,
+            windowSize
         );
 
         return (value, timestamp);
@@ -175,5 +242,9 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
 
     function getTimeoutSeconds() external view returns (uint256) {
         return timeoutSeconds;
+    }
+
+    function getWindowSize() external view returns (uint256) {
+        return windowSize;
     }
 }
