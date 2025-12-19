@@ -63,6 +63,7 @@ func main() {
 	prMode := flag.Bool("pr", false, "If set, creates a PR with the updated file")
 	outPath := flag.String("out", "", "If set, writes all updated config files to this local folder")
 	factor := flag.Float64("factor", 2.0, "Multiplicative factor for the watchdog time")
+	updatePools := flag.Bool("updatePools", false, "if set, updates watchdogDelay for DEX pools")
 	ref := flag.String("ref", "master", "Ref/branch for the fetch & PR base (default master)")
 	flag.Parse()
 
@@ -170,64 +171,66 @@ func main() {
 		}
 	}
 
-	// ---- POOLS ----
-	poolsDir := "config/pools"
-	poolFiles, err := FetchFilenamesWithoutExtensionFromGithub(client, owner, repo, poolsDir, *ref)
-	if err != nil {
-		log.Fatal("FetchFilenames pools: ", err)
-	}
-	log.Infof("Pools: %v", poolFiles)
-
-	for _, poolFile := range poolFiles {
-		log.Infof("===== Processing pool config %s =====", poolFile)
-		poolsPath := fmt.Sprintf("%s/%s.json", poolsDir, poolFile)
-
-		poolsFile, sha, err := fetchGithubFile(client, owner, repo, poolsPath)
+	if *updatePools {
+		// ---- POOLS ----
+		poolsDir := "config/pools"
+		poolFiles, err := FetchFilenamesWithoutExtensionFromGithub(client, owner, repo, poolsDir, *ref)
 		if err != nil {
-			log.Warnf("Error fetching %s: %v", poolsPath, err)
-			continue
+			log.Fatal("FetchFilenames pools: ", err)
 		}
-		var poolsConfig PoolConfig
-		if err := json.Unmarshal(poolsFile, &poolsConfig); err != nil {
-			log.Warnf("Could not decode %s: %v", poolsPath, err)
-			continue
-		}
+		log.Infof("Pools: %v", poolFiles)
 
-		for i, pool := range poolsConfig.Pools {
-			watchdog := computeWatchdogTimeForPool(pool, *factor)
-			log.Infof("Pool %s:%s old vs new watchdog: %d -- %d", pool.Blockchain, pool.Address, pool.WatchDogDelay, watchdog)
-			poolsConfig.Pools[i].WatchDogDelay = watchdog
-			time.Sleep(500 * time.Millisecond)
-		}
+		for _, poolFile := range poolFiles {
+			log.Infof("===== Processing pool config %s =====", poolFile)
+			poolsPath := fmt.Sprintf("%s/%s.json", poolsDir, poolFile)
 
-		updated, err := json.MarshalIndent(poolsConfig, "", "  ")
-		if err != nil {
-			log.Errorf("Error marshaling updated pool config JSON for %s: %v", poolFile, err)
-			continue
-		}
-
-		if *prMode {
-			// update in PR
-			log.Infof("Updating %s in branch %s", poolsPath, branchName)
-			opts := &github.RepositoryContentFileOptions{
-				Message: github.String(fmt.Sprintf("Update watchdogs in pools/%s.json @%d", poolFile, time.Now().Unix())),
-				Content: updated,
-				SHA:     github.String(sha),
-				Branch:  github.String(branchName),
-			}
-			_, _, err = client.Repositories.UpdateFile(context.Background(),
-				owner, repo, poolsPath, opts)
+			poolsFile, sha, err := fetchGithubFile(client, owner, repo, poolsPath)
 			if err != nil {
-				log.Errorf("Error updating pool file: %v", err)
+				log.Warnf("Error fetching %s: %v", poolsPath, err)
+				continue
 			}
-		} else if *outPath != "" {
-			outFile := filepath.Join(*outPath, "pools-"+poolFile+".json")
-			log.Infof("Writing updated pool file to %s", outFile)
-			if err := os.WriteFile(outFile, updated, 0644); err != nil {
-				log.Errorf("Error writing output file: %v", err)
+			var poolsConfig PoolConfig
+			if err := json.Unmarshal(poolsFile, &poolsConfig); err != nil {
+				log.Warnf("Could not decode %s: %v", poolsPath, err)
+				continue
 			}
-		} else {
-			log.Infof("Updated %s pool config file:\n%s", poolFile, string(updated))
+
+			for i, pool := range poolsConfig.Pools {
+				watchdog := computeWatchdogTimeForPool(pool, *factor)
+				log.Infof("Pool %s:%s old vs new watchdog: %d -- %d", pool.Blockchain, pool.Address, pool.WatchDogDelay, watchdog)
+				poolsConfig.Pools[i].WatchDogDelay = watchdog
+				time.Sleep(500 * time.Millisecond)
+			}
+
+			updated, err := json.MarshalIndent(poolsConfig, "", "  ")
+			if err != nil {
+				log.Errorf("Error marshaling updated pool config JSON for %s: %v", poolFile, err)
+				continue
+			}
+
+			if *prMode {
+				// update in PR
+				log.Infof("Updating %s in branch %s", poolsPath, branchName)
+				opts := &github.RepositoryContentFileOptions{
+					Message: github.String(fmt.Sprintf("Update watchdogs in pools/%s.json @%d", poolFile, time.Now().Unix())),
+					Content: updated,
+					SHA:     github.String(sha),
+					Branch:  github.String(branchName),
+				}
+				_, _, err = client.Repositories.UpdateFile(context.Background(),
+					owner, repo, poolsPath, opts)
+				if err != nil {
+					log.Errorf("Error updating pool file: %v", err)
+				}
+			} else if *outPath != "" {
+				outFile := filepath.Join(*outPath, "pools-"+poolFile+".json")
+				log.Infof("Writing updated pool file to %s", outFile)
+				if err := os.WriteFile(outFile, updated, 0644); err != nil {
+					log.Errorf("Error writing output file: %v", err)
+				}
+			} else {
+				log.Infof("Updated %s pool config file:\n%s", poolFile, string(updated))
+			}
 		}
 	}
 
