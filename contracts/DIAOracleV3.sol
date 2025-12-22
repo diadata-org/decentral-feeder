@@ -124,13 +124,13 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      */
     function getValueAt(string memory key, uint256 index) external view returns (uint128 value, uint128 timestamp) {
         ValueEntry[] storage history = _valueHistory[key];
-        uint256 count = valueCount[key];
+        uint256 count = _valueCount[key];
         
         if (index >= count) {
             revert InvalidHistoryIndex(index, count);
         }
         
-        uint256 currentWriteIndex = writeIndex[key];
+        uint256 currentWriteIndex = _writeIndex[key];
         
  
         uint256 position;
@@ -160,7 +160,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         }
         
         ValueEntry[] memory result = new ValueEntry[](count);
-        uint256 currentWriteIndex = writeIndex[key];
+        uint256 currentWriteIndex = _writeIndex[key];
         
          for (uint256 i = 0; i < count; i++) {
             uint256 position;
@@ -182,7 +182,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @return The count of historical values stored.
      */
     function getValueCount(string memory key) external view returns (uint256) {
-        return valueCount[key];
+        return _valueCount[key];
     }
     
     /**
@@ -233,11 +233,11 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
          history[currentWriteIndex] = ValueEntry(value, timestamp);
         
         currentWriteIndex = (currentWriteIndex + 1) % maxHistorySize;
-        writeIndex[key] = currentWriteIndex;
+        _writeIndex[key] = currentWriteIndex;
         
          if (currentCount < maxHistorySize) {
             currentCount++;
-            valueCount[key] = currentCount;
+            _valueCount[key] = currentCount;
         }
      }
 }
