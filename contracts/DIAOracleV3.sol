@@ -15,21 +15,21 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     uint256 public maxHistorySize;
     
     /// @notice Mapping to store compressed values of assets (price and timestamp).
-    /// @dev The stored value is a 256-bit integer where the upper 128 bits store the price and the lower 128 bits store the timestamp.
+    /// @dev Upper 128 bits store the price and the lower 128 bits store the timestamp.
     ///      This maintains backward compatibility with V2's getValue() function.
     mapping (string => uint256) public values;
     
     /// @notice Mapping to store historical values for each key (ring buffer).
     /// @dev Pre-allocated arrays of size maxHistorySize, using ring buffer pattern.
-    mapping (string => ValueEntry[]) private valueHistory;
+    mapping (string => ValueEntry[]) private _valueHistory;
     
     /// @notice Mapping to track the current write index for ring buffer.
     /// @dev Points to the next position to write. When buffer is full, wraps around.
-    mapping (string => uint256) private writeIndex;
+    mapping (string => uint256) private _writeIndex;
     
     /// @notice Mapping to track the actual count of values stored (for partially filled buffers).
     /// @dev Starts at 0, increases up to maxHistorySize, then stays at maxHistorySize.
-    mapping (string => uint256) private valueCount;
+    mapping (string => uint256) private _valueCount;
     
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
     event UpdaterAddressChange(address newUpdater);
@@ -123,7 +123,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @return timestamp The timestamp at the specified index.
      */
     function getValueAt(string memory key, uint256 index) external view returns (uint128 value, uint128 timestamp) {
-        ValueEntry[] storage history = valueHistory[key];
+        ValueEntry[] storage history = _valueHistory[key];
         uint256 count = valueCount[key];
         
         if (index >= count) {
@@ -152,8 +152,8 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @return An array of ValueEntry structs containing all stored historical values.
      */
     function getValueHistory(string memory key) external view returns (ValueEntry[] memory) {
-        ValueEntry[] storage history = valueHistory[key];
-        uint256 count = valueCount[key];
+        ValueEntry[] storage history = _valueHistory[key];
+        uint256 count = _valueCount[key];
         
         if (count == 0) {
             return new ValueEntry[](0);
@@ -218,9 +218,9 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param timestamp The timestamp to store.
      */
     function _addToHistory(string memory key, uint128 value, uint128 timestamp) private {
-        ValueEntry[] storage history = valueHistory[key];
-        uint256 currentWriteIndex = writeIndex[key];
-        uint256 currentCount = valueCount[key];
+        ValueEntry[] storage history = _valueHistory[key];
+        uint256 currentWriteIndex = _writeIndex[key];
+        uint256 currentCount = _valueCount[key];
         
          if (history.length == 0) {
              for (uint256 i = 0; i < maxHistorySize; i++) {
