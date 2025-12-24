@@ -213,4 +213,86 @@ contract DIAOracleV3Test is Test {
         assertEq(latestValue, valueAt0, "getValue should match getValueAt(0)");
         assertEq(latestTimestamp, timestampAt0, "getValue timestamp should match getValueAt(0)");
     }
+
+     function testConstructorMaxHistorySizeTooLarge() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DIAOracleV3.MaxHistorySizeTooLarge.selector,
+                1001,
+                1000
+            )
+        );
+        new DIAOracleV3(1001);
+    }
+
+     function testSetMultipleValuesMismatchedArrays() public {
+        string[] memory keys = new string[](2);
+        keys[0] = "ETH/USD";
+        keys[1] = "SOL/USD";
+
+        uint256[] memory compressedValues = new uint256[](3);  
+        compressedValues[0] = (uint256(3000) << 128) + 1710000001;
+        compressedValues[1] = (uint256(150) << 128) + 1710000001;
+        compressedValues[2] = (uint256(200) << 128) + 1710000001;
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DIAOracleV3.MismatchedArrayLengths.selector,
+                2,
+                3
+            )
+        );
+        oracle.setMultipleValues(keys, compressedValues);
+    }
+
+     function testGetValueHistoryEmpty() public {
+        string memory key = "EMPTY";
+        IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
+        
+        assertEq(history.length, 0, "Empty key should return empty array");
+    }
+
+     function testGetValueHistoryRingBufferWrap() public {
+        string memory key = "WRAP_TEST";
+        uint256 maxSize = oracle.getMaxHistorySize();
+        
+        // Fill the buffer completely  
+        for (uint256 i = 0; i < maxSize; i++) {
+            oracle.setValue(key, uint128(1000 + i), uint128(1710000000 + i));
+        }
+        
+        // Add one more to trigger wrap  
+        oracle.setValue(key, uint128(1000 + maxSize), uint128(1710000000 + maxSize));
+        
+         IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
+        
+         assertEq(history.length, maxSize, "Should have maxSize values");
+         assertEq(history[0].value, uint128(1000 + maxSize), "Most recent should be last added");
+         assertEq(history[maxSize - 1].value, uint128(1000 + 1), "Oldest should be second value");
+    }
+
+     function testSetMaxHistorySizeTooLargeByAdmin() public {
+         vm.expectRevert(
+            abi.encodeWithSelector(
+                DIAOracleV3.MaxHistorySizeTooLarge.selector,
+                1001,
+                1000
+            )
+        );
+        oracle.setMaxHistorySize(1001);
+    }
+
+     function testGetValueAtRingBufferWrap() public {
+        string memory key = "WRAP_VALUE_TEST";
+        uint256 maxSize = oracle.getMaxHistorySize();
+        
+         for (uint256 i = 0; i < maxSize; i++) {
+            oracle.setValue(key, uint128(2000 + i), uint128(1710000000 + i));
+        }
+        
+         oracle.setValue(key, uint128(2000 + maxSize), uint128(1710000000 + maxSize));
+        
+         (uint128 value, ) = oracle.getValueAt(key, maxSize - 1);
+         assertEq(value, uint128(2000 + 1), "Should access wrapped buffer correctly");
+    }
 }
