@@ -32,6 +32,9 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     event OracleAdded(address newOracleAddress);
     event OracleRemoved(address removedOracleAddress);
     event PriceMethodologyChanged(address oldMethodology, address newMethodology);
+    event ThresholdChanged(uint256 oldThreshold, uint256 newThreshold);
+    event TimeoutSecondsChanged(uint256 oldTimeoutSeconds, uint256 newTimeoutSeconds);
+    event WindowSizeChanged(uint256 oldWindowSize, uint256 newWindowSize);
 
     error OracleNotFound();
     error ZeroAddress();
@@ -84,16 +87,26 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      * @param oracleToRemove The address of the oracle contract to remove.
      */
     function removeOracle(address oracleToRemove) public onlyOwner {
-        for (uint256 i = 0; i < numOracles; i++) {
+        uint256 oracleCount = numOracles;
+        bool found = false;
+        uint256 indexToRemove = 0;
+        
+        for (uint256 i = 0; i < oracleCount; i++) {
             if (oracles[i] == oracleToRemove) {
-                oracles[i] = oracles[numOracles - 1];
-                oracles[numOracles - 1] = address(0);
-                numOracles--;
-                emit OracleRemoved(oracleToRemove);
-                return;
+                indexToRemove = i;
+                found = true;
+                break;
             }
         }
-        revert OracleNotFound();
+        
+        if (!found) {
+            revert OracleNotFound();
+        }
+        
+        oracles[indexToRemove] = oracles[oracleCount - 1];
+        oracles[oracleCount - 1] = address(0);
+        numOracles = oracleCount - 1;
+        emit OracleRemoved(oracleToRemove);
     }
 
     /**
@@ -105,7 +118,9 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (newThreshold == 0) {
             revert InvalidThreshold(newThreshold);
         }
+        uint256 oldThreshold = threshold;
         threshold = newThreshold;
+        emit ThresholdChanged(oldThreshold, newThreshold);
     }
 
     /**
@@ -120,7 +135,9 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (newTimeoutSeconds > 86400) {
             revert TimeoutExceedsLimit(newTimeoutSeconds);
         }
+        uint256 oldTimeoutSeconds = timeoutSeconds;
         timeoutSeconds = newTimeoutSeconds;
+        emit TimeoutSecondsChanged(oldTimeoutSeconds, newTimeoutSeconds);
     }
 
     /**
@@ -146,7 +163,9 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (newWindowSize == 0) {
             revert InvalidWindowSize(newWindowSize);
         }
+        uint256 oldWindowSize = windowSize;
         windowSize = newWindowSize;
+        emit WindowSizeChanged(oldWindowSize, newWindowSize);
     }
 
     /**
@@ -188,30 +207,30 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      * @notice Retrieves the price value with custom configuration parameters.
      * @dev Allows overriding the default windowSize, methodology, timeoutSeconds, and threshold for this call.
      * @param key The asset identifier (e.g., "BTC/USD").
-     * @param windowSize Maximum number of recent historical values to consider per oracle.
-     * @param methodology Address of the methodology contract to use (must implement IPriceMethodology).
-     * @param timeoutSeconds Timeout in seconds for value validity.
-     * @param threshold Minimum number of valid values required.
+     * @param customWindowSize Maximum number of recent historical values to consider per oracle.
+     * @param customMethodology Address of the methodology contract to use (must implement IPriceMethodology).
+     * @param customTimeoutSeconds Timeout in seconds for value validity.
+     * @param customThreshold Minimum number of valid values required.
      * @return value The aggregated price value from available oracles.
      * @return timestamp The current block timestamp.
      */
     function getValueByConfig(
         string memory key,
-        uint256 windowSize,
-        address methodology,
-        uint256 timeoutSeconds,
-        uint256 threshold
+        uint256 customWindowSize,
+        address customMethodology,
+        uint256 customTimeoutSeconds,
+        uint256 customThreshold
     ) external view returns (uint128 value, uint128 timestamp) {
-        if (timeoutSeconds == 0) {
-            revert InvalidTimeOut(timeoutSeconds);
+        if (customTimeoutSeconds == 0) {
+            revert InvalidTimeOut(customTimeoutSeconds);
         }
-        if (threshold == 0) {
-            revert InvalidThreshold(threshold);
+        if (customThreshold == 0) {
+            revert InvalidThreshold(customThreshold);
         }
-        if (windowSize == 0) {
-            revert InvalidWindowSize(windowSize);
+        if (customWindowSize == 0) {
+            revert InvalidWindowSize(customWindowSize);
         }
-        if (methodology == address(0)) {
+        if (customMethodology == address(0)) {
             revert InvalidMethodology();
         }
 
@@ -220,13 +239,13 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             oracleAddresses[i] = oracles[i];
         }
 
-        IPriceMethodology priceMethodology = IPriceMethodology(methodology);
-        (value, timestamp) = priceMethodology.calculateValue(
+        IPriceMethodology methodologyContract = IPriceMethodology(customMethodology);
+        (value, timestamp) = methodologyContract.calculateValue(
             key,
             oracleAddresses,
-            timeoutSeconds,
-            threshold,
-            windowSize
+            customTimeoutSeconds,
+            customThreshold,
+            customWindowSize
         );
 
         return (value, timestamp);
