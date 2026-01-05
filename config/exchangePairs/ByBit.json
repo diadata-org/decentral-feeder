@@ -141,10 +141,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FLOW-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "GRT-USDT", 
             "WatchDogDelay": 300
         },
