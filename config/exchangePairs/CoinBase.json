@@ -157,14 +157,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FLOW-USD", 
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "FLOW-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "FTM-USDT", 
             "WatchDogDelay": 300
         },
