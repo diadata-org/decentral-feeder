@@ -435,6 +435,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "TURBO",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
