@@ -61,10 +61,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "BANANA-USD",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "BONK-USDT",
             "WatchDogDelay": 300
         },
@@ -133,10 +129,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FLOKI-USD",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "FIL-USDT",
             "WatchDogDelay": 300
         },
@@ -174,14 +166,6 @@
         },
         {
             "Pair": "LDO-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "LYX-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "MOG-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -298,10 +282,6 @@
         },
         {
             "Pair": "TIA-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TURBO-USD",
             "WatchDogDelay": 300
         },
         {
