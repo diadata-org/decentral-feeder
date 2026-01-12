@@ -1,536 +1,536 @@
 {
-  "Tokens": [
-    {
-      "Symbol": "AAVE",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ADA",
-      "Exchange": "KuCoin",
-      "Blockchain": "Cardano",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "AERO",
-      "Exchange": "KuCoin",
-      "Blockchain": "Base",
-      "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "APT",
-      "Exchange": "KuCoin",
-      "Blockchain": "Aptos",
-      "Address": "0x1::aptos_coin::AptosCoin",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "AR",
-      "Exchange": "KuCoin",
-      "Blockchain": "Arweave",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 0
-    },
-    {
-      "Symbol": "ARB",
-      "Exchange": "KuCoin",
-      "Blockchain": "Arbitrum",
-      "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ATOM",
-      "Exchange": "KuCoin",
-      "Blockchain": "Cosmos",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "AVAX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Avalanche",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 0
-    },
-    {
-      "Symbol": "BANANA",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "HPOS10I",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "BNB",
-      "Exchange": "KuCoin",
-      "Blockchain": "KuCoinSmartChain",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "BONK",
-      "Exchange": "KuCoin",
-      "Blockchain": "Solana",
-      "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
-      "Decimals": 5
-    },
-    {
-      "Symbol": "BRETT",
-      "Exchange": "KuCoin",
-      "Blockchain": "Base",
-      "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "BTC",
-      "Exchange": "KuCoin",
-      "Blockchain": "Bitcoin",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "CRV",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "MILADYCULT",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "DIA",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "DOGE",
-      "Exchange": "KuCoin",
-      "Blockchain": "Dogechain",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "DOT",
-      "Exchange": "KuCoin",
-      "Blockchain": "Polkadot",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 10
-    },
-    {
-      "Symbol": "DYDX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ENA",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ENS",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ETH",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "FET",
-      "Exchange": "KuCoin",
-      "Blockchain": "Fetch",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "FIL",
-      "Exchange": "KuCoin",
-      "Blockchain": "Filecoin",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "FLOKI",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
-      "Decimals": 9
-    },
-    {
-      "Symbol": "FLOW",
-      "Exchange": "KuCoin",
-      "Blockchain": "Flow",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 0
-    },
-    {
-      "Symbol": "FTM",
-      "Exchange": "KuCoin",
-      "Blockchain": "Fantom",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "GIZA",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "GRT",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ICP",
-      "Exchange": "KuCoin",
-      "Blockchain": "InternetComputer",
-      "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "LDO",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "LYX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Lukso",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "MAIGA",
-      "Exchange": "KuCoin",
-      "Blockchain": "BinanceSmartChain",
-      "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "MKR",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "MNT",
-      "Exchange": "KuCoin",
-      "Blockchain": "Mantle",
-      "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "MOVR",
-      "Exchange": "KuCoin",
-      "Blockchain": "Moonriver",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "NEAR",
-      "Exchange": "KuCoin",
-      "Blockchain": "NEAR",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 0
-    },
-    {
-      "Symbol": "NPC",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "OMG",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ONDO",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "OP",
-      "Exchange": "KuCoin",
-      "Blockchain": "Optimism",
-      "Address": "0x4200000000000000000000000000000000000042",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "PENDLE",
-      "Exchange": "KuCoin",
-      "Blockchain": "Arbitrum",
-      "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "POL",
-      "Exchange": "KuCoin",
-      "Blockchain": "Polygon",
-      "Address": "0x0000000000000000000000000000000000001010",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "PRIME",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "RENDER",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "SAND",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "SEI",
-      "Exchange": "KuCoin",
-      "Blockchain": "Sei",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "SHIB",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "SKY",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x56072C95FAA701256059aa122697B133aDEd9279",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "SNX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "SOL",
-      "Exchange": "KuCoin",
-      "Blockchain": "Solana",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 0
-    },
-    {
-      "Symbol": "SPX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "STG",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "STORJ",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "STRK",
-      "Exchange": "KuCoin",
-      "Blockchain": "Starknet",
-      "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "STX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Stacks",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "SUI",
-      "Exchange": "KuCoin",
-      "Blockchain": "Sui",
-      "Address": "0x2::sui::SUI",
-      "Decimals": 9
-    },
-    {
-      "Symbol": "SUSHI",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "TAO",
-      "Exchange": "KuCoin",
-      "Blockchain": "Bittensor",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "TIA",
-      "Exchange": "KuCoin",
-      "Blockchain": "Osmosis",
-      "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "TON",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ton",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "TRX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Tron",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "TURBO",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "UNI",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "USD",
-      "Exchange": "KuCoin",
-      "Blockchain": "Fiat",
-      "Address": "840",
-      "Decimals": 2
-    },
-    {
-      "Symbol": "USDC",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "USDT",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "WIF",
-      "Exchange": "KuCoin",
-      "Blockchain": "Solana",
-      "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "WILD",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "WLD",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x163f8C2467924be0ae7B5347228CABF260318753",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "WMTX",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0xDBB5Cf12408a3Ac17d668037Ce289f9eA75439D7",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "XLM",
-      "Exchange": "KuCoin",
-      "Blockchain": "Stellar",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 8
-    },
-    {
-      "Symbol": "XRP",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ripple",
-      "Address": "0x0000000000000000000000000000000000000000",
-      "Decimals": 6
-    },
-    {
-      "Symbol": "YFI",
-      "Exchange": "KuCoin",
-      "Blockchain": "Ethereum",
-      "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
-      "Decimals": 18
-    },
-    {
-      "Symbol": "ZEN",
-      "Exchange": "KuCoin",
-      "Blockchain": "Base",
-      "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229",
-      "Decimals": 18
-    }
-  ]
+    "Tokens": [
+        {
+            "Symbol": "AAVE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ADA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AERO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "APT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Aptos",
+            "Address": "0x1::aptos_coin::AptosCoin",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "AR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Arweave",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "ARB",
+            "Exchange": "KuCoin",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ATOM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Cosmos",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "BANANA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "HPOS10I",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "BNB",
+            "Exchange": "KuCoin",
+            "Blockchain": "KuCoinSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "BONK",
+            "Exchange": "KuCoin",
+            "Blockchain": "Solana",
+            "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+            "Decimals": 5
+        },
+        {
+            "Symbol": "BRETT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "BTC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "CRV",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MILADYCULT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "DIA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 10
+        },
+        {
+            "Symbol": "DYDX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ENA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ENS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "FET",
+            "Exchange": "KuCoin",
+            "Blockchain": "Fetch",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "FIL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Filecoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "FLOKI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "FLOW",
+            "Exchange": "KuCoin",
+            "Blockchain": "Flow",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "FTM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Fantom",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GIZA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GRT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ICP",
+            "Exchange": "KuCoin",
+            "Blockchain": "InternetComputer",
+            "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "LDO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "LYX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MAIGA",
+            "Exchange": "KuCoin",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MKR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MNT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Mantle",
+            "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MOVR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Moonriver",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "NEAR",
+            "Exchange": "KuCoin",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "NPC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "OMG",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ONDO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "OP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PENDLE",
+            "Exchange": "KuCoin",
+            "Blockchain": "Arbitrum",
+            "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "POL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PRIME",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RENDER",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SAND",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x3845badAde8e6dFF049820680d1F14bD3903a5d0",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SEI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Sei",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SHIB",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SKY",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SNX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SOL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 0
+        },
+        {
+            "Symbol": "SPX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "STG",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STORJ",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STRK",
+            "Exchange": "KuCoin",
+            "Blockchain": "Starknet",
+            "Address": "0x4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "SUI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Sui",
+            "Address": "0x2::sui::SUI",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "SUSHI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TAO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Bittensor",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TIA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "TON",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TRX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Tron",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "TURBO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "UNI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Fiat",
+            "Address": "840",
+            "Decimals": 2
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "WIF",
+            "Exchange": "KuCoin",
+            "Blockchain": "Solana",
+            "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WILD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WLD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x163f8C2467924be0ae7B5347228CABF260318753",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WMTX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xDBB5Cf12408a3Ac17d668037Ce289f9eA75439D7",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "XLM",
+            "Exchange": "KuCoin",
+            "Blockchain": "Stellar",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "YFI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZEN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229",
+            "Decimals": 18
+        }
+    ]
 }

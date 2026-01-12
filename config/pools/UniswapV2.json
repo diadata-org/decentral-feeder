@@ -1,160 +1,160 @@
 {
-  "Pools": [
-    {
-      "ForeignName": "XMW-WETH",
-      "Address": "0x0da7096f14303eddd634c0241963c064e0244984",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "NPC-WETH",
-      "Address": "0x69c7bd26512f52bf6f76fab834140d13dda673ca",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "WILD-WETH",
-      "Address": "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "BANANA-WETH",
-      "Address": "0x43de4318b6eb91a7cf37975dbb574396a7b5b5c6",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "JOE-WETH",
-      "Address": "0x704ad8d95c12d7fea531738faa94402725acb035",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "MOG-WETH",
-      "Address": "0xc2eab7d33d3cb97692ecb231a5d0e4a649cb539d",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "SPX-WETH",
-      "Address": "0x52c77b0cb827afbad022e6d6caf2c44452edbc39",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "SPX-BITCOIN",
-      "Address": "0x7c1c4a2cf81d2fc83b89bfd34f4d2c7e90044b32",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "APU-WETH",
-      "Address": "0x5ced44f03ff443bbe14d8ea23bc24425fb89e3ed",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "BOBO-WETH",
-      "Address": "0xe945683b3462d2603a18bdfbb19261c6a4f03ad1",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "Neiro-WETH",
-      "Address": "0xc555d55279023e732ccd32d812114caf5838fd46",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "USDS-SKY",
-      "Address": "0x2621cc0b3f3c079c1db0e80794aa24976f0b9e3c",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "FLOKI-WETH",
-      "Address": "0xca7c2771d248dcbe09eabe0ce57a62e18da178c0",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "ANDY-WETH",
-      "Address": "0xa1bf0e900fb272089c9fd299ea14bfccb1d1c2c0",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "WOLF-WETH",
-      "Address": "0x67324985b5014b36b960273353deb3d96f2f18c2",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "WETH-USDT",
-      "Address": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "PEPE-WETH",
-      "Address": "0xA43fe16908251ee70EF74718545e4FE6C5cCEc9f",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "USDC-WETH",
-      "Address": "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc",
-      "Order": "1",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "WBTC-WETH",
-      "Address": "0xBb2b8038a1640196FbE3e38816F3e67Cba72D940",
-      "Order": "2",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "DAI-WETH",
-      "Address": "0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11",
-      "Order": "1",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "UNI-WETH",
-      "Address": "0xd3d2E2692501A5c9Ca623199D38826e513033a17",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "USDC-USDT",
-      "Address": "0x3041CbD36888bECc7bbCBc0045E3B1f144466f5f",
-      "Order": "2",
-      "WatchDogDelay": 3600
-    },
-    {
-      "ForeignName": "LINK-WETH",
-      "Address": "0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "TRUMP-WETH",
-      "Address": "0xE4b8583cCB95b25737C016ac88E539D0605949e8",
-      "Order": "0",
-      "WatchDogDelay": 3600
-    },
-    {
-      "ForeignName": "DOGE-WETH",
-      "Address": "0x308C6fbD6a14881Af333649f17f2FdE9cd75e2a6",
-      "Order": "0",
-      "WatchDogDelay": 1800
-    },
-    {
-      "ForeignName": "ASF-WETH",
-      "Address": "0x6eb95848e9b3e0f98ccf8e1b17c37788e0532846",
-      "Order": "0",
-      "WatchDogDelay": 600
-    }
-  ]
+    "Pools": [
+        {
+            "ForeignName": "XMW-WETH",
+            "Address": "0x0da7096f14303eddd634c0241963c064e0244984",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "NPC-WETH",
+            "Address": "0x69c7bd26512f52bf6f76fab834140d13dda673ca",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "WILD-WETH",
+            "Address": "0xcaa004418eb42cdf00cb057b7c9e28f0ffd840a5",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "BANANA-WETH",
+            "Address": "0x43de4318b6eb91a7cf37975dbb574396a7b5b5c6",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "JOE-WETH",
+            "Address": "0x704ad8d95c12d7fea531738faa94402725acb035",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "MOG-WETH",
+            "Address": "0xc2eab7d33d3cb97692ecb231a5d0e4a649cb539d",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "SPX-WETH",
+            "Address": "0x52c77b0cb827afbad022e6d6caf2c44452edbc39",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "SPX-BITCOIN",
+            "Address": "0x7c1c4a2cf81d2fc83b89bfd34f4d2c7e90044b32",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "APU-WETH",
+            "Address": "0x5ced44f03ff443bbe14d8ea23bc24425fb89e3ed",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "BOBO-WETH",
+            "Address": "0xe945683b3462d2603a18bdfbb19261c6a4f03ad1",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "Neiro-WETH",
+            "Address": "0xc555d55279023e732ccd32d812114caf5838fd46",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "USDS-SKY",
+            "Address": "0x2621cc0b3f3c079c1db0e80794aa24976f0b9e3c",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "FLOKI-WETH",
+            "Address": "0xca7c2771d248dcbe09eabe0ce57a62e18da178c0",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "ANDY-WETH",
+            "Address": "0xa1bf0e900fb272089c9fd299ea14bfccb1d1c2c0",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "WOLF-WETH",
+            "Address": "0x67324985b5014b36b960273353deb3d96f2f18c2",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "WETH-USDT",
+            "Address": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "PEPE-WETH",
+            "Address": "0xA43fe16908251ee70EF74718545e4FE6C5cCEc9f",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "USDC-WETH",
+            "Address": "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc",
+            "Order": "1",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "WBTC-WETH",
+            "Address": "0xBb2b8038a1640196FbE3e38816F3e67Cba72D940",
+            "Order": "2",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "DAI-WETH",
+            "Address": "0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11",
+            "Order": "1",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "UNI-WETH",
+            "Address": "0xd3d2E2692501A5c9Ca623199D38826e513033a17",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "USDC-USDT",
+            "Address": "0x3041CbD36888bECc7bbCBc0045E3B1f144466f5f",
+            "Order": "2",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "LINK-WETH",
+            "Address": "0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "TRUMP-WETH",
+            "Address": "0xE4b8583cCB95b25737C016ac88E539D0605949e8",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "DOGE-WETH",
+            "Address": "0x308C6fbD6a14881Af333649f17f2FdE9cd75e2a6",
+            "Order": "0",
+            "WatchDogDelay": 1800
+        },
+        {
+            "ForeignName": "ASF-WETH",
+            "Address": "0x6eb95848e9b3e0f98ccf8e1b17c37788e0532846",
+            "Order": "0",
+            "WatchDogDelay": 600
+        }
+    ]
 }
