@@ -57,6 +57,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "HPOS10I",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "ByBit",
             "Blockchain": "ByBitSmartChain",
@@ -69,6 +76,13 @@
             "Blockchain": "Solana",
             "Address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
             "Decimals": 5
+        },
+        {
+            "Symbol": "BRETT",
+            "Exchange": "ByBit",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+            "Decimals": 18
         },
         {
             "Symbol": "BTC",
@@ -169,6 +183,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "FLOKI",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "ByBit",
             "Blockchain": "Flow",
@@ -215,6 +236,13 @@
             "Exchange": "ByBit",
             "Blockchain": "Mantle",
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MOG",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a",
             "Decimals": 18
         },
         {
@@ -274,13 +302,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "RNDR",
-            "Exchange": "ByBit",
-            "Blockchain": "Ethereum",
-            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
-            "Decimals": 18
-        },
-        {
             "Symbol": "RENDER",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
@@ -328,6 +349,13 @@
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "SPX",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C",
+            "Decimals": 8
         },
         {
             "Symbol": "STETH",

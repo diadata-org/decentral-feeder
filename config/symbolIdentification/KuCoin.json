@@ -57,6 +57,20 @@
             "Decimals": 0
         },
         {
+            "Symbol": "BANANA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "HPOS10I",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "KuCoin",
             "Blockchain": "KuCoinSmartChain",
@@ -71,6 +85,13 @@
             "Decimals": 5
         },
         {
+            "Symbol": "BRETT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+            "Decimals": 18
+        },
+        {
             "Symbol": "BTC",
             "Exchange": "KuCoin",
             "Blockchain": "Bitcoin",
@@ -82,6 +103,13 @@
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MILADYCULT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4",
             "Decimals": 18
         },
         {
@@ -148,6 +176,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "FLOKI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "KuCoin",
             "Blockchain": "Flow",
@@ -190,6 +225,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "LYX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MAIGA",
+            "Exchange": "KuCoin",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MKR",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -216,6 +265,13 @@
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "NPC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
+            "Decimals": 18
         },
         {
             "Symbol": "OMG",
@@ -309,6 +365,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "SPX",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C",
+            "Decimals": 8
+        },
+        {
             "Symbol": "STG",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -379,6 +442,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "TURBO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -411,6 +481,13 @@
             "Exchange": "KuCoin",
             "Blockchain": "Solana",
             "Address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WILD",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
             "Decimals": 18
         },
         {
