@@ -1,6 +1,60 @@
 {
   "Pools": [
     {
+      "ForeignName": "SERV-WETH",
+      "Address": "0x9c7ed68b00dc4f45243b07ce71a54a86e8f8fcbb",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "Pin-WETH",
+      "Address": "0x241fc1cdbf9f741933e5fa515c5b884da93b81b6",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "sUSDS-OHM",
+      "Address": "0x0858e2b0f9d75f7300b38d64482ac2c8df06a755",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "hOHM-sUSDS",
+      "Address": "0xd80e75faf4cc02f6447287d5b1ef195eac19ffd9",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "SPX-WETH",
+      "Address": "0x7c706586679af2ba6d1a9fc2da9c6af59883fdd3",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "REKT-WETH",
+      "Address": "0xf12533a96712133d9bb97c24de5bcf52f48851bd",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "BITCOIN-WETH",
+      "Address": "0x25392d7129040710f152174af5019004a6f9b18d",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "BITCOIN-WETH",
+      "Address": "0x0c30062368eefb96bf3ade1218e685306b8e89fa",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
+      "ForeignName": "CULT-WETH",
+      "Address": "0xc4ce8e63921b8b6cbdb8fcb6bd64cc701fb926f2",
+      "Order": "0",
+      "WatchDogDelay": 600
+    },
+    {
       "ForeignName": "PRIME-WETH",
       "Address": "0xCD423F3ab39a11ff1D9208B7D37dF56E902C932B",
       "Order": "1",
@@ -211,24 +265,6 @@
       "WatchDogDelay": 3600
     },
     {
-      "ForeignName": "SERV-WETH",
-      "Address": "0x9c7ed68b00dc4f45243b07ce71a54a86e8f8fcbb",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "Pin-WETH",
-      "Address": "0x241fc1cdbf9f741933e5fa515c5b884da93b81b6",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "hOHM-sUSDS",
-      "Address": "0xd80e75faf4cc02f6447287d5b1ef195eac19ffd9",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
       "ForeignName": "MOG-WETH",
       "Address": "0x7832310Cd0de39c4cE0A635F34d9a4B5b47fd434",
       "Order": "0",
@@ -241,24 +277,6 @@
       "WatchDogDelay": 600
     },
     {
-      "ForeignName": "REKT-WETH",
-      "Address": "0xF12533a96712133d9Bb97C24de5BCf52F48851BD",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "BITCOIN-WETH",
-      "Address": "0x25392D7129040710f152174Af5019004a6F9b18d",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "BITCOIN-WETH",
-      "Address": "0x0c30062368eEfB96bF3AdE1218E685306b8E89Fa",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
       "ForeignName": "BITCOIN-USDC",
       "Address": "0xFfC9eFD66926e3023A4cbd20145CA48F52DFf2d9",
       "Order": "0",
@@ -267,12 +285,6 @@
     {
       "ForeignName": "APU-WETH",
       "Address": "0x120FFad35bB97a5BaF9aB68f9Dd7667864530245",
-      "Order": "0",
-      "WatchDogDelay": 600
-    },
-    {
-      "ForeignName": "CULT-WETH",
-      "Address": "0xC4ce8E63921b8B6cBdB8fCB6Bd64cC701Fb926f2",
       "Order": "0",
       "WatchDogDelay": 600
     },

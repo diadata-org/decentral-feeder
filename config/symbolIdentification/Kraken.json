@@ -29,6 +29,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "APU",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa",
+            "Decimals": 18
+        },
+        {
             "Symbol": "AR",
             "Exchange": "Kraken",
             "Blockchain": "Arweave",
@@ -55,6 +62,13 @@
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "BITCOIN",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
         },
         {
             "Symbol": "BNB",
@@ -148,6 +162,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "FLOKI",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "Kraken",
             "Blockchain": "Flow",
@@ -160,6 +181,13 @@
             "Blockchain": "Fantom",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
+        },
+        {
+            "Symbol": "GBP",
+            "Exchange": "Kraken",
+            "Blockchain": "Fiat",
+            "Address": "826",
+            "Decimals": 2
         },
         {
             "Symbol": "GRT",
@@ -209,6 +237,13 @@
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "NEIRO",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",
+            "Decimals": 9
         },
         {
             "Symbol": "OMG",
@@ -302,6 +337,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "SPX",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C",
+            "Decimals": 8
+        },
+        {
             "Symbol": "STG",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
@@ -370,6 +412,13 @@
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TURBO",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
         },
         {
             "Symbol": "UNI",

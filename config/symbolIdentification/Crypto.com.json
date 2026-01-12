@@ -57,6 +57,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "BANANA",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Decimals": 18
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "Crypto.com",
             "Blockchain": "Crypto.comSmartChain",
@@ -148,6 +155,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "FLOKI",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "Crypto.com",
             "Blockchain": "Flow",
@@ -183,6 +197,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "LYX",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MKR",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
@@ -194,6 +215,13 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Mantle",
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MOG",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a",
             "Decimals": 18
         },
         {
@@ -363,6 +391,13 @@
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TURBO",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
         },
         {
             "Symbol": "UNI",

@@ -162,6 +162,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "FLOKI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "CoinBase",
             "Blockchain": "Flow",
@@ -174,6 +181,13 @@
             "Blockchain": "Fantom",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
+        },
+        {
+            "Symbol": "GBP",
+            "Exchange": "CoinBase",
+            "Blockchain": "Fiat",
+            "Address": "826",
+            "Decimals": 2
         },
         {
             "Symbol": "GRT",
@@ -267,14 +281,14 @@
             "Decimals": 18
         },
         {
-            "Symbol": "RNDR",
+            "Symbol": "RENDER",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
             "Decimals": 18
         },
         {
-            "Symbol": "RENDER",
+            "Symbol": "RNDR",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
@@ -393,6 +407,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "TURBO",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -412,6 +433,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             "Decimals": 6
+        },
+        {
+            "Symbol": "USDS",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+            "Decimals": 18
         },
         {
             "Symbol": "USDT",

@@ -29,6 +29,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "APU",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa",
+            "Decimals": 18
+        },
+        {
             "Symbol": "AR",
             "Exchange": "MEXC",
             "Blockchain": "Arweave",
@@ -57,11 +64,25 @@
             "Decimals": 0
         },
         {
+            "Symbol": "BANANA",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Decimals": 18
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "MEXC",
             "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "BOBO",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xB90B2A35C65dBC466b04240097Ca756ad2005295",
+            "Decimals": 18
         },
         {
             "Symbol": "BONK",
@@ -89,6 +110,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "CULT",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4",
             "Decimals": 18
         },
         {
@@ -162,6 +190,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "FLOKI",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
             "Symbol": "FLOW",
             "Exchange": "MEXC",
             "Blockchain": "Flow",
@@ -204,6 +239,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "LYX",
+            "Exchange": "MEXC",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MAIGA",
+            "Exchange": "MEXC",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MKR",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -215,6 +264,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Mantle",
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MOG",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a",
             "Decimals": 18
         },
         {
@@ -230,6 +286,20 @@
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "NEIRO",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "NPC",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
+            "Decimals": 18
         },
         {
             "Symbol": "OMG",
@@ -260,6 +330,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PIN",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x2e44f3f609ff5aA4819B323FD74690f07C3607c4",
+            "Decimals": 18
+        },
+        {
             "Symbol": "POL",
             "Exchange": "MEXC",
             "Blockchain": "Polygon",
@@ -274,14 +351,14 @@
             "Decimals": 18
         },
         {
-            "Symbol": "RNDR",
+            "Symbol": "RENDER",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
             "Decimals": 18
         },
         {
-            "Symbol": "RENDER",
+            "Symbol": "RNDR",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
@@ -335,6 +412,13 @@
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "SPX",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C",
+            "Decimals": 8
         },
         {
             "Symbol": "STETH",
@@ -407,6 +491,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "TURBO",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
+        },
+        {
             "Symbol": "UNI",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -447,6 +538,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xDBB5Cf12408a3Ac17d668037Ce289f9eA75439D7",
             "Decimals": 6
+        },
+        {
+            "Symbol": "WOLF",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69",
+            "Decimals": 18
         },
         {
             "Symbol": "XLM",
