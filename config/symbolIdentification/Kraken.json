@@ -148,6 +148,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "EUR",
+            "Exchange": "Kraken",
+            "Blockchain": "Fiat",
+            "Address": "978",
+            "Decimals": 2
+        },
+        {
             "Symbol": "FET",
             "Exchange": "Kraken",
             "Blockchain": "Fetch",
