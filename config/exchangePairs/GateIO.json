@@ -49,7 +49,7 @@
       "WatchDogDelay": 300
     },
     {
-      "Pair": "BITCOIN-USDT",
+      "Pair": "HPOS10I-USDT",
       "WatchDogDelay": 300
     },
     {
@@ -69,7 +69,7 @@
       "WatchDogDelay": 300
     },
     {
-      "Pair": "CULT-USDT",
+      "Pair": "MILADYCULT-USDT",
       "WatchDogDelay": 300
     },
     {
