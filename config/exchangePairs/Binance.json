@@ -29,6 +29,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "BANANA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BANANA-USDC",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "BNB-USDT",
             "WatchDogDelay": 300
         },
