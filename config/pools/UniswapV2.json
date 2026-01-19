@@ -43,12 +43,6 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "SPX-BITCOIN",
-            "Address": "0x7c1c4a2cf81d2fc83b89bfd34f4d2c7e90044b32",
-            "Order": "0",
-            "WatchDogDelay": 600
-        },
-        {
             "ForeignName": "APU-WETH",
             "Address": "0x5ced44f03ff443bbe14d8ea23bc24425fb89e3ed",
             "Order": "0",
