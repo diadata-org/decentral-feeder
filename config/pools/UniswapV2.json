@@ -149,12 +149,6 @@
             "Address": "0x308C6fbD6a14881Af333649f17f2FdE9cd75e2a6",
             "Order": "0",
             "WatchDogDelay": 1800
-        },
-        {
-            "ForeignName": "ASF-WETH",
-            "Address": "0x6eb95848e9b3e0f98ccf8e1b17c37788e0532846",
-            "Order": "0",
-            "WatchDogDelay": 600
         }
     ]
 }

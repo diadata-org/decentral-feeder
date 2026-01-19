@@ -271,12 +271,6 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "IMF-WETH",
-            "Address": "0x59D813c1D0266278e2f5F146c0e222a6cFEa83dF",
-            "Order": "0",
-            "WatchDogDelay": 600
-        },
-        {
             "ForeignName": "BITCOIN-USDC",
             "Address": "0xFfC9eFD66926e3023A4cbd20145CA48F52DFf2d9",
             "Order": "0",
@@ -297,12 +291,6 @@
         {
             "ForeignName": "Neiro-WETH",
             "Address": "0x15153Da0E9e13cfC167b3D417d3721bF545479bB",
-            "Order": "0",
-            "WatchDogDelay": 600
-        },
-        {
-            "ForeignName": "TURBO-WETH",
-            "Address": "0x7baecE5d47f1BC5E1953FBE0E9931D54DAB6D810",
             "Order": "0",
             "WatchDogDelay": 600
         }
