@@ -1,7 +1,7 @@
 {
     "Pools": [
         {
-            "ForeignName": "sUSDS-sUSDe",
+            "ForeignName": "sUSDe-sUSDS",
             "Address": "0x3cef1afc0e8324b57293a6e7ce663781bbefbb79",
             "Order": "0",
             "WatchDogDelay": 600
@@ -13,25 +13,25 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "sUSDS-DOLA",
+            "ForeignName": "DOLA-sUSDS",
             "Address": "0x8b83c4aa949254895507d09365229bc3a8c7f710",
             "Order": "0",
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "sUSDS-frxUSD",
+            "ForeignName": "frxUSD-sUSDS",
             "Address": "0x81a2612f6dea269a6dd1f6deab45c5424ee2c4b7",
             "Order": "0",
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "sUSDS-scrvUSD",
+            "ForeignName": "scrvUSD-sUSDS",
             "Address": "0xfd1627e3f3469c8392c8c3a261d8f0677586e5e1",
             "Order": "0",
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "USDS-PYUSD",
+            "ForeignName": "PYUSD-USDS",
             "Address": "0xa632d59b9b804a956bfaa9b48af3a1b74808fc1f",
             "Order": "0",
             "WatchDogDelay": 600
