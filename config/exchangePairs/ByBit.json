@@ -156,10 +156,6 @@
             "Pair": "LDO-USDT",
             "WatchDogDelay": 300
         },
-         {
-            "Pair": "MANA-USDT",
-            "WatchDogDelay": 300
-        },
         {
             "Pair": "LTC-USDT",
             "WatchDogDelay": 300
