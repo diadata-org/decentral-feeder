@@ -37,23 +37,29 @@ var (
 	// 2: both directions
 	dexEnv = utils.Getenv("DEX_LIST", "")
 
-	exchangePairs []models.ExchangePair
-	pools         []models.Pool
+	exchangePairs      []models.ExchangePair
+	pools              []models.Pool
+	branchMarketConfig string
 )
 
 func init() {
 	cexLists := strings.Split(exchanges, ENV_SEPARATOR)
+	branchMarketConfig = utils.Getenv("BRANCH_MARKET_CONFIG", "")
 	var epErr error
-	exchangePairs, epErr = models.ExchangePairsFromConfigFiles(cexLists)
+	exchangePairs, epErr = models.ExchangePairsFromConfigFiles(cexLists, branchMarketConfig)
 	if epErr != nil {
-		log.Fatal("Read exchange pairs from files: ", epErr)
+		log.Error("Read exchange pairs from files: ", epErr)
 	}
 
 	dexLists := strings.Split(dexEnv, ENV_SEPARATOR)
 	var err error
-	pools, err = models.PoolsFromConfigFiles(dexLists)
+	pools, err = models.PoolsFromConfigFiles(dexLists, branchMarketConfig)
 	if err != nil {
-		log.Fatal("Read pools from Config files: ", err)
+		log.Error("Read pools from Config files: ", err)
+	}
+
+	if len(exchangePairs) == 0 && len(pools) == 0 {
+		log.Fatal("no exchangepairs and no pools available.")
 	}
 }
 
@@ -148,6 +154,7 @@ func main() {
 		metacontractClient,
 		metacontractAddress,
 		metacontractPrecision,
+		branchMarketConfig,
 		&wg,
 	)
 
