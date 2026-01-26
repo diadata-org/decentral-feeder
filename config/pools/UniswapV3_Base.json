@@ -1,0 +1,16 @@
+{
+    "Pools": [
+        {
+            "ForeignName": "WETH-USDC",
+            "Address": "0xd0b53D9277642d899DF5C87A3966A349A798F224",
+            "Order": "2",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDC-cbBTC",
+            "Address": "0xfBB6Eed8e7aa03B138556eeDaF5D271A5E1e43ef",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        }
+    ]
+}
