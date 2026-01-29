@@ -281,6 +281,13 @@
             "Decimals": 18
         },
         {
+            "Exchange": "Crypto.com",
+            "Symbol": "REACT",
+            "Blockchain": "React",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "Render",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",

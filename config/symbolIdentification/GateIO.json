@@ -358,6 +358,13 @@
             "Decimals": 18
         },
         {
+            "Exchange": "GateIO",
+            "Symbol": "REACT",
+            "Blockchain": "React",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "RENDER",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
