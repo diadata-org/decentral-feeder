@@ -315,6 +315,13 @@
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
             "Decimals": 18
         },
+         {
+            "Exchange": "KuCoin",
+            "Symbol": "REACT",
+            "Blockchain": "React",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
         {
             "Symbol": "RENDER",
             "Exchange": "KuCoin",

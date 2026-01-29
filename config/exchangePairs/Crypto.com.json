@@ -209,6 +209,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "REACT-USD",
+            "WatchDogDelay": 600
+        },
+        {
             "Pair": "SAND-USDT",
             "WatchDogDelay": 300
         },
