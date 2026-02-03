@@ -2,12 +2,6 @@
     "Pools": [
         {
             "ForeignName": "WETH-USDC",
-            "Address": "0x3548029694fbb241d45fb24ba0cd9c9d4e745f16",
-            "Order": "2",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "WETH-USDC",
             "Address": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
             "Order": "2",
             "WatchDogDelay": 3600
