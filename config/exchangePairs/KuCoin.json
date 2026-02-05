@@ -149,6 +149,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "REACT-USDT",
+            "WatchDogDelay": 600
+        },
+        {
             "Pair": "RENDER-USDT",
             "WatchDogDelay": 300
         },
