@@ -227,6 +227,12 @@
             "Address": "0x08f68110f1e0Ca67C80a24B4Bd206675610f445D",
             "Order": "0",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "KING-WETH",
+            "Address": "0x29567ae23d65225870C5bd738a6debe7Ac5A1D66",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }

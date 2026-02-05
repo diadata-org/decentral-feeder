@@ -307,9 +307,9 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "USDS-PYUSD",
+            "ForeignName": "PYUSD-USDS",
             "Address": "0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f",
-            "Order": "01",
+            "Order": "10",
             "WatchDogDelay": 3600
         }
     ]
