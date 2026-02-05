@@ -169,6 +169,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "KERNEL-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT", 
             "WatchDogDelay": 300
         },
@@ -269,6 +273,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "TANSSI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "TIA-USDT", 
             "WatchDogDelay": 300
         },
@@ -306,6 +314,10 @@
         },
         {
             "Pair": "UNI-ETH", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UNIT0-USDT", 
             "WatchDogDelay": 300
         },
         {

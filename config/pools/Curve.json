@@ -305,6 +305,12 @@
             "Address": "0x4f062658EaAF2C1ccf8C8e36D6824CDf41167956",
             "Order": "10",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDS-PYUSD",
+            "Address": "0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f",
+            "Order": "01",
+            "WatchDogDelay": 3600
         }
     ]
 }

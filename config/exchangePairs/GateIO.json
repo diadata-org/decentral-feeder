@@ -21,6 +21,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ASTR-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ATOM-USDT", 
             "WatchDogDelay": 300
         },
@@ -105,6 +109,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "KERNEL-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT", 
             "WatchDogDelay": 300
         },
@@ -138,6 +146,10 @@
         },
         {
             "Pair": "SAND-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SAGA-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -189,6 +201,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "TANSSI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "TAO-USDT", 
             "WatchDogDelay": 300
         },
@@ -201,6 +217,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "TLOS-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "TON-USDT", 
             "WatchDogDelay": 300
         },
@@ -210,6 +230,10 @@
         },
         {
             "Pair": "UNI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UNIT0-USDT", 
             "WatchDogDelay": 300
         },
         {

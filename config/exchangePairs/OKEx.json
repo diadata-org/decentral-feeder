@@ -33,6 +33,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ASTR-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ATOM-USDT", 
             "WatchDogDelay": 300
         },
@@ -258,6 +262,10 @@
         },
         {
             "Pair": "SUI-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TANSSI-USDT", 
             "WatchDogDelay": 300
         },
         {

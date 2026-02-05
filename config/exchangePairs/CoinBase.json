@@ -177,6 +177,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "KERNEL-USD", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USD",
             "WatchDogDelay": 300
         },
@@ -346,6 +350,10 @@
         },
         {
             "Pair": "USDC-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "USDS-USD", 
             "WatchDogDelay": 300
         },
         {

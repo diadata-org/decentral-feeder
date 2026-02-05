@@ -101,6 +101,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "KERNEL-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT", 
             "WatchDogDelay": 300
         },
