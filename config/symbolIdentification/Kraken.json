@@ -211,6 +211,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "KERNEL",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf",
+            "Decimals": 18
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
