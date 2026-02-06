@@ -232,6 +232,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "KERNEL",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf",
+            "Decimals": 18
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -463,6 +470,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "TANSSI",
+            "Exchange": "MEXC",
+            "Blockchain": "Tanssi",
+            "Address": "0x553F4cB7256D8fC038E91d36Cb63fa7C13b624AB",
+            "Decimals": 12
+        },
+        {
             "Symbol": "TIA",
             "Exchange": "MEXC",
             "Blockchain": "Osmosis",
@@ -496,6 +510,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
             "Decimals": 18
+        },
+        {
+            "Symbol": "UNIT0",
+            "Exchange": "MEXC",
+            "Blockchain": "Waves",
+            "Address": "GjwAHMjqWzYR4LgoNy91CxUKAGJN79h2hseZoae4nU8t",
+            "Decimals": 8
         },
         {
             "Symbol": "USDC",

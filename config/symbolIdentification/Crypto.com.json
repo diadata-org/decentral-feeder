@@ -190,6 +190,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "KERNEL",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf",
+            "Decimals": 18
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
@@ -278,6 +285,13 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
+            "Decimals": 18
+        },
+        {
+            "Exchange": "Crypto.com",
+            "Symbol": "REACT",
+            "Blockchain": "React",
+            "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
         },
         {

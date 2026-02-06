@@ -149,10 +149,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FLOKI-USD",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "FIL-USD",
             "WatchDogDelay": 300
         },
@@ -162,14 +158,6 @@
         },
         {
             "Pair": "FTM-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "GBP-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "GBP-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -186,6 +174,10 @@
         },
         {
             "Pair": "ICP-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "KERNEL-USD", 
             "WatchDogDelay": 300
         },
         {
@@ -349,10 +341,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "TURBO-USD",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "UNI-USD",
             "WatchDogDelay": 300
         },
@@ -365,11 +353,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "USDT-USD",
+            "Pair": "USDS-USD", 
             "WatchDogDelay": 300
         },
         {
-            "Pair": "USDS-USD",
+            "Pair": "USDT-USD",
             "WatchDogDelay": 300
         },
         {

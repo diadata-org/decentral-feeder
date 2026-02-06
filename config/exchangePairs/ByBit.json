@@ -49,10 +49,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "HPOS10I-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "BNB-USDT",
             "WatchDogDelay": 300
         },
@@ -62,14 +58,6 @@
         },
         {
             "Pair": "BONK-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "BRETT-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "BRETT-USDC",
             "WatchDogDelay": 300
         },
         {
@@ -145,14 +133,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FLOKI-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "FLOKI-USDC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "FIL-USDT",
             "WatchDogDelay": 300
         },
@@ -174,10 +154,6 @@
         },
         {
             "Pair": "LDO-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "MOG-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -234,10 +210,6 @@
         },
         {
             "Pair": "SKY-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "SPX-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -298,14 +270,6 @@
         },
         {
             "Pair": "TRX-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TURBO-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TURBO-USDC",
             "WatchDogDelay": 300
         },
         {
