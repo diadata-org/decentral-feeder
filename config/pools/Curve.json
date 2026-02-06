@@ -1,6 +1,42 @@
 {
     "Pools": [
         {
+            "ForeignName": "sUSDe-sUSDS",
+            "Address": "0x3cef1afc0e8324b57293a6e7ce663781bbefbb79",
+            "Order": "01",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "sUSDS-USDT",
+            "Address": "0x00836fe54625be242bcfa286207795405ca4fd10",
+            "Order": "01",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "DOLA-sUSDS",
+            "Address": "0x8b83c4aa949254895507d09365229bc3a8c7f710",
+            "Order": "01",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "frxUSD-sUSDS",
+            "Address": "0x81a2612f6dea269a6dd1f6deab45c5424ee2c4b7",
+            "Order": "01",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "scrvUSD-sUSDS",
+            "Address": "0xfd1627e3f3469c8392c8c3a261d8f0677586e5e1",
+            "Order": "01",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "USDS-stUSDS",
+            "Address": "0x2c7c98a3b1582d83c43987202aeff638312478ae",
+            "Order": "01",
+            "WatchDogDelay": 600
+        },
+        {
             "ForeignName": "stETH-WETH",
             "Address": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
             "Order": "10",

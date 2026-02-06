@@ -1,6 +1,60 @@
 {
     "Pools": [
         {
+            "ForeignName": "SERV-WETH",
+            "Address": "0x9c7ed68b00dc4f45243b07ce71a54a86e8f8fcbb",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "Pin-WETH",
+            "Address": "0x241fc1cdbf9f741933e5fa515c5b884da93b81b6",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "OHM-sUSDS",
+            "Address": "0x0858e2b0f9d75f7300b38d64482ac2c8df06a755",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "hOHM-sUSDS",
+            "Address": "0xd80e75faf4cc02f6447287d5b1ef195eac19ffd9",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "SPX-WETH",
+            "Address": "0x7c706586679af2ba6d1a9fc2da9c6af59883fdd3",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "REKT-WETH",
+            "Address": "0xf12533a96712133d9bb97c24de5bcf52f48851bd",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "BITCOIN-WETH",
+            "Address": "0x25392d7129040710f152174af5019004a6f9b18d",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "BITCOIN-WETH",
+            "Address": "0x0c30062368eefb96bf3ade1218e685306b8e89fa",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "CULT-WETH",
+            "Address": "0xc4ce8e63921b8b6cbdb8fcb6bd64cc701fb926f2",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
             "ForeignName": "PRIME-WETH",
             "Address": "0xCD423F3ab39a11ff1D9208B7D37dF56E902C932B",
             "Order": "1",
@@ -213,6 +267,18 @@
         {
             "ForeignName": "KERNEL-USDT",
             "Address": "0x1542CD77E7A605cbf140823A9f21Fa7ddDE44078",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "MOG-WETH",
+            "Address": "0x7832310Cd0de39c4cE0A635F34d9a4B5b47fd434",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "BITCOIN-USDC",
+            "Address": "0xFfC9eFD66926e3023A4cbd20145CA48F52DFf2d9",
             "Order": "0",
             "WatchDogDelay": 3600
         },
