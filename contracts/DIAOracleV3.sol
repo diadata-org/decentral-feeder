@@ -31,7 +31,11 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     /// @dev Starts at 0, increases up to maxHistorySize, then stays at maxHistorySize.
     mapping (string => uint256) private _valueCount;
     
+    /// @notice Mapping to store raw data for each asset key (volume and any additional data).
+    mapping (string => bytes) public rawData;
+    
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
+    event OracleUpdateRaw(string key, uint128 value, uint128 timestamp, uint128 volume, bytes data);
     event UpdaterAddressChange(address newUpdater);
     event MaxHistorySizeChanged(uint256 oldSize, uint256 newSize);
     
@@ -64,8 +68,8 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
        uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
         
-        // Add to historical storage
-        _addToHistory(key, value, timestamp);
+        // Add to historical storage (volume = 0 for backward compatibility)
+        _addToHistory(key, value, timestamp, 0);
         
         emit OracleUpdate(key, value, timestamp);
     }
@@ -92,11 +96,60 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
             // Update the current value (backward compatibility with V2)
             values[currentKey] = currentCvalue;
             
-            // Add to historical storage
-            _addToHistory(currentKey, value, timestamp);
+            // Add to historical storage (volume = 0 for backward compatibility)
+            _addToHistory(currentKey, value, timestamp, 0);
             
             emit OracleUpdate(currentKey, value, timestamp);
         }
+    }
+    
+    /**
+     * @notice Updates the price, timestamp, volume, and arbitrary data for a given asset key using raw calldata.
+     * @dev Only callable by addresses with UPDATER_ROLE.
+     *      Decodes calldata to extract key, value, timestamp, volume, and arbitrary additional data.
+     * @param data The encoded calldata containing (string key, uint128 value, uint128 timestamp, uint128 volume, bytes additionalData).
+     */
+    function setRawValue(bytes calldata data) public onlyRole(UPDATER_ROLE) {
+        (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) = abi.decode(data, (string, uint128, uint128, uint128, bytes));
+        
+        uint256 cValue = (((uint256)(value)) << 128) + timestamp;
+        values[key] = cValue;
+        rawData[key] = additionalData;
+        
+        // Add to historical storage with volume
+        _addToHistory(key, value, timestamp, volume);
+        
+        emit OracleUpdateRaw(key, value, timestamp, volume, additionalData);
+    }
+    
+    /**
+     * @notice Updates multiple asset values with volume and additional data in a single transaction.
+     * @dev Only callable by addresses with UPDATER_ROLE.
+     *      Each element in the array should be encoded as (string key, uint128 value, uint128 timestamp, uint128 volume, bytes additionalData).
+     * @param dataArray The array of encoded calldata entries.
+     */
+    function setMultipleRawValues(bytes[] calldata dataArray) public onlyRole(UPDATER_ROLE) {
+        for (uint256 i = 0; i < dataArray.length; i++) {
+            (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) = abi.decode(dataArray[i], (string, uint128, uint128, uint128, bytes));
+            
+            uint256 cValue = (((uint256)(value)) << 128) + timestamp;
+            values[key] = cValue;
+            rawData[key] = additionalData;
+            
+            // Add to historical storage with volume
+            _addToHistory(key, value, timestamp, volume);
+            
+            emit OracleUpdateRaw(key, value, timestamp, volume, additionalData);
+        }
+    }
+    
+    /**
+     * @notice Retrieves the raw data for a given asset key.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @return The stored raw data (can be decoded by the caller based on expected format).
+     */
+    function getRawData(string memory key) external view returns (bytes memory) {
+        return rawData[key];
     }
     
     /**
@@ -121,8 +174,9 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param index The index of the historical value (0 = most recent).
      * @return value The price value at the specified index.
      * @return timestamp The timestamp at the specified index.
+     * @return volume The volume at the specified index.
      */
-    function getValueAt(string memory key, uint256 index) external view returns (uint128 value, uint128 timestamp) {
+    function getValueAt(string memory key, uint256 index) external view returns (uint128 value, uint128 timestamp, uint128 volume) {
         ValueEntry[] storage history = _valueHistory[key];
         uint256 count = _valueCount[key];
         
@@ -132,7 +186,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         
         uint256 currentWriteIndex = _writeIndex[key];
         
- 
+
         uint256 position;
         if (index + 1 <= currentWriteIndex) {
              position = currentWriteIndex - 1 - index;
@@ -141,7 +195,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         }
         
         ValueEntry memory entry = history[position];
-        return (entry.value, entry.timestamp);
+        return (entry.value, entry.timestamp, entry.volume);
     }
     
     /**
@@ -216,21 +270,22 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param key The asset identifier.
      * @param value The price value to store.
      * @param timestamp The timestamp to store.
+     * @param volume The volume to store.
      */
-    function _addToHistory(string memory key, uint128 value, uint128 timestamp) private {
+    function _addToHistory(string memory key, uint128 value, uint128 timestamp, uint128 volume) private {
         ValueEntry[] storage history = _valueHistory[key];
         uint256 currentWriteIndex = _writeIndex[key];
         uint256 currentCount = _valueCount[key];
         
          if (history.length == 0) {
              for (uint256 i = 0; i < maxHistorySize; i++) {
-                history.push(ValueEntry(0, 0));
+                history.push(ValueEntry(0, 0, 0));
             }
             currentWriteIndex = 0;
             currentCount = 0;
         }
         
-         history[currentWriteIndex] = ValueEntry(value, timestamp);
+         history[currentWriteIndex] = ValueEntry(value, timestamp, volume);
         
         currentWriteIndex = (currentWriteIndex + 1) % maxHistorySize;
         _writeIndex[key] = currentWriteIndex;

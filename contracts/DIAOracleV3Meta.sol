@@ -251,6 +251,194 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         return (value, timestamp);
     }
 
+    /**
+     * @notice Retrieves the aggregated volume for a given asset key from all registered oracles.
+     * @dev Sums up the most recent volume from each oracle that has valid (non-expired) data.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @return totalVolume The sum of volumes from all valid oracles.
+     * @return validOracleCount The number of oracles with valid volume data.
+     */
+    function getAggregatedVolume(string memory key) external view returns (uint128 totalVolume, uint256 validOracleCount) {
+        if (timeoutSeconds == 0) {
+            revert InvalidTimeOut(timeoutSeconds);
+        }
+        
+        uint256 sum = 0;
+        uint256 count = 0;
+        
+        for (uint256 i = 0; i < numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            uint256 valueCount = oracle.getValueCount(key);
+            
+            if (valueCount == 0) {
+                continue;
+            }
+            
+            (uint128 value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
+            
+            // Check if value is not expired
+            if ((timestamp + timeoutSeconds) >= block.timestamp) {
+                sum += volume;
+                count++;
+            }
+        }
+        
+        return (uint128(sum), count);
+    }
+    
+    /**
+     * @notice Retrieves the raw data for a given asset key from a specific oracle.
+     * @param oracleIndex The index of the oracle in the registry.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @return data The raw data stored for this key in the specified oracle.
+     */
+    function getRawDataFromOracle(uint256 oracleIndex, string memory key) external view returns (bytes memory) {
+        if (oracleIndex >= numOracles) {
+            revert InvalidHistoryIndex(oracleIndex);
+        }
+        
+        IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
+        return oracle.getRawData(key);
+    }
+    
+    /**
+     * @notice Retrieves raw data for a given asset key from all registered oracles.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @return dataArray Array of raw data from each oracle (in order of registration).
+     */
+    function getAllRawData(string memory key) external view returns (bytes[] memory) {
+        bytes[] memory dataArray = new bytes[](numOracles);
+        
+        for (uint256 i = 0; i < numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            dataArray[i] = oracle.getRawData(key);
+        }
+        
+        return dataArray;
+    }
+    
+    /**
+     * @notice Retrieves value, timestamp, and volume for a given asset key from a specific oracle.
+     * @param oracleIndex The index of the oracle in the registry.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @param historyIndex The index in the oracle's history (0 = most recent).
+     * @return value The price value.
+     * @return timestamp The timestamp of the value.
+     * @return volume The volume associated with the value.
+     */
+    function getValueWithVolumeFromOracle(
+        uint256 oracleIndex, 
+        string memory key, 
+        uint256 historyIndex
+    ) external view returns (uint128 value, uint128 timestamp, uint128 volume) {
+        if (oracleIndex >= numOracles) {
+            revert InvalidHistoryIndex(oracleIndex);
+        }
+        
+        IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
+        return oracle.getValueAt(key, historyIndex);
+    }
+    
+    /**
+     * @notice Retrieves the most recent value with volume from all oracles.
+     * @dev Returns arrays of values, timestamps, and volumes from each oracle.
+     *      Only includes oracles that have data for the given key.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @return values Array of price values from each oracle.
+     * @return timestamps Array of timestamps from each oracle.
+     * @return volumes Array of volumes from each oracle.
+     * @return oracleAddresses Array of oracle addresses that provided data.
+     */
+    function getAllValuesWithVolume(string memory key) external view returns (
+        uint128[] memory values,
+        uint128[] memory timestamps,
+        uint128[] memory volumes,
+        address[] memory oracleAddresses
+    ) {
+        // First pass: count oracles with data
+        uint256 count = 0;
+        for (uint256 i = 0; i < numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getValueCount(key) > 0) {
+                count++;
+            }
+        }
+        
+        // Allocate arrays
+        values = new uint128[](count);
+        timestamps = new uint128[](count);
+        volumes = new uint128[](count);
+        oracleAddresses = new address[](count);
+        
+        // Second pass: populate arrays
+        uint256 idx = 0;
+        for (uint256 i = 0; i < numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getValueCount(key) > 0) {
+                (values[idx], timestamps[idx], volumes[idx]) = oracle.getValueAt(key, 0);
+                oracleAddresses[idx] = oracles[i];
+                idx++;
+            }
+        }
+        
+        return (values, timestamps, volumes, oracleAddresses);
+    }
+    
+    /**
+     * @notice Retrieves aggregated value with total volume.
+     * @dev Uses the configured methodology for price calculation and sums volumes from valid oracles.
+     * @param key The asset identifier (e.g., "BTC/USD").
+     * @return value The aggregated price value.
+     * @return timestamp The timestamp from methodology.
+     * @return totalVolume The sum of volumes from all valid oracles.
+     */
+    function getValueWithVolume(string memory key) external view returns (uint128 value, uint128 timestamp, uint128 totalVolume) {
+        if (timeoutSeconds == 0) {
+            revert InvalidTimeOut(timeoutSeconds);
+        }
+        if (threshold == 0) {
+            revert InvalidThreshold(threshold);
+        }
+        if (windowSize == 0) {
+            revert InvalidWindowSize(windowSize);
+        }
+
+        address[] memory oracleAddresses = new address[](numOracles);
+        for (uint256 i = 0; i < numOracles; i++) {
+            oracleAddresses[i] = oracles[i];
+        }
+
+        // Get aggregated value using methodology
+        (value, timestamp) = priceMethodology.calculateValue(
+            key,
+            oracleAddresses,
+            timeoutSeconds,
+            threshold,
+            windowSize
+        );
+        
+        // Calculate total volume from valid oracles
+        uint256 volumeSum = 0;
+        for (uint256 i = 0; i < numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            uint256 valueCount = oracle.getValueCount(key);
+            
+            if (valueCount == 0) {
+                continue;
+            }
+            
+            (uint128 oracleValue, uint128 oracleTimestamp, uint128 oracleVolume) = oracle.getValueAt(key, 0);
+            
+            // Check if value is not expired
+            if ((oracleTimestamp + timeoutSeconds) >= block.timestamp) {
+                volumeSum += oracleVolume;
+            }
+        }
+        
+        totalVolume = uint128(volumeSum);
+        return (value, timestamp, totalVolume);
+    }
+
     function getNumOracles() external view returns (uint256) {
         return numOracles;
     }
