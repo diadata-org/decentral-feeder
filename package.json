@@ -1,0 +1,25 @@
+{
+  "name": "dia-oracle",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "lint": "npx solhint 'contracts/**/*.sol' 'script/**/*.sol'",
+    "lint:fix": "npx solhint 'contracts/**/*.sol' 'script/**/*.sol' --fix",
+    "fmt": "forge fmt",
+    "fmt:check": "forge fmt --check",
+    "deploy:testnet": "./deploy.sh testnet",
+    "deploy:mainnet": "./deploy.sh mainnet",
+    "deploy:fast": "forge script script/Deploy.s.sol:DeployScript --rpc-url ${RPC_URL:-https://testnet-rpc.diadata.org} --broadcast -s 'run()'",
+    "clean": "forge clean"
+  },
+  "keywords": [
+    "solidity",
+    "foundry",
+    "deployment"
+  ],
+  "devDependencies": {
+    "solhint": "^4.5.4"
+  }
+}

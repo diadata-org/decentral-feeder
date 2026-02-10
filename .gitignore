@@ -3,6 +3,8 @@ decentral-feeder
 decentral-feeder/build/docker-images.sh
 /build/docker-images.sh
 .env
+.env.local
+.deployed_addresses
 lib
 cache
 .vscode
@@ -10,5 +12,6 @@ out
 coverage-report
 lcov.info
 node_modules
+broadcast
 
 

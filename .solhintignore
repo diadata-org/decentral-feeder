@@ -1,0 +1,7 @@
+contracts/Flattened_for_verification.sol
+**/node_modules/**/*.sol
+**/lib/**/*.sol
+**/out/**/*.sol
+**/cache/**/*.sol
+test-foundry/**/*.sol
+contracts/node_modules/**/*.sol
