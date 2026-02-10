@@ -10,42 +10,42 @@ import "./IDIAOracleV3.sol";
  */
 contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     bytes32 public constant UPDATER_ROLE = keccak256("UPDATER_ROLE");
-    
+
     /// @notice Maximum number of historical values to store per key (default: 100)
     uint256 public maxHistorySize;
-    
+
     /// @notice Mapping to store compressed values of assets (price and timestamp).
     /// @dev Upper 128 bits store the price and the lower 128 bits store the timestamp.
     ///      This maintains backward compatibility with V2's getValue() function.
-    mapping (string => uint256) public values;
-    
+    mapping(string => uint256) public values;
+
     /// @notice Mapping to store historical values for each key (ring buffer).
     /// @dev Pre-allocated arrays of size maxHistorySize, using ring buffer pattern.
-    mapping (string => ValueEntry[]) private _valueHistory;
-    
+    mapping(string => ValueEntry[]) private _valueHistory;
+
     /// @notice Mapping to track the current write index for ring buffer.
     /// @dev Points to the next position to write. When buffer is full, wraps around.
-    mapping (string => uint256) private _writeIndex;
-    
+    mapping(string => uint256) private _writeIndex;
+
     /// @notice Mapping to track the actual count of values stored (for partially filled buffers).
     /// @dev Starts at 0, increases up to maxHistorySize, then stays at maxHistorySize.
-    mapping (string => uint256) private _valueCount;
-    
+    mapping(string => uint256) private _valueCount;
+
     /// @notice Mapping to store raw data for each asset key (volume and any additional data).
-    mapping (string => bytes) public rawData;
-    
+    mapping(string => bytes) public rawData;
+
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
     event OracleUpdateRaw(string key, uint128 value, uint128 timestamp, uint128 volume, bytes data);
     event UpdaterAddressChange(address newUpdater);
     event MaxHistorySizeChanged(uint256 oldSize, uint256 newSize);
-    
+
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
     error MaxHistorySizeTooLarge(uint256 requestedSize, uint256 maxAllowed);
-    
+
     /// @notice Maximum allowed history size to prevent gas issues (set to 1000)
     uint256 public constant MAX_ALLOWED_HISTORY_SIZE = 1000;
-    
+
     constructor(uint256 _maxHistorySize) {
         if (_maxHistorySize > MAX_ALLOWED_HISTORY_SIZE) {
             revert MaxHistorySizeTooLarge(_maxHistorySize, MAX_ALLOWED_HISTORY_SIZE);
@@ -54,7 +54,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
-    
+
     /**
      * @notice Updates the price and timestamp for a given asset key.
      * @dev Only callable by addresses with UPDATER_ROLE.
@@ -65,15 +65,15 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param timestamp The timestamp associated with the value.
      */
     function setValue(string memory key, uint128 value, uint128 timestamp) public onlyRole(UPDATER_ROLE) {
-       uint256 cValue = (((uint256)(value)) << 128) + timestamp;
+        uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
-        
+
         // Add to historical storage (volume = 0 for backward compatibility)
         _addToHistory(key, value, timestamp, 0);
-        
+
         emit OracleUpdate(key, value, timestamp);
     }
-    
+
     /**
      * @notice Updates multiple asset values in a single transaction.
      * @dev Each entry in `compressedValues` should be a 256-bit integer where:
@@ -86,23 +86,23 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         if (keys.length != compressedValues.length) {
             revert MismatchedArrayLengths(keys.length, compressedValues.length);
         }
-        
+
         for (uint128 i = 0; i < keys.length; i++) {
             string memory currentKey = keys[i];
             uint256 currentCvalue = compressedValues[i];
             uint128 value = (uint128)(currentCvalue >> 128);
-            uint128 timestamp = (uint128)(currentCvalue % 2**128);
-            
+            uint128 timestamp = (uint128)(currentCvalue % 2 ** 128);
+
             // Update the current value (backward compatibility with V2)
             values[currentKey] = currentCvalue;
-            
+
             // Add to historical storage (volume = 0 for backward compatibility)
             _addToHistory(currentKey, value, timestamp, 0);
-            
+
             emit OracleUpdate(currentKey, value, timestamp);
         }
     }
-    
+
     /**
      * @notice Updates the price, timestamp, volume, and arbitrary data for a given asset key using raw calldata.
      * @dev Only callable by addresses with UPDATER_ROLE.
@@ -110,18 +110,19 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param data The encoded calldata containing (string key, uint128 value, uint128 timestamp, uint128 volume, bytes additionalData).
      */
     function setRawValue(bytes calldata data) public onlyRole(UPDATER_ROLE) {
-        (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) = abi.decode(data, (string, uint128, uint128, uint128, bytes));
-        
+        (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) =
+            abi.decode(data, (string, uint128, uint128, uint128, bytes));
+
         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
         rawData[key] = additionalData;
-        
+
         // Add to historical storage with volume
         _addToHistory(key, value, timestamp, volume);
-        
+
         emit OracleUpdateRaw(key, value, timestamp, volume, additionalData);
     }
-    
+
     /**
      * @notice Updates multiple asset values with volume and additional data in a single transaction.
      * @dev Only callable by addresses with UPDATER_ROLE.
@@ -130,19 +131,20 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      */
     function setMultipleRawValues(bytes[] calldata dataArray) public onlyRole(UPDATER_ROLE) {
         for (uint256 i = 0; i < dataArray.length; i++) {
-            (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) = abi.decode(dataArray[i], (string, uint128, uint128, uint128, bytes));
-            
+            (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) =
+                abi.decode(dataArray[i], (string, uint128, uint128, uint128, bytes));
+
             uint256 cValue = (((uint256)(value)) << 128) + timestamp;
             values[key] = cValue;
             rawData[key] = additionalData;
-            
+
             // Add to historical storage with volume
             _addToHistory(key, value, timestamp, volume);
-            
+
             emit OracleUpdateRaw(key, value, timestamp, volume, additionalData);
         }
     }
-    
+
     /**
      * @notice Retrieves the raw data for a given asset key.
      * @param key The asset identifier (e.g., "BTC/USD").
@@ -151,7 +153,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     function getRawData(string memory key) external view returns (bytes memory) {
         return rawData[key];
     }
-    
+
     /**
      * @notice Retrieves the latest price and timestamp for a given asset key.
      * @dev Maintains backward compatibility with V2 interface.
@@ -161,11 +163,11 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      */
     function getValue(string memory key) external view returns (uint128, uint128) {
         uint256 cValue = values[key];
-        uint128 timestamp = (uint128)(cValue % 2**128);
+        uint128 timestamp = (uint128)(cValue % 2 ** 128);
         uint128 value = (uint128)(cValue >> 128);
         return (value, timestamp);
     }
-    
+
     /**
      * @notice Retrieves a specific historical value by index using ring buffer.
      * @dev Index 0 is the most recent value, index 1 is the second most recent, etc.
@@ -176,28 +178,31 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @return timestamp The timestamp at the specified index.
      * @return volume The volume at the specified index.
      */
-    function getValueAt(string memory key, uint256 index) external view returns (uint128 value, uint128 timestamp, uint128 volume) {
+    function getValueAt(string memory key, uint256 index)
+        external
+        view
+        returns (uint128 value, uint128 timestamp, uint128 volume)
+    {
         ValueEntry[] storage history = _valueHistory[key];
         uint256 count = _valueCount[key];
-        
+
         if (index >= count) {
             revert InvalidHistoryIndex(index, count);
         }
-        
+
         uint256 currentWriteIndex = _writeIndex[key];
-        
 
         uint256 position;
         if (index + 1 <= currentWriteIndex) {
-             position = currentWriteIndex - 1 - index;
+            position = currentWriteIndex - 1 - index;
         } else {
-             position = (currentWriteIndex + maxHistorySize - 1 - index) % maxHistorySize;
+            position = (currentWriteIndex + maxHistorySize - 1 - index) % maxHistorySize;
         }
-        
+
         ValueEntry memory entry = history[position];
         return (entry.value, entry.timestamp, entry.volume);
     }
-    
+
     /**
      * @notice Retrieves all historical values for a given key using ring buffer.
      * @dev Returns values in reverse chronological order (most recent first).
@@ -208,27 +213,27 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     function getValueHistory(string memory key) external view returns (ValueEntry[] memory) {
         ValueEntry[] storage history = _valueHistory[key];
         uint256 count = _valueCount[key];
-        
+
         if (count == 0) {
             return new ValueEntry[](0);
         }
-        
+
         ValueEntry[] memory result = new ValueEntry[](count);
         uint256 currentWriteIndex = _writeIndex[key];
-        
-         for (uint256 i = 0; i < count; i++) {
+
+        for (uint256 i = 0; i < count; i++) {
             uint256 position;
             if (i + 1 <= currentWriteIndex) {
-                 position = currentWriteIndex - 1 - i;
+                position = currentWriteIndex - 1 - i;
             } else {
-                 position = (currentWriteIndex + maxHistorySize - 1 - i) % maxHistorySize;
+                position = (currentWriteIndex + maxHistorySize - 1 - i) % maxHistorySize;
             }
             result[i] = history[position];
         }
-        
+
         return result;
     }
-    
+
     /**
      * @notice Returns the number of historical values stored for a given key.
      * @dev Uses valueCount mapping which tracks actual stored values (not array length).
@@ -238,7 +243,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     function getValueCount(string memory key) external view returns (uint256) {
         return _valueCount[key];
     }
-    
+
     /**
      * @notice Sets the maximum number of historical values to store per key.
      * @dev Only callable by addresses with DEFAULT_ADMIN_ROLE.
@@ -249,12 +254,12 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         if (newMaxSize > MAX_ALLOWED_HISTORY_SIZE) {
             revert MaxHistorySizeTooLarge(newMaxSize, MAX_ALLOWED_HISTORY_SIZE);
         }
-        
+
         uint256 oldSize = maxHistorySize;
         maxHistorySize = newMaxSize;
         emit MaxHistorySizeChanged(oldSize, newMaxSize);
     }
-    
+
     /**
      * @notice Returns the current maximum history size setting.
      * @return The maximum number of historical values that will be stored per key.
@@ -262,7 +267,18 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     function getMaxHistorySize() external view returns (uint256) {
         return maxHistorySize;
     }
-    
+
+    /**
+     * @notice ERC-165 interface support check.
+     * @dev Returns true if this contract implements the interface defined by
+     *      `interfaceId`. See the corresponding ERC-165 section in the ERC
+     * @param interfaceId The interface identifier to check for support.
+     * @return True if the contract supports the interface, false otherwise.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, IERC165) returns (bool) {
+        return interfaceId == type(IDIAOracleV3).interfaceId || super.supportsInterface(interfaceId);
+    }
+
     /**
      * @notice Internal function to add a value to the historical storage using ring buffer.
      * @dev Uses a ring buffer (circular buffer) for O(1) insertion instead of O(n) array shifting.
@@ -276,23 +292,23 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         ValueEntry[] storage history = _valueHistory[key];
         uint256 currentWriteIndex = _writeIndex[key];
         uint256 currentCount = _valueCount[key];
-        
-         if (history.length == 0) {
-             for (uint256 i = 0; i < maxHistorySize; i++) {
+
+        if (history.length == 0) {
+            for (uint256 i = 0; i < maxHistorySize; i++) {
                 history.push(ValueEntry(0, 0, 0));
             }
             currentWriteIndex = 0;
             currentCount = 0;
         }
-        
-         history[currentWriteIndex] = ValueEntry(value, timestamp, volume);
-        
+
+        history[currentWriteIndex] = ValueEntry(value, timestamp, volume);
+
         currentWriteIndex = (currentWriteIndex + 1) % maxHistorySize;
         _writeIndex[key] = currentWriteIndex;
-        
-         if (currentCount < maxHistorySize) {
+
+        if (currentCount < maxHistorySize) {
             currentCount++;
             _valueCount[key] = currentCount;
         }
-     }
+    }
 }

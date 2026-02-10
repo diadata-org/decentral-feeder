@@ -2,6 +2,7 @@
 pragma solidity 0.8.29;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "./IDIAOracleV3.sol";
 import "./IPriceMethodology.sol";
 
@@ -46,9 +47,21 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     error InvalidHistoryIndex(uint256 index);
     error InvalidMethodology();
     error InvalidWindowSize(uint256 value);
+    error InvalidOracle(address oracleAddress);
 
     modifier validateAddress(address _address) {
         if (_address == address(0)) revert ZeroAddress();
+        _;
+    }
+
+    /**
+     * @dev Modifier to check if an address implements the IDIAOracleV3 interface.
+     * @param _oracleAddress The address to validate.
+     */
+    modifier validateOracleInterface(address _oracleAddress) {
+        if (!IERC165(_oracleAddress).supportsInterface(type(IDIAOracleV3).interfaceId)) {
+            revert InvalidOracle(_oracleAddress);
+        }
         _;
     }
 
@@ -66,11 +79,15 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     /**
      * @notice Adds a new oracle to the registry.
      * @dev Only the administrator can call this function.
+     *      Validates that the address implements the IDIAOracleV3 interface.
      * @param newOracleAddress The address of the oracle contract to add.
      */
-    function addOracle(
-        address newOracleAddress
-    ) public onlyOwner validateAddress(newOracleAddress) {
+    function addOracle(address newOracleAddress)
+        public
+        onlyOwner
+        validateAddress(newOracleAddress)
+        validateOracleInterface(newOracleAddress)
+    {
         for (uint256 i = 0; i < numOracles; i++) {
             if (oracles[i] == newOracleAddress) {
                 revert OracleExists();
@@ -90,7 +107,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         uint256 oracleCount = numOracles;
         bool found = false;
         uint256 indexToRemove = 0;
-        
+
         for (uint256 i = 0; i < oracleCount; i++) {
             if (oracles[i] == oracleToRemove) {
                 indexToRemove = i;
@@ -98,11 +115,11 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
                 break;
             }
         }
-        
+
         if (!found) {
             revert OracleNotFound();
         }
-        
+
         oracles[indexToRemove] = oracles[oracleCount - 1];
         oracles[oracleCount - 1] = address(0);
         numOracles = oracleCount - 1;
@@ -187,18 +204,13 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidWindowSize(windowSize);
         }
 
-         address[] memory oracleAddresses = new address[](numOracles);
+        address[] memory oracleAddresses = new address[](numOracles);
         for (uint256 i = 0; i < numOracles; i++) {
             oracleAddresses[i] = oracles[i];
         }
 
-         (uint128 value, uint128 timestamp) = priceMethodology.calculateValue(
-            key,
-            oracleAddresses,
-            timeoutSeconds,
-            threshold,
-            windowSize
-        );
+        (uint128 value, uint128 timestamp) =
+            priceMethodology.calculateValue(key, oracleAddresses, timeoutSeconds, threshold, windowSize);
 
         return (value, timestamp);
     }
@@ -241,11 +253,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
 
         IPriceMethodology methodologyContract = IPriceMethodology(customMethodology);
         (value, timestamp) = methodologyContract.calculateValue(
-            key,
-            oracleAddresses,
-            customTimeoutSeconds,
-            customThreshold,
-            customWindowSize
+            key, oracleAddresses, customTimeoutSeconds, customThreshold, customWindowSize
         );
 
         return (value, timestamp);
@@ -258,34 +266,38 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      * @return totalVolume The sum of volumes from all valid oracles.
      * @return validOracleCount The number of oracles with valid volume data.
      */
-    function getAggregatedVolume(string memory key) external view returns (uint128 totalVolume, uint256 validOracleCount) {
+    function getAggregatedVolume(string memory key)
+        external
+        view
+        returns (uint128 totalVolume, uint256 validOracleCount)
+    {
         if (timeoutSeconds == 0) {
             revert InvalidTimeOut(timeoutSeconds);
         }
-        
+
         uint256 sum = 0;
         uint256 count = 0;
-        
+
         for (uint256 i = 0; i < numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             uint256 valueCount = oracle.getValueCount(key);
-            
+
             if (valueCount == 0) {
                 continue;
             }
-            
+
             (uint128 value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
-            
+
             // Check if value is not expired
             if ((timestamp + timeoutSeconds) >= block.timestamp) {
                 sum += volume;
                 count++;
             }
         }
-        
+
         return (uint128(sum), count);
     }
-    
+
     /**
      * @notice Retrieves the raw data for a given asset key from a specific oracle.
      * @param oracleIndex The index of the oracle in the registry.
@@ -296,11 +308,11 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (oracleIndex >= numOracles) {
             revert InvalidHistoryIndex(oracleIndex);
         }
-        
+
         IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
         return oracle.getRawData(key);
     }
-    
+
     /**
      * @notice Retrieves raw data for a given asset key from all registered oracles.
      * @param key The asset identifier (e.g., "BTC/USD").
@@ -308,15 +320,15 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      */
     function getAllRawData(string memory key) external view returns (bytes[] memory) {
         bytes[] memory dataArray = new bytes[](numOracles);
-        
+
         for (uint256 i = 0; i < numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             dataArray[i] = oracle.getRawData(key);
         }
-        
+
         return dataArray;
     }
-    
+
     /**
      * @notice Retrieves value, timestamp, and volume for a given asset key from a specific oracle.
      * @param oracleIndex The index of the oracle in the registry.
@@ -326,19 +338,19 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      * @return timestamp The timestamp of the value.
      * @return volume The volume associated with the value.
      */
-    function getValueWithVolumeFromOracle(
-        uint256 oracleIndex, 
-        string memory key, 
-        uint256 historyIndex
-    ) external view returns (uint128 value, uint128 timestamp, uint128 volume) {
+    function getValueWithVolumeFromOracle(uint256 oracleIndex, string memory key, uint256 historyIndex)
+        external
+        view
+        returns (uint128 value, uint128 timestamp, uint128 volume)
+    {
         if (oracleIndex >= numOracles) {
             revert InvalidHistoryIndex(oracleIndex);
         }
-        
+
         IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
         return oracle.getValueAt(key, historyIndex);
     }
-    
+
     /**
      * @notice Retrieves the most recent value with volume from all oracles.
      * @dev Returns arrays of values, timestamps, and volumes from each oracle.
@@ -349,12 +361,16 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      * @return volumes Array of volumes from each oracle.
      * @return oracleAddresses Array of oracle addresses that provided data.
      */
-    function getAllValuesWithVolume(string memory key) external view returns (
-        uint128[] memory values,
-        uint128[] memory timestamps,
-        uint128[] memory volumes,
-        address[] memory oracleAddresses
-    ) {
+    function getAllValuesWithVolume(string memory key)
+        external
+        view
+        returns (
+            uint128[] memory values,
+            uint128[] memory timestamps,
+            uint128[] memory volumes,
+            address[] memory oracleAddresses
+        )
+    {
         // First pass: count oracles with data
         uint256 count = 0;
         for (uint256 i = 0; i < numOracles; i++) {
@@ -363,13 +379,13 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
                 count++;
             }
         }
-        
+
         // Allocate arrays
         values = new uint128[](count);
         timestamps = new uint128[](count);
         volumes = new uint128[](count);
         oracleAddresses = new address[](count);
-        
+
         // Second pass: populate arrays
         uint256 idx = 0;
         for (uint256 i = 0; i < numOracles; i++) {
@@ -380,10 +396,10 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
                 idx++;
             }
         }
-        
+
         return (values, timestamps, volumes, oracleAddresses);
     }
-    
+
     /**
      * @notice Retrieves aggregated value with total volume.
      * @dev Uses the configured methodology for price calculation and sums volumes from valid oracles.
@@ -392,7 +408,11 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      * @return timestamp The timestamp from methodology.
      * @return totalVolume The sum of volumes from all valid oracles.
      */
-    function getValueWithVolume(string memory key) external view returns (uint128 value, uint128 timestamp, uint128 totalVolume) {
+    function getValueWithVolume(string memory key)
+        external
+        view
+        returns (uint128 value, uint128 timestamp, uint128 totalVolume)
+    {
         if (timeoutSeconds == 0) {
             revert InvalidTimeOut(timeoutSeconds);
         }
@@ -409,32 +429,27 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         }
 
         // Get aggregated value using methodology
-        (value, timestamp) = priceMethodology.calculateValue(
-            key,
-            oracleAddresses,
-            timeoutSeconds,
-            threshold,
-            windowSize
-        );
-        
+        (value, timestamp) =
+            priceMethodology.calculateValue(key, oracleAddresses, timeoutSeconds, threshold, windowSize);
+
         // Calculate total volume from valid oracles
         uint256 volumeSum = 0;
         for (uint256 i = 0; i < numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             uint256 valueCount = oracle.getValueCount(key);
-            
+
             if (valueCount == 0) {
                 continue;
             }
-            
+
             (uint128 oracleValue, uint128 oracleTimestamp, uint128 oracleVolume) = oracle.getValueAt(key, 0);
-            
+
             // Check if value is not expired
             if ((oracleTimestamp + timeoutSeconds) >= block.timestamp) {
                 volumeSum += oracleVolume;
             }
         }
-        
+
         totalVolume = uint128(volumeSum);
         return (value, timestamp, totalVolume);
     }
