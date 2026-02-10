@@ -13,14 +13,14 @@ import "../IDIAOracleV3.sol";
 contract VolumeWeightedOracleMethodology is IPriceMethodology {
     error ThresholdNotMet(uint256 validValues, uint256 threshold);
     error NoVolumeData();
-    
+
     struct OracleResult {
         uint256 avgPrice;
         uint256 totalVolume;
         uint128 maxTimestamp;
         bool valid;
     }
-    
+
     /**
      * @notice Calculates price using volume-weighted oracle methodology
      * @param key The asset identifier
@@ -49,13 +49,8 @@ contract VolumeWeightedOracleMethodology is IPriceMethodology {
         uint128 maxTimestamp = 0;
 
         for (uint256 i = 0; i < numOracles; i++) {
-            OracleResult memory result = _calculateOracleData(
-                IDIAOracleV3(oracles[i]),
-                key,
-                timeoutSeconds,
-                windowSize
-            );
-            
+            OracleResult memory result = _calculateOracleData(IDIAOracleV3(oracles[i]), key, timeoutSeconds, windowSize);
+
             if (result.valid) {
                 totalPriceVolume += result.avgPrice * result.totalVolume;
                 totalVolume += result.totalVolume;
@@ -77,18 +72,17 @@ contract VolumeWeightedOracleMethodology is IPriceMethodology {
         value = uint128(totalPriceVolume / totalVolume);
         return (value, maxTimestamp);
     }
-    
+
     /**
      * @notice Calculates average price and total volume for a single oracle
      */
-    function _calculateOracleData(
-        IDIAOracleV3 oracle,
-        string memory key,
-        uint256 timeoutSeconds,
-        uint256 windowSize
-    ) internal view returns (OracleResult memory) {
+    function _calculateOracleData(IDIAOracleV3 oracle, string memory key, uint256 timeoutSeconds, uint256 windowSize)
+        internal
+        view
+        returns (OracleResult memory)
+    {
         IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
-        
+
         if (history.length == 0) {
             return OracleResult(0, 0, 0, false);
         }
@@ -98,18 +92,18 @@ contract VolumeWeightedOracleMethodology is IPriceMethodology {
         uint256 validCount = 0;
         uint128 maxTs = 0;
         uint256 maxIndex = windowSize < history.length ? windowSize : history.length;
-        
+
         for (uint256 j = 0; j < maxIndex; j++) {
             IDIAOracleV3.ValueEntry memory entry = history[j];
-            
+
             if ((entry.timestamp + timeoutSeconds) < block.timestamp) {
                 continue;
             }
-            
+
             priceSum += entry.value;
             volumeSum += entry.volume;
             validCount++;
-            
+
             if (entry.timestamp > maxTs) {
                 maxTs = entry.timestamp;
             }
@@ -118,7 +112,7 @@ contract VolumeWeightedOracleMethodology is IPriceMethodology {
         if (validCount == 0 || volumeSum == 0) {
             return OracleResult(0, 0, 0, false);
         }
-        
+
         return OracleResult(priceSum / validCount, volumeSum, maxTs, true);
     }
 }

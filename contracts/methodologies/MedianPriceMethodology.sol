@@ -12,7 +12,7 @@ import "../QuickSort.sol";
  */
 contract MedianPriceMethodology is IPriceMethodology {
     error ThresholdNotMet(uint256 validValues, uint256 threshold);
-    
+
     /**
      * @notice Calculates price using median methodology
      * @dev For each oracle:
@@ -35,20 +35,14 @@ contract MedianPriceMethodology is IPriceMethodology {
         uint256 threshold,
         uint256 windowSize
     ) external view override returns (uint128 value, uint128 timestamp) {
-         IDIAOracleV3[] memory oracleContracts = new IDIAOracleV3[](oracles.length);
+        IDIAOracleV3[] memory oracleContracts = new IDIAOracleV3[](oracles.length);
         for (uint256 i = 0; i < oracles.length; i++) {
             oracleContracts[i] = IDIAOracleV3(oracles[i]);
         }
-        
-        return _aggregateMedianMedian(
-            oracleContracts,
-            key,
-            timeoutSeconds,
-            threshold,
-            windowSize
-        );
+
+        return _aggregateMedianMedian(oracleContracts, key, timeoutSeconds, threshold, windowSize);
     }
-    
+
     /**
      * @notice Aggregates oracle values using median-then-median methodology.
      * @dev For each oracle: takes up to windowSize most recent valid (non-expired) values,
@@ -79,36 +73,36 @@ contract MedianPriceMethodology is IPriceMethodology {
 
         for (uint256 i = 0; i < numOracles; i++) {
             IDIAOracleV3.ValueEntry[] memory history = oracles[i].getValueHistory(key);
-            
+
             if (history.length == 0) {
-                continue; 
+                continue;
             }
 
             uint128[] memory validHistoryValues = new uint128[](windowSize);
             uint256 validCount = 0;
             uint256 maxIndex = windowSize < history.length ? windowSize : history.length;
-            
-             for (uint256 j = 0; j < maxIndex; j++) {
+
+            for (uint256 j = 0; j < maxIndex; j++) {
                 uint128 entryTimestamp = history[j].timestamp;
                 if ((entryTimestamp + timeoutSeconds) < block.timestamp) {
                     continue;
                 }
                 validHistoryValues[validCount] = history[j].value;
                 validCount += 1;
-                 if (entryTimestamp > maxTimestamp) {
+                if (entryTimestamp > maxTimestamp) {
                     maxTimestamp = entryTimestamp;
                 }
             }
 
-             if (validCount > 0) {
-                 uint128[] memory sortedValues = new uint128[](validCount);
+            if (validCount > 0) {
+                uint128[] memory sortedValues = new uint128[](validCount);
                 for (uint256 k = 0; k < validCount; k++) {
                     sortedValues[k] = validHistoryValues[k];
                 }
-                
-                 sortedValues = QuickSort.sort(sortedValues, 0, validCount - 1);
-                
-                 uint256 oracleMedianIndex = validCount / 2;
+
+                sortedValues = QuickSort.sort(sortedValues, 0, validCount - 1);
+
+                uint256 oracleMedianIndex = validCount / 2;
                 medians[validValues] = sortedValues[oracleMedianIndex];
                 validValues += 1;
             }
@@ -118,9 +112,9 @@ contract MedianPriceMethodology is IPriceMethodology {
             revert ThresholdNotMet(validValues, threshold);
         }
 
-         medians = QuickSort.sort(medians, 0, validValues - 1);
+        medians = QuickSort.sort(medians, 0, validValues - 1);
 
-         uint256 finalMedianIndex = validValues / 2;
+        uint256 finalMedianIndex = validValues / 2;
         return (medians[finalMedianIndex], maxTimestamp);
     }
 }

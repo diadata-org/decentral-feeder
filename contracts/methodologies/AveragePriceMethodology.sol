@@ -12,7 +12,7 @@ import "../QuickSort.sol";
  */
 contract AveragePriceMethodology is IPriceMethodology {
     error ThresholdNotMet(uint256 validValues, uint256 threshold);
-    
+
     /**
      * @notice Calculates price using average methodology
      * @dev For each oracle:
@@ -39,16 +39,10 @@ contract AveragePriceMethodology is IPriceMethodology {
         for (uint256 i = 0; i < oracles.length; i++) {
             oracleContracts[i] = IDIAOracleV3(oracles[i]);
         }
-        
-        return _aggregateAverageMedian(
-            oracleContracts,
-            key,
-            timeoutSeconds,
-            threshold,
-            windowSize
-        );
+
+        return _aggregateAverageMedian(oracleContracts, key, timeoutSeconds, threshold, windowSize);
     }
-    
+
     /**
      * @notice Aggregates oracle values using average-then-median methodology.
      * @dev For each oracle: takes up to windowSize most recent valid values, averages them, then takes the median of those averages
@@ -78,28 +72,28 @@ contract AveragePriceMethodology is IPriceMethodology {
 
         for (uint256 i = 0; i < numOracles; i++) {
             IDIAOracleV3.ValueEntry[] memory history = oracles[i].getValueHistory(key);
-            
+
             if (history.length == 0) {
-                continue; 
+                continue;
             }
 
-             uint256 sum = 0;
+            uint256 sum = 0;
             uint256 validCount = 0;
             uint256 maxIndex = windowSize < history.length ? windowSize : history.length;
-            
-             for (uint256 j = 0; j < maxIndex; j++) {
+
+            for (uint256 j = 0; j < maxIndex; j++) {
                 uint128 entryTimestamp = history[j].timestamp;
                 if ((entryTimestamp + timeoutSeconds) < block.timestamp) {
                     continue;
                 }
                 sum += history[j].value;
                 validCount += 1;
-                 if (entryTimestamp > maxTimestamp) {
+                if (entryTimestamp > maxTimestamp) {
                     maxTimestamp = entryTimestamp;
                 }
             }
 
-             if (validCount > 0) {
+            if (validCount > 0) {
                 averages[validValues] = uint128(sum / validCount);
                 validValues += 1;
             }
@@ -109,9 +103,9 @@ contract AveragePriceMethodology is IPriceMethodology {
             revert ThresholdNotMet(validValues, threshold);
         }
 
-         averages = QuickSort.sort(averages, 0, validValues - 1);
+        averages = QuickSort.sort(averages, 0, validValues - 1);
 
-         uint256 medianIndex = validValues / 2;
+        uint256 medianIndex = validValues / 2;
         return (averages[medianIndex], maxTimestamp);
     }
 }

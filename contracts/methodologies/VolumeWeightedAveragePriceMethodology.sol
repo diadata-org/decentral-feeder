@@ -13,13 +13,13 @@ import "../QuickSort.sol";
  */
 contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
     error ThresholdNotMet(uint256 validValues, uint256 threshold);
-    
+
     struct VWAPResult {
         uint128 vwap;
         uint128 maxTimestamp;
         bool valid;
     }
-    
+
     /**
      * @notice Calculates price using VWAP methodology
      * @param key The asset identifier
@@ -47,13 +47,8 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
         uint128 maxTimestamp = 0;
 
         for (uint256 i = 0; i < numOracles; i++) {
-            VWAPResult memory result = _calculateOracleVWAP(
-                IDIAOracleV3(oracles[i]),
-                key,
-                timeoutSeconds,
-                windowSize
-            );
-            
+            VWAPResult memory result = _calculateOracleVWAP(IDIAOracleV3(oracles[i]), key, timeoutSeconds, windowSize);
+
             if (result.valid) {
                 vwaps[validValues] = result.vwap;
                 validValues++;
@@ -70,18 +65,17 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
         vwaps = QuickSort.sort(vwaps, 0, validValues - 1);
         return (vwaps[validValues / 2], maxTimestamp);
     }
-    
+
     /**
      * @notice Calculates VWAP for a single oracle
      */
-    function _calculateOracleVWAP(
-        IDIAOracleV3 oracle,
-        string memory key,
-        uint256 timeoutSeconds,
-        uint256 windowSize
-    ) internal view returns (VWAPResult memory) {
+    function _calculateOracleVWAP(IDIAOracleV3 oracle, string memory key, uint256 timeoutSeconds, uint256 windowSize)
+        internal
+        view
+        returns (VWAPResult memory)
+    {
         IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
-        
+
         if (history.length == 0) {
             return VWAPResult(0, 0, false);
         }
@@ -90,21 +84,21 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
         uint256 sumVolume = 0;
         uint128 maxTs = 0;
         uint256 maxIndex = windowSize < history.length ? windowSize : history.length;
-        
+
         for (uint256 j = 0; j < maxIndex; j++) {
             IDIAOracleV3.ValueEntry memory entry = history[j];
-            
+
             if ((entry.timestamp + timeoutSeconds) < block.timestamp) {
                 continue;
             }
-            
+
             if (entry.volume == 0) {
                 continue;
             }
-            
+
             sumPriceVolume += uint256(entry.value) * uint256(entry.volume);
             sumVolume += entry.volume;
-            
+
             if (entry.timestamp > maxTs) {
                 maxTs = entry.timestamp;
             }
@@ -113,7 +107,7 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
         if (sumVolume == 0) {
             return VWAPResult(0, 0, false);
         }
-        
+
         return VWAPResult(uint128(sumPriceVolume / sumVolume), maxTs, true);
     }
 }
