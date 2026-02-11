@@ -6,7 +6,7 @@ import "./IDIAOracleV3.sol";
 /**
  * @title IPriceMethodology
  * @dev Interface for price calculation methodologies
- *      Allows different calculation strategies 
+ *      Allows different calculation strategies
  */
 interface IPriceMethodology {
     /**

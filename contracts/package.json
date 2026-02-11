@@ -7,8 +7,9 @@
     "scripts": {
       "test": "forge test --contracts 'contracts/**/*.sol'",
       "test:coverage": "forge coverage --contracts 'contracts/**/*.sol'",
-      "prettier": "npx prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
-      "lint": "npx solhint '*.sol'"
+      "prettier": "npx prettier --write --plugin=prettier-plugin-solidity '*.sol' 'methodologies/*.sol'",
+      "lint": "solhint '*.sol' 'methodologies/*.sol'",
+      "lint:fix": "solhint '*.sol' 'methodologies/*.sol' --fix"
     },
     "devDependencies": {
       "@nomicfoundation/hardhat-toolbox": "^5.0.0",

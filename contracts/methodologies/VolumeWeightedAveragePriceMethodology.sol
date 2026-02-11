@@ -69,11 +69,12 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
     /**
      * @notice Calculates VWAP for a single oracle
      */
-    function _calculateOracleVWAP(IDIAOracleV3 oracle, string memory key, uint256 timeoutSeconds, uint256 windowSize)
-        internal
-        view
-        returns (VWAPResult memory)
-    {
+    function _calculateOracleVWAP(
+        IDIAOracleV3 oracle,
+        string memory key,
+        uint256 timeoutSeconds,
+        uint256 windowSize
+    ) internal view returns (VWAPResult memory) {
         IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
 
         if (history.length == 0) {

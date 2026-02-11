@@ -45,7 +45,8 @@ contract AveragePriceMethodology is IPriceMethodology {
 
     /**
      * @notice Aggregates oracle values using average-then-median methodology.
-     * @dev For each oracle: takes up to windowSize most recent valid values, averages them, then takes the median of those averages
+     * @dev For each oracle: takes up to windowSize most recent valid values, averages them,
+     *      then takes the median of those averages
      * @param oracles Array of oracle contracts to aggregate from.
      * @param key The asset identifier.
      * @param timeoutSeconds Timeout period for valid values.

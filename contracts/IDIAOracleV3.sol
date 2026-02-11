@@ -18,10 +18,10 @@ interface IDIAOracleV3 is IERC165 {
     function getRawData(string memory key) external view returns (bytes memory);
 
     // Historical value functions
-    function getValueAt(string memory key, uint256 index)
-        external
-        view
-        returns (uint128 value, uint128 timestamp, uint128 volume);
+    function getValueAt(
+        string memory key,
+        uint256 index
+    ) external view returns (uint128 value, uint128 timestamp, uint128 volume);
     function getValueHistory(string memory key) external view returns (ValueEntry[] memory);
     function getValueCount(string memory key) external view returns (uint256);
     function setMaxHistorySize(uint256 newMaxSize) external;

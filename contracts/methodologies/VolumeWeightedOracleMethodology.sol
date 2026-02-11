@@ -49,7 +49,12 @@ contract VolumeWeightedOracleMethodology is IPriceMethodology {
         uint128 maxTimestamp = 0;
 
         for (uint256 i = 0; i < numOracles; i++) {
-            OracleResult memory result = _calculateOracleData(IDIAOracleV3(oracles[i]), key, timeoutSeconds, windowSize);
+            OracleResult memory result = _calculateOracleData(
+                IDIAOracleV3(oracles[i]),
+                key,
+                timeoutSeconds,
+                windowSize
+            );
 
             if (result.valid) {
                 totalPriceVolume += result.avgPrice * result.totalVolume;
@@ -76,11 +81,12 @@ contract VolumeWeightedOracleMethodology is IPriceMethodology {
     /**
      * @notice Calculates average price and total volume for a single oracle
      */
-    function _calculateOracleData(IDIAOracleV3 oracle, string memory key, uint256 timeoutSeconds, uint256 windowSize)
-        internal
-        view
-        returns (OracleResult memory)
-    {
+    function _calculateOracleData(
+        IDIAOracleV3 oracle,
+        string memory key,
+        uint256 timeoutSeconds,
+        uint256 windowSize
+    ) internal view returns (OracleResult memory) {
         IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
 
         if (history.length == 0) {
