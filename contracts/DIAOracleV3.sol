@@ -42,9 +42,16 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
     error MaxHistorySizeTooLarge(uint256 requestedSize, uint256 maxAllowed);
+    error TimestampTooFarInFuture(uint128 timestamp, uint256 blockTime);
+    error TimestampTooFarInPast(uint128 timestamp, uint256 blockTime);
 
     /// @notice Maximum allowed history size to prevent gas issues (set to 1000)
     uint256 public constant MAX_ALLOWED_HISTORY_SIZE = 1000;
+
+    /// @notice Maximum timestamp gap in the future (1 hour)
+    uint256 public constant MAX_TIMESTAMP_GAP= 1 hours;
+
+ 
 
     constructor(uint256 _maxHistorySize) {
         if (_maxHistorySize > MAX_ALLOWED_HISTORY_SIZE) {
@@ -65,6 +72,8 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param timestamp The timestamp associated with the value.
      */
     function setValue(string memory key, uint128 value, uint128 timestamp) public onlyRole(UPDATER_ROLE) {
+        _validateTimestamp(timestamp);
+
         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
 
@@ -93,6 +102,8 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
             uint128 value = (uint128)(currentCvalue >> 128);
             uint128 timestamp = (uint128)(currentCvalue % 2 ** 128);
 
+            _validateTimestamp(timestamp);
+
             // Update the current value (backward compatibility with V2)
             values[currentKey] = currentCvalue;
 
@@ -116,6 +127,8 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
             (string, uint128, uint128, uint128, bytes)
         );
 
+        _validateTimestamp(timestamp);
+
         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
         rawData[key] = additionalData;
@@ -137,6 +150,8 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         for (uint256 i = 0; i < dataArray.length; i++) {
             (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) = abi
                 .decode(dataArray[i], (string, uint128, uint128, uint128, bytes));
+
+            _validateTimestamp(timestamp);
 
             uint256 cValue = (((uint256)(value)) << 128) + timestamp;
             values[key] = cValue;
@@ -312,6 +327,26 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         if (currentCount < maxHistorySize) {
             currentCount++;
             _valueCount[key] = currentCount;
+        }
+    }
+
+    /**
+     * @notice Validates that a timestamp is within acceptable bounds.
+     * @dev Timestamp must not be too far in the future or too far in the past.
+     *      This prevents invalid data from polluting the oracle.
+     * @param timestamp The timestamp to validate.
+     */
+    function _validateTimestamp(uint128 timestamp) private view {
+        uint256 currentBlockTime = block.timestamp;
+
+        // Check if timestamp is too far in the future
+        if (timestamp > uint128(currentBlockTime + MAX_TIMESTAMP_GAP)) {
+            revert TimestampTooFarInFuture(timestamp, currentBlockTime);
+        }
+
+        // Check if timestamp is too far in the past
+        if (currentBlockTime > MAX_TIMESTAMP_GAP && timestamp < uint128(currentBlockTime - MAX_TIMESTAMP_GAP)) {
+            revert TimestampTooFarInPast(timestamp, currentBlockTime);
         }
     }
 }

@@ -85,7 +85,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     function addOracle(
         address newOracleAddress
     ) public onlyOwner validateAddress(newOracleAddress) validateOracleInterface(newOracleAddress) {
-        for (uint256 i = 0; i < numOracles; i++) {
+        for (uint256 i = 0; i < _numOracles; i++) {
             if (oracles[i] == newOracleAddress) {
                 revert OracleExists();
             }
@@ -290,7 +290,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
                 continue;
             }
 
-            (uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
+            (uint128 value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
 
             // Check if value is not expired
             if ((timestamp + _timeoutSeconds) >= block.timestamp) {
@@ -451,7 +451,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
                 continue;
             }
 
-            (uint128 oracleTimestamp, uint128 oracleVolume) = oracle.getValueAt(key, 0);
+            (uint128 oracleValue, uint128 oracleTimestamp, uint128 oracleVolume) = oracle.getValueAt(key, 0);
 
             // Check if value is not expired
             if ((oracleTimestamp + _timeoutSeconds) >= block.timestamp) {
