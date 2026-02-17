@@ -63,7 +63,16 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
         }
 
         vwaps = QuickSort.sort(vwaps, 0, validValues - 1);
-        return (vwaps[validValues / 2], maxTimestamp);
+
+        uint256 medianIndex = validValues / 2;
+        uint128 medianValue;
+        if (validValues % 2 == 0) {
+            uint256 lowerIndex = medianIndex - 1;
+            medianValue = uint128((uint256(vwaps[lowerIndex]) + uint256(vwaps[medianIndex])) / 2);
+        } else {
+            medianValue = vwaps[medianIndex];
+        }
+        return (medianValue, maxTimestamp);
     }
 
     /**

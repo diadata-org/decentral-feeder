@@ -107,6 +107,13 @@ contract AveragePriceMethodology is IPriceMethodology {
         averages = QuickSort.sort(averages, 0, validValues - 1);
 
         uint256 medianIndex = validValues / 2;
-        return (averages[medianIndex], maxTimestamp);
+        uint128 medianValue;
+        if (validValues % 2 == 0) {
+            uint256 lowerIndex = medianIndex - 1;
+            medianValue = uint128((uint256(averages[lowerIndex]) + uint256(averages[medianIndex])) / 2);
+        } else {
+            medianValue = averages[medianIndex];
+        }
+        return (medianValue, maxTimestamp);
     }
 }

@@ -103,7 +103,14 @@ contract MedianPriceMethodology is IPriceMethodology {
                 sortedValues = QuickSort.sort(sortedValues, 0, validCount - 1);
 
                 uint256 oracleMedianIndex = validCount / 2;
-                medians[validValues] = sortedValues[oracleMedianIndex];
+                uint128 oracleMedian;
+                if (validCount % 2 == 0) {
+                    uint256 lowerIndex = oracleMedianIndex - 1;
+                    oracleMedian = uint128((uint256(sortedValues[lowerIndex]) + uint256(sortedValues[oracleMedianIndex])) / 2);
+                } else {
+                    oracleMedian = sortedValues[oracleMedianIndex];
+                }
+                medians[validValues] = oracleMedian;
                 validValues += 1;
             }
         }
@@ -115,6 +122,13 @@ contract MedianPriceMethodology is IPriceMethodology {
         medians = QuickSort.sort(medians, 0, validValues - 1);
 
         uint256 finalMedianIndex = validValues / 2;
-        return (medians[finalMedianIndex], maxTimestamp);
+        uint128 finalMedian;
+        if (validValues % 2 == 0) {
+            uint256 lowerIndex = finalMedianIndex - 1;
+            finalMedian = uint128((uint256(medians[lowerIndex]) + uint256(medians[finalMedianIndex])) / 2);
+        } else {
+            finalMedian = medians[finalMedianIndex];
+        }
+        return (finalMedian, maxTimestamp);
     }
 }
