@@ -75,6 +75,9 @@ jobs:
       - name: Install Foundry dependencies
         run: forge install || true
 
+      - name: Install forge-std
+        run: forge install foundry-rs/forge-std --no-git || true
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -86,6 +89,7 @@ jobs:
       - name: Write Foundry remappings
         run: |
           echo "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/" > remappings.txt
+          echo "forge-std/=lib/forge-std/src/" >> remappings.txt
 
       - name: Run tests
         run: forge test -v || true
