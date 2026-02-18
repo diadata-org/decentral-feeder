@@ -1,0 +1,132 @@
+name: smart-contracts
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "contracts/**"
+      - "test-foundry/**"
+      - "foundry.toml"
+      - "slither.config.json"
+      - ".github/workflows/smart-contracts.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "contracts/**"
+      - "foundry.toml"
+      - "slither.config.json"
+      - ".github/workflows/smart-contracts.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write # required for uploading SARIF to GitHub Security tab
+  pull-requests: write # required for posting PR comments
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Job 1: Solidity Linter (solhint)
+  # ─────────────────────────────────────────────
+  solhint:
+    name: Solidity Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: contracts/package-lock.json
+
+      - name: Install dependencies
+        working-directory: contracts
+        run: npm ci
+
+      - name: Run solhint
+        working-directory: contracts
+        # lint all .sol files in this directory, excluding the flattened file
+        run: |
+          npx solhint '**/*.sol' \
+            --ignore-path .solhintignore \
+            --formatter stylish \
+            || true  # report findings without failing the step; remove '|| true' to make it a hard gate
+
+  # ─────────────────────────────────────────────
+  # Job 2: Slither Static Analysis
+  # ─────────────────────────────────────────────
+  slither:
+    name: Slither Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install Foundry dependencies
+        run: forge install
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install OpenZeppelin via npm
+        run: npm install @openzeppelin/contracts
+
+      - name: Remove contracts/node_modules to prevent forge scanning it
+        run: rm -rf contracts/node_modules
+
+      - name: Write Foundry remappings
+        run: |
+          echo "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/" > remappings.txt
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install solc
+        run: |
+          pip install solc-select
+          solc-select install 0.8.29
+          solc-select use 0.8.29
+
+      - name: Install Slither
+        run: pip install slither-analyzer
+
+      - name: Verify tool paths
+        run: |
+          which forge
+          forge --version
+          which slither || true
+          python -c "import slither; print(slither.__file__)"
+
+      - name: Run Slither
+        run: |
+          python -m slither contracts/ \
+            --solc-remaps "@openzeppelin/contracts/=contracts/node_modules/@openzeppelin/contracts/" \
+            --filter-paths "contracts/Flattened_for_verification.sol,contracts/node_modules/" \
+            --sarif results.sarif \
+            || true  # never fail; remove '|| true' to gate on findings
+
+      - name: Ensure SARIF file exists
+        if: always()
+        run: |
+          if [ ! -f results.sarif ]; then
+            echo '{"version":"2.1.0","runs":[]}' > results.sarif
+          fi
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: results.sarif
