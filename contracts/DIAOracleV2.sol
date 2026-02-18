@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
+// test: trigger slither annotations
 pragma solidity 0.8.29;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
