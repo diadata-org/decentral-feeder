@@ -20,6 +20,7 @@
     "deployment"
   ],
   "devDependencies": {
+    "@openzeppelin/upgrades-core": "^1.44.2",
     "solhint": "^4.5.4"
   }
 }

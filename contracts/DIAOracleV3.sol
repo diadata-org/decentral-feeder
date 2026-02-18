@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.29;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "./IDIAOracleV3.sol";
 
 /**
  * @title DIAOracleV3
- * @dev A simple oracle contract that allows an authorized updater to set and retrieve price values with timestamps.
+ * @dev UUPS upgradeable oracle contract that allows an authorized updater to set and retrieve price values with timestamps.
  */
-contract DIAOracleV3 is IDIAOracleV3, AccessControl {
+contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant UPDATER_ROLE = keccak256("UPDATER_ROLE");
 
     /// @notice Maximum number of historical values to store per key (default: 100)
@@ -42,6 +44,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
     error MaxHistorySizeTooLarge(uint256 requestedSize, uint256 maxAllowed);
+    error MaxHistorySizeZero();
     error TimestampTooFarInFuture(uint128 timestamp, uint256 blockTime);
     error TimestampTooFarInPast(uint128 timestamp, uint256 blockTime);
 
@@ -49,11 +52,42 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
     uint256 public constant MAX_ALLOWED_HISTORY_SIZE = 1000;
 
     /// @notice Maximum timestamp gap in the future (1 hour)
-    uint256 public constant MAX_TIMESTAMP_GAP= 1 hours;
+    uint256 public constant MAX_TIMESTAMP_GAP = 1 hours;
 
- 
+    /// @notice Reserved storage space for future upgrades (100 slots)
+    /// @dev Storage slots from forge build --extra-output storageLayout:
+    ///
+    /// Slot | Label              | Type
+    /// ----|--------------------|-------------------------------------------------
+    ///   0  | maxHistorySize     | uint256
+    ///   1  | values             | mapping(string => uint256)
+    ///   2  | _valueHistory      | mapping(string => array(ValueEntry)_dyn_storage)
+    ///   3  | _writeIndex        | mapping(string => uint256)
+    ///   4  | _valueCount        | mapping(string => uint256)
+    ///   5  | rawData            | mapping(string => bytes)
+    ///   6+ | __gap             | 100 slots reserved for future upgrades
+    ///
+    /// Note: Parent contract storage (before slot 0):
+    /// - Initializable: 2 slots (_initialized, _initializing)
+    /// - AccessControlUpgradeable: ~4 slots (_roles mapping)
+    /// Total contract uses slots 0-5 + parent slots + 100 gap slots
+    uint256[100] private __gap;
 
-    constructor(uint256 _maxHistorySize) {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /**
+     * @notice Initializes the contract with max history size and roles.
+     * @dev Replaces constructor for upgradeable contracts. Uses reinitializer(1)
+     *      to allow future upgrades to add new initialization logic with version 2, 3, etc.
+     * @param _maxHistorySize Maximum number of historical values to store per key.
+     */
+    function initialize(uint256 _maxHistorySize) public reinitializer(1) {
+        if (_maxHistorySize == 0) {
+            revert MaxHistorySizeZero();
+        }
         if (_maxHistorySize > MAX_ALLOWED_HISTORY_SIZE) {
             revert MaxHistorySizeTooLarge(_maxHistorySize, MAX_ALLOWED_HISTORY_SIZE);
         }
@@ -61,6 +95,13 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
+
+    /**
+     * @notice Authorizes upgrade to new implementation.
+     * @dev Only callable by addresses with DEFAULT_ADMIN_ROLE.
+     * @param newImplementation Address of the new implementation contract.
+     */
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
      * @notice Updates the price and timestamp for a given asset key.
@@ -269,6 +310,9 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param newMaxSize The new maximum history size (must be <= MAX_ALLOWED_HISTORY_SIZE).
      */
     function setMaxHistorySize(uint256 newMaxSize) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (newMaxSize == 0) {
+            revert MaxHistorySizeZero();
+        }
         if (newMaxSize > MAX_ALLOWED_HISTORY_SIZE) {
             revert MaxHistorySizeTooLarge(newMaxSize, MAX_ALLOWED_HISTORY_SIZE);
         }
@@ -293,7 +337,7 @@ contract DIAOracleV3 is IDIAOracleV3, AccessControl {
      * @param interfaceId The interface identifier to check for support.
      * @return True if the contract supports the interface, false otherwise.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, IERC165) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlUpgradeable, IERC165) returns (bool) {
         return interfaceId == type(IDIAOracleV3).interfaceId || super.supportsInterface(interfaceId);
     }
 
