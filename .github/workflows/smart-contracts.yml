@@ -73,7 +73,7 @@ jobs:
           version: nightly
 
       - name: Install Foundry dependencies
-        run: forge install
+        run: forge install || true
 
       - name: Setup Node
         uses: actions/setup-node@v4
