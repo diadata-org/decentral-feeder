@@ -2,14 +2,16 @@
 pragma solidity 0.8.29;
 
 import "forge-std/Test.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "../contracts/DIAOracleV3.sol";
 import "../contracts/DIAOracleV3Meta.sol";
 import "../contracts/IDIAOracleV3.sol";
 import "../contracts/methodologies/AveragePriceMethodology.sol";
 import "../contracts/methodologies/MedianPriceMethodology.sol";
+import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 // Mock Oracle contract implementing IDIAOracleV3
-contract MockDIAOracleV3 is IDIAOracleV3 {
+contract MockDIAOracleV3 is IDIAOracleV3, ERC165 {
     IDIAOracleV3.ValueEntry[] private history;
     uint256 private maxHistorySize;
 
@@ -18,7 +20,7 @@ contract MockDIAOracleV3 is IDIAOracleV3 {
     }
 
     function setValue(string memory, uint128 value, uint128 timestamp) external {
-        history.push(IDIAOracleV3.ValueEntry(value, timestamp));
+        history.push(IDIAOracleV3.ValueEntry(value, timestamp, 0));
         if (history.length > maxHistorySize) {
             // Remove oldest
             for (uint256 i = 0; i < history.length - 1; i++) {
@@ -38,10 +40,14 @@ contract MockDIAOracleV3 is IDIAOracleV3 {
         revert("Not implemented");
     }
 
-    function getValueAt(string memory, uint256 index) external view returns (uint128 value, uint128 timestamp) {
+    function getValueAt(string memory, uint256 index)
+        external
+        view
+        returns (uint128 value, uint128 timestamp, uint128 volume)
+    {
         require(index < history.length, "Invalid index");
         IDIAOracleV3.ValueEntry memory entry = history[history.length - 1 - index];
-        return (entry.value, entry.timestamp);
+        return (entry.value, entry.timestamp, entry.volume);
     }
 
     function getValueHistory(string memory) external view returns (IDIAOracleV3.ValueEntry[] memory) {
@@ -64,6 +70,22 @@ contract MockDIAOracleV3 is IDIAOracleV3 {
     function getMaxHistorySize() external view returns (uint256) {
         return maxHistorySize;
     }
+
+    function setRawValue(bytes calldata) external {
+        revert("Not implemented");
+    }
+
+    function setMultipleRawValues(bytes[] calldata) external {
+        revert("Not implemented");
+    }
+
+    function getRawData(string memory) external view returns (bytes memory) {
+        return "";
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
+        return interfaceId == type(IDIAOracleV3).interfaceId || super.supportsInterface(interfaceId);
+    }
 }
 
 contract DIAOracleV3MetaTest is Test {
@@ -74,15 +96,25 @@ contract DIAOracleV3MetaTest is Test {
 
     address public admin = address(0x123);
 
+    function deployOracle(uint256 maxHistorySize) internal returns (DIAOracleV3) {
+        DIAOracleV3 implementation = new DIAOracleV3();
+        bytes memory initData = abi.encodeWithSelector(
+            DIAOracleV3.initialize.selector,
+            maxHistorySize
+        );
+        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
+        return DIAOracleV3(address(proxy));
+    }
+
     function setUp() public {
         vm.startPrank(admin);
         // Deploy methodology first
         AveragePriceMethodology methodology = new AveragePriceMethodology();
         oracleMeta = new DIAOracleV3Meta(address(methodology));
-        oracle1 = new DIAOracleV3(10);
-        oracle2 = new DIAOracleV3(10);
-        oracle3 = new DIAOracleV3(10);
-        
+        oracle1 = deployOracle(10);
+        oracle2 = deployOracle(10);
+        oracle3 = deployOracle(10);
+
         // Grant UPDATER_ROLE to this test contract so we can call setValue
         oracle1.grantRole(keccak256("UPDATER_ROLE"), address(this));
         oracle2.grantRole(keccak256("UPDATER_ROLE"), address(this));
@@ -127,7 +159,6 @@ contract DIAOracleV3MetaTest is Test {
         assertEq(value, 205, "Median should be 205 (median of averages)");
     }
 
-
     function testGetValueFailsWithoutEnoughOracles() public {
         vm.startPrank(admin);
         oracleMeta.addOracle(address(oracle1));
@@ -156,11 +187,12 @@ contract DIAOracleV3MetaTest is Test {
         oracle2.setValue("BTC", 200, uint128(block.timestamp));
 
         // Both oracles have values, should get aggregated value
-        (uint128 value, ) = oracleMeta.getValue("BTC");
-        // Oracle1: average of [110] = 110
+        (uint128 value,) = oracleMeta.getValue("BTC");
+        // Oracle1: average of [110, 100] = 105
         // Oracle2: average of [200] = 200
-        // Sorted: [110, 200], medianIndex = 1 -> values[1] = 200
-        assertEq(value, 200, "Should get median (higher value when 2 values): 200");
+        // Sorted: [105, 200], validValues = 2
+        // Median of even count: (averages[0] + averages[1]) / 2 = (105 + 200) / 2 = 152
+        assertEq(value, 152, "Should get median of averages: (105 + 200) / 2 = 152");
     }
 
     function testGetValueWithCustomParams() public {
@@ -186,7 +218,7 @@ contract DIAOracleV3MetaTest is Test {
         oracle3.setValue("BTC", 310, uint128(block.timestamp + 1));
 
         // Test with default (average methodology, windowSize 10)
-        (uint128 valueDefault, ) = oracleMeta.getValue("BTC");
+        (uint128 valueDefault,) = oracleMeta.getValue("BTC");
         // Oracle1: average of [110, 100] = 105
         // Oracle2: average of [210, 200] = 205
         // Oracle3: average of [310, 300] = 305
@@ -194,11 +226,519 @@ contract DIAOracleV3MetaTest is Test {
         assertEq(valueDefault, 205, "Default should use average methodology");
 
         // Test with custom windowSize=1, median methodology, custom timeout=2000, custom threshold=2
-        (uint128 valueCustom, ) = oracleMeta.getValueByConfig("BTC", 1, address(medianMethodology), 2000, 2);
+        (uint128 valueCustom,) = oracleMeta.getValueByConfig("BTC", 1, address(medianMethodology), 2000, 2);
         // Oracle1: median of [110] = 110
         // Oracle2: median of [210] = 210
         // Oracle3: median of [310] = 310
         // Median of [110, 210, 310] = 210
         assertEq(valueCustom, 210, "Custom should use median methodology with windowSize=1");
     }
+
+    function testConstructorZeroAddress() public {
+        vm.expectRevert(DIAOracleV3Meta.InvalidMethodology.selector);
+        new DIAOracleV3Meta(address(0));
+    }
+
+    function testAddOracleZeroAddress() public {
+        vm.startPrank(admin);
+        vm.expectRevert(DIAOracleV3Meta.ZeroAddress.selector);
+        oracleMeta.addOracle(address(0));
+        vm.stopPrank();
+    }
+
+    function testAddOracleExists() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.expectRevert(DIAOracleV3Meta.OracleExists.selector);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+    }
+
+    function testRemoveOracle() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.addOracle(address(oracle3));
+        assertEq(oracleMeta.getNumOracles(), 3);
+
+        oracleMeta.removeOracle(address(oracle2));
+        assertEq(oracleMeta.getNumOracles(), 2);
+
+        assertEq(oracleMeta.oracles(0), address(oracle1));
+        assertEq(oracleMeta.oracles(1), address(oracle3));
+        vm.stopPrank();
+    }
+
+    function testRemoveOracleNotFound() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.expectRevert(DIAOracleV3Meta.OracleNotFound.selector);
+        oracleMeta.removeOracle(address(oracle2));
+        vm.stopPrank();
+    }
+
+    function testRemoveOracleLast() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+
+        oracleMeta.removeOracle(address(oracle2));
+        assertEq(oracleMeta.getNumOracles(), 1);
+        assertEq(oracleMeta.oracles(0), address(oracle1));
+        vm.stopPrank();
+    }
+
+    function testSetThresholdZero() public {
+        vm.startPrank(admin);
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidThreshold.selector, 0));
+        oracleMeta.setThreshold(0);
+        vm.stopPrank();
+    }
+
+    function testSetThreshold() public {
+        vm.startPrank(admin);
+        oracleMeta.setThreshold(5);
+        assertEq(oracleMeta.getThreshold(), 5);
+        vm.stopPrank();
+    }
+
+    function testSetTimeoutSecondsZero() public {
+        vm.startPrank(admin);
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidTimeOut.selector, 0));
+        oracleMeta.setTimeoutSeconds(0);
+        vm.stopPrank();
+    }
+
+    function testSetTimeoutSecondsExceedsLimit() public {
+        vm.startPrank(admin);
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.TimeoutExceedsLimit.selector, 86401));
+        oracleMeta.setTimeoutSeconds(86401);
+        vm.stopPrank();
+    }
+
+    function testSetTimeoutSeconds() public {
+        vm.startPrank(admin);
+        oracleMeta.setTimeoutSeconds(3600);
+        assertEq(oracleMeta.getTimeoutSeconds(), 3600);
+        vm.stopPrank();
+    }
+
+    function testSetPriceMethodology() public {
+        vm.startPrank(admin);
+        MedianPriceMethodology newMethodology = new MedianPriceMethodology();
+        address oldMethodology = address(oracleMeta.priceMethodology());
+
+        oracleMeta.setPriceMethodology(address(newMethodology));
+        assertEq(address(oracleMeta.priceMethodology()), address(newMethodology));
+        vm.stopPrank();
+    }
+
+    function testSetPriceMethodologyZeroAddress() public {
+        vm.startPrank(admin);
+        vm.expectRevert(DIAOracleV3Meta.InvalidMethodology.selector);
+        oracleMeta.setPriceMethodology(address(0));
+        vm.stopPrank();
+    }
+
+    function testSetWindowSizeZero() public {
+        vm.startPrank(admin);
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidWindowSize.selector, 0));
+        oracleMeta.setWindowSize(0);
+        vm.stopPrank();
+    }
+
+    function testSetWindowSize() public {
+        vm.startPrank(admin);
+        oracleMeta.setWindowSize(20);
+        assertEq(oracleMeta.getWindowSize(), 20);
+        vm.stopPrank();
+    }
+
+    function testGetValueZeroTimeout() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setWindowSize(10);
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidTimeOut.selector, 0));
+        oracleMeta.getValue("BTC");
+    }
+
+    function testGetValueZeroThreshold() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidThreshold.selector, 0));
+        oracleMeta.getValue("BTC");
+    }
+
+    function testGetValueZeroWindowSize() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidWindowSize.selector, 0));
+        oracleMeta.getValue("BTC");
+    }
+
+    function testGetValueByConfigZeroTimeout() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+        AveragePriceMethodology methodology = new AveragePriceMethodology();
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidTimeOut.selector, 0));
+        oracleMeta.getValueByConfig("BTC", 10, address(methodology), 0, 1);
+    }
+
+    function testGetValueByConfigZeroThreshold() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+        AveragePriceMethodology methodology = new AveragePriceMethodology();
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidThreshold.selector, 0));
+        oracleMeta.getValueByConfig("BTC", 10, address(methodology), 1000, 0);
+    }
+
+    function testGetValueByConfigZeroWindowSize() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+        AveragePriceMethodology methodology = new AveragePriceMethodology();
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidWindowSize.selector, 0));
+        oracleMeta.getValueByConfig("BTC", 0, address(methodology), 1000, 1);
+    }
+
+    function testGetValueByConfigZeroMethodology() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(DIAOracleV3Meta.InvalidMethodology.selector);
+        oracleMeta.getValueByConfig("BTC", 10, address(0), 1000, 1);
+    }
+
+    // Tests for new volume and raw data functions
+
+    function testGetAggregatedVolume() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setTimeoutSeconds(1000);
+        vm.stopPrank();
+
+        // Set values with volume using setRawValue
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(2000000), bytes(""));
+
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        (uint128 totalVolume, uint256 validCount) = oracleMeta.getAggregatedVolume("BTC");
+
+        assertEq(totalVolume, 3000000, "Total volume should be sum of both oracles");
+        assertEq(validCount, 2, "Should have 2 valid oracles");
+    }
+
+    function testGetAggregatedVolumeWithExpiredData() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setTimeoutSeconds(100);
+        vm.stopPrank();
+
+        // Warp to a future time to avoid underflow
+        vm.warp(1000);
+
+        // Set one with current timestamp, one with old timestamp (expired)
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        bytes memory data2 =
+            abi.encode("BTC", uint128(51000), uint128(block.timestamp - 200), uint128(2000000), bytes(""));
+
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        (uint128 totalVolume, uint256 validCount) = oracleMeta.getAggregatedVolume("BTC");
+
+        assertEq(totalVolume, 1000000, "Total volume should only include non-expired oracle");
+        assertEq(validCount, 1, "Should have 1 valid oracle");
+    }
+
+    function testGetRawDataFromOracle() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        vm.stopPrank();
+
+        bytes memory rawData1 = abi.encode("extra data 1");
+        bytes memory rawData2 = abi.encode("extra data 2");
+
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000), rawData1);
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(2000), rawData2);
+
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        bytes memory retrievedData1 = oracleMeta.getRawDataFromOracle(0, "BTC");
+        bytes memory retrievedData2 = oracleMeta.getRawDataFromOracle(1, "BTC");
+
+        assertEq(keccak256(retrievedData1), keccak256(rawData1), "Raw data 1 should match");
+        assertEq(keccak256(retrievedData2), keccak256(rawData2), "Raw data 2 should match");
+    }
+
+    function testGetRawDataFromOracleInvalidIndex() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidHistoryIndex.selector, 5));
+        oracleMeta.getRawDataFromOracle(5, "BTC");
+    }
+
+    function testGetAllRawData() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        vm.stopPrank();
+
+        bytes memory rawData1 = abi.encode("data1");
+        bytes memory rawData2 = abi.encode("data2");
+
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000), rawData1);
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(2000), rawData2);
+
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        bytes[] memory allRawData = oracleMeta.getAllRawData("BTC");
+
+        assertEq(allRawData.length, 2, "Should have 2 raw data entries");
+        assertEq(keccak256(allRawData[0]), keccak256(rawData1), "First raw data should match");
+        assertEq(keccak256(allRawData[1]), keccak256(rawData2), "Second raw data should match");
+    }
+
+    function testGetValueWithVolumeFromOracle() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+
+        bytes memory data = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        oracle1.setRawValue(data);
+
+        (uint128 value, uint128 timestamp, uint128 volume) = oracleMeta.getValueWithVolumeFromOracle(0, "BTC", 0);
+
+        assertEq(value, 50000, "Value should match");
+        assertEq(timestamp, uint128(block.timestamp), "Timestamp should match");
+        assertEq(volume, 1000000, "Volume should match");
+    }
+
+    function testGetValueWithVolumeFromOracleInvalidIndex() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        vm.stopPrank();
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidHistoryIndex.selector, 5));
+        oracleMeta.getValueWithVolumeFromOracle(5, "BTC", 0);
+    }
+
+    function testGetAllValuesWithVolume() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.addOracle(address(oracle3));
+        vm.stopPrank();
+
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(2000000), bytes(""));
+        // oracle3 has no data for BTC
+
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        (
+            uint128[] memory values,
+            uint128[] memory timestamps,
+            uint128[] memory volumes,
+            address[] memory oracleAddresses
+        ) = oracleMeta.getAllValuesWithVolume("BTC");
+
+        assertEq(values.length, 2, "Should have 2 values");
+        assertEq(values[0], 50000, "First value should match");
+        assertEq(values[1], 51000, "Second value should match");
+        assertEq(volumes[0], 1000000, "First volume should match");
+        assertEq(volumes[1], 2000000, "Second volume should match");
+        assertEq(oracleAddresses[0], address(oracle1), "First oracle address should match");
+        assertEq(oracleAddresses[1], address(oracle2), "Second oracle address should match");
+    }
+
+    function testGetValueWithVolume() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setThreshold(2);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        vm.stopPrank();
+
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        bytes memory data2 = abi.encode("BTC", uint128(52000), uint128(block.timestamp), uint128(2000000), bytes(""));
+
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        (uint128 value, uint128 timestamp, uint128 totalVolume) = oracleMeta.getValueWithVolume("BTC");
+
+        // Value should be aggregated using methodology (median of averages)
+        assertGt(value, 0, "Value should be greater than 0");
+        assertEq(totalVolume, 3000000, "Total volume should be sum of both");
+    }
+
+    function testGetValueWithVolumeZeroTimeout() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setWindowSize(10);
+        // timeoutSeconds is 0
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidTimeOut.selector, 0));
+        oracleMeta.getValueWithVolume("BTC");
+    }
+
+    function testGetAggregatedVolumeZeroTimeout() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        // timeoutSeconds is 0
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidTimeOut.selector, 0));
+        oracleMeta.getAggregatedVolume("BTC");
+    }
+
+    // =================================================================
+    // ERC-165 Interface Validation Tests
+    // =================================================================
+
+    /// @notice Test that adding a valid DIAOracleV3 contract succeeds
+    function testAddOracleWithValidInterface() public {
+        vm.startPrank(admin);
+
+        // DIAOracleV3 implements ERC-165 and IDIAOracleV3
+        oracleMeta.addOracle(address(oracle1));
+
+        assertEq(oracleMeta.getNumOracles(), 1);
+        vm.stopPrank();
+    }
+
+    /// @notice Test that adding an EOA (regular address) reverts
+    function testAddOracleEOAFails() public {
+        vm.startPrank(admin);
+
+        // Create a random address (EOA)
+        address randomEOA = address(0x456);
+
+        // EOAs don't implement supportsInterface
+        // The EOA call will revert without error data, then our catch block will revert with InvalidOracle
+        vm.expectRevert();
+        oracleMeta.addOracle(randomEOA);
+
+        vm.stopPrank();
+    }
+
+    /// @notice Test that adding a contract without ERC-165 support reverts
+    function testAddOracleNoERC165Support() public {
+        vm.startPrank(admin);
+
+        // Deploy a contract that doesn't implement ERC-165
+        InvalidOracleContract invalidContract = new InvalidOracleContract();
+
+        // Contract exists but doesn't have supportsInterface, will revert
+        vm.expectRevert();
+        oracleMeta.addOracle(address(invalidContract));
+
+        vm.stopPrank();
+    }
+
+    /// @notice Test that adding a contract with wrong interface reverts
+    function testAddOracleWrongInterface() public {
+        vm.startPrank(admin);
+
+        // Deploy a contract that implements ERC-165 but not IDIAOracleV3
+        WrongInterfaceContract wrongInterface = new WrongInterfaceContract();
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidOracle.selector, address(wrongInterface)));
+        oracleMeta.addOracle(address(wrongInterface));
+
+        vm.stopPrank();
+    }
+
+    /// @notice Test that MockDIAOracleV3 with ERC-165 works
+    function testAddOracleMockWithERC165() public {
+        vm.startPrank(admin);
+
+        // MockDIAOracleV3 properly implements ERC-165 and IDIAOracleV3
+        MockDIAOracleV3 mockOracle = new MockDIAOracleV3(10);
+
+        oracleMeta.addOracle(address(mockOracle));
+
+        assertEq(oracleMeta.getNumOracles(), 1);
+
+        // Verify it actually works by setting and getting a value
+        mockOracle.setValue("ETH", 1000, uint128(block.timestamp));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+
+        (uint128 value,) = oracleMeta.getValue("ETH");
+        assertEq(value, 1000);
+
+        vm.stopPrank();
+    }
 }
+
+// =================================================================
+// Helper contracts for testing ERC-165 validation
+// =================================================================
+
+/// @notice Contract that doesn't implement ERC-165 at all
+contract InvalidOracleContract {
+    function setValue(string memory, uint128, uint128) external {}
+
+    function getValue(string memory) external pure returns (uint128, uint128) {
+        return (0, 0);
+    }
+
+    // Missing: supportsInterface() - No ERC-165 support!
+}
+
+/// @notice Contract that implements ERC-165 but not IDIAOracleV3
+contract WrongInterfaceContract is ERC165 {
+    // No override needed, just inherit from ERC165
+
+    }
