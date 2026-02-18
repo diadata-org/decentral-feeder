@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+      - oraclev3
     paths:
       - "contracts/**"
       - "test-foundry/**"
