@@ -14,7 +14,6 @@ contract DIAOracleV3Test is Test {
     DIAOracleV3 oracle;
     address deployer = address(this);
     address newUpdater = address(0xBEEF);
-    uint256 constant DEFAULT_MAX_HISTORY_SIZE = 10;
 
     function setUp() public {
         // Deploy implementation
@@ -22,8 +21,7 @@ contract DIAOracleV3Test is Test {
 
         // Deploy proxy with initialize call
         bytes memory initData = abi.encodeWithSelector(
-            DIAOracleV3.initialize.selector,
-            DEFAULT_MAX_HISTORY_SIZE
+            DIAOracleV3.initialize.selector
         );
         proxy = new ERC1967Proxy(address(implementation), initData);
 
@@ -123,50 +121,6 @@ contract DIAOracleV3Test is Test {
         oracle.getValueAt(key, 1); // Index 1 doesn't exist, only index 0 exists
     }
 
-    // Test setMaxHistorySize
-    function testSetMaxHistorySize() public {
-        uint256 newSize = 20;
-        oracle.setMaxHistorySize(newSize);
-
-        assertEq(oracle.getMaxHistorySize(), newSize, "Max history size should be updated");
-    }
-
-    // Test setMaxHistorySize with invalid value (too large)
-    function testSetMaxHistorySizeTooLarge() public {
-        address user = address(0x123);
-        vm.startPrank(user);
-        vm.expectRevert();
-        oracle.setMaxHistorySize(1001);
-        vm.stopPrank();
-    }
-
-    // Test initialize with zero max history size (division by zero prevention)
-    function testInitializeWithZeroMaxHistorySize() public {
-        DIAOracleV3 impl = new DIAOracleV3();
-        bytes memory initData = abi.encodeWithSelector(
-            DIAOracleV3.initialize.selector,
-            uint256(0) // Zero history size should fail
-        );
-
-        vm.expectRevert(DIAOracleV3.MaxHistorySizeZero.selector);
-        new ERC1967Proxy(address(impl), initData);
-    }
-
-    // Test setMaxHistorySize with zero (division by zero prevention)
-    function testSetMaxHistorySizeZero() public {
-        vm.expectRevert(DIAOracleV3.MaxHistorySizeZero.selector);
-        oracle.setMaxHistorySize(0);
-    }
-
-    // Test setMaxHistorySize only by admin
-    function testSetMaxHistorySizeOnlyAdmin() public {
-        address nonAdmin = address(0x456);
-        vm.startPrank(nonAdmin);
-        vm.expectRevert();
-        oracle.setMaxHistorySize(50);
-        vm.stopPrank();
-    }
-
     // Test multiple keys with different histories
     function testMultipleKeysWithHistories() public {
         oracle.setValue("BTC/USD", 50000, 1710000001);
@@ -250,21 +204,6 @@ contract DIAOracleV3Test is Test {
         assertEq(latestTimestamp, timestampAt0, "getValue timestamp should match getValueAt(0)");
     }
 
-    function testConstructorMaxHistorySizeTooLarge() public {
-        // Deploy implementation with invalid max history size should not fail in constructor
-        // but should fail when initialize is called
-        DIAOracleV3 badImpl = new DIAOracleV3();
-
-        // Initialize with invalid size should revert
-        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3.MaxHistorySizeTooLarge.selector, 1001, 1000));
-
-        // Deploy proxy and try to initialize with invalid size
-        ERC1967Proxy badProxy = new ERC1967Proxy(
-            address(badImpl),
-            abi.encodeWithSelector(DIAOracleV3.initialize.selector, 1001)
-        );
-    }
-
     function testSetMultipleValuesMismatchedArrays() public {
         string[] memory keys = new string[](2);
         keys[0] = "ETH/USD";
@@ -303,11 +242,6 @@ contract DIAOracleV3Test is Test {
         assertEq(history.length, maxSize, "Should have maxSize values");
         assertEq(history[0].value, uint128(1000 + maxSize), "Most recent should be last added");
         assertEq(history[maxSize - 1].value, uint128(1000 + 1), "Oldest should be second value");
-    }
-
-    function testSetMaxHistorySizeTooLargeByAdmin() public {
-        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3.MaxHistorySizeTooLarge.selector, 1001, 1000));
-        oracle.setMaxHistorySize(1001);
     }
 
     function testGetValueAtRingBufferWrap() public {
@@ -618,7 +552,7 @@ contract DIAOracleV3Test is Test {
 
     function testProxyDeployment() public {
         // Verify proxy is correctly set up
-        assertEq(oracle.getMaxHistorySize(), DEFAULT_MAX_HISTORY_SIZE, "Max history size should be initialized");
+        assertEq(oracle.getMaxHistorySize(), 100, "Max history size should be 100");
         assertTrue(oracle.hasRole(oracle.DEFAULT_ADMIN_ROLE(), deployer), "Deployer should have admin role");
         assertTrue(oracle.hasRole(oracle.UPDATER_ROLE(), deployer), "Deployer should have updater role");
     }
@@ -650,7 +584,7 @@ contract DIAOracleV3Test is Test {
         assertEq(valueAfter, 50000, "Value should persist after upgrade");
 
         // Configuration should persist
-        assertEq(upgradedOracle.getMaxHistorySize(), DEFAULT_MAX_HISTORY_SIZE, "Config should persist");
+        assertEq(upgradedOracle.getMaxHistorySize(), 100, "Max history size should be 100");
 
         // Roles should persist
         assertTrue(upgradedOracle.hasRole(upgradedOracle.DEFAULT_ADMIN_ROLE(), deployer), "Admin role should persist");
@@ -697,7 +631,7 @@ contract DIAOracleV3Test is Test {
 
     function testInitializeCannotBeCalledTwice() public {
         vm.expectRevert();
-        oracle.initialize(50);
+        oracle.initialize();
     }
 
     function testConstructorIsDisabled() public {
@@ -707,7 +641,7 @@ contract DIAOracleV3Test is Test {
 
         // Try to call initialize directly on implementation (should fail due to _disableInitializers)
         vm.expectRevert();
-        impl.initialize(100);
+        impl.initialize();
     }
 
     /**
@@ -748,7 +682,6 @@ contract DIAOracleV3Test is Test {
         // Add data before upgrade
         oracle.setValue("BTC/USD", 50000, 1710000000);
         oracle.setValue("ETH/USD", 3000, 1710000001);
-        oracle.setMaxHistorySize(20);
 
         // Upgrade
         DIAOracleV3 newImplementation = new DIAOracleV3();
@@ -764,7 +697,7 @@ contract DIAOracleV3Test is Test {
         DIAOracleV3 upgradedOracle = DIAOracleV3(address(proxy));
 
         // All storage should be intact
-        assertEq(upgradedOracle.getMaxHistorySize(), 20, "Max history size should persist");
+        assertEq(upgradedOracle.getMaxHistorySize(), 100, "Max history size should be 100");
         assertEq(upgradedOracle.getValueCount("BTC/USD"), 1, "BTC count should persist");
         assertEq(upgradedOracle.getValueCount("ETH/USD"), 1, "ETH count should persist");
 

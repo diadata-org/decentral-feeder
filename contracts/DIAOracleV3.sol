@@ -13,8 +13,8 @@ import "./IDIAOracleV3.sol";
 contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant UPDATER_ROLE = keccak256("UPDATER_ROLE");
 
-    /// @notice Maximum number of historical values to store per key (default: 100)
-    uint256 public maxHistorySize;
+    /// @notice Maximum number of historical values to store per key
+    uint256 public immutable maxHistorySize = 100;
 
     /// @notice Mapping to store compressed values of assets (price and timestamp).
     /// @dev Upper 128 bits store the price and the lower 128 bits store the timestamp.
@@ -39,7 +39,6 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
     event OracleUpdateRaw(string key, uint128 value, uint128 timestamp, uint128 volume, bytes data);
     event UpdaterAddressChange(address newUpdater);
-    event MaxHistorySizeChanged(uint256 oldSize, uint256 newSize);
 
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
@@ -79,19 +78,11 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     }
 
     /**
-     * @notice Initializes the contract with max history size and roles.
+     * @notice Initializes the contract with roles.
      * @dev Replaces constructor for upgradeable contracts. Uses reinitializer(1)
      *      to allow future upgrades to add new initialization logic with version 2, 3, etc.
-     * @param _maxHistorySize Maximum number of historical values to store per key.
      */
-    function initialize(uint256 _maxHistorySize) public reinitializer(1) {
-        if (_maxHistorySize == 0) {
-            revert MaxHistorySizeZero();
-        }
-        if (_maxHistorySize > MAX_ALLOWED_HISTORY_SIZE) {
-            revert MaxHistorySizeTooLarge(_maxHistorySize, MAX_ALLOWED_HISTORY_SIZE);
-        }
-        maxHistorySize = _maxHistorySize;
+    function initialize() public reinitializer(1) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
@@ -301,25 +292,6 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      */
     function getValueCount(string memory key) external view returns (uint256) {
         return _valueCount[key];
-    }
-
-    /**
-     * @notice Sets the maximum number of historical values to store per key.
-     * @dev Only callable by addresses with DEFAULT_ADMIN_ROLE.
-     *      This setting applies to all future updates (existing history is not affected).
-     * @param newMaxSize The new maximum history size (must be <= MAX_ALLOWED_HISTORY_SIZE).
-     */
-    function setMaxHistorySize(uint256 newMaxSize) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (newMaxSize == 0) {
-            revert MaxHistorySizeZero();
-        }
-        if (newMaxSize > MAX_ALLOWED_HISTORY_SIZE) {
-            revert MaxHistorySizeTooLarge(newMaxSize, MAX_ALLOWED_HISTORY_SIZE);
-        }
-
-        uint256 oldSize = maxHistorySize;
-        maxHistorySize = newMaxSize;
-        emit MaxHistorySizeChanged(oldSize, newMaxSize);
     }
 
     /**
