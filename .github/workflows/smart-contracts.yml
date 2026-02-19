@@ -58,7 +58,7 @@ jobs:
             || true  # report findings without failing the step; remove '|| true' to make it a hard gate
 
   # ─────────────────────────────────────────────
-  # Job 3: Unit Tests & Coverage
+  # Job 2: Unit Tests & Coverage
   # ─────────────────────────────────────────────
   tests:
     name: Unit Tests & Coverage
@@ -98,7 +98,7 @@ jobs:
         run: forge coverage || true
 
   # ─────────────────────────────────────────────
-  # Job 2: Slither Static Analysis
+  # Job 3: Slither Static Analysis
   # ─────────────────────────────────────────────
   slither:
     name: Slither Analysis
