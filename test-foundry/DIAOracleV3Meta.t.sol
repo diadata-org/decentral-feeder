@@ -629,6 +629,103 @@ contract DIAOracleV3MetaTest is Test {
         oracleMeta.getValueWithVolume("BTC");
     }
 
+    function testGetValueWithVolumeZeroThreshold() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        // threshold is 0
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidThreshold.selector, 0));
+        oracleMeta.getValueWithVolume("BTC");
+    }
+
+    function testGetValueWithVolumeZeroWindowSize() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setThreshold(1);
+        // windowSize is 0
+        vm.stopPrank();
+
+        oracle1.setValue("BTC", 100, uint128(block.timestamp));
+
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidWindowSize.selector, 0));
+        oracleMeta.getValueWithVolume("BTC");
+    }
+
+    function testGetValueWithVolumeWithExpiredData() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.addOracle(address(oracle3));
+        oracleMeta.setThreshold(2);
+        oracleMeta.setTimeoutSeconds(100);
+        oracleMeta.setWindowSize(10);
+        vm.stopPrank();
+
+        // Warp to a future time
+        vm.warp(1000);
+
+        // oracle1: current data with volume
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        // oracle2: current data with volume
+        bytes memory data2 = abi.encode("BTC", uint128(52000), uint128(block.timestamp), uint128(500000), bytes(""));
+        // oracle3: expired data with volume (timestamp 200 seconds ago, timeout is 100)
+        bytes memory data3 = abi.encode("BTC", uint128(53000), uint128(block.timestamp - 200), uint128(2000000), bytes(""));
+
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+        oracle3.setRawValue(data3);
+
+        (uint128 value,, uint128 totalVolume) = oracleMeta.getValueWithVolume("BTC");
+
+        // oracle1 + oracle2 volume should be counted (oracle3 is expired)
+        assertGt(value, 0, "Value should be greater than 0");
+        assertEq(totalVolume, 1500000, "Total volume should only count non-expired oracles");
+    }
+
+    function testGetValueWithVolumeWithNoData() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        vm.stopPrank();
+
+        // Only oracle1 has data, oracle2 has no data (tests continue branch)
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        oracle1.setRawValue(data1);
+        // oracle2 has no data
+
+        (uint128 value,, uint128 totalVolume) = oracleMeta.getValueWithVolume("BTC");
+
+        assertGt(value, 0, "Value should be greater than 0");
+        assertEq(totalVolume, 1000000, "Total volume should only count oracle with data");
+    }
+
+    function testGetAggregatedVolumeWithNoData() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setTimeoutSeconds(1000);
+        vm.stopPrank();
+
+        // Only oracle1 has data, oracle2 has no data (tests continue branch)
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        oracle1.setRawValue(data1);
+        // oracle2 has no data
+
+        (uint128 totalVolume, uint256 validCount) = oracleMeta.getAggregatedVolume("BTC");
+
+        assertEq(totalVolume, 1000000, "Total volume should only count oracle with data");
+        assertEq(validCount, 1, "Should have 1 valid oracle");
+    }
+
     function testGetAggregatedVolumeZeroTimeout() public {
         vm.startPrank(admin);
         oracleMeta.addOracle(address(oracle1));

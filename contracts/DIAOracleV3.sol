@@ -8,13 +8,14 @@ import "./IDIAOracleV3.sol";
 
 /**
  * @title DIAOracleV3
- * @dev UUPS upgradeable oracle contract that allows an authorized updater to set and retrieve price values with timestamps.
+ * @dev UUPS upgradeable oracle contract that allows an authorized updater to set 
+        and retrieve price values with timestamps.
  */
 contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant UPDATER_ROLE = keccak256("UPDATER_ROLE");
 
     /// @notice Maximum number of historical values to store per key
-    uint256 public immutable maxHistorySize = 100;
+    uint256 public immutable MAX_HISTORY_SIZE = 100;
 
     /// @notice Mapping to store compressed values of assets (price and timestamp).
     /// @dev Upper 128 bits store the price and the lower 128 bits store the timestamp.
@@ -22,7 +23,8 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     mapping(string => uint256) public values;
 
     /// @notice Mapping to store historical values for each key (ring buffer).
-    /// @dev Pre-allocated arrays of size maxHistorySize, using ring buffer pattern.
+    /// @dev Pre-allocated arrays of size MAX_HISTORY_SIZE, using ring buffer pattern.
+    // slither-disable-next-line uninitialized-state-variables
     mapping(string => ValueEntry[]) private _valueHistory;
 
     /// @notice Mapping to track the current write index for ring buffer.
@@ -30,7 +32,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     mapping(string => uint256) private _writeIndex;
 
     /// @notice Mapping to track the actual count of values stored (for partially filled buffers).
-    /// @dev Starts at 0, increases up to maxHistorySize, then stays at maxHistorySize.
+    /// @dev Starts at 0, increases up to MAX_HISTORY_SIZE, then stays at MAX_HISTORY_SIZE.
     mapping(string => uint256) private _valueCount;
 
     /// @notice Mapping to store raw data for each asset key (volume and any additional data).
@@ -42,8 +44,6 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
 
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
-    error MaxHistorySizeTooLarge(uint256 requestedSize, uint256 maxAllowed);
-    error MaxHistorySizeZero();
     error TimestampTooFarInFuture(uint128 timestamp, uint256 blockTime);
     error TimestampTooFarInPast(uint128 timestamp, uint256 blockTime);
 
@@ -58,7 +58,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     ///
     /// Slot | Label              | Type
     /// ----|--------------------|-------------------------------------------------
-    ///   0  | maxHistorySize     | uint256
+    ///   0  | MAX_HISTORY_SIZE     | uint256
     ///   1  | values             | mapping(string => uint256)
     ///   2  | _valueHistory      | mapping(string => array(ValueEntry)_dyn_storage)
     ///   3  | _writeIndex        | mapping(string => uint256)
@@ -70,6 +70,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     /// - Initializable: 2 slots (_initialized, _initializing)
     /// - AccessControlUpgradeable: ~4 slots (_roles mapping)
     /// Total contract uses slots 0-5 + parent slots + 100 gap slots
+    // slither-disable-next-line unused-state-variables
     uint256[100] private __gap;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -92,6 +93,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      * @dev Only callable by addresses with DEFAULT_ADMIN_ROLE.
      * @param newImplementation Address of the new implementation contract.
      */
+    // slither-disable-next-line unused-param
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
@@ -222,7 +224,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     /**
      * @notice Retrieves a specific historical value by index using ring buffer.
      * @dev Index 0 is the most recent value, index 1 is the second most recent, etc.
-     *      Uses ring buffer logic: most recent is at (writeIndex - 1) % maxHistorySize.
+     *      Uses ring buffer logic: most recent is at (writeIndex - 1) % MAX_HISTORY_SIZE.
      * @param key The asset identifier (e.g., "BTC/USD").
      * @param index The index of the historical value (0 = most recent).
      * @return value The price value at the specified index.
@@ -246,7 +248,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
         if (index + 1 <= currentWriteIndex) {
             position = currentWriteIndex - 1 - index;
         } else {
-            position = (currentWriteIndex + maxHistorySize - 1 - index) % maxHistorySize;
+            position = (currentWriteIndex + MAX_HISTORY_SIZE - 1 - index) % MAX_HISTORY_SIZE;
         }
 
         ValueEntry memory entry = history[position];
@@ -276,7 +278,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
             if (i + 1 <= currentWriteIndex) {
                 position = currentWriteIndex - 1 - i;
             } else {
-                position = (currentWriteIndex + maxHistorySize - 1 - i) % maxHistorySize;
+                position = (currentWriteIndex + MAX_HISTORY_SIZE - 1 - i) % MAX_HISTORY_SIZE;
             }
             result[i] = history[position];
         }
@@ -299,7 +301,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      * @return The maximum number of historical values that will be stored per key.
      */
     function getMaxHistorySize() external view returns (uint256) {
-        return maxHistorySize;
+        return MAX_HISTORY_SIZE;
     }
 
     /**
@@ -309,14 +311,16 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      * @param interfaceId The interface identifier to check for support.
      * @return True if the contract supports the interface, false otherwise.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlUpgradeable, IERC165) returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(AccessControlUpgradeable, IERC165) returns (bool) {
         return interfaceId == type(IDIAOracleV3).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /**
      * @notice Internal function to add a value to the historical storage using ring buffer.
      * @dev Uses a ring buffer (circular buffer) for O(1) insertion instead of O(n) array shifting.
-     *      Pre-allocates array to maxHistorySize and uses modulo arithmetic for wrapping.
+     *      Pre-allocates array to MAX_HISTORY_SIZE and uses modulo arithmetic for wrapping.
      * @param key The asset identifier.
      * @param value The price value to store.
      * @param timestamp The timestamp to store.
@@ -328,7 +332,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
         uint256 currentCount = _valueCount[key];
 
         if (history.length == 0) {
-            for (uint256 i = 0; i < maxHistorySize; i++) {
+            for (uint256 i = 0; i < MAX_HISTORY_SIZE; i++) {
                 history.push(ValueEntry(0, 0, 0));
             }
             currentWriteIndex = 0;
@@ -337,10 +341,10 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
 
         history[currentWriteIndex] = ValueEntry(value, timestamp, volume);
 
-        currentWriteIndex = (currentWriteIndex + 1) % maxHistorySize;
+        currentWriteIndex = (currentWriteIndex + 1) % MAX_HISTORY_SIZE;
         _writeIndex[key] = currentWriteIndex;
 
-        if (currentCount < maxHistorySize) {
+        if (currentCount < MAX_HISTORY_SIZE) {
             currentCount++;
             _valueCount[key] = currentCount;
         }

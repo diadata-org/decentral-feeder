@@ -290,7 +290,8 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
                 continue;
             }
 
-            (uint128 value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
+            (uint128 _value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
+            _value; 
 
             // Check if value is not expired
             if ((timestamp + _timeoutSeconds) >= block.timestamp) {
@@ -451,7 +452,8 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
                 continue;
             }
 
-            (uint128 oracleValue, uint128 oracleTimestamp, uint128 oracleVolume) = oracle.getValueAt(key, 0);
+            (uint128 _oracleValue, uint128 oracleTimestamp, uint128 oracleVolume) = oracle.getValueAt(key, 0);
+            _oracleValue; 
 
             // Check if value is not expired
             if ((oracleTimestamp + _timeoutSeconds) >= block.timestamp) {
