@@ -9,7 +9,6 @@ on:
       - "contracts/**"
       - "test-foundry/**"
       - "foundry.toml"
-      - "slither.config.json"
       - ".github/workflows/smart-contracts.yml"
   push:
     branches:
@@ -17,14 +16,12 @@ on:
     paths:
       - "contracts/**"
       - "foundry.toml"
-      - "slither.config.json"
       - ".github/workflows/smart-contracts.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
   security-events: write # required for uploading SARIF to GitHub Security tab
-  pull-requests: write # required for posting PR comments
 
 jobs:
   # ─────────────────────────────────────────────
@@ -50,12 +47,11 @@ jobs:
 
       - name: Run solhint
         working-directory: contracts
-        # lint all .sol files in this directory, excluding the flattened file
+        continue-on-error: true
         run: |
           npx solhint '**/*.sol' \
             --ignore-path .solhintignore \
-            --formatter stylish \
-            || true  # report findings without failing the step; remove '|| true' to make it a hard gate
+            --formatter stylish
 
   # ─────────────────────────────────────────────
   # Job 2: Unit Tests & Coverage
@@ -70,7 +66,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: stable
 
       - name: Install Foundry dependencies
         run: forge install || true
@@ -84,7 +80,7 @@ jobs:
           node-version: "20"
 
       - name: Install OpenZeppelin via npm
-        run: npm install @openzeppelin/contracts
+        run: npm install @openzeppelin/contracts@5.2.0
 
       - name: Write Foundry remappings
         run: |
@@ -92,10 +88,12 @@ jobs:
           echo "forge-std/=lib/forge-std/src/" >> remappings.txt
 
       - name: Run tests
-        run: forge test -v || true
+        continue-on-error: true
+        run: forge test -v
 
       - name: Run coverage
-        run: forge coverage || true
+        continue-on-error: true
+        run: forge coverage
 
   # ─────────────────────────────────────────────
   # Job 3: Slither Static Analysis
@@ -110,7 +108,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: stable
 
       - name: Install Foundry dependencies
         run: forge install || true
@@ -121,7 +119,7 @@ jobs:
           node-version: "20"
 
       - name: Install OpenZeppelin via npm
-        run: npm install @openzeppelin/contracts
+        run: npm install @openzeppelin/contracts@5.2.0
 
       - name: Remove contracts/node_modules to prevent forge scanning it
         run: rm -rf contracts/node_modules
@@ -137,27 +135,20 @@ jobs:
 
       - name: Install solc
         run: |
-          pip install solc-select
+          pip install solc-select==1.2.0
           solc-select install 0.8.29
           solc-select use 0.8.29
 
       - name: Install Slither
-        run: pip install slither-analyzer
-
-      - name: Verify tool paths
-        run: |
-          which forge
-          forge --version
-          which slither || true
-          python -c "import slither; print(slither.__file__)"
+        run: pip install slither-analyzer==0.11.5
 
       - name: Run Slither
+        continue-on-error: true
         run: |
           python -m slither contracts/ \
-            --solc-remaps "@openzeppelin/contracts/=contracts/node_modules/@openzeppelin/contracts/" \
-            --filter-paths "contracts/Flattened_for_verification.sol,contracts/node_modules/" \
-            --sarif results.sarif \
-            || true  # never fail; remove '|| true' to gate on findings
+            --solc-remaps "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/" \
+            --filter-paths "contracts/Flattened_for_verification.sol" \
+            --sarif results.sarif
 
       - name: Ensure SARIF file exists
         if: always()
