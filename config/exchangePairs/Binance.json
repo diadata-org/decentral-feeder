@@ -89,10 +89,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FLOW-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "FTM-USDT", 
             "WatchDogDelay": 300
         },
@@ -125,7 +121,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "RNDR-USDT", 
+            "Pair": "RENDER-USDT", 
             "WatchDogDelay": 300
         },
         {

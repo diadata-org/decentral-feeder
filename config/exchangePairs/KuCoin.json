@@ -101,10 +101,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FLOW-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "FTM-USDT",
             "WatchDogDelay": 300
         },
@@ -151,6 +147,10 @@
         {
             "Pair": "POL-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "REACT-USDT",
+            "WatchDogDelay": 600
         },
         {
             "Pair": "RENDER-USDT",
