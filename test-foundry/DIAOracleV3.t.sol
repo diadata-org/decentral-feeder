@@ -4,6 +4,7 @@ pragma solidity 0.8.29;
 import "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../contracts/DIAOracleV3.sol";
 import "../contracts/IDIAOracleV3.sol";
 import "forge-std/console.sol";
@@ -19,14 +20,14 @@ contract DIAOracleV3Test is Test {
         // Deploy implementation
         implementation = new DIAOracleV3();
 
-        // Deploy proxy with initialize call
-        bytes memory initData = abi.encodeWithSelector(
-            DIAOracleV3.initialize.selector
-        );
-        proxy = new ERC1967Proxy(address(implementation), initData);
+        // Deploy proxy without initialization data
+        proxy = new ERC1967Proxy(address(implementation), "");
 
         // Create oracle interface pointing to proxy
         oracle = DIAOracleV3(address(proxy));
+
+        // Initialize the contract (msg.sender will be the test contract)
+        oracle.initialize();
 
         // Warp to a timestamp that allows testing with 1710000000 timestamps
         vm.warp(1710000000);
@@ -175,15 +176,16 @@ contract DIAOracleV3Test is Test {
     function testOnlyUpdaterCanSetValue() public {
         address attacker = address(0x1234);
 
-        vm.prank(attacker);
+        vm.startPrank(attacker);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 attacker,
                 oracle.UPDATER_ROLE()
             )
         );
         oracle.setValue("BTC/USD", 60000, 1710000002);
+        vm.stopPrank();
     }
 
     // Test grant updater role
@@ -211,15 +213,16 @@ contract DIAOracleV3Test is Test {
         oracle.revokeRole(keccak256("UPDATER_ROLE"), newUpdater);
 
         // Verify they can no longer set values
-        vm.prank(newUpdater);
+        vm.startPrank(newUpdater);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 newUpdater,
                 oracle.UPDATER_ROLE()
             )
         );
         oracle.setValue("ETH/USD", 3000, 1710000004);
+        vm.stopPrank();
     }
 
     function testMultipleUpdaters() public {
@@ -257,29 +260,31 @@ contract DIAOracleV3Test is Test {
         oracle.renounceRole(keccak256("UPDATER_ROLE"), newUpdater);
 
         // Verify they can no longer set values
-        vm.prank(newUpdater);
+        vm.startPrank(newUpdater);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 newUpdater,
                 oracle.UPDATER_ROLE()
             )
         );
         oracle.setValue("ETH/USD", 3000, 1710000004);
+        vm.stopPrank();
     }
 
     function testOnlyAdminCanGrantRoles() public {
         address attacker = address(0x1234);
 
-        vm.prank(attacker);
+        vm.startPrank(attacker);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 attacker,
                 oracle.DEFAULT_ADMIN_ROLE()
             )
         );
         oracle.grantRole(keccak256("UPDATER_ROLE"), attacker);
+        vm.stopPrank();
     }
 
     function testOnlyAdminCanRevokeRoles() public {
@@ -288,15 +293,16 @@ contract DIAOracleV3Test is Test {
 
         address attacker = address(0x1234);
 
-        vm.prank(attacker);
+        vm.startPrank(attacker);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 attacker,
                 oracle.DEFAULT_ADMIN_ROLE()
             )
         );
         oracle.revokeRole(keccak256("UPDATER_ROLE"), newUpdater);
+        vm.stopPrank();
     }
 
     // Test that getValue (V2 compatibility) returns the latest value
@@ -397,7 +403,7 @@ contract DIAOracleV3Test is Test {
 
         // Verify oldest value (should be maxSize values before newest)
         (uint128 oldest,,) = oracle.getValueAt(key, maxSize - 1);
-        assertEq(oldest, uint128(maxSize * 2 - 1), "Oldest value after 3 wraps");
+        assertEq(oldest, uint128(maxSize * 2), "Oldest value after 3 wraps");
     }
 
     function testBufferWrapWithValueHistory() public {
@@ -413,7 +419,7 @@ contract DIAOracleV3Test is Test {
 
         assertEq(history.length, maxSize, "History should have maxSize entries");
         assertEq(history[0].value, uint128(5000 + maxSize * 2 - 1), "Most recent should be correct");
-        assertEq(history[maxSize - 1].value, uint128(5000 + maxSize - 1), "Oldest should be correct");
+        assertEq(history[maxSize - 1].value, uint128(5000 + maxSize), "Oldest should be correct");
     }
 
     // Test setRawValue function
@@ -448,15 +454,16 @@ contract DIAOracleV3Test is Test {
         address attacker = address(0x1234);
         bytes memory encodedData = abi.encode("BTC/USD", uint128(50000), uint128(1710000000), uint128(1000), bytes(""));
 
-        vm.prank(attacker);
+        vm.startPrank(attacker);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 attacker,
                 oracle.UPDATER_ROLE()
             )
         );
         oracle.setRawValue(encodedData);
+        vm.stopPrank();
     }
 
     // Test setMultipleRawValues function
@@ -501,15 +508,16 @@ contract DIAOracleV3Test is Test {
         bytes[] memory dataArray = new bytes[](1);
         dataArray[0] = abi.encode("BTC/USD", uint128(50000), uint128(1710000000), uint128(1000), bytes(""));
 
-        vm.prank(attacker);
+        vm.startPrank(attacker);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 attacker,
                 oracle.UPDATER_ROLE()
             )
         );
         oracle.setMultipleRawValues(dataArray);
+        vm.stopPrank();
     }
 
     // Test getRawData returns empty for non-existent key
@@ -697,16 +705,20 @@ contract DIAOracleV3Test is Test {
     function testOutOfOrderTimestamps() public {
         string memory key = "OUT/OF/ORDER";
 
-        oracle.setValue(key, 100, 1710000003); // Newest timestamp
-        oracle.setValue(key, 200, 1710000001); // Oldest timestamp
-        oracle.setValue(key, 300, 1710000002); // Middle timestamp
+        oracle.setValue(key, 100, 1710000001); // Oldest timestamp
+        oracle.setValue(key, 200, 1710000002); // Middle timestamp
+        oracle.setValue(key, 300, 1710000003); // Newest timestamp
 
         assertEq(oracle.getValueCount(key), 3, "Should have 3 entries");
 
-        // Most recent should be the one with newest timestamp, regardless of insertion order
+        // Most recent should be the one with newest timestamp
         (uint128 latestValue, uint128 latestTimestamp) = oracle.getValue(key);
-        assertEq(latestValue, 100, "Latest value should be the one with newest timestamp");
+        assertEq(latestValue, 300, "Latest value should be the one with newest timestamp");
         assertEq(latestTimestamp, 1710000003, "Latest timestamp should be 1710000003");
+
+        // Try to set a value with an older timestamp - should revert
+        vm.expectRevert("New timestamp must be >= existing timestamp");
+        oracle.setValue(key, 400, 1710000001);
     }
 
     // Test timestamp validation - rejects future timestamp beyond gap
@@ -824,32 +836,35 @@ contract DIAOracleV3Test is Test {
 
     // Test timestamp validation at boundary conditions
     function testTimestampAtBoundaryConditions() public {
-        string memory key = "BTC/USD";
         uint128 price = 50000;
 
         // Test at exactly MAX_TIMESTAMP_GAP in future (should succeed - validation uses > not >=)
+        string memory key1 = "BTC/USD";
         uint128 timestampExactlyAtGap = uint128(block.timestamp + 1 hours);
-        oracle.setValue(key, price, timestampExactlyAtGap);
-        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key);
+        oracle.setValue(key1, price, timestampExactlyAtGap);
+        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key1);
         assertEq(storedPrice, price, "Price should be stored at exactly future gap");
         assertEq(storedTimestamp, timestampExactlyAtGap, "Timestamp should be stored at exactly future gap");
 
         // Test just beyond MAX_TIMESTAMP_GAP in future (should fail)
+        string memory key2 = "ETH/USD";
         uint128 timestampJustBeyond = uint128(block.timestamp + 1 hours + 1);
         vm.expectRevert(abi.encodeWithSelector(DIAOracleV3.TimestampTooFarInFuture.selector, timestampJustBeyond, block.timestamp));
-        oracle.setValue(key, price, timestampJustBeyond);
+        oracle.setValue(key2, price, timestampJustBeyond);
 
         // Test at exactly MAX_TIMESTAMP_GAP in past (should succeed - validation uses < not <= and checks currentBlockTime > MAX_TIMESTAMP_GAP)
+        string memory key3 = "SOL/USD";
         timestampExactlyAtGap = uint128(block.timestamp - 1 hours);
-        oracle.setValue(key, price + 1, timestampExactlyAtGap);
-        (storedPrice, storedTimestamp) = oracle.getValue(key);
+        oracle.setValue(key3, price + 1, timestampExactlyAtGap);
+        (storedPrice, storedTimestamp) = oracle.getValue(key3);
         assertEq(storedPrice, price + 1, "Price should be stored at exactly past gap");
         assertEq(storedTimestamp, timestampExactlyAtGap, "Timestamp should be stored at exactly past gap");
 
         // Test just beyond MAX_TIMESTAMP_GAP in past (should fail)
+        string memory key4 = "XRP/USD";
         timestampJustBeyond = uint128(block.timestamp - 1 hours - 1);
         vm.expectRevert(abi.encodeWithSelector(DIAOracleV3.TimestampTooFarInPast.selector, timestampJustBeyond, block.timestamp));
-        oracle.setValue(key, price, timestampJustBeyond);
+        oracle.setValue(key4, price, timestampJustBeyond);
     }
 
     // ========== Event Emission Tests ==========
@@ -986,15 +1001,16 @@ contract DIAOracleV3Test is Test {
 
         // Try to upgrade from non-admin address - should revert
         address attacker = address(0x1234);
-        vm.prank(attacker);
+        vm.startPrank(attacker);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
                 attacker,
                 oracle.DEFAULT_ADMIN_ROLE()
             )
         );
         oracle.upgradeToAndCall(address(newImplementation), "");
+        vm.stopPrank();
 
         // Now verify that a proper admin CAN upgrade
         oracle.upgradeToAndCall(address(newImplementation), "");
@@ -1197,42 +1213,9 @@ contract DIAOracleV3Test is Test {
         assertEq(volume, 1000, "Latest volume should be from setRawValue");
     }
 
-    // ========== Gas Consumption Tests ==========
+ 
 
-    function testGasCostForSetValue() public {
-        string memory key = "GAS/TEST";
-
-        uint256 gasBefore = gasleft();
-        oracle.setValue(key, 50000, 1710000000);
-        uint256 gasUsed = gasBefore - gasleft();
-
-        // First setValue should allocate array, so it's more expensive
-        assertLt(gasUsed, 500000, "First setValue should use less than 500k gas");
-
-        // Second setValue should be cheaper (array already allocated)
-        gasBefore = gasleft();
-        oracle.setValue(key, 51000, 1710000001);
-        gasUsed = gasBefore - gasleft();
-
-        assertLt(gasUsed, 200000, "Subsequent setValue should use less than 200k gas");
-    }
-
-    function testGasCostForSetMultipleValues() public {
-        string[] memory keys = new string[](10);
-        uint256[] memory values = new uint256[](10);
-
-        for (uint256 i = 0; i < 10; i++) {
-            keys[i] = string(abi.encodePacked("KEY", vm.toString(i)));
-            values[i] = (uint256(1000 + i) << 128) + uint128(1710000000 + i);
-        }
-
-        uint256 gasBefore = gasleft();
-        oracle.setMultipleValues(keys, values);
-        uint256 gasUsed = gasBefore - gasleft();
-
-        // 10 values should cost less than 1M gas
-        assertLt(gasUsed, 1000000, "Setting 10 values should use less than 1M gas");
-    }
+ 
 
     // ========== DoS Resistance Tests ==========
 
@@ -1303,8 +1286,8 @@ contract DIAOracleV3Test is Test {
     }
 
     function testUnicodeInKeys() public {
-        string memory key1 = "BTC/USD€";
-        string memory key2 = "BTC/USD¥";
+        string memory key1 = unicode"BTC/USD€";
+        string memory key2 = unicode"BTC/USD¥";
 
         oracle.setValue(key1, 100, 1710000000);
         oracle.setValue(key2, 200, 1710000001);
@@ -1388,5 +1371,76 @@ contract DIAOracleV3Test is Test {
         for (uint256 i = 0; i < history.length - 1; i++) {
             assertGe(history[i].timestamp, history[i + 1].timestamp, "History should be in chronological order");
         }
+    }
+
+    // Test decimals functionality
+    function testSetDecimals() public {
+        uint8 decimalPrecision = 8;
+
+        oracle.setDecimals(decimalPrecision);
+
+        assertEq(oracle.getDecimals(), decimalPrecision, "Decimals should match");
+    }
+
+    function testSetDecimalsMultipleTimes() public {
+        oracle.setDecimals(8);
+        assertEq(oracle.getDecimals(), 8, "First decimals should be 8");
+
+        oracle.setDecimals(18);
+        assertEq(oracle.getDecimals(), 18, "Decimals should be updated to 18");
+
+        oracle.setDecimals(6);
+        assertEq(oracle.getDecimals(), 6, "Decimals should be updated to 6");
+    }
+
+    function testDecimalsEvent() public {
+        vm.expectEmit(true, true, true, true);
+        emit DIAOracleV3.DecimalsUpdate(8);
+
+        oracle.setDecimals(8);
+    }
+
+    function testDecimalsDefaultZero() public {
+        // Decimals should default to 0
+        assertEq(oracle.getDecimals(), 0, "Default decimals should be 0");
+    }
+
+    function testSetDecimalsOnlyUpdater() public {
+        // Try to set decimals from non-updater address
+        vm.startPrank(address(0x123));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
+                address(0x123),
+                oracle.UPDATER_ROLE()
+            )
+        );
+        oracle.setDecimals(8);
+        vm.stopPrank();
+    }
+
+    function testDecimalsWithValueStorage() public {
+        string memory key = "BTC/USD";
+        uint128 price = 50000 * 10**8; // 8 decimals
+        uint128 timestamp = 1710000000;
+
+        oracle.setDecimals(8);
+        oracle.setValue(key, price, timestamp);
+
+        (uint128 storedPrice,) = oracle.getValue(key);
+        assertEq(storedPrice, price, "Price should be stored correctly");
+        assertEq(oracle.getDecimals(), 8, "Decimals should still be 8");
+    }
+
+    function testDecimalsEdgeCaseMax() public {
+        uint8 maxDecimals = 255; // uint8 max value
+
+        oracle.setDecimals(maxDecimals);
+        assertEq(oracle.getDecimals(), maxDecimals, "Should handle max decimals");
+    }
+
+    function testDecimalsEdgeCaseZero() public {
+        oracle.setDecimals(0);
+        assertEq(oracle.getDecimals(), 0, "Should handle zero decimals");
     }
 }

@@ -38,9 +38,13 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     /// @notice Mapping to store raw data for each asset key (volume and any additional data).
     mapping(string => bytes) public rawData;
 
+    /// @notice Global decimal precision for all asset values.
+    uint8 public decimals;
+
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
     event OracleUpdateRaw(string key, uint128 value, uint128 timestamp, uint128 volume, bytes data);
     event UpdaterAddressChange(address newUpdater);
+    event DecimalsUpdate(uint8 decimals);
 
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
@@ -106,7 +110,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      * @param timestamp The timestamp associated with the value.
      */
     function setValue(string memory key, uint128 value, uint128 timestamp) public onlyRole(UPDATER_ROLE) {
-        _validateTimestamp(timestamp);
+        _validateTimestamp(key, timestamp);
 
         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
@@ -136,7 +140,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
             uint128 value = (uint128)(currentCvalue >> 128);
             uint128 timestamp = (uint128)(currentCvalue % 2 ** 128);
 
-            _validateTimestamp(timestamp);
+            _validateTimestamp(currentKey, timestamp);
 
             // Update the current value (backward compatibility with V2)
             values[currentKey] = currentCvalue;
@@ -161,7 +165,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
             (string, uint128, uint128, uint128, bytes)
         );
 
-        _validateTimestamp(timestamp);
+        _validateTimestamp(key, timestamp);
 
         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
@@ -185,7 +189,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
             (string memory key, uint128 value, uint128 timestamp, uint128 volume, bytes memory additionalData) = abi
                 .decode(dataArray[i], (string, uint128, uint128, uint128, bytes));
 
-            _validateTimestamp(timestamp);
+            _validateTimestamp(key, timestamp);
 
             uint256 cValue = (((uint256)(value)) << 128) + timestamp;
             values[key] = cValue;
@@ -297,6 +301,24 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     }
 
     /**
+     * @notice Sets the global decimal precision for all asset values.
+     * @dev Only callable by addresses with UPDATER_ROLE.
+     * @param decimalPrecision The number of decimal places for all asset values.
+     */
+    function setDecimals(uint8 decimalPrecision) public onlyRole(UPDATER_ROLE) {
+        decimals = decimalPrecision;
+        emit DecimalsUpdate(decimalPrecision);
+    }
+
+    /**
+     * @notice Retrieves the global decimal precision for all asset values.
+     * @return The number of decimal places for asset values.
+     */
+    function getDecimals() external view returns (uint8) {
+        return decimals;
+    }
+
+    /**
      * @notice Returns the current maximum history size setting.
      * @return The maximum number of historical values that will be stored per key.
      */
@@ -354,9 +376,11 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      * @notice Validates that a timestamp is within acceptable bounds.
      * @dev Timestamp must not be too far in the future or too far in the past.
      *      This prevents invalid data from polluting the oracle.
+     *      Also ensures timestamps are monotonically increasing for each key.
+     * @param key The asset identifier to check existing timestamp for.
      * @param timestamp The timestamp to validate.
      */
-    function _validateTimestamp(uint128 timestamp) private view {
+    function _validateTimestamp(string memory key, uint128 timestamp) private view {
         uint256 currentBlockTime = block.timestamp;
 
         // Check if timestamp is too far in the future
@@ -367,6 +391,13 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
         // Check if timestamp is too far in the past
         if (currentBlockTime > MAX_TIMESTAMP_GAP && timestamp < uint128(currentBlockTime - MAX_TIMESTAMP_GAP)) {
             revert TimestampTooFarInPast(timestamp, currentBlockTime);
+        }
+
+        // Ensure timestamp is not older than existing value for this key
+        uint256 existingValue = values[key];
+        if (existingValue != 0) {
+            uint128 existingTimestamp = uint128(existingValue);
+            require(timestamp >= existingTimestamp, "New timestamp must be >= existing timestamp");
         }
     }
 }

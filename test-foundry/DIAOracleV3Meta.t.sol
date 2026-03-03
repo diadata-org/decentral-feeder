@@ -14,6 +14,7 @@ import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 contract MockDIAOracleV3 is IDIAOracleV3, ERC165 {
     IDIAOracleV3.ValueEntry[] private history;
     uint256 private maxHistorySize;
+    uint8 public decimals;
 
     constructor(uint256 _maxHistorySize) {
         maxHistorySize = _maxHistorySize;
@@ -81,6 +82,14 @@ contract MockDIAOracleV3 is IDIAOracleV3, ERC165 {
 
     function getRawData(string memory) external view returns (bytes memory) {
         return "";
+    }
+
+    function setDecimals(uint8 _decimals) external {
+        decimals = _decimals;
+    }
+
+    function getDecimals() external view returns (uint8) {
+        return decimals;
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
@@ -816,6 +825,243 @@ contract DIAOracleV3MetaTest is Test {
         assertEq(value, 1000);
 
         vm.stopPrank();
+    }
+
+    // =================================================================
+    // Decimals Functionality Tests
+    // =================================================================
+
+    function testSetDecimals() public {
+        vm.startPrank(admin);
+        uint8 decimalPrecision = 8;
+
+        oracleMeta.setDecimals(decimalPrecision);
+
+        assertEq(oracleMeta.getDecimals(), decimalPrecision, "Decimals should match");
+        vm.stopPrank();
+    }
+
+    function testSetDecimalsMultipleTimes() public {
+        vm.startPrank(admin);
+        oracleMeta.setDecimals(8);
+        assertEq(oracleMeta.getDecimals(), 8, "First decimals should be 8");
+
+        oracleMeta.setDecimals(18);
+        assertEq(oracleMeta.getDecimals(), 18, "Decimals should be updated to 18");
+
+        oracleMeta.setDecimals(6);
+        assertEq(oracleMeta.getDecimals(), 6, "Decimals should be updated to 6");
+        vm.stopPrank();
+    }
+
+    function testDecimalsEvent() public {
+        vm.startPrank(admin);
+        vm.expectEmit(true, true, true, true);
+        emit DIAOracleV3Meta.DecimalsUpdate(8);
+
+        oracleMeta.setDecimals(8);
+        vm.stopPrank();
+    }
+
+    function testDecimalsDefaultZero() public {
+        // Decimals should default to 0
+        assertEq(oracleMeta.getDecimals(), 0, "Default decimals should be 0");
+    }
+
+    function testSetDecimalsOnlyOwner() public {
+        // Try to set decimals from non-owner address
+        vm.prank(address(0x456));
+        vm.expectRevert();
+        oracleMeta.setDecimals(8);
+    }
+
+    function testDecimalsEdgeCaseMax() public {
+        vm.startPrank(admin);
+        uint8 maxDecimals = 255; // uint8 max value
+
+        oracleMeta.setDecimals(maxDecimals);
+        assertEq(oracleMeta.getDecimals(), maxDecimals, "Should handle max decimals");
+        vm.stopPrank();
+    }
+
+    function testDecimalsEdgeCaseZero() public {
+        vm.startPrank(admin);
+        oracleMeta.setDecimals(0);
+        assertEq(oracleMeta.getDecimals(), 0, "Should handle zero decimals");
+        vm.stopPrank();
+    }
+
+    // =================================================================
+    // Decimal Filtering Tests
+    // =================================================================
+
+    function testGetValueFiltersOraclesByDecimals() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        oracleMeta.setDecimals(8); // Meta oracle expects 8 decimals
+
+        vm.stopPrank();
+
+        // Set same decimals for both oracles
+        oracle1.setDecimals(8);
+        oracle2.setDecimals(8);
+
+        // Set values in both oracles
+        oracle1.setValue("BTC", 50000, uint128(block.timestamp));
+        oracle2.setValue("BTC", 51000, uint128(block.timestamp));
+
+        // Both should be included (same decimals)
+        (uint128 value,) = oracleMeta.getValue("BTC");
+        assertEq(value, 50500, "Should average both oracle values"); // (50000 + 51000) / 2
+    }
+
+    function testGetValueIgnoresOraclesWithDifferentDecimals() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        oracleMeta.setDecimals(8); // Meta oracle expects 8 decimals
+
+        vm.stopPrank();
+
+        // Set different decimals for oracles
+        oracle1.setDecimals(8);  // Matches meta
+        oracle2.setDecimals(18); // Different decimals
+
+        // Set values in both oracles
+        oracle1.setValue("BTC", 50000, uint128(block.timestamp));
+        oracle2.setValue("BTC", 51000, uint128(block.timestamp));
+
+        // Only oracle1 should be included (matching decimals)
+        (uint128 value,) = oracleMeta.getValue("BTC");
+        assertEq(value, 50000, "Should only use oracle1 value (oracle2 ignored due to decimals mismatch)");
+    }
+
+    function testGetValueWithNoMatchingDecimalsOracles() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        oracleMeta.setDecimals(8); // Meta oracle expects 8 decimals
+
+        vm.stopPrank();
+
+        // Set different decimals for oracle
+        oracle1.setDecimals(18); // Different decimals
+
+        // Set value
+        oracle1.setValue("BTC", 50000, uint128(block.timestamp));
+
+        // Should fail because no oracles match
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.ThresholdNotMet.selector, 0, 1));
+        oracleMeta.getValue("BTC");
+    }
+
+    function testGetAggregatedVolumeFiltersByDecimals() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setDecimals(8); // Meta oracle expects 8 decimals
+
+        vm.stopPrank();
+
+        // Set different decimals for oracles
+        oracle1.setDecimals(8);  // Matches meta
+        oracle2.setDecimals(18); // Different decimals
+
+        // Set values with volume in both oracles
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000), bytes(""));
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(2000), bytes(""));
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        // Only oracle1 volume should be included
+        (uint128 totalVolume, uint256 validCount) = oracleMeta.getAggregatedVolume("BTC");
+        assertEq(totalVolume, 1000, "Should only include oracle1 volume");
+        assertEq(validCount, 1, "Should have 1 valid oracle");
+    }
+
+    function testGetValueWithVolumeFiltersByDecimals() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        oracleMeta.setDecimals(8); // Meta oracle expects 8 decimals
+
+        vm.stopPrank();
+
+        // Set different decimals for oracles
+        oracle1.setDecimals(8);  // Matches meta
+        oracle2.setDecimals(18); // Different decimals
+
+        // Set values with volume in both oracles
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000), bytes(""));
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(2000), bytes(""));
+        oracle1.setRawValue(data1);
+        oracle2.setRawValue(data2);
+
+        // Value should only use oracle1, volume should only include oracle1
+        (uint128 value,, uint128 totalVolume) = oracleMeta.getValueWithVolume("BTC");
+        assertEq(value, 50000, "Should only use oracle1 value");
+        assertEq(totalVolume, 1000, "Should only include oracle1 volume");
+    }
+
+    function testGetValueByConfigFiltersByDecimals() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setDecimals(8); // Meta oracle expects 8 decimals
+
+        vm.stopPrank();
+
+        // Set different decimals for oracles
+        oracle1.setDecimals(8);  // Matches meta
+        oracle2.setDecimals(18); // Different decimals
+
+        // Set values in both oracles
+        oracle1.setValue("BTC", 50000, uint128(block.timestamp));
+        oracle2.setValue("BTC", 51000, uint128(block.timestamp));
+
+        // Only oracle1 should be included (matching decimals)
+        (uint128 value,) = oracleMeta.getValueByConfig("BTC", 10, address(oracleMeta.priceMethodology()), 1000, 1);
+        assertEq(value, 50000, "Should only use oracle1 value (oracle2 ignored due to decimals mismatch)");
+    }
+
+    function testMultipleOraclesMixedDecimals() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.addOracle(address(oracle3));
+        oracleMeta.setThreshold(1);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+        oracleMeta.setDecimals(8); // Meta oracle expects 8 decimals
+
+        vm.stopPrank();
+
+        // Set mixed decimals for oracles
+        oracle1.setDecimals(8);  // Matches meta
+        oracle2.setDecimals(18); // Different decimals
+        oracle3.setDecimals(8);  // Matches meta
+
+        // Set values in all oracles
+        oracle1.setValue("BTC", 50000, uint128(block.timestamp));
+        oracle2.setValue("BTC", 55000, uint128(block.timestamp)); // Should be ignored
+        oracle3.setValue("BTC", 52000, uint128(block.timestamp));
+
+        // Only oracle1 and oracle3 should be included (matching decimals)
+        (uint128 value,) = oracleMeta.getValue("BTC");
+        assertEq(value, 51000, "Should average oracle1 and oracle3 values"); // (50000 + 52000) / 2
     }
 }
 

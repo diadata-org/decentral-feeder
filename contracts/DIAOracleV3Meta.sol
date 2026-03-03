@@ -30,12 +30,16 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     /// @notice The price calculation methodology contract.
     IPriceMethodology public priceMethodology;
 
+    /// @notice Global decimal precision for all asset values.
+    uint8 public decimals;
+
     event OracleAdded(address newOracleAddress);
     event OracleRemoved(address removedOracleAddress);
     event PriceMethodologyChanged(address oldMethodology, address newMethodology);
     event ThresholdChanged(uint256 oldThreshold, uint256 newThreshold);
     event TimeoutSecondsChanged(uint256 oldTimeoutSeconds, uint256 newTimeoutSeconds);
     event WindowSizeChanged(uint256 oldWindowSize, uint256 newWindowSize);
+    event DecimalsUpdate(uint8 decimals);
 
     error OracleNotFound();
     error ZeroAddress();
@@ -183,9 +187,28 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     }
 
     /**
+     * @notice Sets the global decimal precision for all asset values.
+     * @dev Only the administrator can call this function.
+     * @param decimalPrecision The number of decimal places for all asset values.
+     */
+    function setDecimals(uint8 decimalPrecision) public onlyOwner {
+        decimals = decimalPrecision;
+        emit DecimalsUpdate(decimalPrecision);
+    }
+
+    /**
+     * @notice Retrieves the global decimal precision for all asset values.
+     * @return The number of decimal places for asset values.
+     */
+    function getDecimals() external view returns (uint8) {
+        return decimals;
+    }
+
+    /**
      * @notice Retrieves the price value for a given asset key from registered oracles.
      * @dev Uses the configured methodology and windowSize to calculate the aggregated value.
-     *      Only considers values that are not older than the timeout period.
+     *      Only considers values that are not older than the timeout period and from oracles
+     *      with matching decimal precision.
      * @param key The asset identifier (e.g., "BTC/USD").
      * @return value The aggregated price value from available oracles.
      * @return timestamp The current block timestamp.
@@ -201,9 +224,24 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidWindowSize(_windowSize);
         }
 
-        address[] memory oracleAddresses = new address[](_numOracles);
+        // Count oracles with matching decimals
+        uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
-            oracleAddresses[i] = oracles[i];
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getDecimals() == decimals) {
+                matchingCount++;
+            }
+        }
+
+        // Collect oracle addresses with matching decimals
+        address[] memory oracleAddresses = new address[](matchingCount);
+        uint256 idx = 0;
+        for (uint256 i = 0; i < _numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getDecimals() == decimals) {
+                oracleAddresses[idx] = oracles[i];
+                idx++;
+            }
         }
 
         (uint128 value, uint128 timestamp) = priceMethodology.calculateValue(
@@ -220,6 +258,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     /**
      * @notice Retrieves the price value with custom configuration parameters.
      * @dev Allows overriding the default windowSize, methodology, timeoutSeconds, and threshold for this call.
+     *      Only considers oracles with matching decimal precision.
      * @param key The asset identifier (e.g., "BTC/USD").
      * @param customWindowSize Maximum number of recent historical values to consider per oracle.
      * @param customMethodology Address of the methodology contract to use (must implement IPriceMethodology).
@@ -248,9 +287,24 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidMethodology();
         }
 
-        address[] memory oracleAddresses = new address[](_numOracles);
+        // Count oracles with matching decimals
+        uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
-            oracleAddresses[i] = oracles[i];
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getDecimals() == decimals) {
+                matchingCount++;
+            }
+        }
+
+        // Collect oracle addresses with matching decimals
+        address[] memory oracleAddresses = new address[](matchingCount);
+        uint256 idx = 0;
+        for (uint256 i = 0; i < _numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getDecimals() == decimals) {
+                oracleAddresses[idx] = oracles[i];
+                idx++;
+            }
         }
 
         IPriceMethodology methodologyContract = IPriceMethodology(customMethodology);
@@ -267,7 +321,8 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
 
     /**
      * @notice Retrieves the aggregated volume for a given asset key from all registered oracles.
-     * @dev Sums up the most recent volume from each oracle that has valid (non-expired) data.
+     * @dev Sums up the most recent volume from each oracle that has valid (non-expired) data
+     *      and matching decimal precision.
      * @param key The asset identifier (e.g., "BTC/USD").
      * @return totalVolume The sum of volumes from all valid oracles.
      * @return validOracleCount The number of oracles with valid volume data.
@@ -284,6 +339,12 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
 
         for (uint256 i = 0; i < _numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+
+            // Only consider oracles with matching decimals
+            if (oracle.getDecimals() != decimals) {
+                continue;
+            }
+
             uint256 valueCount = oracle.getValueCount(key);
 
             if (valueCount == 0) {
@@ -291,7 +352,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             }
 
             (uint128 _value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
-            _value; 
+            _value;
 
             // Check if value is not expired
             if ((timestamp + _timeoutSeconds) >= block.timestamp) {
@@ -410,6 +471,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     /**
      * @notice Retrieves aggregated value with total volume.
      * @dev Uses the configured methodology for price calculation and sums volumes from valid oracles.
+     *      Only considers oracles with matching decimal precision.
      * @param key The asset identifier (e.g., "BTC/USD").
      * @return value The aggregated price value.
      * @return timestamp The timestamp from methodology.
@@ -428,9 +490,24 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidWindowSize(_windowSize);
         }
 
-        address[] memory oracleAddresses = new address[](_numOracles);
+        // Count oracles with matching decimals
+        uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
-            oracleAddresses[i] = oracles[i];
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getDecimals() == decimals) {
+                matchingCount++;
+            }
+        }
+
+        // Collect oracle addresses with matching decimals
+        address[] memory oracleAddresses = new address[](matchingCount);
+        uint256 idx = 0;
+        for (uint256 i = 0; i < _numOracles; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+            if (oracle.getDecimals() == decimals) {
+                oracleAddresses[idx] = oracles[i];
+                idx++;
+            }
         }
 
         // Get aggregated value using methodology
@@ -442,10 +519,10 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             _windowSize
         );
 
-        // Calculate total volume from valid oracles
+        // Calculate total volume from valid oracles with matching decimals
         uint256 volumeSum = 0;
-        for (uint256 i = 0; i < _numOracles; i++) {
-            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
+        for (uint256 i = 0; i < matchingCount; i++) {
+            IDIAOracleV3 oracle = IDIAOracleV3(oracleAddresses[i]);
             uint256 valueCount = oracle.getValueCount(key);
 
             if (valueCount == 0) {
@@ -453,7 +530,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             }
 
             (uint128 _oracleValue, uint128 oracleTimestamp, uint128 oracleVolume) = oracle.getValueAt(key, 0);
-            _oracleValue; 
+            _oracleValue;
 
             // Check if value is not expired
             if ((oracleTimestamp + _timeoutSeconds) >= block.timestamp) {

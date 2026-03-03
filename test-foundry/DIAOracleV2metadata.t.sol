@@ -24,7 +24,7 @@ contract MockDIAOracle is IDIAOracleV2 {
         return (storedValue, storedTimestamp);
     }
 
-    function updateOracleUpdaterAddress(address) external override {}
+    function updateOracleUpdaterAddress(address) external {}
 }
 
 // Forge test contract

@@ -25,4 +25,8 @@ interface IDIAOracleV3 is IERC165 {
     function getValueHistory(string memory key) external view returns (ValueEntry[] memory);
     function getValueCount(string memory key) external view returns (uint256);
     function getMaxHistorySize() external view returns (uint256);
+
+    // Decimals functions
+    function setDecimals(uint8 decimalPrecision) external;
+    function getDecimals() external view returns (uint8);
 }
