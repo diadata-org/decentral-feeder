@@ -117,7 +117,13 @@ contract DIAOracleV3Test is Test {
         string memory key = "BTC/USD";
         oracle.setValue(key, 50000, 1710000000);
 
-        vm.expectRevert();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DIAOracleV3.InvalidHistoryIndex.selector,
+                1,
+                1 // maxIndex = count = 1
+            )
+        );
         oracle.getValueAt(key, 1); // Index 1 doesn't exist, only index 0 exists
     }
 
@@ -170,7 +176,13 @@ contract DIAOracleV3Test is Test {
         address attacker = address(0x1234);
 
         vm.prank(attacker);
-        vm.expectRevert();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                attacker,
+                oracle.UPDATER_ROLE()
+            )
+        );
         oracle.setValue("BTC/USD", 60000, 1710000002);
     }
 
@@ -183,6 +195,108 @@ contract DIAOracleV3Test is Test {
 
         (uint128 storedPrice,) = oracle.getValue("BTC/USD");
         assertEq(storedPrice, 65000, "New updater should be able to set values");
+    }
+
+    // ========== Access Control Tests ==========
+
+    function testRevokeUpdaterRole() public {
+        // Grant role
+        oracle.grantRole(keccak256("UPDATER_ROLE"), newUpdater);
+
+        // Verify they can set values
+        vm.prank(newUpdater);
+        oracle.setValue("BTC/USD", 65000, 1710000003);
+
+        // Revoke role
+        oracle.revokeRole(keccak256("UPDATER_ROLE"), newUpdater);
+
+        // Verify they can no longer set values
+        vm.prank(newUpdater);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                newUpdater,
+                oracle.UPDATER_ROLE()
+            )
+        );
+        oracle.setValue("ETH/USD", 3000, 1710000004);
+    }
+
+    function testMultipleUpdaters() public {
+        address updater1 = address(0x1111);
+        address updater2 = address(0x2222);
+
+        oracle.grantRole(keccak256("UPDATER_ROLE"), updater1);
+        oracle.grantRole(keccak256("UPDATER_ROLE"), updater2);
+
+        // Both updaters should be able to set values
+        vm.prank(updater1);
+        oracle.setValue("BTC/USD", 65000, 1710000001);
+
+        vm.prank(updater2);
+        oracle.setValue("ETH/USD", 3000, 1710000002);
+
+        // Verify both values were set
+        (uint128 btcValue,) = oracle.getValue("BTC/USD");
+        assertEq(btcValue, 65000, "Updater1 should be able to set values");
+
+        (uint128 ethValue,) = oracle.getValue("ETH/USD");
+        assertEq(ethValue, 3000, "Updater2 should be able to set values");
+    }
+
+    function testRenounceRole() public {
+        // Grant role to newUpdater
+        oracle.grantRole(keccak256("UPDATER_ROLE"), newUpdater);
+
+        // Verify they can set values
+        vm.prank(newUpdater);
+        oracle.setValue("BTC/USD", 65000, 1710000003);
+
+        // Renounce role
+        vm.prank(newUpdater);
+        oracle.renounceRole(keccak256("UPDATER_ROLE"), newUpdater);
+
+        // Verify they can no longer set values
+        vm.prank(newUpdater);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                newUpdater,
+                oracle.UPDATER_ROLE()
+            )
+        );
+        oracle.setValue("ETH/USD", 3000, 1710000004);
+    }
+
+    function testOnlyAdminCanGrantRoles() public {
+        address attacker = address(0x1234);
+
+        vm.prank(attacker);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                attacker,
+                oracle.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        oracle.grantRole(keccak256("UPDATER_ROLE"), attacker);
+    }
+
+    function testOnlyAdminCanRevokeRoles() public {
+        // Grant role to newUpdater
+        oracle.grantRole(keccak256("UPDATER_ROLE"), newUpdater);
+
+        address attacker = address(0x1234);
+
+        vm.prank(attacker);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                attacker,
+                oracle.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        oracle.revokeRole(keccak256("UPDATER_ROLE"), newUpdater);
     }
 
     // Test that getValue (V2 compatibility) returns the latest value
@@ -254,8 +368,52 @@ contract DIAOracleV3Test is Test {
 
         oracle.setValue(key, uint128(2000 + maxSize), uint128(1710000000 + maxSize));
 
-        (uint128 value,,) = oracle.getValueAt(key, maxSize - 1);
-        assertEq(value, uint128(2000 + 1), "Should access wrapped buffer correctly");
+        // Verify multiple indices to ensure correct wrap behavior
+        (uint128 value0,,) = oracle.getValueAt(key, 0);
+        assertEq(value0, uint128(2000 + maxSize), "Index 0 should be newest");
+
+        (uint128 valueMid,,) = oracle.getValueAt(key, maxSize / 2);
+        assertEq(valueMid, uint128(2000 + maxSize / 2), "Middle index should be correct");
+
+        (uint128 valueOldest,,) = oracle.getValueAt(key, maxSize - 1);
+        assertEq(valueOldest, uint128(2000 + 1), "Oldest should be second value");
+    }
+
+    function testMultipleBufferWraps() public {
+        string memory key = "MULTI_WRAP_TEST";
+        uint256 maxSize = oracle.getMaxHistorySize();
+
+        // Do 3 full cycles through the buffer
+        for (uint256 i = 0; i < maxSize * 3; i++) {
+            oracle.setValue(key, uint128(i), uint128(1710000000 + i));
+        }
+
+        // Should still only have maxSize values
+        assertEq(oracle.getValueCount(key), maxSize, "Should have maxSize values after multiple wraps");
+
+        // Verify newest value
+        (uint128 newest,,) = oracle.getValueAt(key, 0);
+        assertEq(newest, uint128(maxSize * 3 - 1), "Newest value after 3 wraps");
+
+        // Verify oldest value (should be maxSize values before newest)
+        (uint128 oldest,,) = oracle.getValueAt(key, maxSize - 1);
+        assertEq(oldest, uint128(maxSize * 2 - 1), "Oldest value after 3 wraps");
+    }
+
+    function testBufferWrapWithValueHistory() public {
+        string memory key = "WRAP_HISTORY_TEST";
+        uint256 maxSize = oracle.getMaxHistorySize();
+
+        // Fill buffer and wrap multiple times
+        for (uint256 i = 0; i < maxSize * 2; i++) {
+            oracle.setValue(key, uint128(5000 + i), uint128(1710000000 + i));
+        }
+
+        IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
+
+        assertEq(history.length, maxSize, "History should have maxSize entries");
+        assertEq(history[0].value, uint128(5000 + maxSize * 2 - 1), "Most recent should be correct");
+        assertEq(history[maxSize - 1].value, uint128(5000 + maxSize - 1), "Oldest should be correct");
     }
 
     // Test setRawValue function
@@ -291,7 +449,13 @@ contract DIAOracleV3Test is Test {
         bytes memory encodedData = abi.encode("BTC/USD", uint128(50000), uint128(1710000000), uint128(1000), bytes(""));
 
         vm.prank(attacker);
-        vm.expectRevert();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                attacker,
+                oracle.UPDATER_ROLE()
+            )
+        );
         oracle.setRawValue(encodedData);
     }
 
@@ -338,7 +502,13 @@ contract DIAOracleV3Test is Test {
         dataArray[0] = abi.encode("BTC/USD", uint128(50000), uint128(1710000000), uint128(1000), bytes(""));
 
         vm.prank(attacker);
-        vm.expectRevert();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                attacker,
+                oracle.UPDATER_ROLE()
+            )
+        );
         oracle.setMultipleRawValues(dataArray);
     }
 
@@ -403,6 +573,140 @@ contract DIAOracleV3Test is Test {
 
         assertEq(vol1, 0, "Volume should be 0 for setMultipleValues");
         assertEq(vol2, 0, "Volume should be 0 for setMultipleValues");
+    }
+
+    // ========== Edge Case Tests ==========
+
+    function testZeroValue() public {
+        string memory key = "ZERO/VALUE";
+        uint128 price = 0;
+        uint128 timestamp = 1710000000;
+
+        oracle.setValue(key, price, timestamp);
+
+        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key);
+        assertEq(storedPrice, price, "Zero price should be stored");
+        assertEq(storedTimestamp, timestamp, "Timestamp should be stored");
+    }
+
+    function testMaxUint128Values() public {
+        string memory key = "MAX/VALUES";
+        uint128 price = type(uint128).max;
+        uint128 timestamp = type(uint128).max;
+
+        vm.warp(type(uint128).max - 1 hours); // Set block time to allow max timestamp
+
+        oracle.setValue(key, price, timestamp);
+
+        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key);
+        assertEq(storedPrice, price, "Max price should be stored");
+        assertEq(storedTimestamp, timestamp, "Max timestamp should be stored");
+    }
+
+    function testZeroTimestamp() public {
+        string memory key = "ZERO/TIMESTAMP";
+        uint128 price = 50000;
+
+        // Zero timestamp should be too far in the past
+        vm.expectRevert();
+        oracle.setValue(key, price, 0);
+    }
+
+    function testEmptyStringKey() public {
+        string memory key = "";
+        uint128 price = 50000;
+        uint128 timestamp = 1710000000;
+
+        oracle.setValue(key, price, timestamp);
+
+        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key);
+        assertEq(storedPrice, price, "Empty key should work");
+        assertEq(storedTimestamp, timestamp, "Timestamp should be stored");
+    }
+
+    function testVeryLongKey() public {
+        string memory key = "BTC/USD/VERY/LONG/KEY/WITH/MANY/SLASHES/AND/EXTRA/INFORMATION/THAT/GOES/ON/AND/ON";
+        uint128 price = 50000;
+        uint128 timestamp = 1710000000;
+
+        oracle.setValue(key, price, timestamp);
+
+        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key);
+        assertEq(storedPrice, price, "Long key should work");
+        assertEq(storedTimestamp, timestamp, "Timestamp should be stored");
+    }
+
+    function testZeroPriceWithNonZeroVolume() public {
+        string memory key = "ZERO/PRICE";
+        uint128 price = 0;
+        uint128 timestamp = 1710000000;
+        uint128 volume = 1000000;
+
+        bytes memory data = abi.encode(key, price, timestamp, volume, bytes(""));
+        oracle.setRawValue(data);
+
+        (uint128 storedPrice,, uint128 storedVolume) = oracle.getValueAt(key, 0);
+        assertEq(storedPrice, 0, "Zero price should be stored");
+        assertEq(storedVolume, volume, "Non-zero volume should be stored");
+    }
+
+    function testNonZeroPriceWithZeroVolume() public {
+        string memory key = "ZERO/VOLUME";
+        uint128 price = 50000;
+        uint128 timestamp = 1710000000;
+        uint128 volume = 0;
+
+        bytes memory data = abi.encode(key, price, timestamp, volume, bytes(""));
+        oracle.setRawValue(data);
+
+        (uint128 storedPrice,, uint128 storedVolume) = oracle.getValueAt(key, 0);
+        assertEq(storedPrice, price, "Non-zero price should be stored");
+        assertEq(storedVolume, 0, "Zero volume should be stored");
+    }
+
+    function testAllZeroValues() public {
+        string memory key = "ALL/ZERO";
+        uint128 price = 0;
+        uint128 timestamp = uint128(block.timestamp);
+        uint128 volume = 0;
+
+        bytes memory data = abi.encode(key, price, timestamp, volume, bytes(""));
+        oracle.setRawValue(data);
+
+        (uint128 storedPrice, uint128 storedTimestamp, uint128 storedVolume) = oracle.getValueAt(key, 0);
+        assertEq(storedPrice, 0, "Zero price should be stored");
+        assertEq(storedTimestamp, timestamp, "Timestamp should be stored");
+        assertEq(storedVolume, 0, "Zero volume should be stored");
+    }
+
+    function testSameTimestampMultipleUpdates() public {
+        string memory key = "SAME/TIMESTAMP";
+        uint128 timestamp = 1710000000;
+
+        oracle.setValue(key, 100, timestamp);
+        oracle.setValue(key, 200, timestamp);
+        oracle.setValue(key, 300, timestamp);
+
+        assertEq(oracle.getValueCount(key), 3, "Should have 3 entries with same timestamp");
+
+        (uint128 latestValue, uint128 latestTimestamp) = oracle.getValue(key);
+        assertEq(latestValue, 300, "Latest value should be last set");
+        assertEq(latestTimestamp, timestamp, "Timestamp should match");
+    }
+
+    function testOutOfOrderTimestamps() public {
+        string memory key = "OUT/OF/ORDER";
+
+        oracle.setValue(key, 100, 1710000003); // Newest timestamp
+        oracle.setValue(key, 200, 1710000001); // Oldest timestamp
+        oracle.setValue(key, 300, 1710000002); // Middle timestamp
+
+        assertEq(oracle.getValueCount(key), 3, "Should have 3 entries");
+
+        // Most recent should be the one with newest timestamp, regardless of insertion order
+        (uint128 latestValue, uint128 latestTimestamp) = oracle.getValue(key);
+        assertEq(latestValue, 100, "Latest value should be the one with newest timestamp");
+        assertEq(latestTimestamp, 1710000003, "Latest timestamp should be 1710000003");
     }
 
     // Test timestamp validation - rejects future timestamp beyond gap
@@ -548,6 +852,86 @@ contract DIAOracleV3Test is Test {
         oracle.setValue(key, price, timestampJustBeyond);
     }
 
+    // ========== Event Emission Tests ==========
+
+    function testOracleUpdateEventEmitted() public {
+        string memory key = "BTC/USD";
+        uint128 value = 50000;
+        uint128 timestamp = 1710000000;
+
+        vm.expectEmit(false, false, false, true); // Check topic 1-3, data
+        emit DIAOracleV3.OracleUpdate(key, value, timestamp);
+
+        oracle.setValue(key, value, timestamp);
+    }
+
+    function testOracleUpdateEventEmittedForSetMultipleValues() public {
+        string[] memory keys = new string[](2);
+        keys[0] = "BTC/USD";
+        keys[1] = "ETH/USD";
+
+        uint256[] memory compressedValues = new uint256[](2);
+        compressedValues[0] = (uint256(50000) << 128) + 1710000001;
+        compressedValues[1] = (uint256(3000) << 128) + 1710000002;
+
+        // Expect first event
+        vm.expectEmit(false, false, false, true);
+        emit DIAOracleV3.OracleUpdate("BTC/USD", 50000, 1710000001);
+
+        // Expect second event
+        vm.expectEmit(false, false, false, true);
+        emit DIAOracleV3.OracleUpdate("ETH/USD", 3000, 1710000002);
+
+        oracle.setMultipleValues(keys, compressedValues);
+    }
+
+    function testOracleUpdateRawEventEmitted() public {
+        string memory key = "BTC/USD";
+        uint128 value = 50000;
+        uint128 timestamp = 1710000000;
+        uint128 volume = 1000000;
+        bytes memory additionalData = abi.encode("extra data");
+
+        bytes memory encodedData = abi.encode(key, value, timestamp, volume, additionalData);
+
+        vm.expectEmit(false, false, false, true);
+        emit DIAOracleV3.OracleUpdateRaw(key, value, timestamp, volume, additionalData);
+
+        oracle.setRawValue(encodedData);
+    }
+
+    function testOracleUpdateRawEventEmittedForSetMultipleRawValues() public {
+        bytes[] memory dataArray = new bytes[](2);
+
+        dataArray[0] = abi.encode("BTC/USD", uint128(50000), uint128(1710000001), uint128(1000000), bytes("btc data"));
+        dataArray[1] = abi.encode("ETH/USD", uint128(3000), uint128(1710000002), uint128(500000), bytes("eth data"));
+
+        // Expect first event
+        vm.expectEmit(false, false, false, true);
+        emit DIAOracleV3.OracleUpdateRaw("BTC/USD", 50000, 1710000001, 1000000, bytes("btc data"));
+
+        // Expect second event
+        vm.expectEmit(false, false, false, true);
+        emit DIAOracleV3.OracleUpdateRaw("ETH/USD", 3000, 1710000002, 500000, bytes("eth data"));
+
+        oracle.setMultipleRawValues(dataArray);
+    }
+
+    function testOracleUpdateWithEmptyAdditionalData() public {
+        string memory key = "BTC/USD";
+        uint128 value = 50000;
+        uint128 timestamp = 1710000000;
+        uint128 volume = 1000000;
+        bytes memory additionalData = "";
+
+        bytes memory encodedData = abi.encode(key, value, timestamp, volume, additionalData);
+
+        vm.expectEmit(false, false, false, true);
+        emit DIAOracleV3.OracleUpdateRaw(key, value, timestamp, volume, additionalData);
+
+        oracle.setRawValue(encodedData);
+    }
+
     // ========== UUPS Proxy Tests ==========
 
     function testProxyDeployment() public {
@@ -603,34 +987,26 @@ contract DIAOracleV3Test is Test {
         // Try to upgrade from non-admin address - should revert
         address attacker = address(0x1234);
         vm.prank(attacker);
-        vm.expectRevert();
-        address(proxy).call(
+        vm.expectRevert(
             abi.encodeWithSelector(
-                UUPSUpgradeable.upgradeToAndCall.selector,
-                address(newImplementation),
-                ""
+                AccessControlUpgradeable.AccessControlUnauthorizedAccount.selector,
+                attacker,
+                oracle.DEFAULT_ADMIN_ROLE()
             )
         );
-        // If we reach here, the test should fail (expectRevert ensures it reverts)
+        oracle.upgradeToAndCall(address(newImplementation), "");
 
         // Now verify that a proper admin CAN upgrade
-        (bool success, ) = address(proxy).call(
-            abi.encodeWithSelector(
-                UUPSUpgradeable.upgradeToAndCall.selector,
-                address(newImplementation),
-                ""
-            )
-        );
-        assertTrue(success, "Admin should be able to upgrade");
+        oracle.upgradeToAndCall(address(newImplementation), "");
 
-        // Verify the upgrade worked by checking functionality still works
-        (uint128 value,) = oracle.getValue("BTC/USD");
-        // Oracle should still be functional after upgrade
-        assertTrue(true, "Oracle should still be functional after upgrade");
+        // Verify the upgrade worked by checking actual functionality
+        oracle.setValue("TEST/USD", 12345, 1710000100);
+        (uint128 value,) = oracle.getValue("TEST/USD");
+        assertEq(value, 12345, "Oracle should be functional after upgrade");
     }
 
     function testInitializeCannotBeCalledTwice() public {
-        vm.expectRevert();
+        vm.expectRevert(Initializable.InvalidInitialization.selector);
         oracle.initialize();
     }
 
@@ -640,7 +1016,7 @@ contract DIAOracleV3Test is Test {
         DIAOracleV3 impl = new DIAOracleV3();
 
         // Try to call initialize directly on implementation (should fail due to _disableInitializers)
-        vm.expectRevert();
+        vm.expectRevert(Initializable.InvalidInitialization.selector);
         impl.initialize();
     }
 
@@ -668,14 +1044,17 @@ contract DIAOracleV3Test is Test {
         // 2. Multiple phases of initialization across upgrades
         // 3. Adding new initialization logic without conflicts
 
-        // Verify the contract was initialized with version 1
-        (uint128 value,) = oracle.getValue("BTC/USD");
-        assertEq(value, 0, "Should be uninitialized initially");
+        // Verify the contract is initialized with version 1
+        // Note: We can't directly access _initialized from outside, but we can verify it's not 0
+        // by checking that initialize cannot be called again (tested in testInitializeCannotBeCalledTwice)
 
         // The fact that this test exists and passes demonstrates:
         // - The contract can be initialized with reinitializer(1)
         // - Future versions can use reinitializer(2), reinitializer(3), etc.
-        assertTrue(true, "Reinitializer pattern documented");
+
+        // Verify the contract is functional (proves it was initialized)
+        assertTrue(oracle.hasRole(oracle.DEFAULT_ADMIN_ROLE(), deployer), "Deployer should be admin");
+        assertTrue(oracle.hasRole(oracle.UPDATER_ROLE(), deployer), "Deployer should be updater");
     }
 
     function testStorageLayoutCompatibility() public {
@@ -706,5 +1085,308 @@ contract DIAOracleV3Test is Test {
 
         (uint128 ethValue,) = upgradedOracle.getValue("ETH/USD");
         assertEq(ethValue, 3000, "ETH value should persist");
+    }
+
+    function testUpgradeToZeroAddress() public {
+        address zeroAddress = address(0);
+
+        vm.expectRevert();
+        oracle.upgradeToAndCall(zeroAddress, "");
+    }
+
+    function testUpgradeAndCallWithData() public {
+        // Add some data before upgrade
+        oracle.setValue("BTC/USD", 50000, 1710000000);
+
+        // Deploy new implementation
+        DIAOracleV3 newImplementation = new DIAOracleV3();
+
+        // Upgrade with empty call data (reinitialize is not needed for same version)
+        oracle.upgradeToAndCall(address(newImplementation), "");
+
+        // Verify functionality still works
+        (uint128 valueAfter,) = oracle.getValue("BTC/USD");
+        assertEq(valueAfter, 50000, "Value should persist after upgrade");
+    }
+
+    // ========== Interface Support Tests ==========
+
+    function testSupportsInterface() public {
+        // Test IDIAOracleV3 interface support
+        assertTrue(oracle.supportsInterface(type(IDIAOracleV3).interfaceId), "Should support IDIAOracleV3");
+
+        // Test IERC165 interface support
+        assertTrue(oracle.supportsInterface(type(IERC165).interfaceId), "Should support IERC165");
+
+        // Test invalid interface
+        assertFalse(oracle.supportsInterface(bytes4(0xdeadbeef)), "Should not support invalid interface");
+        assertFalse(oracle.supportsInterface(bytes4(0xffffffff)), "Should not support ERC165 invalid interface");
+    }
+
+    // ========== Batch Operation Partial Failure Tests ==========
+
+    function testSetMultipleValuesPartialFailure() public {
+        string[] memory keys = new string[](3);
+        keys[0] = "VALID1";
+        keys[1] = "INVALID";
+        keys[2] = "VALID2";
+
+        uint256[] memory values = new uint256[](3);
+        values[0] = (uint256(1000) << 128) + uint128(block.timestamp);
+        values[1] = (uint256(2000) << 128) + uint128(block.timestamp + 2 hours); // Invalid timestamp
+        values[2] = (uint256(3000) << 128) + uint128(block.timestamp);
+
+        // Should revert entirely - no partial updates
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3.TimestampTooFarInFuture.selector, uint128(block.timestamp + 2 hours), block.timestamp));
+        oracle.setMultipleValues(keys, values);
+
+        // Verify no values were set
+        assertEq(oracle.getValueCount("VALID1"), 0, "VALID1 should not be set");
+        assertEq(oracle.getValueCount("VALID2"), 0, "VALID2 should not be set");
+    }
+
+    function testSetMultipleRawValuesPartialFailure() public {
+        bytes[] memory dataArray = new bytes[](3);
+
+        // First value is valid
+        dataArray[0] = abi.encode("BTC/USD", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes("btc data"));
+
+        // Second value has invalid timestamp
+        dataArray[1] = abi.encode("ETH/USD", uint128(3000), uint128(block.timestamp - 2 hours), uint128(500000), bytes("eth data"));
+
+        // Third value is valid
+        dataArray[2] = abi.encode("SOL/USD", uint128(150), uint128(block.timestamp), uint128(200000), bytes("sol data"));
+
+        // Should revert entirely - no partial updates
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3.TimestampTooFarInPast.selector, uint128(block.timestamp - 2 hours), block.timestamp));
+        oracle.setMultipleRawValues(dataArray);
+
+        // Verify no values were set
+        assertEq(oracle.getValueCount("BTC/USD"), 0, "BTC should not be set");
+        assertEq(oracle.getValueCount("SOL/USD"), 0, "SOL should not be set");
+    }
+
+    // ========== State Consistency Tests ==========
+
+    function testStateConsistencyAcrossOperations() public {
+        string memory key = "STATE/TEST";
+
+        // Set value
+        oracle.setValue(key, 100, 1710000001);
+        assertEq(oracle.getValueCount(key), 1, "Count should be 1");
+
+        // Set raw value with volume
+        bytes memory data = abi.encode(key, uint128(200), uint128(1710000002), uint128(1000), bytes("test"));
+        oracle.setRawValue(data);
+        assertEq(oracle.getValueCount(key), 2, "Count should be 2");
+
+        // Set multiple values with different key
+        string[] memory keys = new string[](1);
+        keys[0] = "OTHER/KEY";
+        uint256[] memory values = new uint256[](1);
+        values[0] = (uint256(300) << 128) + 1710000003;
+        oracle.setMultipleValues(keys, values);
+
+        // Original key should still have 2 values
+        assertEq(oracle.getValueCount(key), 2, "Original key count should be 2");
+
+        // Latest value should be correct
+        (uint128 value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
+        assertEq(value, 200, "Latest value should be from setRawValue");
+        assertEq(timestamp, 1710000002, "Latest timestamp should be from setRawValue");
+        assertEq(volume, 1000, "Latest volume should be from setRawValue");
+    }
+
+    // ========== Gas Consumption Tests ==========
+
+    function testGasCostForSetValue() public {
+        string memory key = "GAS/TEST";
+
+        uint256 gasBefore = gasleft();
+        oracle.setValue(key, 50000, 1710000000);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        // First setValue should allocate array, so it's more expensive
+        assertLt(gasUsed, 500000, "First setValue should use less than 500k gas");
+
+        // Second setValue should be cheaper (array already allocated)
+        gasBefore = gasleft();
+        oracle.setValue(key, 51000, 1710000001);
+        gasUsed = gasBefore - gasleft();
+
+        assertLt(gasUsed, 200000, "Subsequent setValue should use less than 200k gas");
+    }
+
+    function testGasCostForSetMultipleValues() public {
+        string[] memory keys = new string[](10);
+        uint256[] memory values = new uint256[](10);
+
+        for (uint256 i = 0; i < 10; i++) {
+            keys[i] = string(abi.encodePacked("KEY", vm.toString(i)));
+            values[i] = (uint256(1000 + i) << 128) + uint128(1710000000 + i);
+        }
+
+        uint256 gasBefore = gasleft();
+        oracle.setMultipleValues(keys, values);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        // 10 values should cost less than 1M gas
+        assertLt(gasUsed, 1000000, "Setting 10 values should use less than 1M gas");
+    }
+
+    // ========== DoS Resistance Tests ==========
+
+    function testGasExhaustionResistance() public {
+        // Create many keys to test for gas exhaustion vulnerabilities
+        for (uint256 i = 0; i < 100; i++) {
+            string memory key = string(abi.encodePacked("KEY", vm.toString(i)));
+            oracle.setValue(key, uint128(1000 + i), uint128(1710000000 + i));
+        }
+
+        // Oracle should still function
+        oracle.setValue("FINAL", 999, 1710000100);
+        (uint128 value,) = oracle.getValue("FINAL");
+        assertEq(value, 999, "Oracle should still function after many updates");
+    }
+
+    function testLargeHistoryPerKey() public {
+        string memory key = "LARGE/HISTORY";
+        uint256 maxSize = oracle.getMaxHistorySize();
+
+        // Fill the buffer completely
+        for (uint256 i = 0; i < maxSize; i++) {
+            oracle.setValue(key, uint128(i), uint128(1710000000 + i));
+        }
+
+        // Should still be able to add more (will wrap)
+        oracle.setValue(key, uint128(maxSize), uint128(1710000000 + maxSize));
+
+        assertEq(oracle.getValueCount(key), maxSize, "Count should be maxSize");
+    }
+
+    // ========== Multi-Key and Special Character Tests ==========
+
+    function testCaseSensitiveKeys() public {
+        oracle.setValue("btc/usd", 100, 1710000000);
+        oracle.setValue("BTC/USD", 200, 1710000001);
+        oracle.setValue("Btc/Usd", 300, 1710000002);
+
+        // All three should be different keys
+        assertEq(oracle.getValueCount("btc/usd"), 1, "Lowercase key should exist");
+        assertEq(oracle.getValueCount("BTC/USD"), 1, "Uppercase key should exist");
+        assertEq(oracle.getValueCount("Btc/Usd"), 1, "Mixed case key should exist");
+
+        (uint128 value1,) = oracle.getValue("btc/usd");
+        (uint128 value2,) = oracle.getValue("BTC/USD");
+        (uint128 value3,) = oracle.getValue("Btc/Usd");
+
+        assertEq(value1, 100, "Lowercase value should be correct");
+        assertEq(value2, 200, "Uppercase value should be correct");
+        assertEq(value3, 300, "Mixed case value should be correct");
+    }
+
+    function testSpecialCharactersInKeys() public {
+        string memory key1 = "BTC-USD";
+        string memory key2 = "BTC_USD";
+        string memory key3 = "BTC.USD";
+        string memory key4 = "BTC:USD";
+
+        oracle.setValue(key1, 100, 1710000000);
+        oracle.setValue(key2, 200, 1710000001);
+        oracle.setValue(key3, 300, 1710000002);
+        oracle.setValue(key4, 400, 1710000003);
+
+        assertEq(oracle.getValueCount(key1), 1, "Hyphen key should work");
+        assertEq(oracle.getValueCount(key2), 1, "Underscore key should work");
+        assertEq(oracle.getValueCount(key3), 1, "Dot key should work");
+        assertEq(oracle.getValueCount(key4), 1, "Colon key should work");
+    }
+
+    function testUnicodeInKeys() public {
+        string memory key1 = "BTC/USD€";
+        string memory key2 = "BTC/USD¥";
+
+        oracle.setValue(key1, 100, 1710000000);
+        oracle.setValue(key2, 200, 1710000001);
+
+        (uint128 value1,) = oracle.getValue(key1);
+        (uint128 value2,) = oracle.getValue(key2);
+
+        assertEq(value1, 100, "Unicode character 1 should work");
+        assertEq(value2, 200, "Unicode character 2 should work");
+    }
+
+    // ========== Fuzz Tests ==========
+
+    function testFuzzSetValue(uint128 price, uint32 timestampOffset) public {
+        vm.assume(timestampOffset <= 3600); // Within 1 hour
+        uint128 timestamp = uint128(block.timestamp - 600 + timestampOffset); // -10 minutes to +1 hour
+
+        string memory key = "FUZZ/TEST";
+
+        oracle.setValue(key, price, timestamp);
+
+        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key);
+        assertEq(storedPrice, price, "Price should match");
+        assertEq(storedTimestamp, timestamp, "Timestamp should match");
+    }
+
+    function testFuzzSetValueArbitraryKey(string calldata key) public {
+        vm.assume(bytes(key).length > 0 && bytes(key).length <= 100);
+
+        uint128 price = 50000;
+        uint128 timestamp = uint128(block.timestamp);
+
+        oracle.setValue(key, price, timestamp);
+
+        (uint128 storedPrice, uint128 storedTimestamp) = oracle.getValue(key);
+        assertEq(storedPrice, price);
+        assertEq(storedTimestamp, timestamp);
+    }
+
+    // ========== Invariant Tests ==========
+
+    function testInvariantLatestValueMatchesIndexZero(string memory key) public {
+        // Set multiple values
+        for (uint128 i = 0; i < 10; i++) {
+            oracle.setValue(key, uint128(1000 + i), uint128(1710000000 + i));
+        }
+
+        uint256 count = oracle.getValueCount(key);
+        if (count > 0) {
+            (uint128 latestValue, uint128 latestTimestamp) = oracle.getValue(key);
+            (uint128 valueAt0, uint128 timestampAt0,) = oracle.getValueAt(key, 0);
+
+            assertEq(latestValue, valueAt0, "getValue should match getValueAt(0)");
+            assertEq(latestTimestamp, timestampAt0, "Timestamp should match getValueAt(0)");
+        }
+    }
+
+    function testInvariantCountNeverExceedsMaxSize() public {
+        string memory key = "INVARIANT/COUNT";
+        uint256 maxSize = oracle.getMaxHistorySize();
+
+        // Add 2x maxSize values
+        for (uint256 i = 0; i < maxSize * 2; i++) {
+            oracle.setValue(key, uint128(i), uint128(1710000000 + i));
+
+            // Count should never exceed maxSize
+            uint256 count = oracle.getValueCount(key);
+            assertLe(count, maxSize, "Count should never exceed maxSize");
+        }
+    }
+
+    function testInvariantChronologicalOrderInHistory(string memory key) public {
+        // Set multiple values
+        for (uint128 i = 0; i < 10; i++) {
+            oracle.setValue(key, uint128(1000 + i), uint128(1710000000 + i));
+        }
+
+        IDIAOracleV3.ValueEntry[] memory history = oracle.getValueHistory(key);
+
+        // Verify chronological order (most recent first)
+        for (uint256 i = 0; i < history.length - 1; i++) {
+            assertGe(history[i].timestamp, history[i + 1].timestamp, "History should be in chronological order");
+        }
     }
 }
