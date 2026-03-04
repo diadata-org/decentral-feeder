@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.29;
+pragma solidity 0.8.34;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -50,6 +50,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
     error TimestampTooFarInFuture(uint128 timestamp, uint256 blockTime);
     error TimestampTooFarInPast(uint128 timestamp, uint256 blockTime);
+    error TimestampNotIncreasing(uint128 newTimestamp, uint128 existingTimestamp);
 
     /// @notice Maximum allowed history size to prevent gas issues (set to 1000)
     uint256 public constant MAX_ALLOWED_HISTORY_SIZE = 1000;
@@ -88,6 +89,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      *      to allow future upgrades to add new initialization logic with version 2, 3, etc.
      */
     function initialize() public reinitializer(1) {
+        decimals = 8; 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
@@ -98,7 +100,9 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      * @param newImplementation Address of the new implementation contract.
      */
     // slither-disable-next-line unused-param
-    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {
+        // Only addresses with DEFAULT_ADMIN_ROLE can authorize upgrades
+    }
 
     /**
      * @notice Updates the price and timestamp for a given asset key.
@@ -397,7 +401,9 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
         uint256 existingValue = values[key];
         if (existingValue != 0) {
             uint128 existingTimestamp = uint128(existingValue);
-            require(timestamp >= existingTimestamp, "New timestamp must be >= existing timestamp");
+            if (timestamp < existingTimestamp) {
+                revert TimestampNotIncreasing(timestamp, existingTimestamp);
+            }
         }
     }
 }

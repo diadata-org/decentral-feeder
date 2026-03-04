@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.29;
+pragma solidity 0.8.34;
 
 import "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -810,6 +810,7 @@ contract DIAOracleV3MetaTest is Test {
 
         // MockDIAOracleV3 properly implements ERC-165 and IDIAOracleV3
         MockDIAOracleV3 mockOracle = new MockDIAOracleV3(10);
+        mockOracle.setDecimals(8); // Set to 8 to match oracleMeta's default
 
         oracleMeta.addOracle(address(mockOracle));
 
@@ -864,8 +865,8 @@ contract DIAOracleV3MetaTest is Test {
     }
 
     function testDecimalsDefaultZero() public {
-        // Decimals should default to 0
-        assertEq(oracleMeta.getDecimals(), 0, "Default decimals should be 0");
+        // Decimals should default to 8
+        assertEq(oracleMeta.getDecimals(), 8, "Default decimals should be 8");
     }
 
     function testSetDecimalsOnlyOwner() public {

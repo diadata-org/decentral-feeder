@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.29;
+pragma solidity 0.8.34;
 
 import "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -717,7 +717,13 @@ contract DIAOracleV3Test is Test {
         assertEq(latestTimestamp, 1710000003, "Latest timestamp should be 1710000003");
 
         // Try to set a value with an older timestamp - should revert
-        vm.expectRevert("New timestamp must be >= existing timestamp");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DIAOracleV3.TimestampNotIncreasing.selector,
+                uint128(1710000001),
+                uint128(1710000003)
+            )
+        );
         oracle.setValue(key, 400, 1710000001);
     }
 
@@ -1401,8 +1407,8 @@ contract DIAOracleV3Test is Test {
     }
 
     function testDecimalsDefaultZero() public {
-        // Decimals should default to 0
-        assertEq(oracle.getDecimals(), 0, "Default decimals should be 0");
+        // Decimals should default to 8
+        assertEq(oracle.getDecimals(), 8, "Default decimals should be 8");
     }
 
     function testSetDecimalsOnlyUpdater() public {

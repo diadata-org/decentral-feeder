@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.29;
+pragma solidity 0.8.34;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -77,6 +77,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (_priceMethodology == address(0)) {
             revert InvalidMethodology();
         }
+        decimals = 8; // Default to 8 decimal places (standard for many tokens)
         priceMethodology = IPriceMethodology(_priceMethodology);
     }
 
