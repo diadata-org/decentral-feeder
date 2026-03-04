@@ -6,12 +6,37 @@ import "../IDIAOracleV3.sol";
 
 /**
  * @title MedianPriceMethodology
- * @dev Calculates price by taking the median of all historical values from each oracle,
- *      then taking the median of those medians. Returns the timestamp of the median value.
+ * @notice Price methodology that calculates the median of medians across multiple oracles
+ * @dev This methodology implements a two-stage median calculation:
+ *
+ *      Stage 1 - Per-Oracle Median:
+ *      For each oracle, collects up to windowSize most recent non-expired values
+ *      and calculates the median price with its associated timestamp.
+ *
+ *      Stage 2 - Cross-Oracle Median:
+ *      Takes the median of all per-oracle medians to get the final price.
+ *      For even numbers of values, returns the average of the two middle values
+ *      and the maximum timestamp of those two values.
+ *
+ *      Algorithm:
+ *      1. Query historical values from each oracle
+ *      2. Filter out expired values based on timeoutSeconds
+ *      3. Calculate median for each oracle (bubble sort O(n²))
+ *      4. Calculate median of all oracle medians
+ *      5. Return final median value with its timestamp
+ *
+ *      Use Cases:
+ *      - Resistant to outliers from individual oracles
+ *      - Suitable when oracles may have transient errors
+ *      - Provides a robust single-point estimate
+ *
  */
 contract MedianPriceMethodology is IPriceMethodology {
     error ThresholdNotMet(uint256 validValues, uint256 threshold);
 
+    /// @notice Struct to hold a value along with its associated timestamp
+    /// @param value The price value
+    /// @param timestamp The timestamp when this value was recorded
     struct ValueWithTimestamp {
         uint128 value;
         uint128 timestamp;
@@ -24,9 +49,10 @@ contract MedianPriceMethodology is IPriceMethodology {
      *      2. Takes up to windowSize most recent non-expired values
      *      3. Calculates median of those values with its timestamp
      *      4. Takes median of all oracle medians and returns its timestamp
-     * @param key The asset identifier
-     * @param oracles Array of oracle addresses
-     * @param timeoutSeconds Timeout period for valid values
+     *
+     * @param key The asset identifier (e.g., "BTC/USD")
+     * @param oracles Array of oracle addresses to query
+     * @param timeoutSeconds Timeout period for valid values (older values are ignored)
      * @param threshold Minimum number of valid oracle values required
      * @param windowSize Maximum number of recent historical values to consider per oracle
      * @return value The calculated median of medians

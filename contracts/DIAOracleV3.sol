@@ -8,8 +8,25 @@ import "./IDIAOracleV3.sol";
 
 /**
  * @title DIAOracleV3
- * @dev UUPS upgradeable oracle contract that allows an authorized updater to set 
-        and retrieve price values with timestamps.
+ * @notice UUPS upgradeable oracle contract for storing and retrieving asset price data
+ * @dev This contract allows authorized updaters to set price values with timestamps,
+ *      maintaining both current values and historical data in a ring buffer structure.
+ *
+ *      Key Features:
+ *      - Stores price and timestamp in compressed format (uint256) for backward compatibility
+ *      - Maintains historical values using a ring buffer (max 100 entries per key)
+ *      - Supports volume data and arbitrary additional data via raw value functions
+ *      - Timestamp validation prevents stale or future-dated data
+ *      - Monotonic timestamp enforcement ensures data integrity
+ *
+ *      Access Control:
+ *      - DEFAULT_ADMIN_ROLE: Can grant/revoke roles and authorize upgrades
+ *      - UPDATER_ROLE: Can update price values
+ *
+ *      Storage Layout:
+ *      - Uses UUPS upgradeable pattern with __gap for future upgrades
+ *      - MAX_HISTORY_SIZE is immutable and set at deployment
+ *
  */
 contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, UUPSUpgradeable {
     bytes32 public constant UPDATER_ROLE = keccak256("UPDATER_ROLE");

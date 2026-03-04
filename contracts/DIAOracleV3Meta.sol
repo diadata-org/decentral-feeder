@@ -8,8 +8,28 @@ import "./IPriceMethodology.sol";
 
 /**
  * @title DIAOracleV3Meta
- * @dev Meta oracle that aggregates values from multiple DIAOracleV3 instances.
- *      Uses IPriceMethodology interface for price calculation, allowing different methodologies.
+ * @notice Meta oracle contract that aggregates and validates prices from multiple DIAOracleV3 instances
+ * @dev This contract queries multiple oracle sources and aggregates their values using
+ *      configurable calculation methodologies (median, VWAP, etc.).
+ *
+ *      Key Features:
+ *      - Aggregates data from multiple DIAOracleV3 oracles
+ *      - Pluggable price methodology system (median, VWAP, custom)
+ *      - Configurable validation parameters (timeout, threshold, window size)
+ *      - Filters oracles by decimal precision to ensure consistency
+ *      - Supports volume aggregation
+ *      - Allows custom methodology calls for one-off calculations
+ *
+ *      Access Control:
+ *      - Only owner can add/remove oracles
+ *      - Only owner can change methodology and validation parameters
+ *
+ *      Security Considerations:
+ *      - All oracles must implement IDIAOracleV3 interface
+ *      - Only oracles with matching decimals are included in aggregation
+ *      - Timeout mechanism prevents stale data usage
+ *      - Threshold ensures minimum number of valid responses
+ *
  */
 contract DIAOracleV3Meta is Ownable(msg.sender) {
     /// @notice Mapping of registered oracle addresses.
@@ -543,18 +563,34 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         return (value, timestamp, totalVolume);
     }
 
+    /**
+     * @notice Gets the number of registered oracles
+     * @return count The total number of oracles in the registry
+     */
     function getNumOracles() external view returns (uint256) {
         return _numOracles;
     }
 
+    /**
+     * @notice Gets the minimum threshold of valid oracle values required
+     * @return threshold The minimum number of valid values needed to return a result
+     */
     function getThreshold() external view returns (uint256) {
         return _threshold;
     }
 
+    /**
+     * @notice Gets the timeout period for oracle value validity
+     * @return timeoutSeconds The number of seconds after which a value is considered stale
+     */
     function getTimeoutSeconds() external view returns (uint256) {
         return _timeoutSeconds;
     }
 
+    /**
+     * @notice Gets the window size for historical value consideration
+     * @return windowSize The maximum number of recent historical values to consider per oracle
+     */
     function getWindowSize() external view returns (uint256) {
         return _windowSize;
     }

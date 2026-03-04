@@ -1,32 +1,36 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.29;
+pragma solidity 0.8.34;
 
 import "../IPriceMethodology.sol";
 import "../IDIAOracleV3.sol";
-import "../QuickSort.sol";
 
 /**
  * @title AveragePriceMethodology
  * @dev Calculates price by averaging all historical values from each oracle,
- *      then taking the median of those averages
+ *      then taking the median of those averages. Returns the timestamp of the median value.
  */
 contract AveragePriceMethodology is IPriceMethodology {
     error ThresholdNotMet(uint256 validValues, uint256 threshold);
+
+    struct ValueWithTimestamp {
+        uint128 value;
+        uint128 timestamp;
+    }
 
     /**
      * @notice Calculates price using average methodology
      * @dev For each oracle:
      *      1. Gets historical values using getValueHistory()
      *      2. Takes up to windowSize most recent non-expired values
-     *      3. Calculates average of those values
-     *      4. Takes median of all oracle averages
+     *      3. Calculates average of those values with max timestamp
+     *      4. Takes median of all oracle averages and returns its timestamp
      * @param key The asset identifier
      * @param oracles Array of oracle addresses
      * @param timeoutSeconds Timeout period for valid values
      * @param threshold Minimum number of valid oracle values required
      * @param windowSize Maximum number of recent historical values to consider per oracle
      * @return value The calculated median of averages
-     * @return timestamp Current block timestamp
+     * @return timestamp The timestamp of the median value
      */
     function calculateValue(
         string memory key,
@@ -46,14 +50,14 @@ contract AveragePriceMethodology is IPriceMethodology {
     /**
      * @notice Aggregates oracle values using average-then-median methodology.
      * @dev For each oracle: takes up to windowSize most recent valid values, averages them,
-     *      then takes the median of those averages
+     *      then takes the median of those averages and returns the timestamp of that median.
      * @param oracles Array of oracle contracts to aggregate from.
      * @param key The asset identifier.
      * @param timeoutSeconds Timeout period for valid values.
      * @param threshold Minimum number of valid oracle values required.
      * @param windowSize Maximum number of recent historical values to consider per oracle.
      * @return value The aggregated value (median of averages).
-     * @return timestamp The timestamp associated with the result.
+     * @return timestamp The timestamp of the median value.
      */
     function _aggregateAverageMedian(
         IDIAOracleV3[] memory oracles,
@@ -63,40 +67,20 @@ contract AveragePriceMethodology is IPriceMethodology {
         uint256 windowSize
     ) internal view returns (uint128 value, uint128 timestamp) {
         uint256 numOracles = oracles.length;
-        if (numOracles == 0) {
-            return (0, uint128(block.timestamp));
-        }
 
-        uint128[] memory averages = new uint128[](numOracles);
+        ValueWithTimestamp[] memory oracleResults = new ValueWithTimestamp[](numOracles);
         uint256 validValues = 0;
-        uint128 maxTimestamp = 0;
 
         for (uint256 i = 0; i < numOracles; i++) {
-            IDIAOracleV3.ValueEntry[] memory history = oracles[i].getValueHistory(key);
+            ValueWithTimestamp memory result = _calculateOracleAverage(
+                oracles[i].getValueHistory(key),
+                timeoutSeconds,
+                windowSize
+            );
 
-            if (history.length == 0) {
-                continue;
-            }
-
-            uint256 sum = 0;
-            uint256 validCount = 0;
-            uint256 maxIndex = windowSize < history.length ? windowSize : history.length;
-
-            for (uint256 j = 0; j < maxIndex; j++) {
-                uint128 entryTimestamp = history[j].timestamp;
-                if ((entryTimestamp + timeoutSeconds) < block.timestamp) {
-                    continue;
-                }
-                sum += history[j].value;
-                validCount += 1;
-                if (entryTimestamp > maxTimestamp) {
-                    maxTimestamp = entryTimestamp;
-                }
-            }
-
-            if (validCount > 0) {
-                averages[validValues] = uint128(sum / validCount);
-                validValues += 1;
+            if (result.timestamp != 0) {
+                oracleResults[validValues] = result;
+                validValues++;
             }
         }
 
@@ -104,16 +88,77 @@ contract AveragePriceMethodology is IPriceMethodology {
             revert ThresholdNotMet(validValues, threshold);
         }
 
-        averages = QuickSort.sort(averages, 0, validValues - 1);
+        // Sort oracle averages by value using bubble sort
+        for (uint256 i = 0; i < validValues - 1; i++) {
+            for (uint256 j = i + 1; j < validValues; j++) {
+                if (oracleResults[i].value > oracleResults[j].value) {
+                    ValueWithTimestamp memory temp = oracleResults[i];
+                    oracleResults[i] = oracleResults[j];
+                    oracleResults[j] = temp;
+                }
+            }
+        }
 
         uint256 medianIndex = validValues / 2;
         uint128 medianValue;
+        uint128 medianTimestamp;
+
         if (validValues % 2 == 0) {
+            // Even: average of two middle values, use max timestamp of the two
             uint256 lowerIndex = medianIndex - 1;
-            medianValue = uint128((uint256(averages[lowerIndex]) + uint256(averages[medianIndex])) / 2);
+            medianValue = uint128(
+                (uint256(oracleResults[lowerIndex].value) + uint256(oracleResults[medianIndex].value)) / 2
+            );
+            medianTimestamp = oracleResults[lowerIndex].timestamp > oracleResults[medianIndex].timestamp
+                ? oracleResults[lowerIndex].timestamp
+                : oracleResults[medianIndex].timestamp;
         } else {
-            medianValue = averages[medianIndex];
+            // Odd: use middle value and its timestamp
+            medianValue = oracleResults[medianIndex].value;
+            medianTimestamp = oracleResults[medianIndex].timestamp;
         }
-        return (medianValue, maxTimestamp);
+
+        return (medianValue, medianTimestamp);
+    }
+
+    /**
+     * @notice Calculates average value and its max timestamp 
+     * @dev Returns the average value and the maximum timestamp of values used in the average
+     * @param history Array of value entries from the oracle
+     * @param timeoutSeconds Timeout period for valid values
+     * @param windowSize Maximum number of recent values to consider
+     * @return result The average value and its max timestamp
+     */
+    function _calculateOracleAverage(
+        IDIAOracleV3.ValueEntry[] memory history,
+        uint256 timeoutSeconds,
+        uint256 windowSize
+    ) internal view returns (ValueWithTimestamp memory result) {
+        if (history.length == 0) {
+            return ValueWithTimestamp(0, 0);
+        }
+
+        uint256 sum = 0;
+        uint256 validCount = 0;
+        uint128 maxTs = 0;
+        uint256 maxIndex = windowSize < history.length ? windowSize : history.length;
+
+        for (uint256 j = 0; j < maxIndex; j++) {
+            uint128 entryTimestamp = history[j].timestamp;
+            if ((entryTimestamp + timeoutSeconds) < block.timestamp) {
+                continue;
+            }
+            sum += history[j].value;
+            validCount += 1;
+            if (entryTimestamp > maxTs) {
+                maxTs = entryTimestamp;
+            }
+        }
+
+        if (validCount == 0) {
+            return ValueWithTimestamp(0, 0);
+        }
+
+        return ValueWithTimestamp(uint128(sum / validCount), maxTs);
     }
 }
