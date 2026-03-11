@@ -69,6 +69,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     error TimeoutExceedsLimit(uint256 value);
     error OracleExists();
     error InvalidHistoryIndex(uint256 index);
+    error InvalidOracleIndex(uint256 index);
     error InvalidMethodology();
     error InvalidWindowSize(uint256 value);
     error InvalidOracle(address oracleAddress);
@@ -405,7 +406,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      */
     function getRawDataFromOracle(uint256 oracleIndex, string memory key) external view returns (bytes memory) {
         if (oracleIndex >= _numOracles) {
-            revert InvalidHistoryIndex(oracleIndex);
+            revert InvalidOracleIndex(oracleIndex);
         }
 
         IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
