@@ -171,14 +171,19 @@ contract DIAOracleV3MetaTest is Test {
     function testGetValueFailsWithoutEnoughOracles() public {
         vm.startPrank(admin);
         oracleMeta.addOracle(address(oracle1));
+
+        // setThreshold should reject threshold above numOracles
+        vm.expectRevert(abi.encodeWithSelector(
+            DIAOracleV3Meta.InvalidThreshold.selector,
+            2  
+        ));
         oracleMeta.setThreshold(2);
-        oracleMeta.setTimeoutSeconds(100);
+
+        // Valid: set threshold equal to numOracles
+        oracleMeta.setThreshold(1);
+        assertEq(oracleMeta.getThreshold(), 1);
+
         vm.stopPrank();
-
-        oracle1.setValue("BTC", 100, uint128(block.timestamp));
-
-        vm.expectRevert();
-        oracleMeta.getValue("BTC");
     }
 
     function testGetValueWithInsufficientHistory() public {
@@ -278,6 +283,34 @@ contract DIAOracleV3MetaTest is Test {
         vm.stopPrank();
     }
 
+    function testRemoveOracleWithThresholdImbalance() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.addOracle(address(oracle3));
+
+        // Set threshold equal to numOracles
+        oracleMeta.setThreshold(3);
+        oracleMeta.setTimeoutSeconds(1000);
+        oracleMeta.setWindowSize(10);
+
+        // removeOracle should reject removal when threshold > new numOracles
+        vm.expectRevert(abi.encodeWithSelector(
+            DIAOracleV3Meta.InvalidThreshold.selector,
+            3 // threshold (3) > new numOracles (2)
+        ));
+        oracleMeta.removeOracle(address(oracle3));
+
+        // To remove, must first lower threshold
+        oracleMeta.setThreshold(2);
+        oracleMeta.removeOracle(address(oracle3));
+
+        assertEq(oracleMeta.getNumOracles(), 2);
+        assertEq(oracleMeta.getThreshold(), 2);
+
+        vm.stopPrank();
+    }
+
     function testRemoveOracleNotFound() public {
         vm.startPrank(admin);
         oracleMeta.addOracle(address(oracle1));
@@ -306,8 +339,22 @@ contract DIAOracleV3MetaTest is Test {
 
     function testSetThreshold() public {
         vm.startPrank(admin);
-        oracleMeta.setThreshold(5);
-        assertEq(oracleMeta.getThreshold(), 5);
+
+        // Should reject threshold above numOracles (0 oracles)
+        vm.expectRevert(abi.encodeWithSelector(
+            DIAOracleV3Meta.InvalidThreshold.selector,
+            3 // threshold (3) > numOracles (0)
+        ));
+        oracleMeta.setThreshold(3);
+
+        // Add oracles first
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.addOracle(address(oracle3));
+
+        // Now threshold 3 is valid
+        oracleMeta.setThreshold(3);
+        assertEq(oracleMeta.getThreshold(), 3);
         vm.stopPrank();
     }
 

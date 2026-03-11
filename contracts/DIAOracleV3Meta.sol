@@ -142,9 +142,15 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert OracleNotFound();
         }
 
+        uint256 newNumOracles = oracleCount - 1;
+
+        if (_threshold > newNumOracles) {
+            revert InvalidThreshold(_threshold);
+        }
+
         oracles[indexToRemove] = oracles[oracleCount - 1];
         oracles[oracleCount - 1] = address(0);
-        _numOracles = oracleCount - 1;
+        _numOracles = newNumOracles;
         emit OracleRemoved(oracleToRemove);
     }
 
@@ -157,6 +163,12 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (newThreshold == 0) {
             revert InvalidThreshold(newThreshold);
         }
+
+        // Validate that threshold doesn't exceed number of oracles
+        if (newThreshold > _numOracles) {
+            revert InvalidThreshold(newThreshold);
+        }
+
         uint256 oldThreshold = _threshold;
         _threshold = newThreshold;
         emit ThresholdChanged(oldThreshold, newThreshold);
