@@ -69,8 +69,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     error TimestampTooFarInPast(uint128 timestamp, uint256 blockTime);
     error TimestampNotIncreasing(uint128 newTimestamp, uint128 existingTimestamp);
 
-    /// @notice Maximum allowed history size to prevent gas issues (set to 1000)
-    uint256 public constant MAX_ALLOWED_HISTORY_SIZE = 1000;
+ 
 
     /// @notice Maximum timestamp gap in the future (1 hour)
     uint256 public constant MAX_TIMESTAMP_GAP = 1 hours;
