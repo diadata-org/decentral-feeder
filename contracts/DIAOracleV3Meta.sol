@@ -68,7 +68,6 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     error InvalidTimeOut(uint256 value);
     error TimeoutExceedsLimit(uint256 value);
     error OracleExists();
-    error ThresholdNotMet(uint256 validValues, uint256 threshold);
     error InvalidHistoryIndex(uint256 index);
     error InvalidMethodology();
     error InvalidWindowSize(uint256 value);
