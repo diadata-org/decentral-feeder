@@ -692,13 +692,19 @@ contract DIAOracleV3Test is Test {
         uint128 timestamp = 1710000000;
 
         oracle.setValue(key, 100, timestamp);
+         vm.expectRevert(
+            abi.encodeWithSelector(
+                DIAOracleV3.TimestampNotIncreasing.selector,
+                uint128(timestamp),
+                uint128(timestamp)
+            )
+        );
         oracle.setValue(key, 200, timestamp);
-        oracle.setValue(key, 300, timestamp);
-
-        assertEq(oracle.getValueCount(key), 3, "Should have 3 entries with same timestamp");
+ 
+        assertEq(oracle.getValueCount(key), 1, "Should have 1 entry only");
 
         (uint128 latestValue, uint128 latestTimestamp) = oracle.getValue(key);
-        assertEq(latestValue, 300, "Latest value should be last set");
+        assertEq(latestValue, 100, "Latest value should be last set");
         assertEq(latestTimestamp, timestamp, "Timestamp should match");
     }
 

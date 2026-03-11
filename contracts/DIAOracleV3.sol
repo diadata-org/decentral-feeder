@@ -418,7 +418,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
         uint256 existingValue = values[key];
         if (existingValue != 0) {
             uint128 existingTimestamp = uint128(existingValue);
-            if (timestamp < existingTimestamp) {
+            if (timestamp <= existingTimestamp) {
                 revert TimestampNotIncreasing(timestamp, existingTimestamp);
             }
         }
