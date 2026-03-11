@@ -3,6 +3,7 @@ pragma solidity 0.8.34;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "./IDIAOracleV3.sol";
 import "./IPriceMethodology.sol";
 
@@ -394,7 +395,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             }
         }
 
-        return (uint128(sum), count);
+        return (SafeCast.toUint128(sum), count);
     }
 
     /**
@@ -571,7 +572,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             }
         }
 
-        totalVolume = uint128(volumeSum);
+        totalVolume = SafeCast.toUint128(volumeSum);
         return (value, timestamp, totalVolume);
     }
 

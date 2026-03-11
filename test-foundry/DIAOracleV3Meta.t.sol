@@ -685,6 +685,32 @@ contract DIAOracleV3MetaTest is Test {
         oracleMeta.getValueWithVolume("BTC");
     }
 
+    function testGetAggregatedVolumeOverflow() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.setTimeoutSeconds(1000);
+        vm.stopPrank();
+
+        //  volume overflow
+        uint128 maxUint128 = type(uint128).max;
+        bytes memory data = abi.encode("BTC", uint128(50000), uint128(block.timestamp), maxUint128, bytes(""));
+        oracle1.setRawValue(data);
+
+        // overflow in getAggregatedVolume
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.setDecimals(8); // Match meta oracle decimals
+        vm.stopPrank();
+
+        oracle2.setDecimals(8);
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(1), bytes(""));
+        oracle2.setRawValue(data2);
+
+        // getAggregatedVolume should revert with SafeCast overflow
+        vm.expectRevert();
+        oracleMeta.getAggregatedVolume("BTC");
+    }
+
     function testGetValueWithVolumeZeroThreshold() public {
         vm.startPrank(admin);
         oracleMeta.addOracle(address(oracle1));
