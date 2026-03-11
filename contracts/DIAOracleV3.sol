@@ -156,7 +156,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
             revert MismatchedArrayLengths(keys.length, compressedValues.length);
         }
 
-        for (uint128 i = 0; i < keys.length; i++) {
+        for (uint256 i = 0; i < keys.length; i++) {
             string memory currentKey = keys[i];
             uint256 currentCvalue = compressedValues[i];
             uint128 value = (uint128)(currentCvalue >> 128);
