@@ -135,6 +135,8 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
 
         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
+        
+        delete rawData[key];   
 
         // Add to historical storage (volume = 0 for backward compatibility)
         _addToHistory(key, value, timestamp, 0);
@@ -165,6 +167,8 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
 
             // Update the current value (backward compatibility with V2)
             values[currentKey] = currentCvalue;
+
+            delete rawData[currentKey];   
 
             // Add to historical storage (volume = 0 for backward compatibility)
             _addToHistory(currentKey, value, timestamp, 0);

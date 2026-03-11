@@ -1202,27 +1202,41 @@ contract DIAOracleV3Test is Test {
         // Set value
         oracle.setValue(key, 100, 1710000001);
         assertEq(oracle.getValueCount(key), 1, "Count should be 1");
+        assertEq(oracle.getRawData(key).length, 0, "Raw data should be empty after setValue");
 
         // Set raw value with volume
         bytes memory data = abi.encode(key, uint128(200), uint128(1710000002), uint128(1000), bytes("test"));
         oracle.setRawValue(data);
         assertEq(oracle.getValueCount(key), 2, "Count should be 2");
+        assertEq(keccak256(oracle.getRawData(key)), keccak256(bytes("test")), "Raw data should be set");
 
-        // Set multiple values with different key
+        // Update via setMultipleValues on same key (should clear rawData)
         string[] memory keys = new string[](1);
-        keys[0] = "OTHER/KEY";
+        keys[0] = key;
         uint256[] memory values = new uint256[](1);
         values[0] = (uint256(300) << 128) + 1710000003;
         oracle.setMultipleValues(keys, values);
 
-        // Original key should still have 2 values
-        assertEq(oracle.getValueCount(key), 2, "Original key count should be 2");
+        // Should have 3 values now
+        assertEq(oracle.getValueCount(key), 3, "Count should be 3");
 
-        // Latest value should be correct
+        // Latest value should be from setMultipleValues
         (uint128 value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
-        assertEq(value, 200, "Latest value should be from setRawValue");
-        assertEq(timestamp, 1710000002, "Latest timestamp should be from setRawValue");
-        assertEq(volume, 1000, "Latest volume should be from setRawValue");
+        assertEq(value, 300, "Latest value should be from setMultipleValues");
+        assertEq(timestamp, 1710000003, "Latest timestamp should be from setMultipleValues");
+        assertEq(volume, 0, "Volume should be 0 for setMultipleValues");
+
+        // Raw data should be cleared after setMultipleValues
+        assertEq(oracle.getRawData(key).length, 0, "Raw data should be cleared after setMultipleValues");
+
+        string[] memory keys2 = new string[](1);
+        keys2[0] = "OTHER/KEY";
+        uint256[] memory values2 = new uint256[](1);
+        values2[0] = (uint256(400) << 128) + 1710000004;
+        oracle.setMultipleValues(keys2, values2);
+
+        assertEq(oracle.getValueCount(key), 3, "Original key count should be 3");
+        assertEq(oracle.getRawData(key).length, 0, "Original key raw data should still be empty");
     }
 
  
@@ -1455,4 +1469,6 @@ contract DIAOracleV3Test is Test {
         oracle.setDecimals(0);
         assertEq(oracle.getDecimals(), 0, "Should handle zero decimals");
     }
+
+ 
 }
