@@ -74,8 +74,8 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
         uint256 windowSize
     ) external view override returns (uint128 value, uint128 timestamp) {
         uint256 numOracles = oracles.length;
-        if (numOracles == 0) {
-            return (0, uint128(block.timestamp));
+        if (numOracles < threshold) {
+            revert ThresholdNotMet(numOracles, threshold);
         }
 
         uint128[] memory vwaps = new uint128[](numOracles);

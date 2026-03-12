@@ -307,16 +307,20 @@ contract VolumeWeightedAveragePriceMethodologyTest is Test {
 
         address[] memory oracles = new address[](0);
 
-        (uint128 value, uint128 timestamp) = methodology.calculateValue(
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                VolumeWeightedAveragePriceMethodology.ThresholdNotMet.selector,
+                0,
+                1
+            )
+        );
+        methodology.calculateValue(
             key,
             oracles,
             3600,
             1,
             10
         );
-
-        assertEq(value, 0, "Should return 0 for empty oracle array");
-        assertEq(timestamp, 1710000000, "Should return block timestamp");
     }
 
     function testVWAPReturnsMaxTimestamp() public {
