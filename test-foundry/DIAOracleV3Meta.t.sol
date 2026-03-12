@@ -569,7 +569,7 @@ contract DIAOracleV3MetaTest is Test {
         oracleMeta.addOracle(address(oracle1));
         vm.stopPrank();
 
-        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidHistoryIndex.selector, 5));
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidOracleIndex.selector, 5));
         oracleMeta.getRawDataFromOracle(5, "BTC");
     }
 
@@ -615,7 +615,7 @@ contract DIAOracleV3MetaTest is Test {
         oracleMeta.addOracle(address(oracle1));
         vm.stopPrank();
 
-        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidHistoryIndex.selector, 5));
+        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidOracleIndex.selector, 5));
         oracleMeta.getValueWithVolumeFromOracle(5, "BTC", 0);
     }
 
@@ -818,6 +818,33 @@ contract DIAOracleV3MetaTest is Test {
 
         vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.InvalidTimeOut.selector, 0));
         oracleMeta.getAggregatedVolume("BTC");
+    }
+
+    function testGetAggregatedVolumeSkipsZeroVolume() public {
+        vm.startPrank(admin);
+        oracleMeta.addOracle(address(oracle1));
+        oracleMeta.addOracle(address(oracle2));
+        oracleMeta.addOracle(address(oracle3));
+        oracleMeta.setTimeoutSeconds(1000);
+        vm.stopPrank();
+
+        // Oracle1: value with volume 1000000
+        bytes memory data1 = abi.encode("BTC", uint128(50000), uint128(block.timestamp), uint128(1000000), bytes(""));
+        oracle1.setRawValue(data1);
+
+        // Oracle2: value with ZERO volume (should be skipped)
+        bytes memory data2 = abi.encode("BTC", uint128(51000), uint128(block.timestamp), uint128(0), bytes(""));
+        oracle2.setRawValue(data2);
+
+        // Oracle3: value with volume 2000000
+        bytes memory data3 = abi.encode("BTC", uint128(52000), uint128(block.timestamp), uint128(2000000), bytes(""));
+        oracle3.setRawValue(data3);
+
+        (uint128 totalVolume, uint256 validCount) = oracleMeta.getAggregatedVolume("BTC");
+
+        // Should only count oracle1 and oracle3 (skip oracle2 with zero volume)
+        assertEq(totalVolume, 3000000, "Total volume should skip zero-volume oracle");
+        assertEq(validCount, 2, "Should have 2 valid oracles (zero-volume skipped)");
     }
 
     // =================================================================
@@ -1034,7 +1061,7 @@ contract DIAOracleV3MetaTest is Test {
         oracle1.setValue("BTC", 50000, uint128(block.timestamp));
 
         // Should fail because no oracles match
-        vm.expectRevert(abi.encodeWithSelector(DIAOracleV3Meta.ThresholdNotMet.selector, 0, 1));
+        vm.expectRevert(abi.encodeWithSelector(AveragePriceMethodology.ThresholdNotMet.selector, 0, 1));
         oracleMeta.getValue("BTC");
     }
 

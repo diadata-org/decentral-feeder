@@ -388,6 +388,10 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             (uint128 _value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
             _value;
 
+            if (volume == 0) {
+                continue;
+            }
+
             // Check if value is not expired
             if ((timestamp + _timeoutSeconds) >= block.timestamp) {
                 sum += volume;
@@ -444,7 +448,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         uint256 historyIndex
     ) external view returns (uint128 value, uint128 timestamp, uint128 volume) {
         if (oracleIndex >= _numOracles) {
-            revert InvalidHistoryIndex(oracleIndex);
+            revert InvalidOracleIndex(oracleIndex);
         }
 
         IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
