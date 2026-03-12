@@ -98,7 +98,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (_priceMethodology == address(0)) {
             revert InvalidMethodology();
         }
-        decimals = 8; // Default to 8 decimal places (standard for many tokens)
+        decimals = 18; // Default to 18 decimal places (standard for many tokens)
         priceMethodology = IPriceMethodology(_priceMethodology);
     }
 

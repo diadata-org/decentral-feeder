@@ -27,7 +27,7 @@ contract DIAOracleV3Test is Test {
         oracle = DIAOracleV3(address(proxy));
 
         // Initialize the contract (msg.sender will be the test contract)
-        oracle.initialize();
+        oracle.initialize(18); // Default to 18 decimals
 
         // Warp to a timestamp that allows testing with 1710000000 timestamps
         vm.warp(1710000000);
@@ -1035,7 +1035,7 @@ contract DIAOracleV3Test is Test {
 
     function testInitializeCannotBeCalledTwice() public {
         vm.expectRevert(Initializable.InvalidInitialization.selector);
-        oracle.initialize();
+        oracle.initialize(18);
     }
 
     function testConstructorIsDisabled() public {
@@ -1045,7 +1045,7 @@ contract DIAOracleV3Test is Test {
 
         // Try to call initialize directly on implementation (should fail due to _disableInitializers)
         vm.expectRevert(Initializable.InvalidInitialization.selector);
-        impl.initialize();
+        impl.initialize(18);
     }
 
     /**
@@ -1400,75 +1400,10 @@ contract DIAOracleV3Test is Test {
     }
 
     // Test decimals functionality
-    function testSetDecimals() public {
-        uint8 decimalPrecision = 8;
-
-        oracle.setDecimals(decimalPrecision);
-
-        assertEq(oracle.getDecimals(), decimalPrecision, "Decimals should match");
+    function testDecimalsSetInInitialize() public {
+        // Decimals should be set to 18 from initialize in setUp
+        assertEq(oracle.getDecimals(), 18, "Decimals should be 18 as set in initialize");
     }
 
-    function testSetDecimalsMultipleTimes() public {
-        oracle.setDecimals(8);
-        assertEq(oracle.getDecimals(), 8, "First decimals should be 8");
-
-        oracle.setDecimals(18);
-        assertEq(oracle.getDecimals(), 18, "Decimals should be updated to 18");
-
-        oracle.setDecimals(6);
-        assertEq(oracle.getDecimals(), 6, "Decimals should be updated to 6");
-    }
-
-    function testDecimalsEvent() public {
-        vm.expectEmit(true, true, true, true);
-        emit DIAOracleV3.DecimalsUpdate(8);
-
-        oracle.setDecimals(8);
-    }
-
-    function testDecimalsDefaultZero() public {
-        // Decimals should default to 8
-        assertEq(oracle.getDecimals(), 8, "Default decimals should be 8");
-    }
-
-    function testSetDecimalsOnlyUpdater() public {
-        // Try to set decimals from non-updater address
-        vm.startPrank(address(0x123));
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
-                address(0x123),
-                oracle.UPDATER_ROLE()
-            )
-        );
-        oracle.setDecimals(8);
-        vm.stopPrank();
-    }
-
-    function testDecimalsWithValueStorage() public {
-        string memory key = "BTC/USD";
-        uint128 price = 50000 * 10**8; // 8 decimals
-        uint128 timestamp = 1710000000;
-
-        oracle.setDecimals(8);
-        oracle.setValue(key, price, timestamp);
-
-        (uint128 storedPrice,) = oracle.getValue(key);
-        assertEq(storedPrice, price, "Price should be stored correctly");
-        assertEq(oracle.getDecimals(), 8, "Decimals should still be 8");
-    }
-
-    function testDecimalsEdgeCaseMax() public {
-        uint8 maxDecimals = 255; // uint8 max value
-
-        oracle.setDecimals(maxDecimals);
-        assertEq(oracle.getDecimals(), maxDecimals, "Should handle max decimals");
-    }
-
-    function testDecimalsEdgeCaseZero() public {
-        oracle.setDecimals(0);
-        assertEq(oracle.getDecimals(), 0, "Should handle zero decimals");
-    }
-
- 
 }
+

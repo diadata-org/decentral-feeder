@@ -22,19 +22,19 @@ contract VolumeWeightedAveragePriceMethodologyTest is Test {
         DIAOracleV3 impl1 = new DIAOracleV3();
         ERC1967Proxy proxy1 = new ERC1967Proxy(address(impl1), "");
         oracle1 = DIAOracleV3(address(proxy1));
-        oracle1.initialize();
+        oracle1.initialize(18);
 
         // Deploy oracle 2
         DIAOracleV3 impl2 = new DIAOracleV3();
         ERC1967Proxy proxy2 = new ERC1967Proxy(address(impl2), "");
         oracle2 = DIAOracleV3(address(proxy2));
-        oracle2.initialize();
+        oracle2.initialize(18);
 
         // Deploy oracle 3
         DIAOracleV3 impl3 = new DIAOracleV3();
         ERC1967Proxy proxy3 = new ERC1967Proxy(address(impl3), "");
         oracle3 = DIAOracleV3(address(proxy3));
-        oracle3.initialize();
+        oracle3.initialize(18);
 
         // Set block timestamp
         vm.warp(1710000000);

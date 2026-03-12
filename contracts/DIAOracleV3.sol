@@ -61,7 +61,6 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
     event OracleUpdateRaw(string key, uint128 value, uint128 timestamp, uint128 volume, bytes data);
     event UpdaterAddressChange(address newUpdater);
-    event DecimalsUpdate(uint8 decimals);
 
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
@@ -100,12 +99,13 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     }
 
     /**
-     * @notice Initializes the contract with roles.
+     * @notice Initializes the contract with roles and decimal precision.
      * @dev Replaces constructor for upgradeable contracts. Uses reinitializer(1)
      *      to allow future upgrades to add new initialization logic with version 2, 3, etc.
+     * @param decimalPrecision The number of decimal places for all asset values.
      */
-    function initialize() public reinitializer(1) {
-        decimals = 8; 
+    function initialize(uint8 decimalPrecision) public reinitializer(1) {
+        decimals = decimalPrecision;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
@@ -322,16 +322,6 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
      */
     function getValueCount(string memory key) external view returns (uint256) {
         return _valueCount[key];
-    }
-
-    /**
-     * @notice Sets the global decimal precision for all asset values.
-     * @dev Only callable by addresses with UPDATER_ROLE.
-     * @param decimalPrecision The number of decimal places for all asset values.
-     */
-    function setDecimals(uint8 decimalPrecision) public onlyRole(UPDATER_ROLE) {
-        decimals = decimalPrecision;
-        emit DecimalsUpdate(decimalPrecision);
     }
 
     /**
