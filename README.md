@@ -191,6 +191,51 @@ If any issues arise during deployment, follow these steps:
   ```
 - Apply fixes and redeploy.
 
+## Contract Verification
+
+When a feeder auto-deploys a new DIAOracleV3 contract (i.e. `DEPLOYED_CONTRACT` is empty on startup), two contracts are deployed:
+
+1. **Implementation** — `DIAOracleV3` logic contract
+2. **Proxy** — `ERC1967Proxy` pointing to the implementation
+
+Both should be verified on the block explorer after deployment. Run the following from the repo root (requires [Foundry](https://getfoundry.sh) installed):
+
+```bash
+# Verify implementation
+forge verify-contract \
+  --rpc-url <RPC_URL> \
+  --verifier blockscout \
+  --verifier-url '<EXPLORER_URL>/api/' \
+  <IMPLEMENTATION_ADDRESS> \
+  contracts/DIAOracleV3.sol:DIAOracleV3
+
+# Verify proxy
+forge verify-contract \
+  --rpc-url <RPC_URL> \
+  --verifier blockscout \
+  --verifier-url '<EXPLORER_URL>/api/' \
+  <PROXY_ADDRESS> \
+  lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol:ERC1967Proxy \
+  --constructor-args $(cast abi-encode "constructor(address,bytes)" \
+    <IMPLEMENTATION_ADDRESS> \
+    0x8129fc1c)
+```
+
+**Testnet values:**
+- `RPC_URL`: `https://testnet-rpc.diadata.org`
+- `EXPLORER_URL`: `https://testnet-explorer.diadata.org`
+
+**Mainnet values:**
+- `RPC_URL`: `https://rpc.diadata.org`
+- `EXPLORER_URL`: `https://explorer.diadata.org`
+
+> The implementation and proxy addresses are logged by the feeder on first deployment:
+> ```
+> Implementation pending deploy: 0x...
+> Proxy pending deploy: 0x...
+> Contract deployed and initialized at proxy: 0x...
+> ```
+
 ## Documentation
 
 For the full node deployment instructions, you can visit our [Wiki](https://github.com/diadata-org/decentral-feeder/wiki) page.
