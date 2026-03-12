@@ -329,8 +329,8 @@ contract MedianPriceMethodologyTest is Test {
             10
         );
 
-        // Final median of [175, 250] = (175 + 250) / 2 = 212
-        assertEq(value, 212, "Complex even count median should be correct");
+        // Final median of [175, 250] = (175 + 250 + 1) / 2 = 213
+        assertEq(value, 213, "Complex even count median should be correct");
     }
 
     function testMedianWithMixedExpiredAndValidValues() public {

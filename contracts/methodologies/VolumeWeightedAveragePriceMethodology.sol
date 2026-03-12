@@ -104,7 +104,7 @@ contract VolumeWeightedAveragePriceMethodology is IPriceMethodology {
         uint128 medianValue;
         if (validValues % 2 == 0) {
             uint256 lowerIndex = medianIndex - 1;
-            medianValue = uint128((uint256(vwaps[lowerIndex]) + uint256(vwaps[medianIndex])) / 2);
+            medianValue = uint128((uint256(vwaps[lowerIndex]) + uint256(vwaps[medianIndex]) + 1) / 2);
         } else {
             medianValue = vwaps[medianIndex];
         }

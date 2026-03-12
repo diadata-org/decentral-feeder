@@ -137,7 +137,7 @@ contract MedianPriceMethodology is IPriceMethodology {
             // Even: average of two middle values, use max timestamp of the two
             uint256 lowerIndex = finalMedianIndex - 1;
             finalMedian = uint128(
-                (uint256(oracleResults[lowerIndex].value) + uint256(oracleResults[finalMedianIndex].value)) / 2
+                (uint256(oracleResults[lowerIndex].value) + uint256(oracleResults[finalMedianIndex].value) + 1) / 2
             );
             medianTimestamp = oracleResults[lowerIndex].timestamp > oracleResults[finalMedianIndex].timestamp
                 ? oracleResults[lowerIndex].timestamp

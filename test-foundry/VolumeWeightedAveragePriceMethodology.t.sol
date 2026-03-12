@@ -383,8 +383,8 @@ contract VolumeWeightedAveragePriceMethodologyTest is Test {
             10
         );
 
-        // Median of [166, 277] = (166 + 277) / 2 = 221
-        assertEq(value, 221, "Complex VWAP calculation should be correct");
+        // Median of [166, 277] = (166 + 277 + 1) / 2 = 222
+        assertEq(value, 222, "Complex VWAP calculation should be correct");
     }
 
     function testVWAPWithMixedExpiredAndValidValues() public {
