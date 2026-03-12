@@ -3,7 +3,7 @@ module github.com/diadata-org/decentral-feeder/cmd/scrapers
 go 1.24.0
 
 require (
-	github.com/diadata-org/lumina-library v1.0.3
+	github.com/diadata-org/lumina-library v1.0.4-0.20260312165037-96bd54011525
 	github.com/sirupsen/logrus v1.9.3
 )
 
@@ -58,5 +58,3 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-replace github.com/diadata-org/lumina-library => /Users/khawla/github/lumina-library
