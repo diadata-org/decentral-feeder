@@ -185,7 +185,7 @@ contract MedianPriceMethodology is IPriceMethodology {
             return ValueWithTimestamp(0, 0);
         }
 
-        // Sort by value using bubble sort
+        // Sort by value using selection sort
         for (uint256 i = 0; i < validCount - 1; i++) {
             for (uint256 j = i + 1; j < validCount; j++) {
                 if (validEntries[i].value > validEntries[j].value) {
