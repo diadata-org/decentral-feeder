@@ -74,19 +74,20 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     uint256 public constant MAX_TIMESTAMP_GAP = 1 hours;
 
     /// @notice Reserved storage space for future upgrades (100 slots)
-    /// @dev Storage slots from forge build --extra-output storageLayout:
+    /// @dev Storage slots from forge inspect DIAOracleV3 storageLayout:
     ///
     /// Slot | Label              | Type
     /// ----|--------------------|-------------------------------------------------
-    ///   0  | MAX_HISTORY_SIZE     | uint256
-    ///   1  | values             | mapping(string => uint256)
-    ///   2  | _valueHistory      | mapping(string => array(ValueEntry)_dyn_storage)
-    ///   3  | _writeIndex        | mapping(string => uint256)
-    ///   4  | _valueCount        | mapping(string => uint256)
-    ///   5  | rawData            | mapping(string => bytes)
-    ///   6+ | __gap             | 100 slots reserved for future upgrades
+    ///   0  | values             | mapping(string => uint256)
+    ///   1  | _valueHistory      | mapping(string => struct IDIAOracleV3.ValueEntry[])
+    ///   2  | _writeIndex        | mapping(string => uint256)
+    ///   3  | _valueCount        | mapping(string => uint256)
+    ///   4  | rawData            | mapping(string => bytes)
+    ///   5  | decimals           | uint8
+    ///   6+ | __gap              | uint256[100] (100 slots reserved for future upgrades)
     ///
-    /// Note: Parent contract storage (before slot 0):
+    /// Note: MAX_HISTORY_SIZE is immutable (stored in bytecode, not storage)
+    /// Parent contract storage (before slot 0):
     /// - Initializable: 2 slots (_initialized, _initializing)
     /// - AccessControlUpgradeable: ~4 slots (_roles mapping)
     /// Total contract uses slots 0-5 + parent slots + 100 gap slots
