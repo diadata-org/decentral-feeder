@@ -258,24 +258,22 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidWindowSize(_windowSize);
         }
 
-        // Count oracles with matching decimals
+         address[] memory oracleAddresses = new address[](_numOracles);
         uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             if (oracle.getDecimals() == decimals) {
+                oracleAddresses[matchingCount] = oracles[i];
                 matchingCount++;
             }
         }
 
-        // Collect oracle addresses with matching decimals
-        address[] memory oracleAddresses = new address[](matchingCount);
-        uint256 idx = 0;
-        for (uint256 i = 0; i < _numOracles; i++) {
-            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
-            if (oracle.getDecimals() == decimals) {
-                oracleAddresses[idx] = oracles[i];
-                idx++;
+         if (matchingCount < _numOracles) {
+            address[] memory trimmedAddresses = new address[](matchingCount);
+            for (uint256 i = 0; i < matchingCount; i++) {
+                trimmedAddresses[i] = oracleAddresses[i];
             }
+            oracleAddresses = trimmedAddresses;
         }
 
         (uint128 value, uint128 timestamp) = priceMethodology.calculateValue(
@@ -321,24 +319,22 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidMethodology();
         }
 
-        // Count oracles with matching decimals
+         address[] memory oracleAddresses = new address[](_numOracles);
         uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             if (oracle.getDecimals() == decimals) {
+                oracleAddresses[matchingCount] = oracles[i];
                 matchingCount++;
             }
         }
 
-        // Collect oracle addresses with matching decimals
-        address[] memory oracleAddresses = new address[](matchingCount);
-        uint256 idx = 0;
-        for (uint256 i = 0; i < _numOracles; i++) {
-            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
-            if (oracle.getDecimals() == decimals) {
-                oracleAddresses[idx] = oracles[i];
-                idx++;
+         if (matchingCount < _numOracles) {
+            address[] memory trimmedAddresses = new address[](matchingCount);
+            for (uint256 i = 0; i < matchingCount; i++) {
+                trimmedAddresses[i] = oracleAddresses[i];
             }
+            oracleAddresses = trimmedAddresses;
         }
 
         IPriceMethodology methodologyContract = IPriceMethodology(customMethodology);
@@ -528,24 +524,22 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidWindowSize(_windowSize);
         }
 
-        // Count oracles with matching decimals
+         address[] memory oracleAddresses = new address[](_numOracles);
         uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             if (oracle.getDecimals() == decimals) {
+                oracleAddresses[matchingCount] = oracles[i];
                 matchingCount++;
             }
         }
 
-        // Collect oracle addresses with matching decimals
-        address[] memory oracleAddresses = new address[](matchingCount);
-        uint256 idx = 0;
-        for (uint256 i = 0; i < _numOracles; i++) {
-            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
-            if (oracle.getDecimals() == decimals) {
-                oracleAddresses[idx] = oracles[i];
-                idx++;
+         if (matchingCount < _numOracles) {
+            address[] memory trimmedAddresses = new address[](matchingCount);
+            for (uint256 i = 0; i < matchingCount; i++) {
+                trimmedAddresses[i] = oracleAddresses[i];
             }
+            oracleAddresses = trimmedAddresses;
         }
 
         // Get aggregated value using methodology
