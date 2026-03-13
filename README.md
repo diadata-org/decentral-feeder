@@ -80,16 +80,24 @@ This repository hosts a self-contained containerized application for running a d
 
 ### Retrieve Deployed Contract
 
-- Once the container is deployed with `DEPLOYED_CONTRACT` env variable empty the logs will display the deployed contract address in the following format:
+- Once the container is deployed with `DEPLOYED_CONTRACT` env variable empty, two contracts are deployed automatically: an implementation contract and a proxy. The logs will show:
+
   ```plaintext
-  │ time="2024-11-25T11:30:08Z" level=info msg="Contract pending deploy: 0xxxxxxxxxxxxxxxxxxxxxxxxxx."
+  level=info msg="Implementation pending deploy: 0x<implementation_address>."
+  level=info msg="Transaction waiting to be mined: 0x<tx_hash>."
   ```
-- Copy the displayed contract address (e.g., `0xxxxxxxxxxxxxxxxxxxxxxxxxx`) and stop the container with `docker rm -f <container_name>`.
 
-- Update your `.env` file with `DEPLOYED_CONTRACT` variable mentioned above. Redeployed the container with `docker-compose up -d`
+- Wait approximately **3 minutes** for the implementation transaction to mine. The proxy deployment will then begin automatically:
 
   ```plaintext
-  DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx
+  level=info msg="Proxy pending deploy: 0x<proxy_address>."
+  level=info msg="Transaction waiting to be mined: 0x<tx_hash>."
+  ```
+
+- Copy the **proxy address** from the `Proxy pending deploy` log line and update your `.env` file with the `DEPLOYED_CONTRACT` variable:
+
+  ```plaintext
+  DEPLOYED_CONTRACT=0x<proxy_address>
   ```
 
 - Check if the container is running correctly by viewing the logs. Run the following command:
@@ -193,32 +201,30 @@ If any issues arise during deployment, follow these steps:
 
 ## Contract Verification
 
-When a feeder auto-deploys a new DIAOracleV3 contract (i.e. `DEPLOYED_CONTRACT` is empty on startup), two contracts are deployed:
+When a feeder auto-deploys a new DIAOracleV3 contract (i.e. `DEPLOYED_CONTRACT` is empty on startup), the feeder logs the deployed addresses:
 
-1. **Implementation** — `DIAOracleV3` logic contract
-2. **Proxy** — `ERC1967Proxy` pointing to the implementation
+```
+level=info msg="Implementation pending deploy: 0x<IMPLEMENTATION_ADDRESS>."
+level=info msg="Proxy pending deploy: 0x<PROXY_ADDRESS>."
+```
 
-Both should be verified on the block explorer after deployment. Run the following from the repo root (requires [Foundry](https://getfoundry.sh) installed):
+Copy `PROXY_ADDRESS` and set it as `DEPLOYED_CONTRACT` in your `.env` so the feeder uses it on restart.
+
+Only the **implementation** needs to be verified on the block explorer. The proxy is auto-detected by the explorer as an EIP-1967 proxy and will automatically expose the implementation's read/write methods once the implementation is verified.
+
+To verify the implementation, run the following from the repo root (requires [Foundry](https://getfoundry.sh) installed):
 
 ```bash
-# Verify implementation
-forge verify-contract \
+# 1. Build the V3 contracts
+FOUNDRY_PROFILE=v3 forge build contracts/DIAOracleV3/DIAOracleV3.sol
+
+# 2. Verify the implementation
+FOUNDRY_PROFILE=v3 forge verify-contract \
   --rpc-url <RPC_URL> \
   --verifier blockscout \
   --verifier-url '<EXPLORER_URL>/api/' \
   <IMPLEMENTATION_ADDRESS> \
-  contracts/DIAOracleV3.sol:DIAOracleV3
-
-# Verify proxy
-forge verify-contract \
-  --rpc-url <RPC_URL> \
-  --verifier blockscout \
-  --verifier-url '<EXPLORER_URL>/api/' \
-  <PROXY_ADDRESS> \
-  lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol:ERC1967Proxy \
-  --constructor-args $(cast abi-encode "constructor(address,bytes)" \
-    <IMPLEMENTATION_ADDRESS> \
-    0x8129fc1c)
+  contracts/DIAOracleV3/DIAOracleV3.sol:DIAOracleV3
 ```
 
 **Testnet values:**
@@ -228,13 +234,6 @@ forge verify-contract \
 **Mainnet values:**
 - `RPC_URL`: `https://rpc.diadata.org`
 - `EXPLORER_URL`: `https://explorer.diadata.org`
-
-> The implementation and proxy addresses are logged by the feeder on first deployment:
-> ```
-> Implementation pending deploy: 0x...
-> Proxy pending deploy: 0x...
-> Contract deployed and initialized at proxy: 0x...
-> ```
 
 ## Documentation
 
