@@ -67,12 +67,6 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "FLOKI-WETH",
-            "Address": "0xca7c2771d248dcbe09eabe0ce57a62e18da178c0",
-            "Order": "0",
-            "WatchDogDelay": 600
-        },
-        {
             "ForeignName": "ANDY-WETH",
             "Address": "0xa1bf0e900fb272089c9fd299ea14bfccb1d1c2c0",
             "Order": "0",

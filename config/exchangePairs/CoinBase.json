@@ -157,6 +157,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "FLOKI-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "FTM-USDT",
             "WatchDogDelay": 300
         },
@@ -338,6 +342,10 @@
         },
         {
             "Pair": "TRX-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TURBO-USD",
             "WatchDogDelay": 300
         },
         {
