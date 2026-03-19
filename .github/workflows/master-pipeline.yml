@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'tools/**'
+      - '**.md'
+      - '.gitignore'
   workflow_dispatch:  # This allows manual triggering
 
 permissions:
@@ -32,34 +36,6 @@ jobs:
         run: |
           git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
 
-      # Install IBM Cloud CLI and Container Registry CLI
-      - name: Install IBM Cloud CLI
-        run: |
-          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-          ibmcloud plugin install container-registry -f
-
-      # Log in to IBM Cloud
-      - name: Log in to IBM Cloud
-        env:
-          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
-        run: |
-          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
-          ibmcloud target -r us-south
-          ibmcloud target -g Default
-
-      # Build and Tag the Docker images for simulation feeders with the commit hash
-      - name: Build and Tag Docker images for simulation feeders
-        run: |
-          docker build -f build/Dockerfile-luminaScraperFeeder -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }} .
-          docker build -f build/Dockerfile-luminaSimulationFeeder -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }} .
-
-      # Push both Docker images to IBM Cloud Container Registry
-      - name: Push Docker images for simulation and scraper feeders
-        run: |
-          ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:commit-hash-${{ env.COMMIT_HASH }}
-          docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:commit-hash-${{ env.COMMIT_HASH }}
-
       # Configure AWS credentials and push to ECR
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -72,18 +48,26 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Tag and push images to AWS ECR
+      # Build and Tag Docker images for AWS ECR
+      - name: Build and Tag Docker images
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: commit-hash-${{ env.COMMIT_HASH }}
         run: |
-          # Tag and push scraper image to ECR
-          docker tag us.icr.io/dia-registry/oracles/diadecentraloracleservice:${IMAGE_TAG} \
-            ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
-          docker push ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
+          docker build -f build/Dockerfile-luminaScraperFeeder -t ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG} .
+          docker build -f build/Dockerfile-luminaSimulationFeeder -t ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG} .
 
-          echo "✅ Pushed scraper image to AWS ECR:"
+      - name: Push images to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: commit-hash-${{ env.COMMIT_HASH }}
+        run: |
+          docker push ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}
+
+          echo "Pushed images to AWS ECR:"
           echo "  ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}"
+          echo "  ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}"
 
       # Update AWS mainnet feeder image tags in lumina-infra
       - name: Update AWS mainnet feeder values and push to lumina-infra
@@ -114,9 +98,9 @@ jobs:
             git add helmcharts/decentral-feeders-aws/003-scraper-mainnet-aws/values.yaml
             git commit -m "Deploy AWS mainnet feeder: commit-hash-${{ env.COMMIT_HASH }}"
             git push https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra.git HEAD:master
-            echo "✅ Pushed updates to lumina-infra. ArgoCD will sync AWS mainnet feeder automatically."
+            echo "Pushed updates to lumina-infra. ArgoCD will sync AWS mainnet feeder automatically."
           else
-            echo "ℹ️  No changes to commit"
+            echo "No changes to commit"
           fi
 
           cd ..
@@ -127,56 +111,6 @@ jobs:
           curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
-
-      - name: IBM Cluster kubectl config 
-        env:
-          TOKEN: ${{ secrets.K8S_SERVICE_ACCOUNT_TOKEN_PROD }}
-          CLUSTER_NAME: ${{ secrets.K8s_CLUSTER_NAME_IBM }}
-          CONTEXT: ${{ secrets.K8s_CONTEXT_IBM }}
-          API_SERVER:  ${{ secrets.K8S_API_SERVER_IBM }}
-          KUBE_CA_CERT_BASE64: ${{ secrets.KUBE_CA_CERT_BASE64_IBM }}
-          SERVICE_ACCOUNT: ${{ secrets.K8S_SA }}
-        run: |
-          TOKEN=$(echo "$TOKEN" | tr -d '\n')
-          echo "$KUBE_CA_CERT_BASE64" | base64 --decode > /tmp/ca.pem
-          kubectl config set-cluster "$CLUSTER_NAME" \
-            --server="$API_SERVER" \
-            --certificate-authority=/tmp/ca.pem
-          kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
-          kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT 
-          kubectl config use-context $CONTEXT
-
-      # IBM Mainnet Scrapers
-      - name: Helm upgrade/install scraper mainnet feeders to IBM Cluster
-        run: |
-          echo "Deploying scraper mainnet node 003"
-          cd lumina-infra/helmcharts/decentral-feeders/003-scraper-mainnet-ibm
-          helm upgrade --install -n lumina-mainnet \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            003-scraper-mainnet .
-          cd -
-
-      # # IBM Testnet Scraper #### MOVE TO ANOTHER CLUSTER
-      # - name: Helm upgrade/install scraper testnet feeder to IBM Cluster
-      #   run: |
-      #     echo "Deploying scraper testnet node 004"
-      #     cd lumina-infra/helmcharts/decentral-feeders/004-scraper-testnet-ibm
-      #     helm upgrade --install -n dia-lumina --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" 004-scraper-testnet .
-      #     cd -
-
-      #IBM Testnet Simulation -- 102, 103 active
-      - name: Helm upgrade/install simulation feeders to IBM Cluster
-        run: |
-          for i in 102 103; do 
-            echo "Deploying simulation feeder $i"
-            cd lumina-infra/helmcharts/decentral-feeders/${i}-simulation-testnet-ibm
-            helm upgrade --install -n dia-lumina \
-              --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-              $i-simulation-testnet .
-            cd -
-          done
-          # Clean up CA certificate immediately
-          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       - name: Civo Cluster kubectl config
         env:
@@ -195,8 +129,7 @@ jobs:
           kubectl config set-credentials $SERVICE_ACCOUNT --token="$TOKEN"
           kubectl config set-context $CONTEXT --cluster="$CLUSTER_NAME" --user=$SERVICE_ACCOUNT
           kubectl config use-context $CONTEXT
-  
-  
+
       # Civo Testnet Scraper
       - name: Helm upgrade/install scraper feeders to Civo Cluster
         run: |
@@ -221,24 +154,13 @@ jobs:
             002-scraper-mainnet .
           cd -
 
-      # # Civo Testnet Simulation -- Currently disabled
-      # - name: Helm upgrade/install simulation feeder to Civo Cluster
-      #   run: |
-      #     echo "Deploying simulation feeder 105"
-      #     cd lumina-infra/helmcharts/decentral-feeders/105-simulation-testnet-civo
-      #     helm upgrade --install -n dia-lumina \
-      #       --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-      #       105-simulation-testnet .
-      #     cd -
-
-      #     # Clean up CA certificate immediately
-      #     if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
+          # Clean up CA certificate
+          if [ -f /tmp/ca.pem ]; then shred -u /tmp/ca.pem; fi
 
       # Cleanup the cloned repository
-      - name: Cleanup cloned repository and logout from IBM
+      - name: Cleanup cloned repository
         run: |
           rm -rf lumina-infra
           if [ -f /tmp/ca.pem ]; then
             shred -u /tmp/ca.pem
           fi
-          ibmcloud logout
