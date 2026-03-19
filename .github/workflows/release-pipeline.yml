@@ -24,33 +24,36 @@ jobs:
           RELEASE_TAG=${GITHUB_REF#refs/tags/}
           echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
 
-      # Install IBM Cloud CLI and Container Registry CLI
-      - name: Install IBM Cloud CLI
-        run: |
-          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-          ibmcloud plugin install container-registry -f
+      # Configure AWS credentials and push to ECR
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
 
-      # Log in to IBM Cloud
-      - name: Log in to IBM Cloud
-        env:
-          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
-        run: |
-          ibmcloud login --apikey $IBM_CLOUD_API_KEY --no-region
-          ibmcloud target -r us-south
-          ibmcloud target -g Default
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      # Build and Tag Docker images for IBM Cloud Registry
+      # Build and Tag Docker images for AWS ECR
       - name: Build and Tag Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build -f build/Dockerfile-luminaScraperFeeder -t us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.RELEASE_TAG }} .
-          docker build -f build/Dockerfile-luminaSimulationFeeder -t us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ env.RELEASE_TAG }} .
+          docker build -f build/Dockerfile-luminaScraperFeeder -t ${ECR_REGISTRY}/lumina/decentralized-feeder:${{ env.RELEASE_TAG }} .
+          docker build -f build/Dockerfile-luminaSimulationFeeder -t ${ECR_REGISTRY}/lumina/simulation-feeder:${{ env.RELEASE_TAG }} .
 
-      # Push Docker images to IBM Cloud Registry
-      - name: Push Docker images to IBM Cloud Registry
+      - name: Push images to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          ibmcloud cr login
-          docker push us.icr.io/dia-registry/oracles/diadecentraloracleservice:${{ env.RELEASE_TAG }}
-          docker push us.icr.io/dia-registry/oracles/luminasimulationfeeder:${{ env.RELEASE_TAG }}
+          docker push ${ECR_REGISTRY}/lumina/decentralized-feeder:${{ env.RELEASE_TAG }}
+          docker push ${ECR_REGISTRY}/lumina/simulation-feeder:${{ env.RELEASE_TAG }}
+
+          echo "Pushed images to AWS ECR:"
+          echo "  ${ECR_REGISTRY}/lumina/decentralized-feeder:${{ env.RELEASE_TAG }}"
+          echo "  ${ECR_REGISTRY}/lumina/simulation-feeder:${{ env.RELEASE_TAG }}"
 
       # Set up Docker Buildx
       - name: Set up Docker Buildx
@@ -82,7 +85,7 @@ jobs:
             diadata/decentralized-feeder:${{ env.SEMVER_TAG }}
             diadata/decentralized-feeder:scraper-${{ env.SEMVER_TAG }}
             ${{ !contains(env.SEMVER_TAG, '-') && 'diadata/decentralized-feeder:latest' || '' }}
-            ${{ !contains(env.SEMVER_TAG, '-') && 'diadata/decentralized-feeder:scraper-latest' || '' }} 
+            ${{ !contains(env.SEMVER_TAG, '-') && 'diadata/decentralized-feeder:scraper-latest' || '' }}
           cache-from: type=registry,ref=diadata/decentralized-feeder:buildcache
           cache-to: type=registry,ref=diadata/decentralized-feeder:buildcache,mode=max
 
@@ -90,4 +93,3 @@ jobs:
       - name: Logout and cleanup
         run: |
           docker logout
-          ibmcloud logout 
