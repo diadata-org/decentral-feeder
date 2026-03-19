@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'tools/**'
+      - '**.md'
+      - '.gitignore'
   workflow_dispatch:  # This allows manual triggering
 
 permissions:
@@ -82,8 +86,14 @@ jobs:
             ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
           docker push ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
 
-          echo "✅ Pushed scraper image to AWS ECR:"
+          # Tag and push simulation image to ECR
+          docker tag us.icr.io/dia-registry/oracles/luminasimulationfeeder:${IMAGE_TAG} \
+            ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}
+
+          echo "Pushed scraper and simulation images to AWS ECR:"
           echo "  ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}"
+          echo "  ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}"
 
       # Update AWS mainnet feeder image tags in lumina-infra
       - name: Update AWS mainnet feeder values and push to lumina-infra
