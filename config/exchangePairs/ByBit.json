@@ -61,6 +61,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "BRETT-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "BTC-USDT",
             "WatchDogDelay": 300
         },
@@ -141,7 +145,15 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "FLOKI-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "GRT-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "HPOS10I-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -154,6 +166,10 @@
         },
         {
             "Pair": "LDO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "MOG-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -226,6 +242,10 @@
         },
         {
             "Pair": "SOL-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SPX-USDT",
             "WatchDogDelay": 300
         },
         {

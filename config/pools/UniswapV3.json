@@ -25,9 +25,9 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "SPX-WETH",
+            "ForeignName": "WETH-SPX",
             "Address": "0x7c706586679af2ba6d1a9fc2da9c6af59883fdd3",
-            "Order": "0",
+            "Order": "1",
             "WatchDogDelay": 600
         },
         {

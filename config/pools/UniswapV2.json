@@ -37,9 +37,9 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "SPX-WETH",
+            "ForeignName": "WETH-SPX",
             "Address": "0x52c77b0cb827afbad022e6d6caf2c44452edbc39",
-            "Order": "0",
+            "Order": "1",
             "WatchDogDelay": 600
         },
         {
@@ -63,12 +63,6 @@
         {
             "ForeignName": "USDS-SKY",
             "Address": "0x2621cc0b3f3c079c1db0e80794aa24976f0b9e3c",
-            "Order": "0",
-            "WatchDogDelay": 600
-        },
-        {
-            "ForeignName": "FLOKI-WETH",
-            "Address": "0xca7c2771d248dcbe09eabe0ce57a62e18da178c0",
             "Order": "0",
             "WatchDogDelay": 600
         },

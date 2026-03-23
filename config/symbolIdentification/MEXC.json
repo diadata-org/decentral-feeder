@@ -253,13 +253,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "MAIGA",
-            "Exchange": "MEXC",
-            "Blockchain": "BinanceSmartChain",
-            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
-            "Decimals": 18
-        },
-        {
             "Symbol": "MKR",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
