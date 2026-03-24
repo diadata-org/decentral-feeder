@@ -22,19 +22,19 @@ contract MedianPriceMethodologyTest is Test {
         DIAOracleV3 impl1 = new DIAOracleV3();
         ERC1967Proxy proxy1 = new ERC1967Proxy(address(impl1), "");
         oracle1 = DIAOracleV3(address(proxy1));
-        oracle1.initialize();
+        oracle1.initialize(18);
 
         // Deploy oracle 2
         DIAOracleV3 impl2 = new DIAOracleV3();
         ERC1967Proxy proxy2 = new ERC1967Proxy(address(impl2), "");
         oracle2 = DIAOracleV3(address(proxy2));
-        oracle2.initialize();
+        oracle2.initialize(18);
 
         // Deploy oracle 3
         DIAOracleV3 impl3 = new DIAOracleV3();
         ERC1967Proxy proxy3 = new ERC1967Proxy(address(impl3), "");
         oracle3 = DIAOracleV3(address(proxy3));
-        oracle3.initialize();
+        oracle3.initialize(18);
 
         // Set block timestamp
         vm.warp(1710000000);
@@ -262,16 +262,20 @@ contract MedianPriceMethodologyTest is Test {
 
         address[] memory oracles = new address[](0);
 
-        (uint128 value, uint128 timestamp) = methodology.calculateValue(
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                MedianPriceMethodology.ThresholdNotMet.selector,
+                0,
+                1
+            )
+        );
+        methodology.calculateValue(
             key,
             oracles,
             3600,
             1,
             10
         );
-
-        assertEq(value, 0, "Should return 0 for empty oracle array");
-        assertEq(timestamp, 1710000000, "Should return block timestamp");
     }
 
     function testMedianReturnsTimestampOfMedian() public {
@@ -325,8 +329,8 @@ contract MedianPriceMethodologyTest is Test {
             10
         );
 
-        // Final median of [175, 250] = (175 + 250) / 2 = 212
-        assertEq(value, 212, "Complex even count median should be correct");
+        // Final median of [175, 250] = (175 + 250 + 1) / 2 = 213
+        assertEq(value, 213, "Complex even count median should be correct");
     }
 
     function testMedianWithMixedExpiredAndValidValues() public {

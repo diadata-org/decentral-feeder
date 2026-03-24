@@ -2,8 +2,8 @@
 pragma solidity 0.8.34;
 
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "./IDIAOracleV3.sol";
 
 /**
@@ -61,7 +61,6 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     event OracleUpdate(string key, uint128 value, uint128 timestamp);
     event OracleUpdateRaw(string key, uint128 value, uint128 timestamp, uint128 volume, bytes data);
     event UpdaterAddressChange(address newUpdater);
-    event DecimalsUpdate(uint8 decimals);
 
     error MismatchedArrayLengths(uint256 keysLength, uint256 valuesLength);
     error InvalidHistoryIndex(uint256 index, uint256 maxIndex);
@@ -69,26 +68,26 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     error TimestampTooFarInPast(uint128 timestamp, uint256 blockTime);
     error TimestampNotIncreasing(uint128 newTimestamp, uint128 existingTimestamp);
 
-    /// @notice Maximum allowed history size to prevent gas issues (set to 1000)
-    uint256 public constant MAX_ALLOWED_HISTORY_SIZE = 1000;
+ 
 
     /// @notice Maximum timestamp gap in the future (1 hour)
     uint256 public constant MAX_TIMESTAMP_GAP = 1 hours;
 
     /// @notice Reserved storage space for future upgrades (100 slots)
-    /// @dev Storage slots from forge build --extra-output storageLayout:
+    /// @dev Storage slots from forge inspect DIAOracleV3 storageLayout:
     ///
     /// Slot | Label              | Type
     /// ----|--------------------|-------------------------------------------------
-    ///   0  | MAX_HISTORY_SIZE     | uint256
-    ///   1  | values             | mapping(string => uint256)
-    ///   2  | _valueHistory      | mapping(string => array(ValueEntry)_dyn_storage)
-    ///   3  | _writeIndex        | mapping(string => uint256)
-    ///   4  | _valueCount        | mapping(string => uint256)
-    ///   5  | rawData            | mapping(string => bytes)
-    ///   6+ | __gap             | 100 slots reserved for future upgrades
+    ///   0  | values             | mapping(string => uint256)
+    ///   1  | _valueHistory      | mapping(string => struct IDIAOracleV3.ValueEntry[])
+    ///   2  | _writeIndex        | mapping(string => uint256)
+    ///   3  | _valueCount        | mapping(string => uint256)
+    ///   4  | rawData            | mapping(string => bytes)
+    ///   5  | decimals           | uint8
+    ///   6+ | __gap              | uint256[100] (100 slots reserved for future upgrades)
     ///
-    /// Note: Parent contract storage (before slot 0):
+    /// Note: MAX_HISTORY_SIZE is immutable (stored in bytecode, not storage)
+    /// Parent contract storage (before slot 0):
     /// - Initializable: 2 slots (_initialized, _initializing)
     /// - AccessControlUpgradeable: ~4 slots (_roles mapping)
     /// Total contract uses slots 0-5 + parent slots + 100 gap slots
@@ -101,12 +100,14 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     }
 
     /**
-     * @notice Initializes the contract with roles.
+     * @notice Initializes the contract with roles and decimal precision.
      * @dev Replaces constructor for upgradeable contracts. Uses reinitializer(1)
      *      to allow future upgrades to add new initialization logic with version 2, 3, etc.
+     * @param decimalPrecision The number of decimal places for all asset values.
      */
-    function initialize() public reinitializer(1) {
-        decimals = 8; 
+    function initialize(uint8 decimalPrecision) public reinitializer(1) {
+        __AccessControl_init();
+        decimals = decimalPrecision;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(UPDATER_ROLE, msg.sender);
     }
@@ -135,6 +136,8 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
 
         uint256 cValue = (((uint256)(value)) << 128) + timestamp;
         values[key] = cValue;
+        
+        delete rawData[key];   
 
         // Add to historical storage (volume = 0 for backward compatibility)
         _addToHistory(key, value, timestamp, 0);
@@ -155,7 +158,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
             revert MismatchedArrayLengths(keys.length, compressedValues.length);
         }
 
-        for (uint128 i = 0; i < keys.length; i++) {
+        for (uint256 i = 0; i < keys.length; i++) {
             string memory currentKey = keys[i];
             uint256 currentCvalue = compressedValues[i];
             uint128 value = (uint128)(currentCvalue >> 128);
@@ -165,6 +168,8 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
 
             // Update the current value (backward compatibility with V2)
             values[currentKey] = currentCvalue;
+
+            delete rawData[currentKey];   
 
             // Add to historical storage (volume = 0 for backward compatibility)
             _addToHistory(currentKey, value, timestamp, 0);
@@ -322,16 +327,6 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
     }
 
     /**
-     * @notice Sets the global decimal precision for all asset values.
-     * @dev Only callable by addresses with UPDATER_ROLE.
-     * @param decimalPrecision The number of decimal places for all asset values.
-     */
-    function setDecimals(uint8 decimalPrecision) public onlyRole(UPDATER_ROLE) {
-        decimals = decimalPrecision;
-        emit DecimalsUpdate(decimalPrecision);
-    }
-
-    /**
      * @notice Retrieves the global decimal precision for all asset values.
      * @return The number of decimal places for asset values.
      */
@@ -418,7 +413,7 @@ contract DIAOracleV3 is Initializable, IDIAOracleV3, AccessControlUpgradeable, U
         uint256 existingValue = values[key];
         if (existingValue != 0) {
             uint128 existingTimestamp = uint128(existingValue);
-            if (timestamp < existingTimestamp) {
+            if (timestamp <= existingTimestamp) {
                 revert TimestampNotIncreasing(timestamp, existingTimestamp);
             }
         }

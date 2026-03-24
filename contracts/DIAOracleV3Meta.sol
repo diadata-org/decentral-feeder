@@ -3,6 +3,7 @@ pragma solidity 0.8.34;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "./IDIAOracleV3.sol";
 import "./IPriceMethodology.sol";
 
@@ -67,8 +68,8 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
     error InvalidTimeOut(uint256 value);
     error TimeoutExceedsLimit(uint256 value);
     error OracleExists();
-    error ThresholdNotMet(uint256 validValues, uint256 threshold);
     error InvalidHistoryIndex(uint256 index);
+    error InvalidOracleIndex(uint256 index);
     error InvalidMethodology();
     error InvalidWindowSize(uint256 value);
     error InvalidOracle(address oracleAddress);
@@ -97,7 +98,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (_priceMethodology == address(0)) {
             revert InvalidMethodology();
         }
-        decimals = 8; // Default to 8 decimal places (standard for many tokens)
+        decimals = 18; // Default to 18 decimal places (standard for many tokens)
         priceMethodology = IPriceMethodology(_priceMethodology);
     }
 
@@ -142,9 +143,15 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert OracleNotFound();
         }
 
+        uint256 newNumOracles = oracleCount - 1;
+
+        if (_threshold > newNumOracles) {
+            revert InvalidThreshold(_threshold);
+        }
+
         oracles[indexToRemove] = oracles[oracleCount - 1];
         oracles[oracleCount - 1] = address(0);
-        _numOracles = oracleCount - 1;
+        _numOracles = newNumOracles;
         emit OracleRemoved(oracleToRemove);
     }
 
@@ -157,6 +164,12 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         if (newThreshold == 0) {
             revert InvalidThreshold(newThreshold);
         }
+
+        // Validate that threshold doesn't exceed number of oracles
+        if (newThreshold > _numOracles) {
+            revert InvalidThreshold(newThreshold);
+        }
+
         uint256 oldThreshold = _threshold;
         _threshold = newThreshold;
         emit ThresholdChanged(oldThreshold, newThreshold);
@@ -245,24 +258,22 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidWindowSize(_windowSize);
         }
 
-        // Count oracles with matching decimals
+         address[] memory oracleAddresses = new address[](_numOracles);
         uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             if (oracle.getDecimals() == decimals) {
+                oracleAddresses[matchingCount] = oracles[i];
                 matchingCount++;
             }
         }
 
-        // Collect oracle addresses with matching decimals
-        address[] memory oracleAddresses = new address[](matchingCount);
-        uint256 idx = 0;
-        for (uint256 i = 0; i < _numOracles; i++) {
-            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
-            if (oracle.getDecimals() == decimals) {
-                oracleAddresses[idx] = oracles[i];
-                idx++;
+         if (matchingCount < _numOracles) {
+            address[] memory trimmedAddresses = new address[](matchingCount);
+            for (uint256 i = 0; i < matchingCount; i++) {
+                trimmedAddresses[i] = oracleAddresses[i];
             }
+            oracleAddresses = trimmedAddresses;
         }
 
         (uint128 value, uint128 timestamp) = priceMethodology.calculateValue(
@@ -308,24 +319,22 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidMethodology();
         }
 
-        // Count oracles with matching decimals
+         address[] memory oracleAddresses = new address[](_numOracles);
         uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             if (oracle.getDecimals() == decimals) {
+                oracleAddresses[matchingCount] = oracles[i];
                 matchingCount++;
             }
         }
 
-        // Collect oracle addresses with matching decimals
-        address[] memory oracleAddresses = new address[](matchingCount);
-        uint256 idx = 0;
-        for (uint256 i = 0; i < _numOracles; i++) {
-            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
-            if (oracle.getDecimals() == decimals) {
-                oracleAddresses[idx] = oracles[i];
-                idx++;
+         if (matchingCount < _numOracles) {
+            address[] memory trimmedAddresses = new address[](matchingCount);
+            for (uint256 i = 0; i < matchingCount; i++) {
+                trimmedAddresses[i] = oracleAddresses[i];
             }
+            oracleAddresses = trimmedAddresses;
         }
 
         IPriceMethodology methodologyContract = IPriceMethodology(customMethodology);
@@ -375,6 +384,10 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             (uint128 _value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
             _value;
 
+            if (volume == 0) {
+                continue;
+            }
+
             // Check if value is not expired
             if ((timestamp + _timeoutSeconds) >= block.timestamp) {
                 sum += volume;
@@ -382,7 +395,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             }
         }
 
-        return (uint128(sum), count);
+        return (SafeCast.toUint128(sum), count);
     }
 
     /**
@@ -393,7 +406,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
      */
     function getRawDataFromOracle(uint256 oracleIndex, string memory key) external view returns (bytes memory) {
         if (oracleIndex >= _numOracles) {
-            revert InvalidHistoryIndex(oracleIndex);
+            revert InvalidOracleIndex(oracleIndex);
         }
 
         IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
@@ -431,7 +444,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
         uint256 historyIndex
     ) external view returns (uint128 value, uint128 timestamp, uint128 volume) {
         if (oracleIndex >= _numOracles) {
-            revert InvalidHistoryIndex(oracleIndex);
+            revert InvalidOracleIndex(oracleIndex);
         }
 
         IDIAOracleV3 oracle = IDIAOracleV3(oracles[oracleIndex]);
@@ -511,24 +524,22 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             revert InvalidWindowSize(_windowSize);
         }
 
-        // Count oracles with matching decimals
+         address[] memory oracleAddresses = new address[](_numOracles);
         uint256 matchingCount = 0;
         for (uint256 i = 0; i < _numOracles; i++) {
             IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
             if (oracle.getDecimals() == decimals) {
+                oracleAddresses[matchingCount] = oracles[i];
                 matchingCount++;
             }
         }
 
-        // Collect oracle addresses with matching decimals
-        address[] memory oracleAddresses = new address[](matchingCount);
-        uint256 idx = 0;
-        for (uint256 i = 0; i < _numOracles; i++) {
-            IDIAOracleV3 oracle = IDIAOracleV3(oracles[i]);
-            if (oracle.getDecimals() == decimals) {
-                oracleAddresses[idx] = oracles[i];
-                idx++;
+         if (matchingCount < _numOracles) {
+            address[] memory trimmedAddresses = new address[](matchingCount);
+            for (uint256 i = 0; i < matchingCount; i++) {
+                trimmedAddresses[i] = oracleAddresses[i];
             }
+            oracleAddresses = trimmedAddresses;
         }
 
         // Get aggregated value using methodology
@@ -559,7 +570,7 @@ contract DIAOracleV3Meta is Ownable(msg.sender) {
             }
         }
 
-        totalVolume = uint128(volumeSum);
+        totalVolume = SafeCast.toUint128(volumeSum);
         return (value, timestamp, totalVolume);
     }
 

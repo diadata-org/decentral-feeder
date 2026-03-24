@@ -27,7 +27,7 @@ contract DIAOracleV3Test is Test {
         oracle = DIAOracleV3(address(proxy));
 
         // Initialize the contract (msg.sender will be the test contract)
-        oracle.initialize();
+        oracle.initialize(18); // Default to 18 decimals
 
         // Warp to a timestamp that allows testing with 1710000000 timestamps
         vm.warp(1710000000);
@@ -692,13 +692,19 @@ contract DIAOracleV3Test is Test {
         uint128 timestamp = 1710000000;
 
         oracle.setValue(key, 100, timestamp);
+         vm.expectRevert(
+            abi.encodeWithSelector(
+                DIAOracleV3.TimestampNotIncreasing.selector,
+                uint128(timestamp),
+                uint128(timestamp)
+            )
+        );
         oracle.setValue(key, 200, timestamp);
-        oracle.setValue(key, 300, timestamp);
-
-        assertEq(oracle.getValueCount(key), 3, "Should have 3 entries with same timestamp");
+ 
+        assertEq(oracle.getValueCount(key), 1, "Should have 1 entry only");
 
         (uint128 latestValue, uint128 latestTimestamp) = oracle.getValue(key);
-        assertEq(latestValue, 300, "Latest value should be last set");
+        assertEq(latestValue, 100, "Latest value should be last set");
         assertEq(latestTimestamp, timestamp, "Timestamp should match");
     }
 
@@ -1029,7 +1035,7 @@ contract DIAOracleV3Test is Test {
 
     function testInitializeCannotBeCalledTwice() public {
         vm.expectRevert(Initializable.InvalidInitialization.selector);
-        oracle.initialize();
+        oracle.initialize(18);
     }
 
     function testConstructorIsDisabled() public {
@@ -1039,7 +1045,7 @@ contract DIAOracleV3Test is Test {
 
         // Try to call initialize directly on implementation (should fail due to _disableInitializers)
         vm.expectRevert(Initializable.InvalidInitialization.selector);
-        impl.initialize();
+        impl.initialize(18);
     }
 
     /**
@@ -1196,27 +1202,41 @@ contract DIAOracleV3Test is Test {
         // Set value
         oracle.setValue(key, 100, 1710000001);
         assertEq(oracle.getValueCount(key), 1, "Count should be 1");
+        assertEq(oracle.getRawData(key).length, 0, "Raw data should be empty after setValue");
 
         // Set raw value with volume
         bytes memory data = abi.encode(key, uint128(200), uint128(1710000002), uint128(1000), bytes("test"));
         oracle.setRawValue(data);
         assertEq(oracle.getValueCount(key), 2, "Count should be 2");
+        assertEq(keccak256(oracle.getRawData(key)), keccak256(bytes("test")), "Raw data should be set");
 
-        // Set multiple values with different key
+        // Update via setMultipleValues on same key (should clear rawData)
         string[] memory keys = new string[](1);
-        keys[0] = "OTHER/KEY";
+        keys[0] = key;
         uint256[] memory values = new uint256[](1);
         values[0] = (uint256(300) << 128) + 1710000003;
         oracle.setMultipleValues(keys, values);
 
-        // Original key should still have 2 values
-        assertEq(oracle.getValueCount(key), 2, "Original key count should be 2");
+        // Should have 3 values now
+        assertEq(oracle.getValueCount(key), 3, "Count should be 3");
 
-        // Latest value should be correct
+        // Latest value should be from setMultipleValues
         (uint128 value, uint128 timestamp, uint128 volume) = oracle.getValueAt(key, 0);
-        assertEq(value, 200, "Latest value should be from setRawValue");
-        assertEq(timestamp, 1710000002, "Latest timestamp should be from setRawValue");
-        assertEq(volume, 1000, "Latest volume should be from setRawValue");
+        assertEq(value, 300, "Latest value should be from setMultipleValues");
+        assertEq(timestamp, 1710000003, "Latest timestamp should be from setMultipleValues");
+        assertEq(volume, 0, "Volume should be 0 for setMultipleValues");
+
+        // Raw data should be cleared after setMultipleValues
+        assertEq(oracle.getRawData(key).length, 0, "Raw data should be cleared after setMultipleValues");
+
+        string[] memory keys2 = new string[](1);
+        keys2[0] = "OTHER/KEY";
+        uint256[] memory values2 = new uint256[](1);
+        values2[0] = (uint256(400) << 128) + 1710000004;
+        oracle.setMultipleValues(keys2, values2);
+
+        assertEq(oracle.getValueCount(key), 3, "Original key count should be 3");
+        assertEq(oracle.getRawData(key).length, 0, "Original key raw data should still be empty");
     }
 
  
@@ -1380,73 +1400,10 @@ contract DIAOracleV3Test is Test {
     }
 
     // Test decimals functionality
-    function testSetDecimals() public {
-        uint8 decimalPrecision = 8;
-
-        oracle.setDecimals(decimalPrecision);
-
-        assertEq(oracle.getDecimals(), decimalPrecision, "Decimals should match");
+    function testDecimalsSetInInitialize() public {
+        // Decimals should be set to 18 from initialize in setUp
+        assertEq(oracle.getDecimals(), 18, "Decimals should be 18 as set in initialize");
     }
 
-    function testSetDecimalsMultipleTimes() public {
-        oracle.setDecimals(8);
-        assertEq(oracle.getDecimals(), 8, "First decimals should be 8");
-
-        oracle.setDecimals(18);
-        assertEq(oracle.getDecimals(), 18, "Decimals should be updated to 18");
-
-        oracle.setDecimals(6);
-        assertEq(oracle.getDecimals(), 6, "Decimals should be updated to 6");
-    }
-
-    function testDecimalsEvent() public {
-        vm.expectEmit(true, true, true, true);
-        emit DIAOracleV3.DecimalsUpdate(8);
-
-        oracle.setDecimals(8);
-    }
-
-    function testDecimalsDefaultZero() public {
-        // Decimals should default to 8
-        assertEq(oracle.getDecimals(), 8, "Default decimals should be 8");
-    }
-
-    function testSetDecimalsOnlyUpdater() public {
-        // Try to set decimals from non-updater address
-        vm.startPrank(address(0x123));
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")),
-                address(0x123),
-                oracle.UPDATER_ROLE()
-            )
-        );
-        oracle.setDecimals(8);
-        vm.stopPrank();
-    }
-
-    function testDecimalsWithValueStorage() public {
-        string memory key = "BTC/USD";
-        uint128 price = 50000 * 10**8; // 8 decimals
-        uint128 timestamp = 1710000000;
-
-        oracle.setDecimals(8);
-        oracle.setValue(key, price, timestamp);
-
-        (uint128 storedPrice,) = oracle.getValue(key);
-        assertEq(storedPrice, price, "Price should be stored correctly");
-        assertEq(oracle.getDecimals(), 8, "Decimals should still be 8");
-    }
-
-    function testDecimalsEdgeCaseMax() public {
-        uint8 maxDecimals = 255; // uint8 max value
-
-        oracle.setDecimals(maxDecimals);
-        assertEq(oracle.getDecimals(), maxDecimals, "Should handle max decimals");
-    }
-
-    function testDecimalsEdgeCaseZero() public {
-        oracle.setDecimals(0);
-        assertEq(oracle.getDecimals(), 0, "Should handle zero decimals");
-    }
 }
+

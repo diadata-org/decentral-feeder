@@ -94,8 +94,8 @@ contract MedianPriceMethodology is IPriceMethodology {
         uint256 windowSize
     ) internal view returns (uint128 value, uint128 timestamp) {
         uint256 numOracles = oracles.length;
-        if (numOracles == 0) {
-            return (0, uint128(block.timestamp));
+       if (numOracles < threshold) {
+            revert ThresholdNotMet(numOracles, threshold);
         }
 
         ValueWithTimestamp[] memory oracleResults = new ValueWithTimestamp[](numOracles);
@@ -137,7 +137,7 @@ contract MedianPriceMethodology is IPriceMethodology {
             // Even: average of two middle values, use max timestamp of the two
             uint256 lowerIndex = finalMedianIndex - 1;
             finalMedian = uint128(
-                (uint256(oracleResults[lowerIndex].value) + uint256(oracleResults[finalMedianIndex].value)) / 2
+                (uint256(oracleResults[lowerIndex].value) + uint256(oracleResults[finalMedianIndex].value) + 1) / 2
             );
             medianTimestamp = oracleResults[lowerIndex].timestamp > oracleResults[finalMedianIndex].timestamp
                 ? oracleResults[lowerIndex].timestamp
@@ -185,7 +185,7 @@ contract MedianPriceMethodology is IPriceMethodology {
             return ValueWithTimestamp(0, 0);
         }
 
-        // Sort by value using bubble sort
+        // Sort by value using selection sort
         for (uint256 i = 0; i < validCount - 1; i++) {
             for (uint256 j = i + 1; j < validCount; j++) {
                 if (validEntries[i].value > validEntries[j].value) {

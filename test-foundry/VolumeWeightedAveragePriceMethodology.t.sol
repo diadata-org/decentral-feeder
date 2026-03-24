@@ -22,19 +22,19 @@ contract VolumeWeightedAveragePriceMethodologyTest is Test {
         DIAOracleV3 impl1 = new DIAOracleV3();
         ERC1967Proxy proxy1 = new ERC1967Proxy(address(impl1), "");
         oracle1 = DIAOracleV3(address(proxy1));
-        oracle1.initialize();
+        oracle1.initialize(18);
 
         // Deploy oracle 2
         DIAOracleV3 impl2 = new DIAOracleV3();
         ERC1967Proxy proxy2 = new ERC1967Proxy(address(impl2), "");
         oracle2 = DIAOracleV3(address(proxy2));
-        oracle2.initialize();
+        oracle2.initialize(18);
 
         // Deploy oracle 3
         DIAOracleV3 impl3 = new DIAOracleV3();
         ERC1967Proxy proxy3 = new ERC1967Proxy(address(impl3), "");
         oracle3 = DIAOracleV3(address(proxy3));
-        oracle3.initialize();
+        oracle3.initialize(18);
 
         // Set block timestamp
         vm.warp(1710000000);
@@ -307,16 +307,20 @@ contract VolumeWeightedAveragePriceMethodologyTest is Test {
 
         address[] memory oracles = new address[](0);
 
-        (uint128 value, uint128 timestamp) = methodology.calculateValue(
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                VolumeWeightedAveragePriceMethodology.ThresholdNotMet.selector,
+                0,
+                1
+            )
+        );
+        methodology.calculateValue(
             key,
             oracles,
             3600,
             1,
             10
         );
-
-        assertEq(value, 0, "Should return 0 for empty oracle array");
-        assertEq(timestamp, 1710000000, "Should return block timestamp");
     }
 
     function testVWAPReturnsMaxTimestamp() public {
@@ -379,8 +383,8 @@ contract VolumeWeightedAveragePriceMethodologyTest is Test {
             10
         );
 
-        // Median of [166, 277] = (166 + 277) / 2 = 221
-        assertEq(value, 221, "Complex VWAP calculation should be correct");
+        // Median of [166, 277] = (166 + 277 + 1) / 2 = 222
+        assertEq(value, 222, "Complex VWAP calculation should be correct");
     }
 
     function testVWAPWithMixedExpiredAndValidValues() public {
