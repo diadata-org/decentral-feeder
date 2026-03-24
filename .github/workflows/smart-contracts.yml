@@ -80,11 +80,14 @@ jobs:
           node-version: "20"
 
       - name: Install OpenZeppelin via npm
-        run: npm install @openzeppelin/contracts@5.2.0
+        run: |
+          npm install @openzeppelin/contracts@5.2.0
+          npm install @openzeppelin/contracts-upgradeable@5.2.0
 
       - name: Write Foundry remappings
         run: |
           echo "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/" > remappings.txt
+          echo "@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/" >> remappings.txt
           echo "forge-std/=lib/forge-std/src/" >> remappings.txt
 
       - name: Run tests
@@ -119,7 +122,9 @@ jobs:
           node-version: "20"
 
       - name: Install OpenZeppelin via npm
-        run: npm install @openzeppelin/contracts@5.2.0
+        run: |
+          npm install @openzeppelin/contracts@5.2.0
+          npm install @openzeppelin/contracts-upgradeable@5.2.0
 
       - name: Remove contracts/node_modules to prevent forge scanning it
         run: rm -rf contracts/node_modules
@@ -127,6 +132,7 @@ jobs:
       - name: Write Foundry remappings
         run: |
           echo "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/" > remappings.txt
+          echo "@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/" >> remappings.txt
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -146,7 +152,7 @@ jobs:
         continue-on-error: true
         run: |
           python -m slither contracts/ \
-            --solc-remaps "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/" \
+            --solc-remaps "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/ @openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/" \
             --filter-paths "contracts/Flattened_for_verification.sol" \
             --sarif results.sarif
 
@@ -154,7 +160,7 @@ jobs:
         if: always()
         run: |
           if [ ! -f results.sarif ]; then
-            echo '{"version":"2.1.0","runs":[]}' > results.sarif
+            echo '{"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json","runs":[{"tool":{"driver":{"name":"Slither","version":"0.11.5"}},"results":[]}]}' > results.sarif
           fi
 
       - name: Upload SARIF to GitHub Security tab
