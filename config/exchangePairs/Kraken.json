@@ -117,6 +117,10 @@
             "WatchDogDelay": 1200
         },
         {
+            "Pair": "PYUSD-USD",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "RENDER-USD",
             "WatchDogDelay": 300
         },
