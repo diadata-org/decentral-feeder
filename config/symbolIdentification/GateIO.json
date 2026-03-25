@@ -358,6 +358,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PYUSD",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+            "Decimals": 6
+        },
+        {
             "Exchange": "GateIO",
             "Symbol": "REACT",
             "Blockchain": "React",

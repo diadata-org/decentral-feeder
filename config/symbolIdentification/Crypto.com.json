@@ -281,6 +281,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PYUSD",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+            "Decimals": 6
+        },
+        {
             "Exchange": "Crypto.com",
             "Symbol": "REACT",
             "Blockchain": "React",
