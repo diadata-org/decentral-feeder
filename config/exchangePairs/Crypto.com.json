@@ -209,7 +209,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "PYUSD-USDT",
+            "Pair": "PYUSD-USD",
             "WatchDogDelay": 3600
         },
         {
