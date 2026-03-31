@@ -73,7 +73,7 @@
         {
             "Symbol": "BNB",
             "Exchange": "KuCoin",
-            "Blockchain": "KuCoinSmartChain",
+            "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
         },
