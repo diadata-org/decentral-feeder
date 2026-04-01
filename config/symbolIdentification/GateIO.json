@@ -94,7 +94,7 @@
         {
             "Symbol": "BNB",
             "Exchange": "GateIO",
-            "Blockchain": "GateIOSmartChain",
+            "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
         },
