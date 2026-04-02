@@ -456,6 +456,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "USDS",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+            "Decimals": 18
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
