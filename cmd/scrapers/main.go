@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
+	diaOracleV3MultiupdateService "github.com/diadata-org/lumina-library/contracts/lumina/diaoraclev3"
 	"github.com/diadata-org/lumina-library/metrics"
 	models "github.com/diadata-org/lumina-library/models"
 	"github.com/diadata-org/lumina-library/onchain"
@@ -114,8 +114,8 @@ func main() {
 		exchangePairString,
 	)
 
-	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	var contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
+	var contract *diaOracleV3MultiupdateService.DiaOracleV3MultiupdateService
+	var contractBackup *diaOracleV3MultiupdateService.DiaOracleV3MultiupdateService
 	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
