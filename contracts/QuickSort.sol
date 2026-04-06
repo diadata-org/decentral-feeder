@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.29;
+pragma solidity 0.8.34;
 
 /**
  * @title sort given array using Quick sort.
@@ -11,12 +11,10 @@ library QuickSort {
         return data;
     }
 
-    /** Quicksort is a sorting algorithm based on the divide and conquer approach **/
-    function quickSort(
-        uint128[] memory _arr,
-        int256 left,
-        int256 right
-    ) internal view {
+    /**
+     *
+     */
+    function quickSort(uint128[] memory _arr, int256 left, int256 right) internal view {
         int256 i = left;
         int256 j = right;
         if (i == j) return;
@@ -25,10 +23,7 @@ library QuickSort {
             while (_arr[uint256(i)] < pivot) i++;
             while (pivot < _arr[uint256(j)]) j--;
             if (i <= j) {
-                (_arr[uint256(i)], _arr[uint256(j)]) = (
-                    _arr[uint256(j)],
-                    _arr[uint256(i)]
-                );
+                (_arr[uint256(i)], _arr[uint256(j)]) = (_arr[uint256(j)], _arr[uint256(i)]);
                 i++;
                 j--;
             }

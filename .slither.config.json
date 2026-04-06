@@ -1,0 +1,11 @@
+{
+  "detectors_to_exclude": [
+    "uninitialized-state",
+    "timestamp"
+  ],
+  "exclude_informational": false,
+  "exclude_optimization": false,
+  "exclude_low": false,
+  "exclude_medium": false,
+  "exclude_high": false
+}
