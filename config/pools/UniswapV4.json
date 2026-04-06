@@ -1,0 +1,24 @@
+{
+    "Pools": [
+        {
+            "ForeignName": "WETH-USDT",
+            "Address": "0x72331fcb696b0151904c03584b66dc8365bc63f8a144d89a773384e3a579ca73",
+            "Order": "2",
+            "WatchDogDelay": 3600,
+            "Assetvolumes": [
+                { "Asset": { "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" } },
+                { "Asset": { "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7" } }
+            ]
+        },
+        {
+            "ForeignName": "WETH-USDC",
+            "Address": "0x00b9edc1583bf6ef09ff3a09f6c23ecb57fd7d0bb75625717ec81eed181e22d7",
+            "Order": "1",
+            "WatchDogDelay": 3600,
+            "Assetvolumes": [
+                { "Asset": { "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" } },
+                { "Asset": { "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" } }
+            ]
+        }
+    ]
+}
