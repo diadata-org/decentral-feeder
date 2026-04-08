@@ -66,7 +66,7 @@
         {
             "Symbol": "BNB",
             "Exchange": "Crypto.com",
-            "Blockchain": "Crypto.comSmartChain",
+            "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
         },
@@ -279,6 +279,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
             "Decimals": 18
+        },
+        {
+            "Symbol": "PYUSD",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+            "Decimals": 6
         },
         {
             "Exchange": "Crypto.com",
