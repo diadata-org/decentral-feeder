@@ -1,0 +1,19 @@
+{
+  "extends": "solhint:recommended",
+  "rules": {
+    "no-global-import": "off",
+    "compiler-version": ["error", "^0.8.29"],
+    "max-line-length": ["warn", 120],
+    "func-name-mixedcase": "warn",
+    "func-param-name-mixedcase": "warn",
+    "modifier-name-mixedcase": "warn",
+    "private-vars-leading-underscore": "warn",
+    "use-forbidden-name": "warn",
+    "var-name-mixedcase": "warn",
+    "no-console": "off",
+    "no-empty-blocks": "warn",
+    "no-unused-vars": "warn",
+    "func-visibility": ["warn", { "ignoreConstructors": true }],
+    "one-contract-per-file": "off"
+  }
+}

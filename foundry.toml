@@ -1,8 +1,38 @@
 [profile.default]
-src = "contracts"           
-out = "out"                 
-libs = [ "lib"]     
-solc_version = "0.8.29"     
+src = "contracts"
+out = "out"
+libs = [ "lib"]
+solc_version = "0.8.34"
 test = "test-foundry"
 gas_price = 10
 gas_reports = ["*"]
+via_ir = true
+optimizer = true
+optimizer_runs = 200
+ffi = true
+ast = true
+build_info = true
+extra_output = ["storageLayout"]
+
+remappings = [
+    "forge-std/=lib/forge-std/src/",
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/"
+]
+
+# Network profiles for deployment
+[profile.mainnet]
+rpc_url = "https://rpc.diadata.org"
+chain_id = 1
+etherscan_api_key = "${ETHERSCAN_API_KEY}"
+
+[profile.testnet]
+rpc_url = "https://testnet-rpc.diadata.org"
+chain_id = 11155111  # Sepolia
+etherscan_api_key = "${ETHERSCAN_API_KEY}"
+verifier = "blockscout"
+verifier_url = "https://testnet-explorer.diadata.org/api"
+
+[profile.local]
+rpc_url = "http://localhost:8545"
+chain_id = 31337
