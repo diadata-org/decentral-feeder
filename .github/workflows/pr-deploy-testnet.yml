@@ -1,0 +1,136 @@
+name: decentralized-feeder-deploy-testnet
+
+on:
+  pull_request:
+    types: [labeled]
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  lint:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'deploy-testnet'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [cmd/scrapers, cmd/simulators]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Verify dependencies
+        run: |
+          cd ${{ matrix.module }}
+          go mod tidy
+          go build ./...
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          working-directory: ${{ matrix.module }}
+
+  build-and-deploy:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Short Commit Hash
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Tag Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: commit-hash-${{ env.COMMIT_HASH }}
+        run: |
+          docker build -f build/Dockerfile-luminaScraperFeeder -t ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG} .
+          docker build -f build/Dockerfile-luminaSimulationFeeder -t ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG} .
+
+      - name: Push images to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: commit-hash-${{ env.COMMIT_HASH }}
+        run: |
+          docker push ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
+          docker push ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}
+
+          echo "Pushed images to AWS ECR:"
+          echo "  ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}"
+          echo "  ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}"
+
+      - name: Checkout lumina-infra repository
+        env:
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
+        run: |
+          rm -rf lumina-infra
+          git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
+
+      - name: Update AWS testnet feeder values and push to lumina-infra
+        env:
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          cd lumina-infra
+
+          git config user.name "DIA Lumina Bot"
+          git config user.email "infrastructure@diadata.org"
+
+          # Update image registry and tag for testnet scraper feeders
+          SCRAPER_FEEDERS="001-scraper-testnet-aws 004-scraper-testnet-aws 007-scraper-testnet-aws 008-scraper-testnet-aws 009-scraper-testnet-aws"
+          for feeder in $SCRAPER_FEEDERS; do
+            VALUES_FILE="helmcharts/decentral-feeders-aws/${feeder}/values.yaml"
+            if [ -f "$VALUES_FILE" ]; then
+              echo "Updating $VALUES_FILE"
+              sed -i "s|image: [^,]*|image: ${ECR_REGISTRY}/lumina/decentralized-feeder|" "$VALUES_FILE"
+              sed -i "s|tag: [^}]*|tag: commit-hash-${{ env.COMMIT_HASH }}|" "$VALUES_FILE"
+            fi
+          done
+
+          # Update image registry and tag for testnet simulation feeders
+          SIMULATION_FEEDERS="101-simulation-testnet-aws 102-simulation-testnet-aws 103-simulation-testnet-aws"
+          for feeder in $SIMULATION_FEEDERS; do
+            VALUES_FILE="helmcharts/decentral-feeders-aws/${feeder}/values.yaml"
+            if [ -f "$VALUES_FILE" ]; then
+              echo "Updating $VALUES_FILE"
+              sed -i "s|image: [^,]*|image: ${ECR_REGISTRY}/lumina/simulation-feeder|" "$VALUES_FILE"
+              sed -i "s|tag: [^}]*|tag: commit-hash-${{ env.COMMIT_HASH }}|" "$VALUES_FILE"
+            fi
+          done
+
+          echo "Changes to be committed:"
+          git diff helmcharts/decentral-feeders-aws/*/values.yaml
+
+          if ! git diff --quiet; then
+            git add helmcharts/decentral-feeders-aws/*/values.yaml
+            git commit -m "Deploy decentral-feeders to testnet (commit-hash-${{ env.COMMIT_HASH }})"
+            git push https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra.git HEAD:master
+            echo "Pushed updates to lumina-infra. ArgoCD will sync AWS testnet feeders automatically."
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Cleanup cloned repository
+        run: |
+          rm -rf lumina-infra
