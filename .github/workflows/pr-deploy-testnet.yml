@@ -26,10 +26,10 @@ jobs:
         with:
           go-version: '1.24'
 
-      - name: Download dependencies
+      - name: Build to verify compilation
         run: |
           cd ${{ matrix.module }}
-          go mod download
+          go build ./...
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
