@@ -13,6 +13,11 @@ ffi = true
 ast = true
 build_info = true
 extra_output = ["storageLayout"]
+skip = [
+    "contracts/DIAOracleV2.sol",
+    "contracts/DIAOracleV2Meta.sol",
+    "contracts/IDIAOracleV2.sol"
+]
 
 remappings = [
     "forge-std/=lib/forge-std/src/",
@@ -22,17 +27,10 @@ remappings = [
 
 # Network profiles for deployment
 [profile.mainnet]
-rpc_url = "https://rpc.diadata.org"
 chain_id = 1
-etherscan_api_key = "${ETHERSCAN_API_KEY}"
 
 [profile.testnet]
-rpc_url = "https://testnet-rpc.diadata.org"
 chain_id = 11155111  # Sepolia
-etherscan_api_key = "${ETHERSCAN_API_KEY}"
-verifier = "blockscout"
-verifier_url = "https://testnet-explorer.diadata.org/api"
 
 [profile.local]
-rpc_url = "http://localhost:8545"
 chain_id = 31337
