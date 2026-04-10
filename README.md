@@ -245,6 +245,18 @@ To learn about DIA's oracle stacks, you can visit our documentation [here](https
 
 To report bugs or suggest enhancements, you can create a [Github Issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-an-issue) in the repository.
 
+## CI/CD Workflows
+
+### Pull Request Pipeline
+
+| Trigger | Workflow | Action |
+|---------|----------|--------|
+| PR opened/updated | pr-pipeline | Lint only |
+| Label `deploy-testnet-scrapers-1` | pr-deploy-testnet | Build + deploy feeders 001, 004 |
+| Label `deploy-testnet-scrapers-2` | pr-deploy-testnet | Build + deploy feeders 007, 008, 009 |
+| Label `deploy-testnet-simulators` | pr-deploy-testnet | Build + deploy feeders 101, 102, 103 |
+| Release published | release-pipeline | Push to AWS ECR + Docker Hub |
+
 ## Contribution Guidelines
 
 Coming soon...

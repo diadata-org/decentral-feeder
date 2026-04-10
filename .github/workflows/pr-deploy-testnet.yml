@@ -1,0 +1,167 @@
+name: decentralized-feeder-deploy-testnet
+
+on:
+  pull_request:
+    types: [labeled]
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Deploy target'
+        required: true
+        type: choice
+        options:
+          - scrapers-1
+          - scrapers-2
+          - simulators
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  lint:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event.label.name == 'deploy-testnet-scrapers-1' ||
+      github.event.label.name == 'deploy-testnet-scrapers-2' ||
+      github.event.label.name == 'deploy-testnet-simulators'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [cmd/scrapers, cmd/simulators]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Verify dependencies
+        run: |
+          cd ${{ matrix.module }}
+          go mod tidy
+          go build ./...
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          working-directory: ${{ matrix.module }}
+
+  build-and-deploy:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Short Commit Hash
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: Determine deploy target
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "DEPLOY_TARGET=${{ github.event.inputs.target }}" >> $GITHUB_ENV
+          elif [ "${{ github.event.label.name }}" == "deploy-testnet-scrapers-1" ]; then
+            echo "DEPLOY_TARGET=scrapers-1" >> $GITHUB_ENV
+          elif [ "${{ github.event.label.name }}" == "deploy-testnet-scrapers-2" ]; then
+            echo "DEPLOY_TARGET=scrapers-2" >> $GITHUB_ENV
+          elif [ "${{ github.event.label.name }}" == "deploy-testnet-simulators" ]; then
+            echo "DEPLOY_TARGET=simulators" >> $GITHUB_ENV
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and Tag Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: commit-hash-${{ env.COMMIT_HASH }}
+        run: |
+          if [[ "${{ env.DEPLOY_TARGET }}" == "scrapers-1" || "${{ env.DEPLOY_TARGET }}" == "scrapers-2" ]]; then
+            docker build -f build/Dockerfile-luminaScraperFeeder -t ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG} .
+          elif [ "${{ env.DEPLOY_TARGET }}" == "simulators" ]; then
+            docker build -f build/Dockerfile-luminaSimulationFeeder -t ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG} .
+          fi
+
+      - name: Push images to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: commit-hash-${{ env.COMMIT_HASH }}
+        run: |
+          if [[ "${{ env.DEPLOY_TARGET }}" == "scrapers-1" || "${{ env.DEPLOY_TARGET }}" == "scrapers-2" ]]; then
+            docker push ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}
+            echo "Pushed image: ${ECR_REGISTRY}/lumina/decentralized-feeder:${IMAGE_TAG}"
+          elif [ "${{ env.DEPLOY_TARGET }}" == "simulators" ]; then
+            docker push ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}
+            echo "Pushed image: ${ECR_REGISTRY}/lumina/simulation-feeder:${IMAGE_TAG}"
+          fi
+
+      - name: Checkout lumina-infra repository
+        env:
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
+        run: |
+          rm -rf lumina-infra
+          git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
+
+      - name: Update AWS testnet feeder values and push to lumina-infra
+        env:
+          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          cd lumina-infra
+
+          git config user.name "DIA Lumina Bot"
+          git config user.email "infrastructure@diadata.org"
+
+          case "${{ env.DEPLOY_TARGET }}" in
+            scrapers-1)
+              FEEDERS="001-scraper-testnet-aws 004-scraper-testnet-aws"
+              IMAGE="${ECR_REGISTRY}/lumina/decentralized-feeder"
+              ;;
+            scrapers-2)
+              FEEDERS="007-scraper-testnet-aws 008-scraper-testnet-aws 009-scraper-testnet-aws"
+              IMAGE="${ECR_REGISTRY}/lumina/decentralized-feeder"
+              ;;
+            simulators)
+              FEEDERS="101-simulation-testnet-aws 102-simulation-testnet-aws 103-simulation-testnet-aws"
+              IMAGE="${ECR_REGISTRY}/lumina/simulation-feeder"
+              ;;
+          esac
+
+          for feeder in $FEEDERS; do
+            VALUES_FILE="helmcharts/decentral-feeders-aws/${feeder}/values.yaml"
+            if [ -f "$VALUES_FILE" ]; then
+              echo "Updating $VALUES_FILE"
+              sed -i "s|image: [^,]*|image: ${IMAGE}|" "$VALUES_FILE"
+              sed -i "s|tag: [^}]*|tag: commit-hash-${{ env.COMMIT_HASH }}|" "$VALUES_FILE"
+            fi
+          done
+
+          echo "Changes to be committed:"
+          git diff helmcharts/decentral-feeders-aws/
+
+          if ! git diff --quiet; then
+            git add helmcharts/decentral-feeders-aws/
+            git commit -m "Deploy decentral-feeders (${{ env.DEPLOY_TARGET }}) to testnet (commit-hash-${{ env.COMMIT_HASH }})"
+            git push https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra.git HEAD:master
+            echo "Pushed updates to lumina-infra. ArgoCD will sync ${{ env.DEPLOY_TARGET }} testnet feeders automatically."
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Cleanup cloned repository
+        run: |
+          rm -rf lumina-infra
