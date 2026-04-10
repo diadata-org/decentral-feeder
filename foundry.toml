@@ -2,10 +2,14 @@
 src = "contracts"
 out = "out"
 libs = [ "lib"]
-solc_version = "0.8.29"
+solc_version = "0.8.34"
 test = "test-foundry"
 gas_price = 10
 gas_reports = ["*"]
+remappings = [
+  "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+]
 
 [profile.v3]
 src = "contracts"
