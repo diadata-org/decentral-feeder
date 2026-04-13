@@ -32,10 +32,11 @@ jobs:
 
       # Checkout the lumina-infra repository
       - name: Checkout lumina-infra repository
-        env:
-          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
-        run: |
-          git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
+        uses: actions/checkout@v4
+        with:
+          repository: diadata-org/lumina-infra
+          token: ${{ secrets.LUMINA_INFRA_PAT }}
+          path: lumina-infra
 
       # Configure AWS credentials and push to ECR
       - name: Configure AWS credentials
@@ -73,7 +74,6 @@ jobs:
       # Update AWS mainnet feeder image tags in lumina-infra
       - name: Update AWS mainnet feeder values and push to lumina-infra
         env:
-          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           cd lumina-infra
@@ -98,7 +98,7 @@ jobs:
           if ! git diff --quiet; then
             git add helmcharts/decentral-feeders-aws/003-scraper-mainnet-aws/values.yaml
             git commit -m "Deploy AWS mainnet feeder: commit-hash-${{ env.COMMIT_HASH }}"
-            git push https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra.git HEAD:master
+            git push origin HEAD:master
             echo "Pushed updates to lumina-infra. ArgoCD will sync AWS mainnet feeder automatically."
           else
             echo "No changes to commit"

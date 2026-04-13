@@ -110,15 +110,14 @@ jobs:
           fi
 
       - name: Checkout lumina-infra repository
-        env:
-          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
-        run: |
-          rm -rf lumina-infra
-          git clone -q https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra lumina-infra
+        uses: actions/checkout@v4
+        with:
+          repository: diadata-org/lumina-infra
+          token: ${{ secrets.LUMINA_INFRA_PAT }}
+          path: lumina-infra
 
       - name: Update AWS testnet feeder values and push to lumina-infra
         env:
-          LUMINA_INFRA_PAT: ${{ secrets.LUMINA_INFRA_PAT }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           cd lumina-infra
@@ -156,7 +155,7 @@ jobs:
           if ! git diff --quiet; then
             git add helmcharts/decentral-feeders-aws/
             git commit -m "Deploy decentral-feeders (${{ env.DEPLOY_TARGET }}) to testnet (commit-hash-${{ env.COMMIT_HASH }})"
-            git push https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra.git HEAD:master
+            git push origin HEAD:master
             echo "Pushed updates to lumina-infra. ArgoCD will sync ${{ env.DEPLOY_TARGET }} testnet feeders automatically."
           else
             echo "No changes to commit"
