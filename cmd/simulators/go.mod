@@ -6,9 +6,7 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 require (
 	github.com/diadata-org/diadata v1.4.568
-	github.com/diadata-org/lumina-library v0.1.33
-	github.com/ethereum/go-ethereum v1.15.7
-	github.com/prometheus/client_golang v1.20.5
+	github.com/diadata-org/lumina-library v1.0.4
 	github.com/sirupsen/logrus v1.9.3
 )
 
@@ -26,6 +24,7 @@ require (
 	github.com/deckarep/golang-set/v2 v2.6.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
 	github.com/ethereum/c-kzg-4844 v1.0.3 // indirect
+	github.com/ethereum/go-ethereum v1.15.7 // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
@@ -36,6 +35,7 @@ require (
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect

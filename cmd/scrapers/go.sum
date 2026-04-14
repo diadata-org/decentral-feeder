@@ -51,8 +51,8 @@ github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 h1:rpfIENRNNilwHwZeG5+P150SMrnN
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0/go.mod h1:v57UDF4pDQJcEfFUCRop3lJL149eHGSe9Jvczhzjo/0=
 github.com/deepmap/oapi-codegen v1.6.0 h1:w/d1ntwh91XI0b/8ja7+u5SvA4IFfM0UNNLmiDR1gg0=
 github.com/deepmap/oapi-codegen v1.6.0/go.mod h1:ryDa9AgbELGeB+YEXE1dR53yAjHwFvE9iAUlWl9Al3M=
-github.com/diadata-org/lumina-library v1.0.3-rc10 h1:FgW+0OJQH5/sMaLr5XorPU1459p+ozK/6hQbVxqOXTY=
-github.com/diadata-org/lumina-library v1.0.3-rc10/go.mod h1:GwYjBJ2ox3gq2jiyxsm7Z+nrmaG7yJBVTyjmJPhyjJ4=
+github.com/diadata-org/lumina-library v1.0.4 h1:ZNJ3O250fOz29eGAngY0z9yED4A21EBCoquOigniaFs=
+github.com/diadata-org/lumina-library v1.0.4/go.mod h1:GwYjBJ2ox3gq2jiyxsm7Z+nrmaG7yJBVTyjmJPhyjJ4=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=

@@ -65,7 +65,7 @@ func init() {
 
 func main() {
 
-	chainID, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
+	chainID, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "10050"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chain ID: %v", err)
 	}
