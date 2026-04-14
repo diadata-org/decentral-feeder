@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	diaOracleV3MultiupdateService "github.com/diadata-org/lumina-library/contracts/lumina/diaoraclev3"
+	diaOracleV3 "github.com/diadata-org/lumina-library/contracts/lumina/diaoraclev3"
 	"github.com/diadata-org/lumina-library/metrics"
 	models "github.com/diadata-org/lumina-library/models"
 	"github.com/diadata-org/lumina-library/onchain"
@@ -90,6 +90,12 @@ func main() {
 		metacontractPrecision = 8
 	}
 
+	decimalPrecision, err := strconv.Atoi(utils.Getenv("DECIMAL_PRECISION", "18"))
+	if err != nil {
+		log.Error("parse DECIMAL_PRECISION: ", err)
+		decimalPrecision = 18
+	}
+
 	// Initialize env variables for metrics server.
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
@@ -114,9 +120,9 @@ func main() {
 		exchangePairString,
 	)
 
-	var contract *diaOracleV3MultiupdateService.DiaOracleV3MultiupdateService
-	var contractBackup *diaOracleV3MultiupdateService.DiaOracleV3MultiupdateService
-	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
+	var contract *diaOracleV3.DIAOracleV3
+	var contractBackup *diaOracleV3.DIAOracleV3
+	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup, uint8(decimalPrecision))
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
@@ -159,5 +165,5 @@ func main() {
 	)
 
 	// This should be the final line of main (blocking call)
-	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
+	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, decimalPrecision, filtersChannel)
 }
