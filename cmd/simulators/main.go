@@ -108,6 +108,12 @@ func main() {
 		decimalPrecision = 18
 	}
 
+	batchSizeOracleUpdate, err := strconv.Atoi(utils.Getenv("BATCH_SIZE_ORACLE_UPDATE", "20"))
+	if err != nil {
+		log.Error("parse BATCH_SIZE_ORACLE_UPDATE: ", err)
+		decimalPrecision = 18
+	}
+
 	// Initialize env variables for metrics server.
 	pushgatewayURL := os.Getenv("PUSHGATEWAY_URL")
 	authUser := os.Getenv("PUSHGATEWAY_USER")
@@ -173,6 +179,6 @@ func main() {
 	)
 
 	// Update the oracle. Use backup node if it fails.
-	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, decimalPrecision, filtersChannel)
+	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, decimalPrecision, batchSizeOracleUpdate, filtersChannel)
 
 }
