@@ -82,24 +82,27 @@ jobs:
           git config user.name "DIA Lumina Bot"
           git config user.email "infrastructure@diadata.org"
 
-          # Update image registry and tag for mainnet scraper feeder
-          VALUES_FILE="helmcharts/decentral-feeders-aws/003-scraper-mainnet-aws/values.yaml"
-          if [ -f "$VALUES_FILE" ]; then
-            echo "Updating mainnet scraper: $VALUES_FILE"
-            sed -i "s|image: [^,]*|image: ${ECR_REGISTRY}/lumina/decentralized-feeder|" "$VALUES_FILE"
-            sed -i "s|tag: [^}]*|tag: commit-hash-${{ env.COMMIT_HASH }}|" "$VALUES_FILE"
-          fi
+          # Update image registry and tag for mainnet scraper feeders
+          for FEEDER in 002-scraper-mainnet-aws 003-scraper-mainnet-aws; do
+            VALUES_FILE="helmcharts/decentral-feeders-aws/${FEEDER}/values.yaml"
+            if [ -f "$VALUES_FILE" ]; then
+              echo "Updating mainnet scraper: $VALUES_FILE"
+              sed -i "s|image: [^,]*|image: ${ECR_REGISTRY}/lumina/decentralized-feeder|" "$VALUES_FILE"
+              sed -i "s|tag: [^}]*|tag: commit-hash-${{ env.COMMIT_HASH }}|" "$VALUES_FILE"
+            fi
+          done
 
           # Show what changed
           echo "Changes to be committed:"
-          git diff helmcharts/decentral-feeders-aws/003-scraper-mainnet-aws/values.yaml
+          git diff helmcharts/decentral-feeders-aws/
 
           # Commit and push if there are changes
           if ! git diff --quiet; then
+            git add helmcharts/decentral-feeders-aws/002-scraper-mainnet-aws/values.yaml
             git add helmcharts/decentral-feeders-aws/003-scraper-mainnet-aws/values.yaml
-            git commit -m "Deploy AWS mainnet feeder: commit-hash-${{ env.COMMIT_HASH }}"
+            git commit -m "Deploy AWS mainnet feeders (002, 003): commit-hash-${{ env.COMMIT_HASH }}"
             git push https://$LUMINA_INFRA_PAT@github.com/diadata-org/lumina-infra.git HEAD:master
-            echo "Pushed updates to lumina-infra. ArgoCD will sync AWS mainnet feeder automatically."
+            echo "Pushed updates to lumina-infra. ArgoCD will sync AWS mainnet feeders automatically."
           else
             echo "No changes to commit"
           fi
@@ -146,13 +149,6 @@ jobs:
           helm upgrade --install -n dia-lumina \
             --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
             006-scraper-testnet .
-          cd -
-
-          echo "Deploying scraper mainnet node 002"
-          cd lumina-infra/helmcharts/decentral-feeders/002-scraper-mainnet-civo
-          helm upgrade --install -n lumina-mainnet \
-            --set repository.tag="commit-hash-${{ env.COMMIT_HASH }}" \
-            002-scraper-mainnet .
           cd -
 
           # Clean up CA certificate
