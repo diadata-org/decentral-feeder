@@ -90,11 +90,12 @@ This repository hosts a self-contained containerized application for running a d
 - Wait approximately **3 minutes** for the implementation transaction to mine. The proxy deployment will then begin automatically:
 
   ```plaintext
-  level=info msg="Proxy pending deploy: 0x<proxy_address>."
-  level=info msg="Transaction waiting to be mined: 0x<tx_hash>."
+  level=info msg="Deployment successful!"
+  level=info msg="ValueStore Implementation: 0x2682c1143dc9d4fa1a6ca89b66a76fd280a5ade1"
+  level=info msg="ERC1967Proxy (use this address): 0xda36302ec017d94e3af528ae1c86de375ccf38e1"
   ```
 
-- Copy the **proxy address** from the `Proxy pending deploy` log line and update your `.env` file with the `DEPLOYED_CONTRACT` variable:
+- Copy the **proxy address** from the `ERC1967Proxy (use this address)` log line and update your `.env` file with the `DEPLOYED_CONTRACT` variable:
 
   ```plaintext
   DEPLOYED_CONTRACT=0x<proxy_address>
