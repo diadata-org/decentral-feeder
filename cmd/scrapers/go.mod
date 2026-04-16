@@ -3,8 +3,7 @@ module github.com/diadata-org/decentral-feeder/cmd/scrapers
 go 1.24.0
 
 require (
-	github.com/diadata-org/diadata v1.4.568
-	github.com/diadata-org/lumina-library v1.0.3
+	github.com/diadata-org/lumina-library v1.0.5-rc1
 	github.com/sirupsen/logrus v1.9.3
 )
 

@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	diaOracleV2MultiupdateService "github.com/diadata-org/diadata/pkg/dia/scraper/blockchain-scrapers/blockchains/ethereum/diaOracleV2MultiupdateService"
+	diaOracleV3 "github.com/diadata-org/lumina-library/contracts/lumina/diaoraclev3"
 	"github.com/diadata-org/lumina-library/metrics"
 	models "github.com/diadata-org/lumina-library/models"
 	"github.com/diadata-org/lumina-library/onchain"
@@ -65,7 +65,7 @@ func init() {
 
 func main() {
 
-	chainID, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "100640"), 10, 64)
+	chainID, err := strconv.ParseInt(utils.Getenv("CHAIN_ID", "10050"), 10, 64)
 	if err != nil {
 		log.Fatalf("Failed to parse chain ID: %v", err)
 	}
@@ -88,6 +88,18 @@ func main() {
 	if err != nil {
 		log.Error("parse METACONTRACT_PRECISION: ", err)
 		metacontractPrecision = 8
+	}
+
+	decimalPrecision, err := strconv.Atoi(utils.Getenv("DECIMAL_PRECISION", "18"))
+	if err != nil {
+		log.Error("parse DECIMAL_PRECISION: ", err)
+		decimalPrecision = 18
+	}
+
+	batchSizeOracleUpdate, err := strconv.Atoi(utils.Getenv("BATCH_SIZE_ORACLE_UPDATE", "20"))
+	if err != nil {
+		log.Error("parse BATCH_SIZE_ORACLE_UPDATE: ", err)
+		decimalPrecision = 18
 	}
 
 	// Initialize env variables for metrics server.
@@ -114,9 +126,9 @@ func main() {
 		exchangePairString,
 	)
 
-	var contract *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	var contractBackup *diaOracleV2MultiupdateService.DiaOracleV2MultiupdateService
-	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup)
+	var contract *diaOracleV3.DIAOracleV3
+	var contractBackup *diaOracleV3.DIAOracleV3
+	err = onchain.DeployOrBindContract(deployedContract, conn, connBackup, auth, &contract, &contractBackup, uint8(decimalPrecision))
 	if err != nil {
 		log.Fatalf("Failed to Deploy or Bind primary and backup contract: %v", err)
 	}
@@ -159,5 +171,5 @@ func main() {
 	)
 
 	// This should be the final line of main (blocking call)
-	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, filtersChannel)
+	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, decimalPrecision, batchSizeOracleUpdate, filtersChannel)
 }
