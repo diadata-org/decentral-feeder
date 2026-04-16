@@ -80,16 +80,25 @@ This repository hosts a self-contained containerized application for running a d
 
 ### Retrieve Deployed Contract
 
-- Once the container is deployed with `DEPLOYED_CONTRACT` env variable empty the logs will display the deployed contract address in the following format:
+- Once the container is deployed with `DEPLOYED_CONTRACT` env variable empty, two contracts are deployed automatically: an implementation contract and a proxy. The logs will show:
+
   ```plaintext
-  │ time="2024-11-25T11:30:08Z" level=info msg="Contract pending deploy: 0xxxxxxxxxxxxxxxxxxxxxxxxxx."
+  level=info msg="Implementation pending deploy: 0x<implementation_address>."
+  level=info msg="Transaction waiting to be mined: 0x<tx_hash>."
   ```
-- Copy the displayed contract address (e.g., `0xxxxxxxxxxxxxxxxxxxxxxxxxx`) and stop the container with `docker rm -f <container_name>`.
 
-- Update your `.env` file with `DEPLOYED_CONTRACT` variable mentioned above. Redeployed the container with `docker-compose up -d`
+- Wait approximately **3 minutes** for the deployment transactions to mine. The proxy contract will be shown in the logs as follows:
 
   ```plaintext
-  DEPLOYED_CONTRACT=0xxxxxxxxxxxxxxxxxxxxxxxxxx
+  level=info msg="Deployment successful!"
+  level=info msg="DIAOracleV3 Implementation: 0x<implementation_address>"
+  level=info msg="ERC1967Proxy (use this address): 0x<proxy_address>"
+  ```
+
+- Copy the **proxy address** from the `ERC1967Proxy (use this address)` log line and update your `.env` file with the `DEPLOYED_CONTRACT` variable:
+
+  ```plaintext
+  DEPLOYED_CONTRACT=0x<proxy_address>
   ```
 
 - Check if the container is running correctly by viewing the logs. Run the following command:
