@@ -87,12 +87,12 @@ This repository hosts a self-contained containerized application for running a d
   level=info msg="Transaction waiting to be mined: 0x<tx_hash>."
   ```
 
-- Wait approximately **3 minutes** for the implementation transaction to mine. The proxy deployment will then begin automatically:
+- Wait approximately **3 minutes** for the deployment transactions to mine. The proxy contract will be shown in the logs as follows:
 
   ```plaintext
   level=info msg="Deployment successful!"
-  level=info msg="ValueStore Implementation: 0x2682c1143dc9d4fa1a6ca89b66a76fd280a5ade1"
-  level=info msg="ERC1967Proxy (use this address): 0xda36302ec017d94e3af528ae1c86de375ccf38e1"
+  level=info msg="DIAOracleV3 Implementation: 0x<implementation_address>"
+  level=info msg="ERC1967Proxy (use this address): 0x<proxy_address>"
   ```
 
 - Copy the **proxy address** from the `ERC1967Proxy (use this address)` log line and update your `.env` file with the `DEPLOYED_CONTRACT` variable:
