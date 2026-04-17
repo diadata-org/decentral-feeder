@@ -185,6 +185,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "LTC-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "MKR-USD",
             "WatchDogDelay": 300
         },
