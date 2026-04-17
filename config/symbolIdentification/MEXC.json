@@ -239,6 +239,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "LTC",
+            "Exchange": "MEXC",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
             "Symbol": "LYX",
             "Exchange": "MEXC",
             "Blockchain": "Lukso",
