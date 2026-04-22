@@ -197,6 +197,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "LTC-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LYX-USDT", 
             "WatchDogDelay": 300
         },

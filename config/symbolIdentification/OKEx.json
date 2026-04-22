@@ -211,6 +211,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "LTC",
+            "Exchange": "OKEx",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
             "Symbol": "MKR",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

@@ -204,6 +204,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "LTC",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
             "Symbol": "LYX",
             "Exchange": "Crypto.com",
             "Blockchain": "Lukso",

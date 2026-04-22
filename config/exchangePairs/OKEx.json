@@ -177,6 +177,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "LTC-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "NEAR-USDT", 
             "WatchDogDelay": 300
         },
