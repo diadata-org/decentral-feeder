@@ -1,6 +1,12 @@
 {
     "Pools": [
         {
+            "ForeignName": "WETH-ASTEROID",
+            "Address": "0x76A411f14A704099Ba476CE8dFFC288a53295218",
+            "Order": "1",
+            "WatchDogDelay": 600
+        },
+        {
             "ForeignName": "WETH-USDT",
             "Address": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852",
             "Order": "0",
