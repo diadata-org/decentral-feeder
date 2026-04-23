@@ -37,6 +37,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ASTEROID-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ATOM-USDT", 
             "WatchDogDelay": 300
         },
