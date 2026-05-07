@@ -238,7 +238,7 @@
         },
         {
             "Pair": "USDG-USDT", 
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "USDT-USDC",
