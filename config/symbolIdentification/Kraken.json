@@ -92,6 +92,12 @@
             "Decimals": 18
         },
         {
+            "Symbol": "CASH",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "CASHx9KJUStyftLFWGvEVf59SGeG9sh5FfcnZMVPCASH"
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
@@ -453,6 +459,13 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "USDG",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
             "Decimals": 6
         },
         {

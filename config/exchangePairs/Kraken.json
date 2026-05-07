@@ -37,6 +37,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "CASH-USD",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "DOGE-USD",
             "WatchDogDelay": 300
         },
@@ -191,6 +195,18 @@
         {
             "Pair": "USDC-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "USDG-USD",
+            "WatchDogDelay": 600
+        },
+        {
+            "Pair": "USDG-USDC",
+            "WatchDogDelay": 1200
+        },
+        {
+            "Pair": "USDG-USDT",
+            "WatchDogDelay": 1200
         },
         {
             "Pair": "USDT-USD",
