@@ -421,6 +421,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "SOḾI",
+            "Exchange": "MEXC",
+            "Blockchain": "Somnia",
+            "Address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SPX",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",

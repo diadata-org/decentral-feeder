@@ -344,6 +344,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "SOḾI",
+            "Exchange": "Binance",
+            "Blockchain": "Somnia",
+            "Address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "Decimals": 18
+        },
+        {
             "Symbol": "STG",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",

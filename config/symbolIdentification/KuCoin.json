@@ -386,6 +386,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "SOḾI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Somnia",
+            "Address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SPX",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

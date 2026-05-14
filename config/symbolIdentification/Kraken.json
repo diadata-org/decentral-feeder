@@ -351,6 +351,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "SOḾI",
+            "Exchange": "Kraken",
+            "Blockchain": "Somnia",
+            "Address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SPX",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",

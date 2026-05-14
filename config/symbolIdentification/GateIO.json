@@ -449,6 +449,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "SOḾI",
+            "Exchange": "GateIO",
+            "Blockchain": "Somnia",
+            "Address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SPX",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
