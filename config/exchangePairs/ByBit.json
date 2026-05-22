@@ -237,6 +237,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "SOMI-USDT", 
+            "WatchDogDelay": 600
+        },
+        {
             "Pair": "STETH-USDT",
             "WatchDogDelay": 300
         },

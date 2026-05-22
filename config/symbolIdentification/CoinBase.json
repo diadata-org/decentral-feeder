@@ -204,6 +204,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "JITOSOL",
+            "Exchange": "CoinBase",
+            "Blockchain": "Solana",
+            "Address": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
+            "Decimals": 9
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
