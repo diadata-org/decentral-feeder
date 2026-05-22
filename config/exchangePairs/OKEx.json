@@ -161,6 +161,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "JITOSOL-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "LDO-USDT", 
             "WatchDogDelay": 300
         },
