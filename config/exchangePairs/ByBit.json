@@ -17,6 +17,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "AERO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "APT-USDT",
             "WatchDogDelay": 300
         },
@@ -313,6 +317,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "VIRTUAL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VVV-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "WIF-USDT",
             "WatchDogDelay": 300
         },
@@ -346,6 +358,10 @@
         },
         {
             "Pair": "ZEN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZORA-USDT",
             "WatchDogDelay": 300
         }
     ]

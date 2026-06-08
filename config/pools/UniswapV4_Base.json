@@ -1,0 +1,25 @@
+{
+    "Pools": [
+        {
+            "ForeignName": "cbBTC-USDC",
+            "Address": "0x12d76c5c8ec8edffd3c143995b0aa43fe44a6d71eb9113796272909e54b8e078",
+            "Order": "0",
+            "WatchDogDelay": 3600,
+            "Assetvolumes": [
+                { "Asset": { "Address": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf" } },
+                { "Asset": { "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" } }
+            ]
+        },
+        {
+            "ForeignName": "CHECK-ETH",
+            "Address": "0x1a32cf28776d1c3cf59bf6cf2cab376407c5c712679eabf23a5eb35dc4fe1493",
+            "Order": "0",
+            "WatchDogDelay": 3600,
+            "Assetvolumes": [
+                { "Asset": { "Address": "0x9126236476EfBA9aD8aB77855C60EB5BF37586Eb" } },
+                { "Asset": { "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" } }
+
+            ]
+        }
+    ]
+}

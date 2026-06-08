@@ -9,6 +9,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "AERO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "APT-USDT", 
             "WatchDogDelay": 300
         },
@@ -321,6 +325,14 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "VIRTUAL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VVV-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "WIF-USDT", 
             "WatchDogDelay": 300
         },
@@ -346,6 +358,10 @@
         },
         {
             "Pair": "XRP-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZORA-USDT",
             "WatchDogDelay": 300
         }
     ]

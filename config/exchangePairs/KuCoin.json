@@ -297,6 +297,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "VIRTUAL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VVV-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "WIF-USDT",
             "WatchDogDelay": 300
         },

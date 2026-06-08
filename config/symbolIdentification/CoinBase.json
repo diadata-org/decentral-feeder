@@ -78,6 +78,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "cbETH",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0x2Ae3F1Ec7F1F5012CFEaB0185bfc7aa3cf0DEc22",
+            "Decimals": 18
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -454,6 +461,20 @@
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
             "Decimals": 6
+        }, 
+        {
+            "Symbol": "VIRTUAL",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "VVV",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
+            "Decimals": 18
         },
         {
             "Symbol": "WIF",
@@ -488,6 +509,13 @@
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZORA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
             "Decimals": 18
         }
     ]

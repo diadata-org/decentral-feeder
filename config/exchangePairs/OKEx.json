@@ -337,6 +337,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "VIRTUAL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "WIF-USDT", 
             "WatchDogDelay": 300
         },
@@ -370,6 +374,10 @@
         },
         {
             "Pair": "XRP-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZORA-USDT",
             "WatchDogDelay": 300
         }
     ]

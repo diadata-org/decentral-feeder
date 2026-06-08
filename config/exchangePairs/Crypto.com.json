@@ -333,6 +333,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "VVV-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "WIF-USDT",
             "WatchDogDelay": 300
         },
