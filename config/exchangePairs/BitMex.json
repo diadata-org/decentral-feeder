@@ -25,10 +25,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "MATIC-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "SOL-USDT",
             "WatchDogDelay": 300
         },

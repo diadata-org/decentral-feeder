@@ -64,13 +64,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "MATIC",
-            "Exchange": "BitMex",
-            "Blockchain": "Polygon",
-            "Address": "0x0000000000000000000000000000000000001010",
-            "Decimals": 18
-        },
-        {
             "Symbol": "BMEX",
             "Exchange": "BitMex",
             "Blockchain": "Ethereum",
