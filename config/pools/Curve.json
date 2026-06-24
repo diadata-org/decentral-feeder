@@ -353,12 +353,6 @@
             "Address": "0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f",
             "Order": "10",
             "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "cbETH-WETH",
-            "Address": "0x11c1fbd4b3de66bc0565779b35171a6cf3e71f59",
-            "Order": "10",
-            "WatchDogDelay": 3600
         }
     ]
 }

@@ -1,27 +1,9 @@
 {
     "Pools": [
         {
-            "ForeignName": "WETH-USDC",
-            "Address": "0xb2cc224c1c9feE385f8ad6a55b4d94E92359DC59",
-            "Order": "2",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "WETH-USDC",
-            "Address": "0xdbc6998296caa1652a810dc8d3baf4a8294330f1",
-            "Order": "2",
-            "WatchDogDelay": 3600
-        },
-        {
             "ForeignName": "SYND-WETH",
             "Address": "0x50f8f7ffbd70c6c87b1668eee4e03f5ac057de3f",
             "Order": "0",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "USDT-USDC",
-            "Address": "0xa41bc0affba7fd420d186b84899d7ab2ac57fcd1",
-            "Order": "2",
             "WatchDogDelay": 3600
         },
         {
@@ -31,37 +13,25 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "cbBTC-WETH",
+            "ForeignName": "WETH-cbBTC",
             "Address": "0x70acdf2ad0bf2402c957154f944c19ef4e1cbae1",
             "Order": "1",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "cbBTC-USDC",
+            "ForeignName": "USDC-cbBTC",
             "Address": "0x4e962bb3889bf030368f56810a9c96b83cb3e778",
             "Order": "1",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "AERO-WETH",
-            "Address": "0x4e506648d493c8870f55e870480f92f2f33ece51",
-            "Order": "1",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "AERO-USDC",
+            "ForeignName": "USDC-AERO",
             "Address": "0xbe00ff35af70e8415d0eb605a286d8a45466a4c1",
             "Order": "1",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "cbBTC-AERO",
-            "Address": "0xcdbe19a6ef1b633be744920c93ee40521d5cf2a6",
-            "Order": "1",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "VVV-WETH",
+            "ForeignName": "WETH-VVV",
             "Address": "0x7ec6c9d993d9832aa654593f2dbc21303650bc6c",
             "Order": "1",
             "WatchDogDelay": 3600
@@ -69,18 +39,12 @@
         {
             "ForeignName": "cbETH-WETH",
             "Address": "0x47ca96ea59c13f72745928887f84c9f52c3d7348",
-            "Order": "1",
+            "Order": "0",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "BRETT-WETH",
+            "ForeignName": "WETH-BRETT",
             "Address": "0x4e829f8a5213c42535ab84aa40bd4adcce9cba02",
-            "Order": "1",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "CHECK-USDC",
-            "Address": "0x3c4384f3664b37a3cb5a5cb3452b4b4a3aa1256f",
             "Order": "1",
             "WatchDogDelay": 3600
         }

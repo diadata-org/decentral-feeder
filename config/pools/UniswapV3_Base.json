@@ -1,19 +1,13 @@
 {
     "Pools": [
         {
-            "ForeignName": "WETH-USDC",
-            "Address": "0xd0b53D9277642d899DF5C87A3966A349A798F224",
-            "Order": "2",
-            "WatchDogDelay": 3600
-        },
-        {
             "ForeignName": "USDC-cbBTC",
             "Address": "0xfBB6Eed8e7aa03B138556eeDaF5D271A5E1e43ef",
             "Order": "1",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "cbBTC-WETH",
+            "ForeignName": "WETH-cbBTC",
             "Address": "0x8c7080564b5a792a33ef2fd473fba6364d5495e5",
             "Order": "1",
             "WatchDogDelay": 3600
@@ -21,17 +15,17 @@
         {
             "ForeignName": "VIRTUAL-USDC",
             "Address": "0x529d2863a1521d0b57db028168fde2e97120017c",
-            "Order": "1",
+            "Order": "0",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "TOSHI-WETH",
+            "ForeignName": "WETH-TOSHI",
             "Address": "0x4b0aaf3ebb163dd45f663b38b6d93f6093ebc2d3",
             "Order": "1",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "BRETT-WETH",
+            "ForeignName": "WETH-BRETT",
             "Address": "0xba3f945812a83471d709bce9c3ca699a19fb46f7",
             "Order": "1",
             "WatchDogDelay": 3600
@@ -39,11 +33,11 @@
         {
             "ForeignName": "AIXBT-USDC",
             "Address": "0xf1fdc83c3a336bdbdc9fb06e318b08eaddc82ff4",
-            "Order": "1",
+            "Order": "0",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "DEGEN-WETH",
+            "ForeignName": "WETH-DEGEN",
             "Address": "0xc9034c3e7f58003e6ae0c8438e7c8f4598d5acaa",
             "Order": "1",
             "WatchDogDelay": 3600
