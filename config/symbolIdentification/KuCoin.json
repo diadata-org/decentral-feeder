@@ -470,13 +470,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "TON",
-            "Exchange": "KuCoin",
-            "Blockchain": "Ton",
-            "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
-        },
-        {
             "Symbol": "TRX",
             "Exchange": "KuCoin",
             "Blockchain": "Tron",

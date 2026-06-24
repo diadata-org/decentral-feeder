@@ -540,13 +540,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "TON",
-            "Exchange": "GateIO",
-            "Blockchain": "Ton",
-            "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
-        },
-        {
             "Symbol": "TOSHI",
             "Exchange": "GateIO",
             "Blockchain": "Base",

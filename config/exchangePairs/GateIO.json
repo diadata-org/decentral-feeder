@@ -293,10 +293,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "TON-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "TOSHI-USDT", 
             "WatchDogDelay": 300
         },
