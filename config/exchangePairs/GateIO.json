@@ -213,10 +213,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "TON-USDT", 
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "TRX-USDT", 
             "WatchDogDelay": 300
         },
