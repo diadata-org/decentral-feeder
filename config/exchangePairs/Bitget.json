@@ -85,10 +85,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "BTC-EUR",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "BTC-USDT",
             "WatchDogDelay": 300
         },
