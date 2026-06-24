@@ -491,13 +491,6 @@
             "Decimals": 6
         },
         {
-            "Symbol": "TON",
-            "Exchange": "MEXC",
-            "Blockchain": "Ton",
-            "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
-        },
-        {
             "Symbol": "TRX",
             "Exchange": "MEXC",
             "Blockchain": "Tron",

@@ -407,13 +407,6 @@
             "Decimals": 6
         },
         {
-            "Symbol": "TON",
-            "Exchange": "Binance",
-            "Blockchain": "Ton",
-            "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
-        },
-        {
             "Symbol": "TRX",
             "Exchange": "Binance",
             "Blockchain": "Tron",
