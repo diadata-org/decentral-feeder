@@ -25,6 +25,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ASTR-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ATOM-USDT",
             "WatchDogDelay": 300
         },
@@ -222,6 +226,14 @@
         },
         {
             "Pair": "TIA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TLOS-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TON-USDT",
             "WatchDogDelay": 300
         },
         {
