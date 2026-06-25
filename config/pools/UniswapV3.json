@@ -229,10 +229,28 @@
             "WatchDogDelay": 3600
         },
         {
+            "ForeignName": "BITCOIN-USDC",
+            "Address": "0xFfC9eFD66926e3023A4cbd20145CA48F52DFf2d9",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
             "ForeignName": "KING-WETH",
             "Address": "0x29567ae23d65225870C5bd738a6debe7Ac5A1D66",
             "Order": "0",
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "CULT-SPX",
+            "Address": "0xac2bB0855AB7963152c8fc4f98a862dCac530a4E",
+            "Order": "0",
+            "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "Neiro-WETH",
+            "Address": "0x15153Da0E9e13cfC167b3D417d3721bF545479bB",
+            "Order": "0",
+            "WatchDogDelay": 600
         }
     ]
 }
