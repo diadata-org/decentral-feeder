@@ -13,6 +13,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ANDYETH-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "AR-USDT", 
             "WatchDogDelay": 300
         },
