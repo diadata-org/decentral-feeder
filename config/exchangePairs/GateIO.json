@@ -125,6 +125,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "MOG-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "NEAR-USDT", 
             "WatchDogDelay": 300
         },
@@ -197,8 +201,13 @@
             "WatchDogDelay": 300
         },
         {
+<<<<<<< HEAD
             "Pair": "SOMI-USDT", 
             "WatchDogDelay": 3600
+=======
+            "Pair": "SPX-USDT", 
+            "WatchDogDelay": 300
+>>>>>>> 09cf9da (add SPX & MOG assets)
         },
         {
             "Pair": "STRK-USDT", 

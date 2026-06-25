@@ -161,6 +161,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "MOG-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "NEAR-USDT",
             "WatchDogDelay": 300
         },
@@ -236,9 +240,13 @@
             "Pair": "SOL-BTC",
             "WatchDogDelay": 300
         },
-        {
+        { 
             "Pair": "SOMI-USDT", 
             "WatchDogDelay": 600
+        },
+        {
+            "Pair": "SPX-USDT",
+            "WatchDogDelay": 300
         },
         {
             "Pair": "STETH-USDT",
