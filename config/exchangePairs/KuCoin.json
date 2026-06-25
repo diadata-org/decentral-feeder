@@ -238,7 +238,7 @@
         },
         {
             "Pair": "SOMI-USDT", 
-            "WatchDogDelay": 3600
+            "WatchDogDelay": 14400
         },
         {
             "Pair": "SPX-USDT",
