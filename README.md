@@ -58,7 +58,7 @@ This repository hosts a self-contained containerized application for running a d
   - `PUSHGATEWAY_USER`: to allow decentralized-feeder authenticate towards the monitoring server.
   - `PUSHGATEWAY_PASSWORD`: to allow decentralized-feeder authenticate towards the monitoring server.
 
-  For additional environment variable configurations, refer to [Adding Exchange Pairs](https://github.com/diadata-org/decentral-feeder/wiki/Adding-New-Markets) and [Watchdog environment variables](https://github.com/diadata-org/decentral-feeder/wiki/Enabling-watchdogs)
+  For additional environment variable configurations, refer to [Adding Exchange Pairs](https://github.com/diadata-org/decentral-feeder/wiki/Adding-New-Markets) and [Watchdog environment variables](https://github.com/diadata-org/decentral-feeder/wiki/Enabling-watchdogs) or to a full template for an .env file here [.env.example](https://github.com/diadata-org/decentral-feeder/blob/master/.env.example).
 
 - Example `.env` file:
 
