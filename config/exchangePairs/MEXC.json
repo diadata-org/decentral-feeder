@@ -25,6 +25,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "APU-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "AR-ETH", 
             "WatchDogDelay": 300
         },
@@ -57,6 +61,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "BANANA-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "BNB-USDT", 
             "WatchDogDelay": 300
         },
@@ -66,6 +74,10 @@
         },
         {
             "Pair": "BONK-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BOBO-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -90,6 +102,10 @@
         },
         {
             "Pair": "CRV-ETH", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CULT-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -157,6 +173,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "FLOKI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "GIZA-USDT", 
             "WatchDogDelay": 300
         },
@@ -181,11 +201,19 @@
             "WatchDogDelay": 300
         },
         {
-<<<<<<< HEAD
             "Pair": "LTC-USDT", 
-=======
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LYX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LWOLF-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "MOG-USDT", 
->>>>>>> 09cf9da (add SPX & MOG assets)
             "WatchDogDelay": 300
         },
         {
@@ -194,6 +222,14 @@
         },
         {
             "Pair": "NEAR-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEIROCTO-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NPC-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -206,6 +242,10 @@
         },
         {
             "Pair": "PENDLE-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PIN-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -314,6 +354,10 @@
         },
         {
             "Pair": "TRX-BTC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TURBO-USDT", 
             "WatchDogDelay": 300
         },
         {
