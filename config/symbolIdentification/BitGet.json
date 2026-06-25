@@ -1,0 +1,613 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "ACA",
+            "Exchange": "BitGet",
+            "Blockchain": "Acala",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 12
+        },
+        {
+            "Symbol": "ADA",
+            "Exchange": "BitGet",
+            "Blockchain": "Cardano",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AERO",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AIXBT",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0D4d5Fb53d1A825",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ALEX",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x199ABc11Dbce499643f43F33d6c5a8B6f0272b1e",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ALPH",
+            "Exchange": "BitGet",
+            "Blockchain": "Alephium",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "APU",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x594DaaD7D77592a2b97b725A7AD59D7E188b5bFa",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ARB",
+            "Exchange": "BitGet",
+            "Blockchain": "Arbitrum",
+            "Address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ASTR",
+            "Exchange": "BitGet",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AURORA",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xAaAAAA20D9E0e2461697782ef11675f668207961",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AVAX",
+            "Exchange": "BitGet",
+            "Blockchain": "Avalanche",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AXL",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x467719aD09025FcC6cF6F8311755809d45a5E5f3",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "AZERO",
+            "Exchange": "BitGet",
+            "Blockchain": "AlephZero",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 12
+        },
+        {
+            "Symbol": "BANANA",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "BEAM",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE",
+            "Decimals": 18
+        },        
+        {
+            "Symbol": "BNB",
+            "Exchange": "BitGet",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "BRETT",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "BTC",
+            "Exchange": "BitGet",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "CELO",
+            "Exchange": "BitGet",
+            "Blockchain": "Celo",
+            "Address": "0x471EcE3750Da237f93B8E339c536989b8978a438",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "CLANKER",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0x1bc0c42215582d5a085795f4baDbaC3ff36d1Bcb",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "COOKIE",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "COTI",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "CUSD",
+            "Exchange": "BitGet",
+            "Blockchain": "Celo",
+            "Address": "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "DAI",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "DOGE",
+            "Exchange": "BitGet",
+            "Blockchain": "Dogechain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "DOT",
+            "Exchange": "BitGet",
+            "Blockchain": "Polkadot",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 10
+        },
+        {
+            "Symbol": "ENA",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x57e114B691Db790C35207b2e685D4A43181e6061",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ETH",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "EUR",
+            "Exchange": "BitGet",
+            "Blockchain": "Fiat",
+            "Address": "978",
+            "Decimals": 2
+        },
+        {
+            "Symbol": "FLOKI",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "FXS",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GALA",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "GLMR",
+            "Exchange": "BitGet",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GNO",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x6810e776880C02933D47DB1b9fc05908e5386b96",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GNS",
+            "Exchange": "BitGet",
+            "Blockchain": "Arbitrum",
+            "Address": "0x18c11FD286C5EC11c3b683Caa813B77f5163A122",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GRAIL",
+            "Exchange": "BitGet",
+            "Blockchain": "Arbitrum",
+            "Address": "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GUN",
+            "Exchange": "BitGet",
+            "Blockchain": "Avalanche",
+            "Address": "0x26debd39D5ed069770406FCa10A0E4f8d2c743eB",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "IMX",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "KAITO",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "KDA",
+            "Exchange": "BitGet",
+            "Blockchain": "Kadena",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 12
+        },
+        {
+            "Symbol": "KERNEL",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "KSM",
+            "Exchange": "BitGet",
+            "Blockchain": "Kusama",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 12
+        },
+        {
+            "Symbol": "LDO",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "LYX",
+            "Exchange": "BitGet",
+            "Blockchain": "Lukso",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MAVIA",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x24fcFC492C1393274B6bcd568ac9e225BEc93584",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MIGGLES",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0xb1a03EdA10342529bBf8EB700a06C60441fEf25d",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MORPHO",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MOVR",
+            "Exchange": "BitGet",
+            "Blockchain": "Moonriver",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "NAKA",
+            "Exchange": "BitGet",
+            "Blockchain": "Polygon",
+            "Address": "0x311434160D7537be358930def317AfB606C0D737",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "NEAR",
+            "Exchange": "BitGet",
+            "Blockchain": "NEAR",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 24
+        },
+        {
+            "Symbol": "NEIROCTO",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fa853Ee",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "NEIROETH",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fa853Ee",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "NPC",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "OBOL",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x0B010000b7624eb9B3DfBC279673C76E9D29D5F7",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "OP",
+            "Exchange": "BitGet",
+            "Blockchain": "Optimism",
+            "Address": "0x4200000000000000000000000000000000000042",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ORDI",
+            "Exchange": "BitGet",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PEPE",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "POL",
+            "Exchange": "BitGet",
+            "Blockchain": "Polygon",
+            "Address": "0x0000000000000000000000000000000000001010",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RARE",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xba5BDe662c17e2aDFF1075610382B9B691296350",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "S",
+            "Exchange": "BitGet",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SAGA",
+            "Exchange": "BitGet",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SATS",
+            "Exchange": "BitGet",
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SKY",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x56072C95FAA701256059aa122697B133aDEd9279",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SOL",
+            "Exchange": "BitGet",
+            "Blockchain": "Solana",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "SOMI",
+            "Exchange": "BitGet",
+            "Blockchain": "Somnia",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SSV",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STETH",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STORJ",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "STX",
+            "Exchange": "BitGet",
+            "Blockchain": "Stacks",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "SYK",
+            "Exchange": "BitGet",
+            "Blockchain": "Arbitrum",
+            "Address": "0xACC51FFDeF63fB0c014c882267C3A17261A5eD50",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TANSSI",
+            "Exchange": "BitGet",
+            "Blockchain": "Tanssi",
+            "Address": "0x553F4cB7256D8fC038E91d36Cb63fa7C13b624AB",
+            "Decimals": 12
+        },
+        {
+            "Symbol": "TLOS",
+            "Exchange": "BitGet",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TON",
+            "Exchange": "BitGet",
+            "Blockchain": "Ton",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "TURBO",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xA35923162C49cF95e6BF26623385eb431ad920D3",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "USDE",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USDS",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "VIRTUAL",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WILD",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x2a3bFF78B79A009976EeA096a51A948a3dC00e34",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WOLF",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "XAUT",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "XRP",
+            "Exchange": "BitGet",
+            "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "ZEN",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZK",
+            "Exchange": "BitGet",
+            "Blockchain": "Ethereum",
+            "Address": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZORA",
+            "Exchange": "BitGet",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
+            "Decimals": 18
+        }
+    ]
+}

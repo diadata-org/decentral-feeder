@@ -54,7 +54,7 @@
             "Exchange": "Binance",
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 18
         },
         {
             "Symbol": "BANANA",
@@ -451,8 +451,8 @@
         {
             "Symbol": "VVV",
             "Exchange": "Binance",
-            "Blockchain": "Ethereum",
-            "Address": "0x0000000000000000000000000000000000000000",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
             "Decimals": 18
         },
         {

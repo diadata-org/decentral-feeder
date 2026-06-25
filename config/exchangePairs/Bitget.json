@@ -197,10 +197,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "LA-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "LDO-USDT",
             "WatchDogDelay": 300
         },
