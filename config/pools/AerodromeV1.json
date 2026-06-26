@@ -1,0 +1,22 @@
+{
+    "Pools": [
+        {
+            "ForeignName": "AERO-WETH",
+            "Address": "0x7f670f78B17dEC44d5Ef68a48740b6f8849cc2e6",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDC-WETH",
+            "Address": "0xcdac0d6c6c59727a65f871236188350531885c43",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-USDC",
+            "Address": "0x3548029694fbb241d45fb24ba0cd9c9d4e745f16",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        }
+    ]
+}
