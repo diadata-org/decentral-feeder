@@ -61,7 +61,7 @@
             "Exchange": "Kraken",
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 18
         },
         {
             "Symbol": "HPOS10I",
@@ -89,7 +89,7 @@
             "Exchange": "Kraken",
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
+            "Decimals": 8
         },
         {
             "Symbol": "CASH",
@@ -222,6 +222,13 @@
             "Blockchain": "Solana",
             "Address": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
             "Decimals": 9
+        },
+        {
+            "Symbol": "KERNEL",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf",
+            "Decimals": 18
         },
         {
             "Symbol": "LDO",
@@ -361,7 +368,7 @@
             "Exchange": "Kraken",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 9
         },
         {
             "Symbol": "SOMI",
@@ -476,11 +483,32 @@
             "Decimals": 6
         },
         {
+            "Symbol": "USDS",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xdC035D45d973E3EC169d2276DDab16f1e407384F",
+            "Decimals": 18
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
             "Decimals": 6
+        },
+        {
+            "Symbol": "VIRTUAL",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "VVV",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
+            "Decimals": 18
         },
         {
             "Symbol": "WIF",

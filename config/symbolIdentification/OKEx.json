@@ -43,6 +43,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ASTR",
+            "Exchange": "OKEx",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "OKEx",
             "Blockchain": "Cosmos",
@@ -54,7 +61,7 @@
             "Exchange": "OKEx",
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 18
         },
         {
             "Symbol": "BANANA",
@@ -82,7 +89,7 @@
             "Exchange": "OKEx",
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
+            "Decimals": 8
         },
         {
             "Symbol": "CAKE",
@@ -348,7 +355,7 @@
             "Exchange": "OKEx",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 9
         },
         {
             "Symbol": "STETH",
@@ -398,6 +405,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
             "Decimals": 18
+        },
+        {
+            "Symbol": "TANSSI",
+            "Exchange": "OKEx",
+            "Blockchain": "Tanssi",
+            "Address": "0x553F4cB7256D8fC038E91d36Cb63fa7C13b624AB",
+            "Decimals": 12
         },
         {
             "Symbol": "TIA",
@@ -456,6 +470,20 @@
             "Decimals": 6
         },
         {
+            "Symbol": "VIRTUAL",
+            "Exchange": "OKEx",
+            "Blockchain": "Base",
+            "Address": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "VVV",
+            "Exchange": "OKEx",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
+            "Decimals": 18
+        },
+        {
             "Symbol": "WIF",
             "Exchange": "OKEx",
             "Blockchain": "Solana",
@@ -488,6 +516,13 @@
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZORA",
+            "Exchange": "OKEx",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
             "Decimals": 18
         }
     ]

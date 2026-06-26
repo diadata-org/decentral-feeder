@@ -22,7 +22,7 @@
             "Decimals": 18
         },
         {
-            "Symbol": "ANDY",
+            "Symbol": "ANDYETH",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x68BbEd6A47194EFf1CF514B50Ea91895597fc91E",
@@ -57,6 +57,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ASTR",
+            "Exchange": "GateIO",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "GateIO",
             "Blockchain": "Cosmos",
@@ -68,7 +75,7 @@
             "Exchange": "GateIO",
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 18
         },
         {
             "Symbol": "BANANA",
@@ -117,7 +124,7 @@
             "Exchange": "GateIO",
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
+            "Decimals": 8
         },
         {
             "Symbol": "CRV",
@@ -244,6 +251,13 @@
             "Blockchain": "InternetComputer",
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai",
             "Decimals": 8
+        },
+        {
+            "Symbol": "KERNEL",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x3f80B1c54Ae920Be41a77f8B902259D48cf24cCf",
+            "Decimals": 18
         },
         {
             "Symbol": "LDO",
@@ -386,6 +400,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SAGA",
+            "Exchange": "GateIO",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SAND",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -432,7 +453,7 @@
             "Exchange": "GateIO",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 9
         },
         {
             "Symbol": "SOMI",
@@ -491,6 +512,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "TANSSI",
+            "Exchange": "GateIO",
+            "Blockchain": "Tanssi",
+            "Address": "0x553F4cB7256D8fC038E91d36Cb63fa7C13b624AB",
+            "Decimals": 12
+        },
+        {
             "Symbol": "TAO",
             "Exchange": "GateIO",
             "Blockchain": "Bittensor",
@@ -503,6 +531,13 @@
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TLOS",
+            "Exchange": "GateIO",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
         },
         {
             "Symbol": "TOSHI",
@@ -533,6 +568,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "UNIT0",
+            "Exchange": "GateIO",
+            "Blockchain": "Waves",
+            "Address": "GjwAHMjqWzYR4LgoNy91CxUKAGJN79h2hseZoae4nU8t",
+            "Decimals": 8
+        },
+        {
             "Symbol": "USDC",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -552,6 +594,20 @@
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
             "Decimals": 6
+        },
+        {
+            "Symbol": "VIRTUAL",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "VVV",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
+            "Decimals": 18
         },
         {
             "Symbol": "WIF",
@@ -607,6 +663,13 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZORA",
+            "Exchange": "GateIO",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
             "Decimals": 18
         }
     ]

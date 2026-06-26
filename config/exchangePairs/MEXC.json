@@ -21,7 +21,15 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "AERO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "APT-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "APU-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -33,7 +41,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ASTEROID-USDT", 
+            "Pair": "ASTEROID-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -57,6 +65,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "BANANA-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "BNB-USDT", 
             "WatchDogDelay": 300
         },
@@ -66,6 +78,10 @@
         },
         {
             "Pair": "BONK-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BOBO-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -90,6 +106,10 @@
         },
         {
             "Pair": "CRV-ETH", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CULT-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -157,6 +177,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "FLOKI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "GIZA-USDT", 
             "WatchDogDelay": 300
         },
@@ -173,6 +197,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "KERNEL-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT", 
             "WatchDogDelay": 300
         },
@@ -181,11 +209,31 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "LYX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LWOLF-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "MOG-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "NEAR-USDT", 
             "WatchDogDelay": 300
         },
         {
             "Pair": "NEAR-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEIROCTO-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NPC-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -198,6 +246,10 @@
         },
         {
             "Pair": "PENDLE-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PIN-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -261,6 +313,10 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "SPX-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "STETH-USDT", 
             "WatchDogDelay": 300
         },
@@ -278,6 +334,10 @@
         },
         {
             "Pair": "SUI-USDC", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TANSSI-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -301,6 +361,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "TURBO-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "UNI-USDT", 
             "WatchDogDelay": 300
         },
@@ -313,7 +377,19 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "UNIT0-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "USDC-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VIRTUAL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VVV-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -358,6 +434,10 @@
         },
         {
             "Pair": "XRP-ETH", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZORA-USDT",
             "WatchDogDelay": 300
         }
     ]

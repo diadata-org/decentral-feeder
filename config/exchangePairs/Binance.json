@@ -29,6 +29,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "BANANA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BANANA-USDC",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "BNB-USDT", 
             "WatchDogDelay": 300
         },
@@ -89,6 +97,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "FLOKI-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "FTM-USDT", 
             "WatchDogDelay": 300
         },
@@ -101,6 +113,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "KERNEL-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT", 
             "WatchDogDelay": 300
         },
@@ -110,6 +126,10 @@
         },
         {
             "Pair": "NEAR-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEIRO-USDT", 
             "WatchDogDelay": 300
         },
         {
@@ -162,11 +182,11 @@
         },
         {
             "Pair": "SOMI-USDC", 
-            "WatchDogDelay": 600
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "SOMI-USDT", 
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "STRK-USDT", 
@@ -201,11 +221,23 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "TURBO-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "UNI-USDT", 
             "WatchDogDelay": 300
         },
         {
             "Pair": "USDC-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VIRTUAL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VIRTUAL-USDC",
             "WatchDogDelay": 300
         },
         {
@@ -222,6 +254,10 @@
         },
         {
             "Pair": "XRP-USDT", 
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XVG-USDT", 
             "WatchDogDelay": 300
         }
     ]

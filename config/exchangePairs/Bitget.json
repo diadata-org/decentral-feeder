@@ -1,0 +1,248 @@
+{
+    "ExchangePairs": [
+        {
+            "Pair": "ACA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ADA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AERO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AIXBT-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "ALPH-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "ARB-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ASTR-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "AVAX-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AXL-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "BEAM-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "BNB-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BRETT-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "CELO-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "CLANKER-USDT",
+            "WatchDogDelay": 600
+        },
+        {
+            "Pair": "COOKIE-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "COTI-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "DAI-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOGE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOT-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ENA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ETH-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "FLOKI-USDT",
+            "WatchDogDelay": 600
+        },
+        {
+            "Pair": "GALA-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
+            "Pair": "GUN-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "IMX-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "KAITO-USDT",
+            "WatchDogDelay": 1800
+        },
+        {
+            "Pair": "KERNEL-USDT",
+            "WatchDogDelay": 1800
+        },
+        {
+            "Pair": "KSM-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "LDO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LINK-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "MORPHO-USDT",
+            "WatchDogDelay": 900
+        },
+        {
+            "Pair": "MOVR-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "NEAR-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEIROCTO-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "NPC-USDT",
+            "WatchDogDelay": 900
+        },
+        {
+            "Pair": "OP-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ORDI-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PEPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "POL-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
+            "Pair": "RARE-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
+            "Pair": "S-USDT",
+            "WatchDogDelay": 1800
+        },
+        {
+            "Pair": "SAGA-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "SATS-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "SKY-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "SOL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SOMI-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "SSV-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "STETH-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "STORJ-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "STX-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "SYK-USDT",
+            "WatchDogDelay": 1800
+        },
+        {
+            "Pair": "TLOS-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "TURBO-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "USDE-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
+            "Pair": "USDS-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VIRTUAL-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XAUT-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XRP-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEN-USDT",
+            "WatchDogDelay": 600
+        },
+        {
+            "Pair": "ZK-USDT",
+            "WatchDogDelay": 600
+        },
+        {
+            "Pair": "ZORA-USDT",
+            "WatchDogDelay": 600
+        }
+    ]
+}

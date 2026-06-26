@@ -1,0 +1,52 @@
+{
+    "Pools": [
+        {
+            "ForeignName": "SYND-WETH",
+            "Address": "0x50f8f7ffbd70c6c87b1668eee4e03f5ac057de3f",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-AERO",
+            "Address": "0x82321f3beb69f503380d6b233857d5c43562e2d0",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-cbBTC",
+            "Address": "0x70acdf2ad0bf2402c957154f944c19ef4e1cbae1",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDC-cbBTC",
+            "Address": "0x4e962bb3889bf030368f56810a9c96b83cb3e778",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDC-AERO",
+            "Address": "0xbe00ff35af70e8415d0eb605a286d8a45466a4c1",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-VVV",
+            "Address": "0x7ec6c9d993d9832aa654593f2dbc21303650bc6c",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "cbETH-WETH",
+            "Address": "0x47ca96ea59c13f72745928887f84c9f52c3d7348",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-BRETT",
+            "Address": "0x4e829f8a5213c42535ab84aa40bd4adcce9cba02",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        }
+    ]
+}

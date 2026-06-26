@@ -9,7 +9,15 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "AERO-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "APT-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "APU-USD",
             "WatchDogDelay": 300
         },
         {
@@ -77,11 +85,19 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "FLOKI-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "FTM-USD",
             "WatchDogDelay": 300
         },
         {
             "Pair": "GRT-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "HPOS10I-USD",
             "WatchDogDelay": 300
         },
         {
@@ -93,6 +109,10 @@
             "WatchDogDelay": 1200
         },
         {
+            "Pair": "KERNEL-EUR", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USD",
             "WatchDogDelay": 300
         },
@@ -102,6 +122,10 @@
         },
         {
             "Pair": "NEAR-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEIRO-USD",
             "WatchDogDelay": 300
         },
         {
@@ -169,6 +193,14 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "SOMI-USD", 
+            "WatchDogDelay": 14400
+        },
+        {
+            "Pair": "SPX-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "STRK-USD",
             "WatchDogDelay": 300
         },
@@ -190,6 +222,10 @@
         },
         {
             "Pair": "TRX-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TURBO-USD",
             "WatchDogDelay": 300
         },
         {
@@ -217,7 +253,23 @@
             "WatchDogDelay": 1200
         },
         {
+            "Pair": "USDS-USD", 
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "USDT-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VIRTUAL-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VVV-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "VVV-EUR",
             "WatchDogDelay": 300
         },
         {

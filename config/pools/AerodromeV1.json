@@ -1,0 +1,34 @@
+{
+    "Pools": [
+        {
+            "ForeignName": "VIRTUAL-WETH",
+            "Address": "0x21594b992f68495dd28d605834b58889d0a727c7",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-AERO",
+            "Address": "0x7f670f78B17dEC44d5Ef68a48740b6f8849cc2e6",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDC-AERO",
+            "Address": "0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-VVV",
+            "Address": "0x01784ef301d79e4b2df3a21ad9a536d4cf09a5ce",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDC-NOCK",
+            "Address": "0x85f1aa3a70fedd1c52705c15baed143e675cd626",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        }
+    ]
+}

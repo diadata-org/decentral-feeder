@@ -43,6 +43,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ASTR",
+            "Exchange": "KuCoin",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "KuCoin",
             "Blockchain": "Cosmos",
@@ -54,7 +61,7 @@
             "Exchange": "KuCoin",
             "Blockchain": "Avalanche",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 18
         },
         {
             "Symbol": "BANANA",
@@ -96,7 +103,7 @@
             "Exchange": "KuCoin",
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
+            "Decimals": 8
         },
         {
             "Symbol": "CRV",
@@ -383,7 +390,7 @@
             "Exchange": "KuCoin",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 9
         },
         {
             "Symbol": "SOMI",
@@ -456,6 +463,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "TLOS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Telos",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "TRX",
             "Exchange": "KuCoin",
             "Blockchain": "Tron",
@@ -503,6 +517,20 @@
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
             "Decimals": 6
+        },
+        {
+            "Symbol": "VIRTUAL",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "VVV",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
+            "Decimals": 18
         },
         {
             "Symbol": "WIF",
@@ -558,6 +586,13 @@
             "Exchange": "KuCoin",
             "Blockchain": "Base",
             "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZORA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Base",
+            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
             "Decimals": 18
         }
     ]
