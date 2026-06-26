@@ -1,46 +1,6 @@
 {
     "ExchangePairs": [
         {
-            "Pair": "APE-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "AXS-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "BMEX-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "BTC-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ETH-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ETH-XBT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "LINK-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "SOL-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TRX-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "UNI-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "XBT-USDT",
             "WatchDogDelay": 300
         }

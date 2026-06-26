@@ -182,15 +182,11 @@
         },
         {
             "Pair": "SOMI-USDC", 
-            "WatchDogDelay": 600
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "SOMI-USDT", 
             "WatchDogDelay": 1800
-        },
-        {
-            "Pair": "SOMI-USDT", 
-            "WatchDogDelay": 600
         },
         {
             "Pair": "STRK-USDT", 
