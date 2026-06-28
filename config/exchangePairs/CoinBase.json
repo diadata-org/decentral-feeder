@@ -75,7 +75,7 @@
         {
             "Pair": "BTC-USDT",
             "WatchDogDelay": 300
-        }, 
+        },
         {
             "Pair": "cbETH-USD",
             "WatchDogDelay": 300
@@ -189,7 +189,7 @@
             "WatchDogDelay": 1200
         },
         {
-            "Pair": "KERNEL-USD", 
+            "Pair": "KERNEL-USD",
             "WatchDogDelay": 300
         },
         {
@@ -369,7 +369,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "USDS-USD", 
+            "Pair": "USDS-USD",
             "WatchDogDelay": 300
         },
         {
@@ -410,6 +410,62 @@
         },
         {
             "Pair": "ZORA-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "FAI-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PRO-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BOBA-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "IMX-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "B3-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "KAITO-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "KEYCAT-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PLUME-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "COMP-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "COTI-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZRO-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEN-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CBETH-ETH",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DEGEN-USD",
             "WatchDogDelay": 300
         }
     ]

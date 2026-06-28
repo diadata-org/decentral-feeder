@@ -121,7 +121,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "GIZA-USDT", 
+            "Pair": "GIZA-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -221,7 +221,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SKY-USDT", 
+            "Pair": "SKY-USDT",
             "WatchDogDelay": 600
         },
         {
@@ -237,7 +237,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SOMI-USDT", 
+            "Pair": "SOMI-USDT",
             "WatchDogDelay": 14400
         },
         {
@@ -285,7 +285,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "USDG-USDT", 
+            "Pair": "USDG-USDT",
             "WatchDogDelay": 1800
         },
         {
@@ -329,7 +329,75 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ZEN-USDT", 
+            "Pair": "ZEN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WAN-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "REKT-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZRO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PLUME-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BOBA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LTC-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LINK-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "STX-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BITCOIN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "S-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOGE-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOT-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AAVE-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WBTC-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOGE-KCS",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XRP-KCS",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DEGEN-USDT",
             "WatchDogDelay": 300
         }
     ]

@@ -256,12 +256,12 @@
             "Pair": "SOL-BTC",
             "WatchDogDelay": 300
         },
-        { 
-            "Pair": "SOMI-USDT", 
+        {
+            "Pair": "SOMI-USDT",
             "WatchDogDelay": 600
         },
         {
-            "Pair": "SOMI-USDT", 
+            "Pair": "SOMI-USDT",
             "WatchDogDelay": 1800
         },
         {
@@ -362,6 +362,38 @@
         },
         {
             "Pair": "ZORA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BITCOIN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PLUME-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZRO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BRETT-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "MNT-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "USDE-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZRO-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DEGEN-USDT",
             "WatchDogDelay": 300
         }
     ]

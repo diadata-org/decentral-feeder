@@ -41,6 +41,24 @@
             "Address": "0xc9034c3e7f58003e6ae0c8438e7c8f4598d5acaa",
             "Order": "1",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "PRIME-WETH",
+            "Address": "0x0c8fed5dd65542ca5f0add1acab14c2e470c9110",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "PEAS-USDC",
+            "Address": "0x8f8184bb6d3817910bc2ef91a393d2fe3ca8d774",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "CLANKER-WETH",
+            "Address": "0xc1a6fbedae68e1472dbb91fe29b51f7a0bd44f97",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }
