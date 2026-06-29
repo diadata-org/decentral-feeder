@@ -533,6 +533,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "WAN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Wanchain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "WIF",
             "Exchange": "KuCoin",
             "Blockchain": "Solana",

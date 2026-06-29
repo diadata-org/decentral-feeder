@@ -165,16 +165,8 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "LINK-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "LRC-USDT",
             "WatchDogDelay": 3600
-        },
-        {
-            "Pair": "LTC-ETH",
-            "WatchDogDelay": 300
         },
         {
             "Pair": "LUNC-USDT",

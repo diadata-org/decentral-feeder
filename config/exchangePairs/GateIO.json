@@ -393,34 +393,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "LINK-ETH",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ASTR-ETH",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ASTR-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "STX-ETH",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "LTC-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "FLOKI-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DOGE-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "COINON-USDT",
             "WatchDogDelay": 300
         },

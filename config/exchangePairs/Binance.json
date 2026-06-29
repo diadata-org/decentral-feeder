@@ -285,10 +285,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "BNB-ETH",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "S-USDC",
             "WatchDogDelay": 300
         },
@@ -317,23 +313,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "STX-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "LTC-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "BNB-FDUSD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "LINK-ETH",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DOT-BTC",
             "WatchDogDelay": 300
         },
         {
@@ -358,14 +338,6 @@
         },
         {
             "Pair": "DOT-FDUSD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "LTC-BNB",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "XRP-BNB",
             "WatchDogDelay": 300
         }
     ]

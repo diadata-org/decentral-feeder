@@ -105,10 +105,6 @@
             "WatchDogDelay": 1200
         },
         {
-            "Pair": "KERNEL-EUR",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "LDO-USD",
             "WatchDogDelay": 300
         },
@@ -179,10 +175,6 @@
         {
             "Pair": "SOL-USDT",
             "WatchDogDelay": 300
-        },
-        {
-            "Pair": "SOMI-EUR",
-            "WatchDogDelay": 7200
         },
         {
             "Pair": "SOMI-USD",
@@ -265,10 +257,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "VVV-EUR",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "WIF-USD",
             "WatchDogDelay": 300
         },
@@ -337,14 +325,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "APU-EUR",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "FLOKI-EUR",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "SAGA-USD",
             "WatchDogDelay": 300
         },
@@ -353,19 +333,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "AIXBT-EUR",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TURBO-EUR",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "KAITO-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "PLUME-EUR",
             "WatchDogDelay": 300
         },
         {
@@ -373,35 +341,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "LTC-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "ASTR-USD",
             "WatchDogDelay": 300
         },
         {
-            "Pair": "COTI-EUR",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "NEIRO-EUR",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "SAGA-EUR",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "DAI-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "KAITO-EUR",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "B3-EUR",
             "WatchDogDelay": 300
         }
     ]

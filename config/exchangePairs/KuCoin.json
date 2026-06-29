@@ -325,6 +325,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "WAN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "WAN-BTC",
             "WatchDogDelay": 300
         },
@@ -345,31 +349,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "LTC-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "LINK-USDC",
             "WatchDogDelay": 300
         },
         {
-            "Pair": "STX-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "S-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DOGE-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DOT-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "AAVE-BTC",
             "WatchDogDelay": 300
         },
         {

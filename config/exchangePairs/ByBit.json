@@ -125,10 +125,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ETH-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "FET-USDT",
             "WatchDogDelay": 300
         },
@@ -249,10 +245,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SOL-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "SOMI-USDT",
             "WatchDogDelay": 600
         },
@@ -342,10 +334,6 @@
         },
         {
             "Pair": "XRP-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "XRP-BTC",
             "WatchDogDelay": 300
         },
         {

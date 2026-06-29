@@ -387,14 +387,6 @@
         {
             "Pair": "KAITO-USD",
             "WatchDogDelay": 300
-        },
-        {
-            "Pair": "LTC-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DOGE-BTC",
-            "WatchDogDelay": 300
         }
     ]
 }
