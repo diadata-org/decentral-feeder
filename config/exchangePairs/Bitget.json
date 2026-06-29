@@ -1,10 +1,6 @@
 {
     "ExchangePairs": [
         {
-            "Pair": "ACA-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "ADA-USDT",
             "WatchDogDelay": 300
         },
@@ -63,10 +59,6 @@
         {
             "Pair": "COTI-USDT",
             "WatchDogDelay": 3600
-        },
-        {
-            "Pair": "DAI-USDT",
-            "WatchDogDelay": 300
         },
         {
             "Pair": "DOGE-USDT",

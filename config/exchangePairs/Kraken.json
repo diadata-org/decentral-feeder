@@ -89,10 +89,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FTM-USD",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "GRT-USD",
             "WatchDogDelay": 300
         },
@@ -317,10 +313,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "BITCOIN-USD",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "IMX-USD",
             "WatchDogDelay": 300
         },
@@ -382,10 +374,6 @@
         },
         {
             "Pair": "LTC-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "BITCOIN-EUR",
             "WatchDogDelay": 300
         },
         {

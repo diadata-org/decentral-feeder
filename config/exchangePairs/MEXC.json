@@ -109,14 +109,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "CULT-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DAI-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "DOGE-USDT",
             "WatchDogDelay": 300
         },
@@ -281,10 +273,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SKI-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "SKY-USDT",
             "WatchDogDelay": 2400
         },
@@ -334,10 +322,6 @@
         },
         {
             "Pair": "SUI-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TANSSI-USDT",
             "WatchDogDelay": 300
         },
         {

@@ -117,10 +117,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "FTM-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "GIZA-USDT",
             "WatchDogDelay": 300
         },
@@ -150,10 +146,6 @@
         },
         {
             "Pair": "LYX-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "MAIGA-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -362,10 +354,6 @@
         },
         {
             "Pair": "STX-BTC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "BITCOIN-USDT",
             "WatchDogDelay": 300
         },
         {

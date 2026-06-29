@@ -89,10 +89,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "DAI-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "DOGE-USDT",
             "WatchDogDelay": 300
         },
@@ -301,10 +297,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "TRX-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "UNI-USDT",
             "WatchDogDelay": 300
         },
@@ -362,10 +354,6 @@
         },
         {
             "Pair": "ZORA-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "BITCOIN-USDT",
             "WatchDogDelay": 300
         },
         {
