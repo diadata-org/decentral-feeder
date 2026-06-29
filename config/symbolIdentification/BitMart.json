@@ -354,7 +354,7 @@
             "Symbol": "LWOLF",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
-            "Address": "0x33ABE795f9c1b6136608c36dB211bD7590f5FdAE",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69",
             "Decimals": 18
         },
         {
@@ -556,8 +556,8 @@
         {
             "Symbol": "TIA",
             "Exchange": "BitMart",
-            "Blockchain": "Celestia",
-            "Address": "0x0000000000000000000000000000000000000000",
+            "Blockchain": "Osmosis",
+            "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
             "Decimals": 6
         },
         {
@@ -654,8 +654,8 @@
         {
             "Symbol": "XVG",
             "Exchange": "BitMart",
-            "Blockchain": "Ethereum",
-            "Address": "0x85614a474dbeed440d5bbdb8ac50b0f22367f997",
+            "Blockchain": "Verge",
+            "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
         },
         {
