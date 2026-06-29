@@ -1,13 +1,13 @@
 {
     "Pools": [
         {
-            "ForeignName": "cbBTC-USDC",
+            "ForeignName": "USDC-cbBTC",
             "Address": "0x12d76c5c8ec8edffd3c143995b0aa43fe44a6d71eb9113796272909e54b8e078",
-            "Order": "0",
+            "Order": "1",
             "WatchDogDelay": 3600,
             "Assetvolumes": [
-                { "Asset": { "Address": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf" } },
-                { "Asset": { "Address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" } }
+                { "Asset": { "Address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" } },
+                { "Asset": { "Address": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf" } }
             ]
         },
         {
