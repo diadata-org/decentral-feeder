@@ -256,7 +256,7 @@
             "Symbol": "GRT",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
-            "Address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
+            "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7",
             "Decimals": 18
         },
         {
@@ -410,7 +410,7 @@
             "Symbol": "NEIRO",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
-            "Address": "0x812ba41e071c7b7fa4ebcfb62df5f45f6fa853ee",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",
             "Decimals": 9
         },
         {
