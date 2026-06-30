@@ -113,6 +113,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "DEGEN",
+            "Exchange": "OKEx",
+            "Blockchain": "Base",
+            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
+            "Decimals": 18
+        },
+        {
             "Symbol": "DOGE",
             "Exchange": "OKEx",
             "Blockchain": "Dogechain",
@@ -209,6 +216,13 @@
             "Blockchain": "Solana",
             "Address": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
             "Decimals": 9
+        },
+        {
+            "Symbol": "KAITO",
+            "Exchange": "OKEx",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553",
+            "Decimals": 18
         },
         {
             "Symbol": "LDO",
@@ -523,6 +537,13 @@
             "Exchange": "OKEx",
             "Blockchain": "Base",
             "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         }
     ]
