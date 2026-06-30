@@ -47,7 +47,7 @@
             "Exchange": "BitMex",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 9
         },
         {
             "Symbol": "TRX",
