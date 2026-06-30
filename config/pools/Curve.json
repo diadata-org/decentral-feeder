@@ -353,6 +353,48 @@
             "Address": "0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f",
             "Order": "10",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "FRAX-USDE",
+            "Address": "0x5dc1bf6f1e983c0b21efb003c105133736fa0743",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "OETH-WETH",
+            "Address": "0xcc7d5785ad5755b6164e21495e07adb0ff11c2a8",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "MSETH-OETH",
+            "Address": "0xb5b93dde9d87563184d31f3b7f85dd58404e2ee0",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "OUSD-USDC",
+            "Address": "0x6d18e1a7faeb1f0467a77c0d293872ab685426dc",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "CRVUSD-TBTC",
+            "Address": "0xf1f435b05d255a5dbde37333c0f61da6f69c6127",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-WEETH",
+            "Address": "0xdb74dfdd3bb46be8ce6c33dc9d82777bcfc3ded5",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "CRVUSD-TBTC",
+            "Address": "0x4f52c3a81e33521e5a9a47fd9d3be475d2279c2e",
+            "Order": "10",
+            "WatchDogDelay": 3600
         }
     ]
 }

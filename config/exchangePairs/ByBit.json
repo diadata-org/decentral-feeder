@@ -89,10 +89,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "DAI-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "DOGE-USDT",
             "WatchDogDelay": 300
         },
@@ -126,10 +122,6 @@
         },
         {
             "Pair": "ETH-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ETH-BTC",
             "WatchDogDelay": 300
         },
         {
@@ -253,15 +245,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SOL-BTC",
-            "WatchDogDelay": 300
-        },
-        { 
-            "Pair": "SOMI-USDT", 
+            "Pair": "SOMI-USDT",
             "WatchDogDelay": 600
         },
         {
-            "Pair": "SOMI-USDT", 
+            "Pair": "SOMI-USDT",
             "WatchDogDelay": 1800
         },
         {
@@ -298,10 +286,6 @@
         },
         {
             "Pair": "TRX-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TRX-BTC",
             "WatchDogDelay": 300
         },
         {
@@ -353,15 +337,39 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "XRP-BTC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "ZEN-USDT",
             "WatchDogDelay": 300
         },
         {
             "Pair": "ZORA-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PLUME-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZRO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BRETT-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "MNT-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "USDE-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZRO-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DEGEN-USDT",
             "WatchDogDelay": 300
         }
     ]

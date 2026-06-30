@@ -22,6 +22,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AIXBT",
+            "Exchange": "Binance",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
+            "Decimals": 18
+        },
+        {
             "Symbol": "APT",
             "Exchange": "Binance",
             "Blockchain": "Aptos",
@@ -60,7 +67,7 @@
             "Symbol": "BANANA",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
-            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4",
             "Decimals": 18
         },
         {
@@ -83,6 +90,13 @@
             "Blockchain": "Bitcoin",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "COOKIE",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xC0041EF357B183448B235a8Ea73Ce4E4eC8c265F",
+            "Decimals": 18
         },
         {
             "Symbol": "CRV",
@@ -176,13 +190,6 @@
             "Decimals": 0
         },
         {
-            "Symbol": "FTM",
-            "Exchange": "Binance",
-            "Blockchain": "Fantom",
-            "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
-        },
-        {
             "Symbol": "GRT",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -197,6 +204,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "KAITO",
+            "Exchange": "Binance",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553",
+            "Decimals": 18
+        },
+        {
             "Symbol": "KERNEL",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -208,6 +222,13 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
             "Decimals": 18
         },
         {
@@ -274,10 +295,24 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PAXG",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+            "Decimals": 18
+        },
+        {
             "Symbol": "PENDLE",
             "Exchange": "Binance",
             "Blockchain": "Arbitrum",
             "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PLUME",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1",
             "Decimals": 18
         },
         {
@@ -299,6 +334,20 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "S",
+            "Exchange": "Binance",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SAGA",
+            "Exchange": "Binance",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE",
             "Decimals": 18
         },
         {
@@ -341,7 +390,7 @@
             "Exchange": "Binance",
             "Blockchain": "Solana",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 0
+            "Decimals": 9
         },
         {
             "Symbol": "SOMI",
@@ -440,7 +489,7 @@
             "Blockchain": "Ethereum",
             "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
             "Decimals": 6
-        }, 
+        },
         {
             "Symbol": "VIRTUAL",
             "Exchange": "Binance",
@@ -454,6 +503,13 @@
             "Blockchain": "Base",
             "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
             "Decimals": 18
+        },
+        {
+            "Symbol": "WBTC",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+            "Decimals": 8
         },
         {
             "Symbol": "WIF",
@@ -495,6 +551,20 @@
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZEN",
+            "Exchange": "Binance",
+            "Blockchain": "Base",
+            "Address": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         }
     ]

@@ -22,6 +22,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AIXBT",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
+            "Decimals": 18
+        },
+        {
             "Symbol": "APT",
             "Exchange": "Kraken",
             "Blockchain": "Aptos",
@@ -50,6 +57,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ASTR",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xF27441230EADEaC85B764610325Cc9a0D7859689",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ATOM",
             "Exchange": "Kraken",
             "Blockchain": "Cosmos",
@@ -64,11 +78,18 @@
             "Decimals": 18
         },
         {
-            "Symbol": "HPOS10I",
+            "Symbol": "B3",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0xB3B32F9f8827D4634fE7d973Fa1034Ec9fdDB3B3",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "BEAM",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
-            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
-            "Decimals": 8
+            "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE",
+            "Decimals": 18
         },
         {
             "Symbol": "BNB",
@@ -98,10 +119,24 @@
             "Address": "CASHx9KJUStyftLFWGvEVf59SGeG9sh5FfcnZMVPCASH"
         },
         {
+            "Symbol": "COTI",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
+            "Decimals": 18
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0xD533a949740bb3306d119CC777fa900bA034cd52",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "DAI",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
             "Decimals": 18
         },
         {
@@ -161,6 +196,13 @@
             "Decimals": 2
         },
         {
+            "Symbol": "EUROP",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x888883b5F5D21fb10Dfeb70e8f9722B9FB0E5E51",
+            "Decimals": 6
+        },
+        {
             "Symbol": "FET",
             "Exchange": "Kraken",
             "Blockchain": "Fetch",
@@ -203,11 +245,25 @@
             "Decimals": 2
         },
         {
+            "Symbol": "GLMR",
+            "Exchange": "Kraken",
+            "Blockchain": "Moonbeam",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "GRT",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7",
             "Decimals": 18
+        },
+        {
+            "Symbol": "HPOS10I",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
         },
         {
             "Symbol": "ICP",
@@ -217,11 +273,25 @@
             "Decimals": 8
         },
         {
+            "Symbol": "IMX",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF",
+            "Decimals": 18
+        },
+        {
             "Symbol": "JITOSOL",
             "Exchange": "Kraken",
             "Blockchain": "Solana",
             "Address": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
             "Decimals": 9
+        },
+        {
+            "Symbol": "KAITO",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553",
+            "Decimals": 18
         },
         {
             "Symbol": "KERNEL",
@@ -236,6 +306,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
             "Decimals": 18
+        },
+        {
+            "Symbol": "LTC",
+            "Exchange": "Kraken",
+            "Blockchain": "Litecoin",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         },
         {
             "Symbol": "MKR",
@@ -294,10 +371,24 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PAXG",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+            "Decimals": 18
+        },
+        {
             "Symbol": "PENDLE",
             "Exchange": "Kraken",
             "Blockchain": "Arbitrum",
             "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PLUME",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1",
             "Decimals": 18
         },
         {
@@ -326,6 +417,13 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SAGA",
+            "Exchange": "Kraken",
+            "Blockchain": "Saga",
+            "Address": "0xA19377761FED745723B90993988E04d641c2CfFE",
             "Decimals": 18
         },
         {
@@ -509,6 +607,13 @@
             "Blockchain": "Base",
             "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
             "Decimals": 18
+        },
+        {
+            "Symbol": "WBTC",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+            "Decimals": 8
         },
         {
             "Symbol": "WIF",

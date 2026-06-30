@@ -11,6 +11,12 @@
             "Address": "0x6d6391B9bD02Eefa00FA711fB1Cb828A6471d283",
             "Order": "1",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-NPC",
+            "Address": "0x3f413fccaea59b8053d605aea7ae847c02ed5d95",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }

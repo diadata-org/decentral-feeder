@@ -67,15 +67,8 @@
             "Symbol": "BANANA",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
-            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4",
             "Decimals": 18
-        },
-        {
-            "Symbol": "HPOS10I",
-            "Exchange": "KuCoin",
-            "Blockchain": "Ethereum",
-            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
-            "Decimals": 8
         },
         {
             "Symbol": "BNB",
@@ -83,6 +76,13 @@
             "Blockchain": "BinanceSmartChain",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "BOBA",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x42bBFa2e77757C645eeaAd1655E0911a7553Efbc",
+            "Decimals": 18
         },
         {
             "Symbol": "BONK",
@@ -113,10 +113,10 @@
             "Decimals": 18
         },
         {
-            "Symbol": "MILADYCULT",
+            "Symbol": "DEGEN",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
-            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4",
+            "Address": "0xfee293840D23B0B2De8C55e1Cf7A9F01C157767c",
             "Decimals": 18
         },
         {
@@ -218,6 +218,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HPOS10I",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "KuCoin",
             "Blockchain": "InternetComputer",
@@ -225,10 +232,24 @@
             "Decimals": 8
         },
         {
+            "Symbol": "KCS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xf34960d9d60be18cC1D5Afc1A6F012A723a28811",
+            "Decimals": 6
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
             "Decimals": 18
         },
         {
@@ -250,6 +271,13 @@
             "Exchange": "KuCoin",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MILADYCULT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000c5dc95539589fbD24BE07c6C14eCa4",
             "Decimals": 18
         },
         {
@@ -316,6 +344,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PLUME",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1",
+            "Decimals": 18
+        },
+        {
             "Symbol": "POL",
             "Exchange": "KuCoin",
             "Blockchain": "Polygon",
@@ -344,10 +379,24 @@
             "Decimals": 18
         },
         {
+            "Symbol": "REKT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xdd3B11eF34cd511a2DA159034a05fcb94D806686",
+            "Decimals": 18
+        },
+        {
             "Symbol": "RENDER",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
             "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "S",
+            "Exchange": "KuCoin",
+            "Blockchain": "Sonic",
+            "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
         },
         {
@@ -533,6 +582,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "WAN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Wanchain",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "WBTC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+            "Decimals": 8
+        },
+        {
             "Symbol": "WIF",
             "Exchange": "KuCoin",
             "Blockchain": "Solana",
@@ -592,7 +655,14 @@
             "Symbol": "ZORA",
             "Exchange": "KuCoin",
             "Blockchain": "Base",
-            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         }
     ]

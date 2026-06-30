@@ -47,6 +47,24 @@
             "Address": "0x4e829f8a5213c42535ab84aa40bd4adcce9cba02",
             "Order": "1",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WSTETH-WETH",
+            "Address": "0x861a2922be165a5bd41b1e482b49216b465e1b5f",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "CBLTC-CBBTC",
+            "Address": "0x6044c817e55a03dadc5f6b8b7045af1985ae90fa",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "ZEN-WETH",
+            "Address": "0x0392b12a1ceb0cd13af5ea448cf5586ea609852d",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }

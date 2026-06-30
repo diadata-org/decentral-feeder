@@ -131,7 +131,7 @@
             "Address": "0x11b815efB8f581194ae79006d24E0d814B7697F6",
             "Order": "0",
             "WatchDogDelay": 600
-        },  
+        },
         {
             "ForeignName": "wstETH-WETH",
             "Address": "0x109830a1AAaD605BbF02a9dFA7B0B92EC2FB7dAa",
@@ -305,6 +305,42 @@
             "Address": "0x15153Da0E9e13cfC167b3D417d3721bF545479bB",
             "Order": "0",
             "WatchDogDelay": 600
+        },
+        {
+            "ForeignName": "IMF-WETH",
+            "Address": "0x59d813c1d0266278e2f5f146c0e222a6cfea83df",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "PAXG-XAUT",
+            "Address": "0xc756bba710d45647715079ce50aa16aab36ded42",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "GOHM-WETH",
+            "Address": "0xcf7e21b96a7dae8e1663b5a266fd812cbe973e70",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WEETH-WETH",
+            "Address": "0x202a6012894ae5c288ea824cbc8a9bfb26a49b93",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "RETH-WETH",
+            "Address": "0x553e9c493678d8606d6a5ba284643db2110df823",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "TBTC-WBTC",
+            "Address": "0x73a38006d23517a1d383c88929b2014f8835b38b",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }

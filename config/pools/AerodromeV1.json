@@ -29,6 +29,48 @@
             "Address": "0x85f1aa3a70fedd1c52705c15baed143e675cd626",
             "Order": "1",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "MAVIA-WETH",
+            "Address": "0xc90e88d30b99442b6994915f3b146ce3d55982d9",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "KTA-WETH",
+            "Address": "0xd9edc75a3a797ec92ca370f19051babebfb2edee",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "FBOMB-AERO",
+            "Address": "0xbbf71aad6e1f8d180d3b1d898528654c1d18b2ff",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "FBOMB-USDC",
+            "Address": "0xff8e0bd2d8f02904e7e18dd00ea50aec68f37a10",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "KLIMA-WETH",
+            "Address": "0xb37642e87613d8569fd8ec80888ea6c63684e79e",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "FAI-WETH",
+            "Address": "0x5447f7fe76894d98753a0a6d69b9cb840037c13d",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "KVCM-USDC",
+            "Address": "0x5c0d76fab1822bdeb47308ed6028231761ed723e",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }

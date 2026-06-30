@@ -25,7 +25,7 @@
             "Symbol": "AIXBT",
             "Exchange": "Bitget",
             "Blockchain": "Base",
-            "Address": "0x4F9Fd6Be4a90f2620860d680c0D4d5Fb53d1A825",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
             "Decimals": 18
         },
         {
@@ -69,7 +69,7 @@
             "Blockchain": "Ethereum",
             "Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE",
             "Decimals": 18
-        },        
+        },
         {
             "Symbol": "BNB",
             "Exchange": "Bitget",
@@ -102,7 +102,7 @@
             "Symbol": "CLANKER",
             "Exchange": "Bitget",
             "Blockchain": "Base",
-            "Address": "0x1bc0c42215582d5a085795f4baDbaC3ff36d1Bcb",
+            "Address": "0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb",
             "Decimals": 18
         },
         {
@@ -186,7 +186,7 @@
             "Symbol": "GUN",
             "Exchange": "Bitget",
             "Blockchain": "Avalanche",
-            "Address": "0x26debd39D5ed069770406FCa10A0E4f8d2c743eB",
+            "Address": "0x26deBD39D5eD069770406FCa10A0E4f8d2c743eB",
             "Decimals": 18
         },
         {
@@ -250,13 +250,13 @@
             "Exchange": "Bitget",
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 24
+            "Decimals": 0
         },
         {
             "Symbol": "NEIROCTO",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
-            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fa853Ee",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",
             "Decimals": 9
         },
         {
@@ -459,7 +459,7 @@
             "Symbol": "ZORA",
             "Exchange": "Bitget",
             "Blockchain": "Base",
-            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69",
             "Decimals": 18
         }
     ]

@@ -57,13 +57,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "HPOS10I",
-            "Exchange": "ByBit",
-            "Blockchain": "Ethereum",
-            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
-            "Decimals": 8
-        },
-        {
             "Symbol": "BNB",
             "Exchange": "ByBit",
             "Blockchain": "BinanceSmartChain",
@@ -94,8 +87,8 @@
         {
             "Symbol": "CAKE",
             "Exchange": "ByBit",
-            "Blockchain": "Ethereum",
-            "Address": "0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898",
+            "Blockchain": "BinanceSmartChain",
+            "Address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
             "Decimals": 18
         },
         {
@@ -106,10 +99,10 @@
             "Decimals": 18
         },
         {
-            "Symbol": "DAI",
+            "Symbol": "DEGEN",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
-            "Address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+            "Address": "0xfee293840D23B0B2De8C55e1Cf7A9F01C157767c",
             "Decimals": 18
         },
         {
@@ -211,6 +204,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HPOS10I",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "ByBit",
             "Blockchain": "InternetComputer",
@@ -292,6 +292,13 @@
             "Exchange": "ByBit",
             "Blockchain": "Arbitrum",
             "Address": "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PLUME",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1",
             "Decimals": 18
         },
         {
@@ -382,7 +389,7 @@
             "Symbol": "STETH",
             "Exchange": "ByBit",
             "Blockchain": "Ethereum",
-            "Address": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+            "Address": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
             "Decimals": 18
         },
         {
@@ -461,7 +468,21 @@
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             "Decimals": 6
-        }, 
+        },
+        {
+            "Symbol": "USDE",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "USDT",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "Decimals": 6
+        },
         {
             "Symbol": "VIRTUAL",
             "Exchange": "ByBit",
@@ -475,13 +496,6 @@
             "Blockchain": "Base",
             "Address": "0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf",
             "Decimals": 18
-        },
-        {
-            "Symbol": "USDT",
-            "Exchange": "ByBit",
-            "Blockchain": "Ethereum",
-            "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-            "Decimals": 6
         },
         {
             "Symbol": "WIF",
@@ -529,7 +543,14 @@
             "Symbol": "ZORA",
             "Exchange": "ByBit",
             "Blockchain": "Base",
-            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "ByBit",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         }
     ]
