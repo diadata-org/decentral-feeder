@@ -67,7 +67,7 @@
             "Symbol": "BANANA",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",
-            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4",
             "Decimals": 18
         },
         {
@@ -95,7 +95,7 @@
             "Symbol": "CAKE",
             "Exchange": "OKEx",
             "Blockchain": "BinanceSmartChain",
-            "Address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+            "Address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
             "Decimals": 18
         },
         {
@@ -536,7 +536,14 @@
             "Symbol": "ZORA",
             "Exchange": "OKEx",
             "Blockchain": "Base",
-            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         },
         {

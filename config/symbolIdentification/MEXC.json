@@ -22,6 +22,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AIXBT",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x0D37aF9D8AE74F35F3A38bD2a08FcB29890Ca6d2",
+            "Decimals": 18
+        },
+        {
             "Symbol": "APT",
             "Exchange": "MEXC",
             "Blockchain": "Aptos",
@@ -74,7 +81,7 @@
             "Symbol": "BANANA",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
-            "Address": "0x38e68a37e401f7271568cecaac63c6b1e19130b4",
+            "Address": "0x38E68A37E401F7271568CecaAc63c6B1e19130B4",
             "Decimals": 18
         },
         {
@@ -109,7 +116,14 @@
             "Symbol": "CAKE",
             "Exchange": "MEXC",
             "Blockchain": "BinanceSmartChain",
-            "Address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+            "Address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "COINON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xF042cfa86cf1D598a75Bdb55c3507a1F39f9493b",
             "Decimals": 18
         },
         {
@@ -131,6 +145,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "DEGEN",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xfee293840D23B0B2De8C55e1Cf7A9F01C157767c",
             "Decimals": 18
         },
         {
@@ -183,6 +204,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "FAI",
+            "Exchange": "MEXC",
+            "Blockchain": "Base",
+            "Address": "0xb33Ff54b9F7242EF1593d2C9Bcd8f9df46c77935",
+            "Decimals": 18
+        },
+        {
             "Symbol": "FET",
             "Exchange": "MEXC",
             "Blockchain": "Fetch",
@@ -225,6 +253,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "GOOGLON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xbA47214eDd2bb43099611b208f75E4b42FDcfEDc",
+            "Decimals": 18
+        },
+        {
             "Symbol": "GRT",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -237,6 +272,13 @@
             "Blockchain": "InternetComputer",
             "Address": "ryjl3-tyaaa-aaaaa-aaaba-cai",
             "Decimals": 8
+        },
+        {
+            "Symbol": "KAITO",
+            "Exchange": "MEXC",
+            "Blockchain": "Base",
+            "Address": "0x98d0baa52b2D063E780DE12F615f963Fe8537553",
+            "Decimals": 18
         },
         {
             "Symbol": "KERNEL",
@@ -258,6 +300,13 @@
             "Blockchain": "Litecoin",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "LWOLF",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69",
+            "Decimals": 18
         },
         {
             "Symbol": "LYX",
@@ -351,6 +400,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PLUME",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x4C1746A800D224393fE2470C70A35717eD4eA5F1",
+            "Decimals": 18
+        },
+        {
             "Symbol": "POL",
             "Exchange": "MEXC",
             "Blockchain": "Polygon",
@@ -362,6 +418,20 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xb23d80f5FefcDDaa212212F028021B41DEd428CF",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "PRO",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x226bb599a12C826476e3A771454697EA52E9E220",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "QQQON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x0e397938C1Aa0680954093495B70A9F5e2249aBa",
             "Decimals": 18
         },
         {
@@ -435,6 +505,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "SPYON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xFeDC5f4a6c38211c1338aa411018DFAf26612c08",
+            "Decimals": 18
+        },
+        {
             "Symbol": "STETH",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -505,6 +582,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "TSLAON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
+            "Decimals": 18
+        },
+        {
             "Symbol": "TURBO",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -554,6 +638,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "WBTC",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+            "Decimals": 8
+        },
+        {
             "Symbol": "WIF",
             "Exchange": "MEXC",
             "Blockchain": "Solana",
@@ -575,10 +666,10 @@
             "Decimals": 6
         },
         {
-            "Symbol": "LWOLF",
+            "Symbol": "XFI",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
-            "Address": "0x67466BE17df832165F8C80a5A120CCc652bD7E69",
+            "Address": "0xAA186f737E9CDEa10e4C0de07f452769B32E2f73",
             "Decimals": 18
         },
         {
@@ -606,7 +697,14 @@
             "Symbol": "ZORA",
             "Exchange": "MEXC",
             "Blockchain": "Base",
-            "Address": "0x1111111111166b7FE7BD91427724B487980AFC69",
+            "Address": "0x1111111111166b7FE7bd91427724B487980aFc69",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "ZRO",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         }
     ]
