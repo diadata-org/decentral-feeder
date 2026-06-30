@@ -24,8 +24,8 @@
         {
             "Symbol": "AIXBT",
             "Exchange": "Kraken",
-            "Blockchain": "Ethereum",
-            "Address": "0x0D37aF9D8AE74F35F3A38bD2a08FcB29890Ca6d2",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
             "Decimals": 18
         },
         {
