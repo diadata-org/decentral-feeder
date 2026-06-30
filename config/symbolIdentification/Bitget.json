@@ -250,13 +250,13 @@
             "Exchange": "Bitget",
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 24
+            "Decimals": 0
         },
         {
             "Symbol": "NEIROCTO",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
-            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fa853Ee",
+            "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",
             "Decimals": 9
         },
         {
