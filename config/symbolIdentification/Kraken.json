@@ -119,6 +119,13 @@
             "Address": "CASHx9KJUStyftLFWGvEVf59SGeG9sh5FfcnZMVPCASH"
         },
         {
+            "Symbol": "CHECK",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x9126236476eFBA9Ad8aB77855c60eB5BF37586Eb",
+            "Decimals": 18
+        },
+        {
             "Symbol": "COTI",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
@@ -348,6 +355,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",
             "Decimals": 9
+        },
+        {
+            "Symbol": "NOCK",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0x9B5E262cF9bb04869ab40b19AF91D2dc85761722",
+            "Decimals": 16
         },
         {
             "Symbol": "OMG",
