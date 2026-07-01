@@ -50,7 +50,7 @@
         },
         {
             "Pair": "CHECK-USD",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 7200
         },
         {
             "Pair": "DOGE-USD",
@@ -119,6 +119,10 @@
         {
             "Pair": "NEAR-USD",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NOCK-USD",
+            "WatchDogDelay": 7200
         },
         {
             "Pair": "NEIRO-USD",

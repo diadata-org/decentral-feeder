@@ -86,7 +86,7 @@
         },
         {
             "Pair": "CHECK-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 600
         },
         {
             "Pair": "CRV-USDT",
@@ -210,7 +210,7 @@
         },
         {
             "Pair": "NOCK-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "NPC-USDT",
