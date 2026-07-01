@@ -106,6 +106,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "CHECK",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x9126236476eFBA9Ad8aB77855c60eB5BF37586Eb",
+            "Decimals": 18
+        },
+        {
             "Symbol": "COMP",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",

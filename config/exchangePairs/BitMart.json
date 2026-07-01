@@ -57,6 +57,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "CHECK-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "CHZ-USDT",
             "WatchDogDelay": 300
         },

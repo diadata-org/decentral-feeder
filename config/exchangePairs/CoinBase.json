@@ -61,6 +61,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "CHECK-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "CRV-USD",
             "WatchDogDelay": 300
         },
