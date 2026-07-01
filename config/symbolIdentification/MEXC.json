@@ -122,7 +122,7 @@
         {
             "Symbol": "CHECK",
             "Exchange": "MEXC",
-            "Blockchain": "Ethereum",
+            "Blockchain": "Base",
             "Address": "0x9126236476eFBA9Ad8aB77855c60eB5BF37586Eb",
             "Decimals": 18
         },
