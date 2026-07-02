@@ -134,6 +134,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "COINX",
+            "Exchange": "MEXC",
+            "Blockchain": "Solana",
+            "Address": "Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "CRCLON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x3632DEa96A953C11dac2f00b4A05a32CD1063fAE",
+            "Decimals": 18
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -274,6 +288,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "IAUON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x4f0CA3df1c2e6b943cf82E649d576ffe7B2fABCF",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "MEXC",
             "Blockchain": "InternetComputer",
@@ -351,6 +372,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MSTRON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xCabD955322dfbf94C084929ac5E9Eca3fEB5556F",
+            "Decimals": 18
+        },
+        {
             "Symbol": "NEAR",
             "Exchange": "MEXC",
             "Blockchain": "NEAR",
@@ -376,6 +404,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "NVDAX",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x2D1F7226Bd1F780AF6B9A49DCC0aE00E8Df4bDEE",
             "Decimals": 18
         },
         {
@@ -697,6 +732,13 @@
             "Symbol": "XRP",
             "Exchange": "MEXC",
             "Blockchain": "Ripple",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
+            "Symbol": "XVG",
+            "Exchange": "MEXC",
+            "Blockchain": "Verge",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
         },

@@ -22,6 +22,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AMZNON",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AMZNX",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ANDYETH",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
@@ -139,6 +153,27 @@
             "Blockchain": "Ethereum",
             "Address": "0xF042cfa86cf1D598a75Bdb55c3507a1F39f9493b",
             "Decimals": 18
+        },
+        {
+            "Symbol": "COINX",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "CRCLON",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x3632DEa96A953C11dac2f00b4A05a32CD1063fAE",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "CRCLX",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1",
+            "Decimals": 8
         },
         {
             "Symbol": "CRV",
@@ -281,6 +316,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "IAUON",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x4f0CA3df1c2e6b943cf82E649d576ffe7B2fABCF",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "GateIO",
             "Blockchain": "InternetComputer",
@@ -365,6 +407,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MSTRON",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xCabD955322dfbf94C084929ac5E9Eca3fEB5556F",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MSTRX",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "XsP7xzNPvEHS1m6qfanPUGjNmdnmsLKEoNAnHjdxxyZ",
+            "Decimals": 8
+        },
+        {
             "Symbol": "NEAR",
             "Exchange": "GateIO",
             "Blockchain": "NEAR",
@@ -377,6 +433,20 @@
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
             "Decimals": 18
+        },
+        {
+            "Symbol": "NVDAON",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x2D1F7226Bd1F780AF6B9A49DCC0aE00E8Df4bDEE",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "NVDAX",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+            "Decimals": 8
         },
         {
             "Symbol": "OMG",
@@ -643,6 +713,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
             "Decimals": 18
+        },
+        {
+            "Symbol": "TSLAX",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+            "Decimals": 8
         },
         {
             "Symbol": "TURBO",

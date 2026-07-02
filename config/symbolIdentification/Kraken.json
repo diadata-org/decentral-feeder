@@ -92,6 +92,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "BMNRX",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "0xaeB681B69E5094E04d11BCeF51A71358A374C3ED",
+            "Decimals": 8
+        },
+        {
             "Symbol": "BNB",
             "Exchange": "Kraken",
             "Blockchain": "BinanceSmartChain",
@@ -131,6 +138,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
             "Decimals": 18
+        },
+        {
+            "Symbol": "CRCLX",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1",
+            "Decimals": 8
         },
         {
             "Symbol": "CRV",
@@ -343,6 +357,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MSTRX",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "XsP7xzNPvEHS1m6qfanPUGjNmdnmsLKEoNAnHjdxxyZ",
+            "Decimals": 8
+        },
+        {
             "Symbol": "NEAR",
             "Exchange": "Kraken",
             "Blockchain": "NEAR",
@@ -362,6 +383,13 @@
             "Blockchain": "Base",
             "Address": "0x9B5E262cF9bb04869ab40b19AF91D2dc85761722",
             "Decimals": 16
+        },
+        {
+            "Symbol": "NVDAX",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+            "Decimals": 8
         },
         {
             "Symbol": "OMG",
@@ -558,6 +586,13 @@
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TSLAX",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+            "Decimals": 8
         },
         {
             "Symbol": "TURBO",

@@ -133,6 +133,10 @@
             "WatchDogDelay": 900
         },
         {
+            "Pair": "NVDAON-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "OP-USDT",
             "WatchDogDelay": 300
         },
@@ -199,6 +203,10 @@
         {
             "Pair": "TLOS-USDT",
             "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "TSLAON-USDT",
+            "WatchDogDelay": 300
         },
         {
             "Pair": "TURBO-USDT",

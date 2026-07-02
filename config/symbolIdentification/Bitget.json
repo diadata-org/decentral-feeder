@@ -267,6 +267,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "NVDAON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x2D1F7226Bd1F780AF6B9A49DCC0aE00E8Df4bDEE",
+            "Decimals": 18
+        },
+        {
             "Symbol": "OP",
             "Exchange": "Bitget",
             "Blockchain": "Optimism",
