@@ -409,9 +409,9 @@
         {
             "Symbol": "NVDAX",
             "Exchange": "MEXC",
-            "Blockchain": "Ethereum",
-            "Address": "0x2D1F7226Bd1F780AF6B9A49DCC0aE00E8Df4bDEE",
-            "Decimals": 18
+            "Blockchain": "Solana",
+            "Address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+            "Decimals": 8
         },
         {
             "Symbol": "OMG",

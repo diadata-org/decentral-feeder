@@ -94,7 +94,7 @@
         {
             "Symbol": "BMNRX",
             "Exchange": "Kraken",
-            "Blockchain": "Solana",
+            "Blockchain": "Ethereum",
             "Address": "0xaeB681B69E5094E04d11BCeF51A71358A374C3ED",
             "Decimals": 8
         },
