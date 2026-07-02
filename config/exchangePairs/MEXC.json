@@ -21,6 +21,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "AMZNON-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "AIXBT-USDC",
             "WatchDogDelay": 300
         },
@@ -90,10 +94,6 @@
         },
         {
             "Pair": "CHECK-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "COINON-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -394,10 +394,6 @@
         },
         {
             "Pair": "TRX-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TSLAON-USDT",
             "WatchDogDelay": 300
         },
         {
