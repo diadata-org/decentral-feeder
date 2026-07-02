@@ -9,6 +9,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "AMZNON-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "AIXBT-USDT",
             "WatchDogDelay": 3600
         },
@@ -89,6 +93,10 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "IAUON-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "IMX-USDT",
             "WatchDogDelay": 3600
         },
@@ -131,6 +139,10 @@
         {
             "Pair": "NPC-USDT",
             "WatchDogDelay": 900
+        },
+        {
+            "Pair": "NVDAON-USDT",
+            "WatchDogDelay": 300
         },
         {
             "Pair": "OP-USDT",
@@ -199,6 +211,10 @@
         {
             "Pair": "TLOS-USDT",
             "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "TSLAON-USDT",
+            "WatchDogDelay": 300
         },
         {
             "Pair": "TURBO-USDT",
