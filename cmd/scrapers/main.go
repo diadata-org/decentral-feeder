@@ -39,7 +39,9 @@ var (
 
 	exchangePairs      []models.ExchangePair
 	pools              []models.Pool
+	feedsMap           map[models.AssetKey]models.Feed
 	branchMarketConfig string
+	branchFeedConfig   string
 )
 
 func init() {
@@ -61,6 +63,12 @@ func init() {
 	if len(exchangePairs) == 0 && len(pools) == 0 {
 		log.Fatal("no exchangepairs and no pools available.")
 	}
+
+	feedsMap, err = models.FeedsFromConfigFile(utils.Getenv("BRANCH_FEED_CONFIG", ""))
+	if err != nil {
+		log.Fatal("FeedsFromConfigFile: ", err)
+	}
+	log.Info("feeds: ", feedsMap)
 }
 
 func main() {
@@ -84,7 +92,7 @@ func main() {
 		chainID,
 	)
 	metacontractAddress := utils.Getenv("METACONTRACT_ADDRESS", "")
-	metacontractPrecision, err := strconv.Atoi(utils.Getenv("METACONTRACT_PRECISION", "8"))
+	metacontractPrecision, err := strconv.Atoi(utils.Getenv("METACONTRACT_PRECISION", "18"))
 	if err != nil {
 		log.Error("parse METACONTRACT_PRECISION: ", err)
 		metacontractPrecision = 8
@@ -159,6 +167,7 @@ func main() {
 	go processor.Processor(
 		exchangePairs,
 		pools,
+		feedsMap,
 		tradesblockChannel,
 		filtersChannel,
 		triggerChannel,
@@ -167,6 +176,7 @@ func main() {
 		metacontractAddress,
 		metacontractPrecision,
 		branchMarketConfig,
+		branchFeedConfig,
 		&wg,
 	)
 
