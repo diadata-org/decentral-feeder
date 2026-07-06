@@ -64,7 +64,8 @@ func init() {
 		log.Fatal("no exchangepairs and no pools available.")
 	}
 
-	feedsMap, err = models.FeedsFromConfigFile(utils.Getenv("BRANCH_FEED_CONFIG", ""))
+	branchFeedConfig = utils.Getenv("BRANCH_FEED_CONFIG", "filter-by-asset")
+	feedsMap, err = models.FeedsFromConfigFile(branchFeedConfig)
 	if err != nil {
 		log.Fatal("FeedsFromConfigFile: ", err)
 	}
