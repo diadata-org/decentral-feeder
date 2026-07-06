@@ -339,6 +339,86 @@
         {
             "Pair": "ZRO-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEN-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SAGA-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "COOKIE-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TURBO-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "KERNEL-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "S-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WBTC-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PLUME-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PAXG-BTC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "KAITO-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NEIRO-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AIXBT-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BNB-FDUSD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "BTC-FDUSD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ENA-FDUSD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "XRP-FDUSD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "AVAX-FDUSD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SHIB-FDUSD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DOT-FDUSD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEC-USDT",
+            "WatchDogDelay": 300
         }
     ]
 }

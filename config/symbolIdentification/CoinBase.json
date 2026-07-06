@@ -108,7 +108,7 @@
         {
             "Symbol": "CHECK",
             "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
+            "Blockchain": "Base",
             "Address": "0x9126236476eFBA9Ad8aB77855c60eB5BF37586Eb",
             "Decimals": 18
         },
@@ -199,7 +199,7 @@
         {
             "Symbol": "FAI",
             "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
+            "Blockchain": "Base",
             "Address": "0xb33Ff54b9F7242EF1593d2C9Bcd8f9df46c77935",
             "Decimals": 18
         },
@@ -258,6 +258,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xc944E90C64B2c07662A292be6244BDf05Cda44a7",
             "Decimals": 18
+        },
+        {
+            "Symbol": "HYPE",
+            "Exchange": "CoinBase",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
         },
         {
             "Symbol": "ICP",
@@ -603,6 +610,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ZEC",
+            "Exchange": "CoinBase",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ZEN",
             "Exchange": "CoinBase",
             "Blockchain": "Base",
@@ -619,8 +633,8 @@
         {
             "Symbol": "ZRO",
             "Exchange": "CoinBase",
-            "Blockchain": "Base",
-            "Address": "0x1C9260276ccf1a3c534b19592FD834c807625186",
+            "Blockchain": "Ethereum",
+            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         }
     ]

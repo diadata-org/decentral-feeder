@@ -74,7 +74,7 @@
         },
         {
             "Pair": "CHECK-USD",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 600
         },
         {
             "Pair": "COMP-USD",
@@ -158,6 +158,10 @@
         },
         {
             "Pair": "GRT-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "HYPE-USD",
             "WatchDogDelay": 300
         },
         {
@@ -354,6 +358,22 @@
         },
         {
             "Pair": "ZRO-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEN-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "CBETH-ETH",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DEGEN-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEC-USD",
             "WatchDogDelay": 300
         }
     ]

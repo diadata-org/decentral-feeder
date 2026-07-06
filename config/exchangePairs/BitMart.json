@@ -62,7 +62,7 @@
         },
         {
             "Pair": "CHECK-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "CHZ-USDT",
@@ -258,6 +258,10 @@
         },
         {
             "Pair": "QNT-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "RAIN-USDT",
             "WatchDogDelay": 300
         },
         {

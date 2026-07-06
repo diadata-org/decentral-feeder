@@ -24,8 +24,8 @@
         {
             "Symbol": "AIXBT",
             "Exchange": "Kraken",
-            "Blockchain": "Ethereum",
-            "Address": "0x0D37aF9D8AE74F35F3A38bD2a08FcB29890Ca6d2",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
             "Decimals": 18
         },
         {
@@ -128,7 +128,7 @@
         {
             "Symbol": "CHECK",
             "Exchange": "Kraken",
-            "Blockchain": "Ethereum",
+            "Blockchain": "Base",
             "Address": "0x9126236476eFBA9Ad8aB77855c60eB5BF37586Eb",
             "Decimals": 18
         },
@@ -284,6 +284,13 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "HYPE",
+            "Exchange": "Kraken",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
             "Decimals": 8
         },
         {
@@ -705,6 +712,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
             "Decimals": 18
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "Kraken",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         }
     ]
 }

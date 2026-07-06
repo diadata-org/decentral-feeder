@@ -173,7 +173,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ICP-USDC",
+            "Pair": "HYPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ICP-USDT",
             "WatchDogDelay": 300
         },
         {

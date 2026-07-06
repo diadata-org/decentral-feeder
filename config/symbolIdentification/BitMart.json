@@ -122,7 +122,7 @@
         {
             "Symbol": "CHECK",
             "Exchange": "BitMart",
-            "Blockchain": "Ethereum",
+            "Blockchain": "Base",
             "Address": "0x9126236476eFBA9Ad8aB77855c60eB5BF37586Eb",
             "Decimals": 18
         },
@@ -298,7 +298,7 @@
             "Symbol": "HYPE",
             "Exchange": "BitMart",
             "Blockchain": "Hyperliquid",
-            "Address": "0x0000000000000000000000000000000000000000",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
             "Decimals": 8
         },
         {
@@ -495,6 +495,13 @@
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
             "Address": "0x4a220E6096B25EADb88358cb44068A3248254675",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RAIN",
+            "Exchange": "BitMart",
+            "Blockchain": "Arbitrum",
+            "Address": "0x25118290e6A5f4139381D072181157035864099d",
             "Decimals": 18
         },
         {

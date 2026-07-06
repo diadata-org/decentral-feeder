@@ -143,7 +143,7 @@
         {
             "Symbol": "CHECK",
             "Exchange": "GateIO",
-            "Blockchain": "Ethereum",
+            "Blockchain": "Base",
             "Address": "0x9126236476eFBA9Ad8aB77855c60eB5BF37586Eb",
             "Decimals": 18
         },
@@ -313,6 +313,13 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x72e4f9F808C49A2a61dE9C5896298920Dc4EEEa9",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "HYPE",
+            "Exchange": "GateIO",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
             "Decimals": 8
         },
         {
@@ -523,6 +530,13 @@
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",
             "Address": "0x0e397938C1Aa0680954093495B70A9F5e2249aBa",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RAIN",
+            "Exchange": "GateIO",
+            "Blockchain": "Arbitrum",
+            "Address": "0x25118290e6A5f4139381D072181157035864099d",
             "Decimals": 18
         },
         {

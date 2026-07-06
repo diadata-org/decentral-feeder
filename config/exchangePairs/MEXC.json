@@ -94,7 +94,7 @@
         },
         {
             "Pair": "CHECK-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 600
         },
         {
             "Pair": "COINON-USDT",
@@ -197,11 +197,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "IAUON-USDT",
+            "Pair": "HYPE-USDT",
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ICP-USDC",
+            "Pair": "IAUON-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -254,7 +254,7 @@
         },
         {
             "Pair": "NOCK-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "NPC-USDC",
@@ -306,6 +306,14 @@
         },
         {
             "Pair": "QQQON-USDT",
+            "WatchDogDelay": 300
+        },    
+        {
+            "Pair": "RAIN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "RENDER-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -482,6 +490,22 @@
         },
         {
             "Pair": "ZRO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "WBTC-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "COINON-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DEGEN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEC-USDT",
             "WatchDogDelay": 300
         }
     ]

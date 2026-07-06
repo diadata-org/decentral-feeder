@@ -82,7 +82,7 @@
         },
         {
             "Pair": "CHECK-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 600
         },
         {
             "Pair": "COINON-USDT",
@@ -173,6 +173,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "HYPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ICP-USDT",
             "WatchDogDelay": 300
         },
@@ -258,6 +262,10 @@
         },
         {
             "Pair": "QQQON-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "RAIN-USDT",
             "WatchDogDelay": 300
         },
         {
