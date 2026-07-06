@@ -15,6 +15,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "AMZNON",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
+            "Decimals": 18
+        },
+        {
             "Symbol": "AIXBT",
             "Exchange": "BitMart",
             "Blockchain": "Base",
@@ -134,10 +141,24 @@
             "Decimals": 18
         },
         {
+            "Symbol": "COINON",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0xF042cfa86cf1D598a75Bdb55c3507a1F39f9493b",
+            "Decimals": 18
+        },
+        {
             "Symbol": "COTI",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
             "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "CRCLON",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0x3632DEa96A953C11dac2f00b4A05a32CD1063fAE",
             "Decimals": 18
         },
         {
@@ -277,8 +298,15 @@
             "Symbol": "HYPE",
             "Exchange": "BitMart",
             "Blockchain": "Hyperliquid",
-            "Address": "0x0000000000000000000000000000000000000000",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
             "Decimals": 8
+        },
+        {
+            "Symbol": "IAUON",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0x4f0CA3df1c2e6b943cf82E649d576ffe7B2fABCF",
+            "Decimals": 18
         },
         {
             "Symbol": "KAITO",
@@ -393,6 +421,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MSTRON",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0xCabD955322dfbf94C084929ac5E9Eca3fEB5556F",
+            "Decimals": 18
+        },
+        {
             "Symbol": "NEAR",
             "Exchange": "BitMart",
             "Blockchain": "NEAR",
@@ -411,6 +446,13 @@
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "NVDAON",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0x2D1F7226Bd1F780AF6B9A49DCC0aE00E8Df4bDEE",
             "Decimals": 18
         },
         {
@@ -453,6 +495,13 @@
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
             "Address": "0x4a220E6096B25EADb88358cb44068A3248254675",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RAIN",
+            "Exchange": "BitMart",
+            "Blockchain": "Arbitrum",
+            "Address": "0x25118290e6A5f4139381D072181157035864099d",
             "Decimals": 18
         },
         {
@@ -573,6 +622,13 @@
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TSLAON",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
+            "Decimals": 18
         },
         {
             "Symbol": "TUSD",

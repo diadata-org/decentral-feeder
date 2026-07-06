@@ -22,6 +22,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AMZNON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
+            "Decimals": 18
+        },
+        {
             "Symbol": "AIXBT",
             "Exchange": "MEXC",
             "Blockchain": "Base",
@@ -131,6 +138,20 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xF042cfa86cf1D598a75Bdb55c3507a1F39f9493b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "COINX",
+            "Exchange": "MEXC",
+            "Blockchain": "Solana",
+            "Address": "Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "CRCLON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x3632DEa96A953C11dac2f00b4A05a32CD1063fAE",
             "Decimals": 18
         },
         {
@@ -274,6 +295,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "MEXC",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "IAUON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x4f0CA3df1c2e6b943cf82E649d576ffe7B2fABCF",
+            "Decimals": 18
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "MEXC",
             "Blockchain": "InternetComputer",
@@ -351,6 +386,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MSTRON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xCabD955322dfbf94C084929ac5E9Eca3fEB5556F",
+            "Decimals": 18
+        },
+        {
             "Symbol": "NEAR",
             "Exchange": "MEXC",
             "Blockchain": "NEAR",
@@ -377,6 +419,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
             "Decimals": 18
+        },
+        {
+            "Symbol": "NVDAX",
+            "Exchange": "MEXC",
+            "Blockchain": "Solana",
+            "Address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+            "Decimals": 8
         },
         {
             "Symbol": "OMG",
@@ -446,6 +495,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x0e397938C1Aa0680954093495B70A9F5e2249aBa",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RAIN",
+            "Exchange": "MEXC",
+            "Blockchain": "Arbitrum",
+            "Address": "0x25118290e6A5f4139381D072181157035864099d",
             "Decimals": 18
         },
         {
@@ -701,11 +757,25 @@
             "Decimals": 6
         },
         {
+            "Symbol": "XVG",
+            "Exchange": "MEXC",
+            "Blockchain": "Verge",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 6
+        },
+        {
             "Symbol": "YFI",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
             "Decimals": 18
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "MEXC",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         },
         {
             "Symbol": "ZORA",

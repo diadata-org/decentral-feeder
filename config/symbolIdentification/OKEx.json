@@ -204,6 +204,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "OKEx",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "OKEx",
             "Blockchain": "InternetComputer",
@@ -531,6 +538,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
             "Decimals": 18
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "OKEx",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         },
         {
             "Symbol": "ZORA",

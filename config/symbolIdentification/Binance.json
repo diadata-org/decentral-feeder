@@ -554,6 +554,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "ZEC",
+            "Exchange": "Binance",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ZEN",
             "Exchange": "Binance",
             "Blockchain": "Base",

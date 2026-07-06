@@ -225,6 +225,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "Kraken",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "KuCoin",
             "Blockchain": "InternetComputer",
@@ -370,6 +377,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
             "Decimals": 6
+        },
+        {
+            "Symbol": "RAIN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Arbitrum",
+            "Address": "0x25118290e6A5f4139381D072181157035864099d",
+            "Decimals": 18
         },
         {
             "Exchange": "KuCoin",
@@ -643,6 +657,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
             "Decimals": 18
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "KuCoin",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         },
         {
             "Symbol": "ZEN",
