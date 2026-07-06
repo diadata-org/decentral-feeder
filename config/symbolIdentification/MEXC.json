@@ -274,6 +274,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "MEXC",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "MEXC",
             "Blockchain": "InternetComputer",
@@ -446,6 +453,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0x0e397938C1Aa0680954093495B70A9F5e2249aBa",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "RAIN",
+            "Exchange": "MEXC",
+            "Blockchain": "Arbitrum",
+            "Address": "0x25118290e6A5f4139381D072181157035864099d",
             "Decimals": 18
         },
         {
@@ -706,6 +720,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
             "Decimals": 18
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "MEXC",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         },
         {
             "Symbol": "ZORA",

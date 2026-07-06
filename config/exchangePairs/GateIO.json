@@ -129,6 +129,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "HYPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ICP-USDT",
             "WatchDogDelay": 300
         },
@@ -191,6 +195,10 @@
         {
             "Pair": "PYUSD-USDT",
             "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "RAIN-USDT",
+            "WatchDogDelay": 300
         },
         {
             "Pair": "REACT-USDT",

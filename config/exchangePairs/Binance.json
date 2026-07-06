@@ -339,6 +339,10 @@
         {
             "Pair": "DOT-FDUSD",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEC-USDT",
+            "WatchDogDelay": 300
         }
     ]
 }

@@ -190,6 +190,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "Bitget",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
             "Symbol": "IMX",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
@@ -440,6 +447,13 @@
             "Blockchain": "Ripple",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "Bitget",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         },
         {
             "Symbol": "ZEN",

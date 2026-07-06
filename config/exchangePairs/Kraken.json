@@ -101,6 +101,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "HYPE-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ICP-USD",
             "WatchDogDelay": 300
         },
@@ -354,6 +358,10 @@
         },
         {
             "Pair": "DAI-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEC-USD",
             "WatchDogDelay": 300
         }
     ]

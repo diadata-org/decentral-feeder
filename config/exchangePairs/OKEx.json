@@ -137,6 +137,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "HYPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ICP-USDT",
             "WatchDogDelay": 300
         },
@@ -342,6 +346,10 @@
         },
         {
             "Pair": "DEGEN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEC-USDT",
             "WatchDogDelay": 300
         }
     ]

@@ -237,6 +237,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "RAIN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "RAY-USDT",
             "WatchDogDelay": 300
         },
