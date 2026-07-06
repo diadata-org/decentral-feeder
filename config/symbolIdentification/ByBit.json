@@ -22,6 +22,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AMZNX",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "Xs3eBt7uRfJX8QUs4suhyU8p2M6DoUDrJyWBa8LLZsg",
+            "Decimals": 8
+        },
+        {
             "Symbol": "APT",
             "Exchange": "ByBit",
             "Blockchain": "Aptos",
@@ -90,6 +97,20 @@
             "Blockchain": "BinanceSmartChain",
             "Address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
             "Decimals": 18
+        },
+        {
+            "Symbol": "COINX",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "Xs7ZdzSHLU9ftNJsii5fCeJhoRWSC32SQGzGQtePxNu",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "CRCLX",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1",
+            "Decimals": 8
         },
         {
             "Symbol": "CRV",
@@ -211,6 +232,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "ByBit",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "ByBit",
             "Blockchain": "InternetComputer",
@@ -265,6 +293,13 @@
             "Blockchain": "NEAR",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 0
+        },
+        {
+            "Symbol": "NVDAX",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+            "Decimals": 8
         },
         {
             "Symbol": "OMG",
@@ -454,6 +489,13 @@
             "Blockchain": "Tron",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TSLAX",
+            "Exchange": "ByBit",
+            "Blockchain": "Solana",
+            "Address": "XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB",
+            "Decimals": 8
         },
         {
             "Symbol": "UNI",

@@ -22,6 +22,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AMZNON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
+            "Decimals": 18
+        },
+        {
             "Symbol": "AIXBT",
             "Exchange": "Bitget",
             "Blockchain": "Base",
@@ -190,6 +197,20 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "Bitget",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "IAUON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x4f0CA3df1c2e6b943cf82E649d576ffe7B2fABCF",
+            "Decimals": 18
+        },
+        {
             "Symbol": "IMX",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
@@ -264,6 +285,13 @@
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
             "Address": "0x8eD97a637A790Be1feff5e888d43629dc05408F6",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "NVDAON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x2D1F7226Bd1F780AF6B9A49DCC0aE00E8Df4bDEE",
             "Decimals": 18
         },
         {
@@ -386,6 +414,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "TSLAON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xf6b1117ec07684D3958caD8BEb1b302bfD21103f",
+            "Decimals": 18
+        },
+        {
             "Symbol": "TURBO",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
@@ -440,6 +475,13 @@
             "Blockchain": "Ripple",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 6
+        },
+        {
+            "Symbol": "ZEC",
+            "Exchange": "Bitget",
+            "Blockchain": "Zcash",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 8
         },
         {
             "Symbol": "ZEN",
