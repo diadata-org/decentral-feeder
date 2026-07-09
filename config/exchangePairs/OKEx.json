@@ -81,6 +81,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "DEGEN-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "DOGE-USDC",
             "WatchDogDelay": 300
         },
@@ -157,6 +161,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "KAITO-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT",
             "WatchDogDelay": 300
         },
@@ -186,6 +194,10 @@
         },
         {
             "Pair": "PENDLE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "POL-USDC",
             "WatchDogDelay": 300
         },
         {
@@ -285,6 +297,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "TURBO-USDC",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "TURBO-USDT",
             "WatchDogDelay": 300
         },
@@ -337,31 +353,15 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ZEC-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ZORA-USDT",
             "WatchDogDelay": 300
         },
         {
             "Pair": "ZRO-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "KAITO-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "POL-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "TURBO-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DEGEN-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ZEC-USDT",
             "WatchDogDelay": 300
         }
     ]

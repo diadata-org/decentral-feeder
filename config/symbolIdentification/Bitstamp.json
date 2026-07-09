@@ -4,7 +4,7 @@
             "Symbol": "1INCH",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x111111111117dc0aa78b770fa6a738034120c302",
+            "Address": "0x111111111117dC0aa78b770fA6A738034120C302",
             "Decimals": 18
         },
         {
@@ -32,28 +32,28 @@
             "Symbol": "ALPHA",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xa1faa113cbe53436df28ff0aee54275c13b40975",
+            "Address": "0xa1faa113cbE53436Df28FF0aEe54275c13B40975",
             "Decimals": 18
         },
         {
             "Symbol": "AMP",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xff20817765cb7f73d4bde2e66e067e58d11095c2",
+            "Address": "0xfF20817765cB7f73d4bde2e66e067E58D11095C2",
             "Decimals": 18
         },
         {
             "Symbol": "ANT",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xa117000000f279d81a1d3cc75430faa017fa5a2e",
+            "Address": "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
             "Decimals": 18
         },
         {
             "Symbol": "APE",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+            "Address": "0x4d224452801ACEd8B2F0aebE155379bb5D594381",
             "Decimals": 18
         },
         {
@@ -74,21 +74,21 @@
             "Symbol": "AXS",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xbb0e17ef65f82ab018d8edd776e8dd940327b28b",
+            "Address": "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b",
             "Decimals": 18
         },
         {
             "Symbol": "BAND",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xba11d00c5f74255f56a5e366f4f77f5a186d7f55",
+            "Address": "0xBA11D00c5f74255f56a5E366F4F77f5A186d7f55",
             "Decimals": 18
         },
         {
             "Symbol": "BAT",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
+            "Address": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
             "Decimals": 18
         },
         {
@@ -109,14 +109,14 @@
             "Symbol": "CHZ",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x3506424f91fd33084466f402d5d97f05f8e3b4af",
+            "Address": "0x3506424F91fD33084466F402d5D97f05F8e3b4AF",
             "Decimals": 18
         },
         {
             "Symbol": "COMP",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+            "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
             "Decimals": 18
         },
         {
@@ -130,21 +130,21 @@
             "Symbol": "CTSI",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x491604c0fdf08347dd1fa4ee062a822a5dd06b5d",
+            "Address": "0x491604c0FDF08347Dd1fa4Ee062a822A5DD06B5D",
             "Decimals": 18
         },
         {
             "Symbol": "CVX",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
+            "Address": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",
             "Decimals": 18
         },
         {
             "Symbol": "DAI",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+            "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
             "Decimals": 18
         },
         {
@@ -172,7 +172,7 @@
             "Symbol": "ENJ",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xf629cbd94d3791c9250152bd8dfbdf380e2a3b9c",
+            "Address": "0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c",
             "Decimals": 18
         },
         {
@@ -200,7 +200,7 @@
             "Symbol": "EURT",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xC581b735a1688071a1746c968e0798d642ede491",
+            "Address": "0xC581b735A1688071A1746c968e0798D642EDE491",
             "Decimals": 6
         },
         {
@@ -242,7 +242,7 @@
             "Symbol": "GODS",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xccc8cb5229b0ac8069c51fd58367fd1e622afd97",
+            "Address": "0xccC8cb5229B0ac8069C51fd58367Fd1e622aFD97",
             "Decimals": 18
         },
         {
@@ -256,7 +256,7 @@
             "Symbol": "GUSD",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x056fd409e1d7a124bd7017459dfea2f387b6d5cd",
+            "Address": "0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd",
             "Decimals": 2
         },
         {
@@ -277,14 +277,14 @@
             "Symbol": "INJ",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xe28b3b32b6c345a34ff64674606124dd5aceca30",
+            "Address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30",
             "Decimals": 18
         },
         {
             "Symbol": "KNC",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xdd974d5c2e2928dea5f71b9825b8b646686bd200",
+            "Address": "0xdd974D5C2e2928deA5F71b9825b8b646686BD200",
             "Decimals": 18
         },
         {
@@ -298,7 +298,7 @@
             "Symbol": "LRC",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd",
+            "Address": "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD",
             "Decimals": 18
         },
         {
@@ -333,7 +333,7 @@
             "Symbol": "MPL",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x33349b282065b0284d756f0577fb39c158f935e6",
+            "Address": "0x33349B282065b0284d756F0577FB39c158F935e6",
             "Decimals": 18
         },
         {
@@ -347,7 +347,7 @@
             "Symbol": "NEXO",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206",
+            "Address": "0xB62132e35a6c13ee1EE0f84dC5d40bad8d815206",
             "Decimals": 18
         },
         {
@@ -361,21 +361,21 @@
             "Symbol": "PAX",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x8e870d67f660d95d5be530380d0ec0bd388289e1",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
             "Decimals": 18
         },
         {
             "Symbol": "PERP",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xbc396689893d065f41bc2c6ecbee5e0085233447",
+            "Address": "0xbC396689893D065F41bc2C6EcbeE5e0085233447",
             "Decimals": 18
         },
         {
             "Symbol": "RAD",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x31c8eacbffdd875c74b94b077895bd78cf1e64a3",
+            "Address": "0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3",
             "Decimals": 18
         },
         {
@@ -389,7 +389,7 @@
             "Symbol": "RNDR",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x6de037ef9ad2725eb40118bb1702ebb27e4aeb24",
+            "Address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24",
             "Decimals": 18
         },
         {
@@ -417,7 +417,7 @@
             "Symbol": "SKL",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x00c83aecc790e8a4453e5dd3b0b4b3680501a7a7",
+            "Address": "0x00c83aeCC790e8a4453e5dD3B0B4b3680501a7A7",
             "Decimals": 18
         },
         {
@@ -459,7 +459,7 @@
             "Symbol": "SXP",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9",
+            "Address": "0x8CE9137d39326AD0cD6491fb5CC0CbA0e089b6A9",
             "Decimals": 18
         },
         {
@@ -501,7 +501,7 @@
             "Symbol": "VEGA",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e",
+            "Address": "0xcB84d72e61e383767C4DFEb2d8ff7f4FB89abc6e",
             "Decimals": 18
         },
         {
@@ -529,7 +529,7 @@
             "Symbol": "ZRX",
             "Exchange": "Bitstamp",
             "Blockchain": "Ethereum",
-            "Address": "0xe41d2489571d322189246dafa5ebde1f4699f498",
+            "Address": "0xE41d2489571d322189246DaFA5ebDe1F4699F498",
             "Decimals": 18
         }
     ]

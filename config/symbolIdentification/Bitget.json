@@ -22,13 +22,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "AMZNON",
-            "Exchange": "Bitget",
-            "Blockchain": "Ethereum",
-            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
-            "Decimals": 18
-        },
-        {
             "Symbol": "AIXBT",
             "Exchange": "Bitget",
             "Blockchain": "Base",
@@ -40,6 +33,13 @@
             "Exchange": "Bitget",
             "Blockchain": "Alephium",
             "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AMZNON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
             "Decimals": 18
         },
         {

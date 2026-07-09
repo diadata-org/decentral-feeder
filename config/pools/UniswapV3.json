@@ -7,7 +7,7 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "Pin-WETH",
+            "ForeignName": "PIN-WETH",
             "Address": "0x241fc1cdbf9f741933e5fa515c5b884da93b81b6",
             "Order": "0",
             "WatchDogDelay": 600
@@ -339,6 +339,18 @@
         {
             "ForeignName": "TBTC-WBTC",
             "Address": "0x73a38006d23517a1d383c88929b2014f8835b38b",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-CHMPSTR",
+            "Address": "0x56680935d369a2239684a363c5387992b08d030d",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "rsETH-WETH",
+            "Address": "0x059615EBf32C946aaab3D44491f78e4F8e97e1D3",
             "Order": "0",
             "WatchDogDelay": 3600
         }

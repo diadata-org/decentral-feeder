@@ -69,6 +69,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "CBETH-ETH",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "cbETH-USD",
             "WatchDogDelay": 300
         },
@@ -86,6 +90,10 @@
         },
         {
             "Pair": "CRV-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "DEGEN-USD",
             "WatchDogDelay": 300
         },
         {
@@ -190,6 +198,10 @@
         },
         {
             "Pair": "KEYCAT-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "KTA-USD",
             "WatchDogDelay": 300
         },
         {
@@ -349,6 +361,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ZEC-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "ZEN-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "ZEN-USD",
             "WatchDogDelay": 300
         },
@@ -358,22 +378,6 @@
         },
         {
             "Pair": "ZRO-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ZEN-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "CBETH-ETH",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "DEGEN-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ZEC-USD",
             "WatchDogDelay": 300
         }
     ]

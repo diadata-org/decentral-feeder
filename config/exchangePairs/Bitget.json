@@ -9,16 +9,16 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "AMZNON-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "AIXBT-USDT",
             "WatchDogDelay": 3600
         },
         {
             "Pair": "ALPH-USDT",
             "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "AMZNON-USDT",
+            "WatchDogDelay": 300
         },
         {
             "Pair": "ARB-USDT",
@@ -93,11 +93,11 @@
             "WatchDogDelay": 3600
         },
         {
-            "Pair": "IAUON-USDT",
+            "Pair": "HYPE-USDT",
             "WatchDogDelay": 300
         },
         {
-            "Pair": "HYPE-USDT",
+            "Pair": "IAUON-USDT",
             "WatchDogDelay": 300
         },
         {

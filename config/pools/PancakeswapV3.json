@@ -35,6 +35,12 @@
             "Address": "0x172fcD41E0913e95784454622d1c3724f546f849",
             "Order": "1",
             "WatchDogDelay": 300
+        },
+        {
+            "ForeignName": "WETH-cbXRP",
+            "Address": "0x170b6bFc071426aaB7C81AE12383219facBb6B6A",
+            "Order": "1",
+            "WatchDogDelay": 300
         }
     ]
 }

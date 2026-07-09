@@ -21,7 +21,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "ANDYETH-USDT",
+            "Pair": "ANDY-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -169,11 +169,11 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "IAUON-USDT",
+            "Pair": "HYPE-USDT",
             "WatchDogDelay": 300
         },
         {
-            "Pair": "HYPE-USDT",
+            "Pair": "IAUON-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -402,6 +402,10 @@
         },
         {
             "Pair": "USDG-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "USDP-USDT",
             "WatchDogDelay": 3600
         },
         {
