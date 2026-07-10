@@ -540,6 +540,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SERV",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x40e3d1A4B2C47d9AA61261F5606136ef73E28042",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SHIB",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",

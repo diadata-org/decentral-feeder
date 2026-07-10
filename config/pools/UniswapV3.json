@@ -343,12 +343,6 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "WETH-CHMPSTR",
-            "Address": "0x56680935d369a2239684a363c5387992b08d030d",
-            "Order": "1",
-            "WatchDogDelay": 3600
-        },
-        {
             "ForeignName": "rsETH-WETH",
             "Address": "0x059615EBf32C946aaab3D44491f78e4F8e97e1D3",
             "Order": "0",

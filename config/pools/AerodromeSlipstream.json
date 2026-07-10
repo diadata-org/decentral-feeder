@@ -83,6 +83,12 @@
             "Address": "0x0f664affb82f074937d5cfcd61b97f3f32d5dc50",
             "Order": "1",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "cbXRP-cbBTC",
+            "Address": "0x95ff4985af7ed78421215be100c18a2b987f7e90",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }
