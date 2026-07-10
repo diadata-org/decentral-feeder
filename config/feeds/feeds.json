@@ -1,18 +1,107 @@
-{
-    "Feeds": [
-        {
-            "Symbol": "BTC",
-            "Blockchain": "Bitcoin",
-            "Address": "0x0000000000000000000000000000000000000000",
-            "Filter": "VWAP",
-            "MetaFilter": "VWAP"
-        },
-        {
-            "Symbol": "ETH",
+[
+    {
+        "Symbol": "ETHDEXFeed/USD",
+        "Asset": {
             "Blockchain": "Ethereum",
-            "Address": "0x0000000000000000000000000000000000000000",
-            "Filter": "VWAP",
-            "MetaFilter": "Median"
-        }
-    ]
-}
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        "Filter": "VWAP",
+        "Metafilter": "VWAP",
+        "Pools": [
+            {
+                "Blockchain": {"Name": "Ethereum"},
+                "Address": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"
+            },
+            {
+                "Blockchain": {"Name": "Ethereum"},
+                "Address": "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc"
+            }
+        ]
+    },
+    {
+        "Symbol": "ETHCrossFeed/USD",
+        "Asset": {
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        "Filter": "VWAP",
+        "Metafilter": "VWAP",
+        "Pools": [
+            {
+                "Blockchain": {"Name": "Ethereum"},
+                "Address": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"
+            },
+            {
+                "Blockchain": {"Name": "Ethereum"},
+                "Address": "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc"
+            }
+        ],
+        "Markets": [
+            {
+                "Exchange": "Binance",
+                "ForeignName": "ETH-USDT"
+            },
+            {
+                "Exchange": "CoinBase",
+                "ForeignName": "ETH-USDT"
+            },
+	    {
+		"Exchange": "CoinBase",
+		"ForeignName": "ETH-USDC"
+	    }
+        ]
+    },
+    {
+        "Symbol": "BananaTestFeed/USD",
+        "Asset": {
+            "Blockchain": "Ethereum",
+            "Address": ""
+        },
+        "Filter": "VWAP",
+        "Metafilter": "VWAP",
+        "Pools": [
+            {
+                "Blockchain": {"Name": "Ethereum"},
+                "Address": "0x43DE4318b6EB91a7cF37975dBB574396A7b5B5c6"
+            }
+        ]
+    },
+    {
+        "Symbol": "BTCTestFeed/USD",
+        "Asset": {
+            "Blockchain": "Bitcoin",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        "Filter": "VWAP",
+        "Metafilter": "VWAP",
+        "Markets": [
+            {
+                "Exchange": "Binance",
+                "ForeignName": "BTC-USDT"
+            },
+            {
+                "Exchange": "CoinBase",
+                "ForeignName": "BTC-USD"
+            }
+        ]
+    },
+    {
+        "Symbol": "ETHTestFeed/USD",
+        "Asset": {
+            "Blockchain": "Ethereum",
+            "Address": "0x0000000000000000000000000000000000000000"
+        },
+        "Filter": "VWAP",
+        "Metafilter": "Median",
+        "Markets": [
+            {
+                "Exchange": "Binance",
+                "ForeignName": "ETH-USDT"
+            },
+            {
+                "Exchange": "CoinBase",
+                "ForeignName": "ETH-USD"
+            }
+        ]
+    }
+]
