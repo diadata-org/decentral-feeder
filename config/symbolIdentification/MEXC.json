@@ -435,6 +435,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "NVDAON",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x2D1F7226Bd1F780AF6B9A49DCC0aE00E8Df4bDEE",
+            "Decimals": 18
+        },
+        {
             "Symbol": "NVDAX",
             "Exchange": "MEXC",
             "Blockchain": "Solana",

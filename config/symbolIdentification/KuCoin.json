@@ -226,7 +226,7 @@
         },
         {
             "Symbol": "HYPE",
-            "Exchange": "Kraken",
+            "Exchange": "KuCoin",
             "Blockchain": "Hyperliquid",
             "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
             "Decimals": 8

@@ -3,25 +3,13 @@
         {
             "ForeignName": "USDT-satUSD",
             "Address": "0xac0fe1c4126e4a9b644adfc1303827e3bb5dddf3",
-            "Order": "2",
+            "Order": "1",
             "WatchDogDelay": 300
         },
         {
             "ForeignName": "USDT-WBNB",
             "Address": "0x36696169C63e42cd08ce11f5deeBbCeBae652050",
             "Order": "1",
-            "WatchDogDelay": 300
-        },
-        {
-            "ForeignName": "USDT-USDC",
-            "Address": "0x4f31Fa980a675570939B737Ebdde0471a4Be40Eb",
-            "Order": "2",
-            "WatchDogDelay": 300
-        },
-        {
-            "ForeignName": "USDT-USDC",
-            "Address": "0x92b7807bF19b7DDdf89b706143896d05228f3121",
-            "Order": "2",
             "WatchDogDelay": 300
         },
         {
