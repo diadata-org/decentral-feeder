@@ -217,10 +217,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "KTA-EUR",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "KTA-USD",
             "WatchDogDelay": 300
         },

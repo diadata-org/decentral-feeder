@@ -89,10 +89,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "DOGE-KCS",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "DOGE-USDC",
             "WatchDogDelay": 300
         },
@@ -374,10 +370,6 @@
         },
         {
             "Pair": "XLM-USDT",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "XRP-KCS",
             "WatchDogDelay": 300
         },
         {
