@@ -39,7 +39,9 @@ var (
 
 	exchangePairs      []models.ExchangePair
 	pools              []models.Pool
+	customFeeds        []models.CustomFeed
 	branchMarketConfig string
+	branchFeedConfig   string
 )
 
 func init() {
@@ -61,6 +63,19 @@ func init() {
 	if len(exchangePairs) == 0 && len(pools) == 0 {
 		log.Fatal("no exchangepairs and no pools available.")
 	}
+
+	branchFeedConfig = utils.Getenv("BRANCH_FEED_CONFIG", "")
+	customFeedsAux, err := models.FeedsFromConfigFile(branchFeedConfig)
+	if err != nil {
+		log.Fatal("FeedsFromConfigFile: ", err)
+	}
+	log.Info("feeds: ", customFeedsAux)
+
+	// Check if all custom feeds can be realized.
+	// Don't include feed if not all requested markets are available.(?)
+	customFeeds = processor.FilterAdmissibleCustomFeeds(customFeedsAux, exchangePairs)
+	log.Info("customFeeds: ", customFeeds)
+
 }
 
 func main() {
@@ -84,7 +99,7 @@ func main() {
 		chainID,
 	)
 	metacontractAddress := utils.Getenv("METACONTRACT_ADDRESS", "")
-	metacontractPrecision, err := strconv.Atoi(utils.Getenv("METACONTRACT_PRECISION", "8"))
+	metacontractPrecision, err := strconv.Atoi(utils.Getenv("METACONTRACT_PRECISION", "18"))
 	if err != nil {
 		log.Error("parse METACONTRACT_PRECISION: ", err)
 		metacontractPrecision = 8
@@ -136,7 +151,7 @@ func main() {
 	// Create channels and set up blockchain connections
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
-	filtersChannel := make(chan []models.FilterPointPair)
+	filtersChannel := make(chan []models.FilterPoint)
 	triggerChannel := make(chan time.Time)
 	failoverChannel := make(chan string)
 
@@ -159,6 +174,7 @@ func main() {
 	go processor.Processor(
 		exchangePairs,
 		pools,
+		customFeeds,
 		tradesblockChannel,
 		filtersChannel,
 		triggerChannel,
@@ -167,6 +183,7 @@ func main() {
 		metacontractAddress,
 		metacontractPrecision,
 		branchMarketConfig,
+		branchFeedConfig,
 		&wg,
 	)
 
