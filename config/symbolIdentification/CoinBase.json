@@ -309,6 +309,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "KTA",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0xc0634090F2Fe6c6d75e61Be2b949464aBB498973",
+            "Decimals": 18
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "CoinBase",
             "Blockchain": "Ethereum",
@@ -321,13 +328,6 @@
             "Blockchain": "Litecoin",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
-        },
-        {
-            "Symbol": "MKR",
-            "Exchange": "CoinBase",
-            "Blockchain": "Ethereum",
-            "Address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
-            "Decimals": 18
         },
         {
             "Symbol": "MNT",

@@ -71,6 +71,24 @@
             "Address": "0x5c0d76fab1822bdeb47308ed6028231761ed723e",
             "Order": "0",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "KVCM-WETH",
+            "Address": "0x5e710Fe3C079182a6a2be9cA3c200317d6C34A5D",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "USDC-KLIMA",
+            "Address": "0x958682ec6282bc7e939fa8ba9397805c214c3a09",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "OGN-SUPEROETHB",
+            "Address": "0x6FB655476fDCFB9712dD200308D941A1c6D1119e",
+            "Order": "1",
+            "WatchDogDelay": 3600
         }
     ]
 }

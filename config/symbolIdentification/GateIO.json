@@ -771,6 +771,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "USDP",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
+            "Decimals": 18
+        },
+        {
             "Symbol": "USDT",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

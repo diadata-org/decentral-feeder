@@ -15,6 +15,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "AIXBT",
+            "Exchange": "BitMart",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
+            "Decimals": 18
+        },
+        {
             "Symbol": "AMZNON",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
@@ -22,10 +29,10 @@
             "Decimals": 18
         },
         {
-            "Symbol": "AIXBT",
+            "Symbol": "ANDY",
             "Exchange": "BitMart",
-            "Blockchain": "Base",
-            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
+            "Blockchain": "Ethereum",
+            "Address": "0x68BbEd6A47194EFf1CF514B50Ea91895597fc91E",
             "Decimals": 18
         },
         {
@@ -134,17 +141,17 @@
             "Decimals": 18
         },
         {
-            "Symbol": "COMP",
-            "Exchange": "BitMart",
-            "Blockchain": "Ethereum",
-            "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
-            "Decimals": 18
-        },
-        {
             "Symbol": "COINON",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",
             "Address": "0xF042cfa86cf1D598a75Bdb55c3507a1F39f9493b",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "COMP",
+            "Exchange": "BitMart",
+            "Blockchain": "Ethereum",
+            "Address": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
             "Decimals": 18
         },
         {
@@ -335,6 +342,13 @@
             "Blockchain": "Kusama",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 12
+        },
+        {
+            "Symbol": "KTA",
+            "Exchange": "BitMart",
+            "Blockchain": "Base",
+            "Address": "0xc0634090F2Fe6c6d75e61Be2b949464aBB498973",
+            "Decimals": 18
         },
         {
             "Symbol": "LA",
