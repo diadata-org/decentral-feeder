@@ -148,7 +148,7 @@ func main() {
 	// Create channels and set up blockchain connections
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.SimulatedTradesBlock)
-	filtersChannel := make(chan []models.FilterPointPair)
+	filtersChannel := make(chan []models.FilterPoint)
 	triggerChannel := make(chan time.Time)
 
 	// Frequency for the trigger ticker initiating the computation of filter values.
