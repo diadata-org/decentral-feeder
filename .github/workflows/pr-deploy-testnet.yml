@@ -54,6 +54,11 @@ jobs:
   build-and-deploy:
     needs: lint
     runs-on: ubuntu-latest
+    # Serialize all jobs pushing to lumina-infra (parallel deploy runs and
+    # the mainnet pipeline race on the same branch otherwise)
+    concurrency:
+      group: lumina-infra-push
+      queue: max
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
