@@ -14,7 +14,7 @@
         },
         {
             "Pair": "AMZNON-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "ANDY-USDT",
@@ -22,7 +22,7 @@
         },
         {
             "Pair": "APE-USDC",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1200
         },
         {
             "Pair": "ASTER-USDT",
@@ -42,7 +42,7 @@
         },
         {
             "Pair": "BCH-BTC",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "BEAM-USDT",
@@ -74,7 +74,7 @@
         },
         {
             "Pair": "COINON-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "COMP-USDT",
@@ -82,11 +82,11 @@
         },
         {
             "Pair": "COTI-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "CRCLON-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "CRV-USDT",
@@ -134,7 +134,7 @@
         },
         {
             "Pair": "GMT-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 900
         },
         {
             "Pair": "GMX-USDT",
@@ -150,7 +150,7 @@
         },
         {
             "Pair": "GUN-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "HBAR-USDT",
@@ -158,7 +158,7 @@
         },
         {
             "Pair": "HEMI-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "HYPE-USDT",
@@ -166,7 +166,7 @@
         },
         {
             "Pair": "IAUON-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "KAITO-USDT",
@@ -174,7 +174,7 @@
         },
         {
             "Pair": "KAVA-USDT",
-            "WatchDogDelay": 1200
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "KERNEL-USDT",
@@ -190,7 +190,7 @@
         },
         {
             "Pair": "LA-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "LRC-USDT",
@@ -198,7 +198,7 @@
         },
         {
             "Pair": "LUNC-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "LWOLF-USDT",
@@ -210,7 +210,7 @@
         },
         {
             "Pair": "METIS-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "MNT-USDT",
@@ -226,7 +226,7 @@
         },
         {
             "Pair": "MSTRON-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "NEAR-USDT",
@@ -242,7 +242,7 @@
         },
         {
             "Pair": "NVDAON-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "OBOL-USDT",
@@ -270,7 +270,7 @@
         },
         {
             "Pair": "RAIN-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 1800
         },
         {
             "Pair": "RAY-USDT",
@@ -302,7 +302,7 @@
         },
         {
             "Pair": "SKY-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "SOL-USDT",
@@ -330,7 +330,7 @@
         },
         {
             "Pair": "TIA-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "TOSHI-USDT",
@@ -338,7 +338,7 @@
         },
         {
             "Pair": "TRUMP-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "TRX-USDT",
@@ -346,7 +346,7 @@
         },
         {
             "Pair": "TSLAON-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "TUSD-USDC",
@@ -366,7 +366,7 @@
         },
         {
             "Pair": "USDP-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "VELO-USDT",
@@ -414,7 +414,7 @@
         },
         {
             "Pair": "ZK-USDT",
-            "WatchDogDelay": 300
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "ZORA-USDT",
