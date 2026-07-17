@@ -5,7 +5,7 @@ go 1.23.4
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 require (
-	github.com/diadata-org/lumina-library v1.0.5-rc1
+	github.com/diadata-org/lumina-library v1.0.7
 	github.com/sirupsen/logrus v1.9.3
 )
 

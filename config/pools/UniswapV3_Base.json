@@ -59,6 +59,12 @@
             "Address": "0xc1a6fbedae68e1472dbb91fe29b51f7a0bd44f97",
             "Order": "0",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-SERV",
+            "Address": "0x393e58375cA7bCAA89ED90e661eE7cc46466eCCF",
+            "Order": "1",
+            "WatchDogDelay": 600
         }
     ]
 }

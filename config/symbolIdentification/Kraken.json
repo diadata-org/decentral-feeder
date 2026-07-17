@@ -329,6 +329,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "KTA",
+            "Exchange": "Kraken",
+            "Blockchain": "Base",
+            "Address": "0xc0634090F2Fe6c6d75e61Be2b949464aBB498973",
+            "Decimals": 18
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
@@ -354,6 +361,13 @@
             "Exchange": "Kraken",
             "Blockchain": "Mantle",
             "Address": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MON",
+            "Exchange": "Kraken",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
         },
         {
@@ -571,6 +585,13 @@
             "Exchange": "Kraken",
             "Blockchain": "Ethereum",
             "Address": "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SYRUP",
+            "Exchange": "Kraken",
+            "Blockchain": "Ethereum",
+            "Address": "0x643C4E15d7d62Ad0aBeC4a9BD4b001aA3Ef52d66",
             "Decimals": 18
         },
         {

@@ -442,6 +442,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SYRUP",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x643C4E15d7d62Ad0aBeC4a9BD4b001aA3Ef52d66",
+            "Decimals": 18
+        },
+        {
             "Symbol": "TAO",
             "Exchange": "Binance",
             "Blockchain": "Bittensor",
@@ -482,6 +489,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             "Decimals": 6
+        },
+        {
+            "Symbol": "USDP",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
+            "Decimals": 18
         },
         {
             "Symbol": "USDT",

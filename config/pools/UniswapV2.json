@@ -145,12 +145,6 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "DOGE-WETH",
-            "Address": "0x308C6fbD6a14881Af333649f17f2FdE9cd75e2a6",
-            "Order": "0",
-            "WatchDogDelay": 1800
-        },
-        {
             "ForeignName": "ASF-WETH",
             "Address": "0x6eb95848e9b3e0f98ccf8e1b17c37788e0532846",
             "Order": "0",
@@ -161,6 +155,12 @@
             "Address": "0x180efc1349a69390ade25667487a826164c9c6e4",
             "Order": "0",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "SERV-WETH",
+            "Address": "0xB771f724C504b329623B0ce9199907137670600E",
+            "Order": "0",
+            "WatchDogDelay": 600
         }
     ]
 }

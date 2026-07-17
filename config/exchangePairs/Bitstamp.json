@@ -1,0 +1,8 @@
+{
+    "ExchangePairs": [
+        {
+            "Pair": "USDT-USD",
+            "WatchDogDelay": 300
+        }
+    ]
+}

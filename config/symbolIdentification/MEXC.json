@@ -22,6 +22,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "AIXBT",
+            "Exchange": "MEXC",
+            "Blockchain": "Base",
+            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
+            "Decimals": 18
+        },
+        {
             "Symbol": "AMZNON",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -29,10 +36,10 @@
             "Decimals": 18
         },
         {
-            "Symbol": "AIXBT",
+            "Symbol": "ANDYETH",
             "Exchange": "MEXC",
-            "Blockchain": "Base",
-            "Address": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
+            "Blockchain": "Ethereum",
+            "Address": "0x68BbEd6A47194EFf1CF514B50Ea91895597fc91E",
             "Decimals": 18
         },
         {
@@ -330,6 +337,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "KTA",
+            "Exchange": "MEXC",
+            "Blockchain": "Base",
+            "Address": "0xc0634090F2Fe6c6d75e61Be2b949464aBB498973",
+            "Decimals": 18
+        },
+        {
             "Symbol": "LDO",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -376,6 +390,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
             "Address": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "MON",
+            "Exchange": "MEXC",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
         },
         {
@@ -533,6 +554,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SERV",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x40e3d1A4B2C47d9AA61261F5606136ef73E28042",
+            "Decimals": 18
+        },
+        {
             "Symbol": "SHIB",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -638,6 +666,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SYRUP",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x643C4E15d7d62Ad0aBeC4a9BD4b001aA3Ef52d66",
+            "Decimals": 18
+        },
+        {
             "Symbol": "TANSSI",
             "Exchange": "MEXC",
             "Blockchain": "Tanssi",
@@ -650,6 +685,13 @@
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TIBBIR",
+            "Exchange": "MEXC",
+            "Blockchain": "Base",
+            "Address": "0xA4A2E2ca3fBfE21aed83471D28b6f65A233C6e00",
+            "Decimals": 18
         },
         {
             "Symbol": "TRX",
@@ -692,6 +734,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             "Decimals": 6
+        },
+        {
+            "Symbol": "USDP",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
+            "Decimals": 18
         },
         {
             "Symbol": "USDT",

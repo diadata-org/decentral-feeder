@@ -67,6 +67,18 @@
                     "Name": "Ethereum"
                 },
                 "Address": "0xC2e9F25Be6257c210d7Adf0D4Cd6E3E881ba25f8"
+            },
+            {
+                "Blockchain": {
+                    "Name": "Ethereum"
+                },
+                "Address": "0x00b9edc1583bf6ef09ff3a09f6c23ecb57fd7d0bb75625717ec81eed181e22d7"
+            },
+            {
+                "Blockchain": {
+                    "Name": "Ethereum"
+                },
+                "Address": "0x72331fcb696b0151904c03584b66dc8365bc63f8a144d89a773384e3a579ca73"
             }
         ]
     },

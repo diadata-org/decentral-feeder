@@ -407,6 +407,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MON",
+            "Exchange": "GateIO",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "GateIO",
             "Blockchain": "Moonriver",
@@ -680,6 +687,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "SYRUP",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x643C4E15d7d62Ad0aBeC4a9BD4b001aA3Ef52d66",
+            "Decimals": 18
+        },
+        {
             "Symbol": "TANSSI",
             "Exchange": "GateIO",
             "Blockchain": "Tanssi",
@@ -769,6 +783,13 @@
             "Blockchain": "Ethereum",
             "Address": "0xe343167631d89B6Ffc58B88d6b7fB0228795491D",
             "Decimals": 6
+        },
+        {
+            "Symbol": "USDP",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
+            "Decimals": 18
         },
         {
             "Symbol": "USDT",

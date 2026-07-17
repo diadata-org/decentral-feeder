@@ -39,7 +39,7 @@ var (
 
 	exchangePairs      []models.ExchangePair
 	pools              []models.Pool
-	feedsMap           map[models.AssetKey]models.Feed
+	customFeeds        []models.CustomFeed
 	branchMarketConfig string
 	branchFeedConfig   string
 )
@@ -64,12 +64,18 @@ func init() {
 		log.Fatal("no exchangepairs and no pools available.")
 	}
 
-	branchFeedConfig = utils.Getenv("BRANCH_FEED_CONFIG", "filter-by-asset")
-	feedsMap, err = models.FeedsFromConfigFile(branchFeedConfig)
+	branchFeedConfig = utils.Getenv("BRANCH_FEED_CONFIG", "")
+	customFeedsAux, err := models.FeedsFromConfigFile(branchFeedConfig)
 	if err != nil {
 		log.Fatal("FeedsFromConfigFile: ", err)
 	}
-	log.Info("feeds: ", feedsMap)
+	log.Info("feeds: ", customFeedsAux)
+
+	// Check if all custom feeds can be realized.
+	// Don't include feed if not all requested markets are available.(?)
+	customFeeds = processor.FilterAdmissibleCustomFeeds(customFeedsAux, exchangePairs)
+	log.Info("customFeeds: ", customFeeds)
+
 }
 
 func main() {
@@ -145,7 +151,7 @@ func main() {
 	// Create channels and set up blockchain connections
 	wg := sync.WaitGroup{}
 	tradesblockChannel := make(chan map[string]models.TradesBlock)
-	filtersChannel := make(chan []models.FilterPointPair)
+	filtersChannel := make(chan []models.FilterPoint)
 	triggerChannel := make(chan time.Time)
 	failoverChannel := make(chan string)
 
@@ -168,7 +174,7 @@ func main() {
 	go processor.Processor(
 		exchangePairs,
 		pools,
-		feedsMap,
+		customFeeds,
 		tradesblockChannel,
 		filtersChannel,
 		triggerChannel,

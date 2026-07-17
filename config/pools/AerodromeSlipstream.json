@@ -65,6 +65,30 @@
             "Address": "0x0392b12a1ceb0cd13af5ea448cf5586ea609852d",
             "Order": "0",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "KVCM-USDC",
+            "Address": "0x5aadacac0dededd534990ddc0ea6565d104b48de",
+            "Order": "0",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-SUPEROETHB",
+            "Address": "0x6446021F4E396dA3df4235C62537431372195D38",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "WETH-TIBBIR",
+            "Address": "0x0f664affb82f074937d5cfcd61b97f3f32d5dc50",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "cbXRP-cbBTC",
+            "Address": "0x95ff4985af7ed78421215be100c18a2b987f7e90",
+            "Order": "0",
+            "WatchDogDelay": 3600
         }
     ]
 }

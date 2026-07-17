@@ -22,13 +22,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "AMZNON",
-            "Exchange": "Bitget",
-            "Blockchain": "Ethereum",
-            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
-            "Decimals": 18
-        },
-        {
             "Symbol": "AIXBT",
             "Exchange": "Bitget",
             "Blockchain": "Base",
@@ -40,6 +33,13 @@
             "Exchange": "Bitget",
             "Blockchain": "Alephium",
             "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "AMZNON",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0xbb8774FB97436d23d74C1b882E8E9A69322cFD31",
             "Decimals": 18
         },
         {
@@ -253,6 +253,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MON",
+            "Exchange": "Bitget",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MORPHO",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
@@ -404,6 +411,13 @@
             "Exchange": "Bitget",
             "Blockchain": "Arbitrum",
             "Address": "0xACC51FFDeF63fB0c014c882267C3A17261A5eD50",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "SYRUP",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x643C4E15d7d62Ad0aBeC4a9BD4b001aA3Ef52d66",
             "Decimals": 18
         },
         {

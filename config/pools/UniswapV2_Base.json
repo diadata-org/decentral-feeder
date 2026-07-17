@@ -3,7 +3,7 @@
         {
             "ForeignName": "VIRTUAL-TIBBIR",
             "Address": "0x0c3b466104545efa096b8f944c1e524E1d0D4888",
-            "Order": "0",
+            "Order": "1",
             "WatchDogDelay": 3600
         },
         {
