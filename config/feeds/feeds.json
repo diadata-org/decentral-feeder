@@ -12,24 +12,6 @@
                 "Blockchain": {
                     "Name": "Ethereum"
                 },
-                "Address": "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4"
-            },
-            {
-                "Blockchain": {
-                    "Name": "Ethereum"
-                },
-                "Address": "0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B"
-            },
-            {
-                "Blockchain": {
-                    "Name": "Ethereum"
-                },
-                "Address": "0xD51a44d3FaE010294C616388b506AcdA1bfAAE46"
-            },
-            {
-                "Blockchain": {
-                    "Name": "Ethereum"
-                },
                 "Address": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852"
             },
             {
@@ -85,12 +67,6 @@
                     "Name": "Ethereum"
                 },
                 "Address": "0xC2e9F25Be6257c210d7Adf0D4Cd6E3E881ba25f8"
-            },
-            {
-                "Blockchain": {
-                    "Name": "Ethereum"
-                },
-                "Address": "0x72331fcb696b0151904c03584b66dc8365bc63f8a144d89a773384e3a579ca73"
             },
             {
                 "Blockchain": {
