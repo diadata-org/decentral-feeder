@@ -3,7 +3,7 @@
         {
             "ForeignName": "WETH-USDT",
             "Address": "0x72331fcb696b0151904c03584b66dc8365bc63f8a144d89a773384e3a579ca73",
-            "Order": "2",
+            "Order": "0",
             "WatchDogDelay": 3600,
             "Assetvolumes": [
                 {
@@ -21,7 +21,7 @@
         {
             "ForeignName": "WETH-USDC",
             "Address": "0x00b9edc1583bf6ef09ff3a09f6c23ecb57fd7d0bb75625717ec81eed181e22d7",
-            "Order": "1",
+            "Order": "0",
             "WatchDogDelay": 3600,
             "Assetvolumes": [
                 {
