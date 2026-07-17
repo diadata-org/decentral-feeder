@@ -197,6 +197,10 @@
             "WatchDogDelay": 2700
         },
         {
+            "Pair": "MON-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "NEAR-USDC",
             "WatchDogDelay": 3600
         },

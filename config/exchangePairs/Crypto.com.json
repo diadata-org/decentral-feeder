@@ -205,6 +205,10 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "MON-USD",
+            "WatchDogDelay": 7200
+        },
+        {
             "Pair": "MOVR-USD",
             "WatchDogDelay": 3600
         },

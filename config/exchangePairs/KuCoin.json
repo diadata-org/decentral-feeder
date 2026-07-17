@@ -173,6 +173,10 @@
             "WatchDogDelay": 1200
         },
         {
+            "Pair": "MON-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "NEAR-USDT",
             "WatchDogDelay": 300
         },
@@ -279,6 +283,10 @@
         {
             "Pair": "SUI-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SYRUP-USDT",
+            "WatchDogDelay": 2400
         },
         {
             "Pair": "TAO-USDT",

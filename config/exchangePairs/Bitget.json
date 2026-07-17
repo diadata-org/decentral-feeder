@@ -125,6 +125,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "MON-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "MORPHO-USDT",
             "WatchDogDelay": 1800
         },
@@ -211,6 +215,10 @@
         {
             "Pair": "SYK-USDT",
             "WatchDogDelay": 1800
+        },
+        {
+            "Pair": "SYRUP-USDT",
+            "WatchDogDelay": 2400
         },
         {
             "Pair": "TLOS-USDT",
