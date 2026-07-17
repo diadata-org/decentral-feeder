@@ -181,6 +181,10 @@
             "WatchDogDelay": 2700
         },
         {
+            "Pair": "MON-USD",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "MOVR-USD",
             "WatchDogDelay": 3600
         },
@@ -291,6 +295,10 @@
         {
             "Pair": "SUI-USD",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SYRUP-USDT",
+            "WatchDogDelay": 2400
         },
         {
             "Pair": "TAO-USD",

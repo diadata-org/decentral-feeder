@@ -260,6 +260,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MON",
+            "Exchange": "OKEx",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MOVR",
             "Exchange": "OKEx",
             "Blockchain": "Moonriver",

@@ -428,6 +428,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "MON",
+            "Exchange": "BitMart",
+            "Blockchain": "Monad",
+            "Address": "0x0000000000000000000000000000000000000000",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MORPHO",
             "Exchange": "BitMart",
             "Blockchain": "Ethereum",

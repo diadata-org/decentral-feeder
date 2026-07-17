@@ -265,6 +265,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "SYRUP-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SYRUP-USDT",
+            "WatchDogDelay": 600
+        },
+        {
             "Pair": "TAO-USDT",
             "WatchDogDelay": 300
         },
