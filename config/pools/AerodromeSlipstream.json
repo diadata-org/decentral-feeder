@@ -38,7 +38,7 @@
         },
         {
             "ForeignName": "cbETH-WETH",
-            "Address": "0x47ca96ea59c13f72745928887f84c9f52c3d7348",
+            "Address": "0x47cA96Ea59C13F72745928887f84C9F52C3D7348",
             "Order": "0",
             "WatchDogDelay": 3600
         },
