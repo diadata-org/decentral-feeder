@@ -1,8 +1,0 @@
-{
-    "ExchangePairs": [
-        {
-            "Pair": "XBT-USDT",
-            "WatchDogDelay": 300
-        }
-    ]
-}
