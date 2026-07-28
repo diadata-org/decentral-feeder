@@ -1,6 +1,24 @@
 {
     "Pools": [
         {
+            "ForeignName": "VUSD-crvUSD",
+            "Address": "0xAFbA5800252530CE71b03Ba2BCa2Dd5aE44a7F3d",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+         {
+            "ForeignName": "frxUSD-VUSD",
+            "Address": "0xdE0576968C898bbE7bf13d79862F252c58443F96",
+            "Order": "10",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "frxUSD-crvUSD",
+            "Address": "0x13e12BB0E6A2f1A3d6901a59a9d585e89A6243e1",
+            "Order": "01",
+            "WatchDogDelay": 1200
+        },
+        {
             "ForeignName": "sUSDe-sUSDS",
             "Address": "0x3cef1afc0e8324b57293a6e7ce663781bbefbb79",
             "Order": "10",
@@ -43,7 +61,7 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "stETH-WETH",
+            "ForeignName": "WETH-stETH",
             "Address": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -55,13 +73,13 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "USDT-USDC",
+            "ForeignName": "USDC-USDT",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "21",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "USDC-DAI",
+            "ForeignName": "DAI-USDC",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -73,7 +91,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "USDT-DAI",
+            "ForeignName": "DAI-USDT",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "20",
             "WatchDogDelay": 3600
@@ -85,7 +103,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "stETH-WETH",
+            "ForeignName": "WETH-stETH",
             "Address": "0x21E27a5E5513D6e65C4f830167390997aA84843a",
             "Order": "01",
             "WatchDogDelay": 3600
@@ -97,7 +115,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "3Crv-MIM",
+            "ForeignName": "MIM-3Crv",
             "Address": "0x5a6A4D54456819380173272A5E8E9B9904BdF41B",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -151,7 +169,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "crvUSD-USDC",
+            "ForeignName": "USDC-crvUSD",
             "Address": "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -163,7 +181,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "cvxCRV-CRV",
+            "ForeignName": "CRV-cvxCRV",
             "Address": "0x971add32Ea87f10bD192671630be3BE8A11b8623",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -193,45 +211,15 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "CVX-WETH",
+            "ForeignName": "WETH-CVX",
             "Address": "0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4",
             "Order": "10",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "crvUSD-USDT",
+            "ForeignName": "USDT-crvUSD",
             "Address": "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
             "Order": "10",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "aUSDC-aDAI",
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "10",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "aUSDT-aDAI",
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "20",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "aDAI-aUSDT",
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "02",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "aUSDC-aUSDT",
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "12",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "aUSDT-aUSDC",
-            "Address": "0xDeBF20617708857ebe4F679508E7b7863a8A8EeE",
-            "Order": "21",
             "WatchDogDelay": 3600
         },
         {
@@ -265,7 +253,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "stLINK-LINK",
+            "ForeignName": "LINK-stLINK",
             "Address": "0x7E13876B92F1a62C599C231f783f682E96B91761",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -277,7 +265,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "tBTC-WBTC",
+            "ForeignName": "WBTC-tBTC",
             "Address": "0xB7ECB2AA52AA64a717180E030241bC75Cd946726",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -289,45 +277,9 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "USDT-USDC",
+            "ForeignName": "USDC-USDT",
             "Address": "0x4f493B7dE8aAC7d55F71853688b1F7C8F0243C85",
             "Order": "10",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "iDAI-iUSDC",
-            "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
-            "Order": "01",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "iUSDC-iDAI",
-            "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
-            "Order": "10",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "iUSDT-iDAI",
-            "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
-            "Order": "20",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "iDAI-iUSDT",
-            "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
-            "Order": "02",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "iUSDC-iUSDT",
-            "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
-            "Order": "12",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "iUSDT-iUSDC",
-            "Address": "0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF",
-            "Order": "21",
             "WatchDogDelay": 3600
         },
         {
@@ -343,7 +295,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "3Crv-GUSD",
+            "ForeignName": "GUSD-3Crv",
             "Address": "0x4f062658EaAF2C1ccf8C8e36D6824CDf41167956",
             "Order": "10",
             "WatchDogDelay": 3600
@@ -355,7 +307,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "FRAX-USDE",
+            "ForeignName": "FRAX-USDe",
             "Address": "0x5dc1bf6f1e983c0b21efb003c105133736fa0743",
             "Order": "01",
             "WatchDogDelay": 3600
@@ -367,7 +319,7 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "MSETH-OETH",
+            "ForeignName": "msETH-OETH",
             "Address": "0xb5b93dde9d87563184d31f3b7f85dd58404e2ee0",
             "Order": "01",
             "WatchDogDelay": 3600
@@ -379,19 +331,19 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "CRVUSD-TBTC",
+            "ForeignName": "crvUSD-tBTC",
             "Address": "0xf1f435b05d255a5dbde37333c0f61da6f69c6127",
             "Order": "01",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "WETH-WEETH",
+            "ForeignName": "WETH-weETH",
             "Address": "0xdb74dfdd3bb46be8ce6c33dc9d82777bcfc3ded5",
             "Order": "10",
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "CRVUSD-TBTC",
+            "ForeignName": "crvUSD-tBTC",
             "Address": "0x4f52c3a81e33521e5a9a47fd9d3be475d2279c2e",
             "Order": "10",
             "WatchDogDelay": 3600
