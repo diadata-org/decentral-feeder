@@ -162,6 +162,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "COTI",
+            "Exchange": "GateIO",
+            "Blockchain": "Ethereum",
+            "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
+            "Decimals": 18
+        },
+        {
             "Symbol": "CRCLON",
             "Exchange": "GateIO",
             "Blockchain": "Ethereum",

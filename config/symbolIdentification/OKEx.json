@@ -246,6 +246,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "METIS",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MKR",
             "Exchange": "OKEx",
             "Blockchain": "Ethereum",

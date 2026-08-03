@@ -69,6 +69,10 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "COTI-USDT",
+            "WatchDogDelay": 600
+        },
+        {
             "Pair": "CRV-USDT",
             "WatchDogDelay": 300
         },
@@ -155,6 +159,10 @@
         {
             "Pair": "LTC-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "METIS-USDT",
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "NEAR-USDT",

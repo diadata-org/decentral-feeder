@@ -491,6 +491,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "TOSHI",
+            "Exchange": "ByBit",
+            "Blockchain": "Base",
+            "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4",
+            "Decimals": 18
+        },
+        {
             "Symbol": "TRX",
             "Exchange": "ByBit",
             "Blockchain": "Tron",

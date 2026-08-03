@@ -185,6 +185,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "METIS-USD",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "MON-USD",
             "WatchDogDelay": 300
         },
@@ -287,6 +291,10 @@
         {
             "Pair": "TIA-USD",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "TOSHI-USD",
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "TURBO-USD",

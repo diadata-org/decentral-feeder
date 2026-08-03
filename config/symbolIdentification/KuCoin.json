@@ -106,6 +106,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "COTI",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
+            "Decimals": 18
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -278,6 +285,13 @@
             "Exchange": "KuCoin",
             "Blockchain": "BinanceSmartChain",
             "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "METIS",
+            "Exchange": "KuCoin",
+            "Blockchain": "Ethereum",
+            "Address": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
             "Decimals": 18
         },
         {
