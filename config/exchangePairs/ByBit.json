@@ -313,6 +313,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "TOSHI-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "TRX-USDC",
             "WatchDogDelay": 3600
         },

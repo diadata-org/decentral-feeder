@@ -330,6 +330,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "METIS",
+            "Exchange": "CoinBase",
+            "Blockchain": "Ethereum",
+            "Address": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
+            "Decimals": 18
+        },
+        {
             "Symbol": "MNT",
             "Exchange": "CoinBase",
             "Blockchain": "Mantle",
@@ -524,6 +531,13 @@
             "Blockchain": "Osmosis",
             "Address": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
             "Decimals": 6
+        },
+        {
+            "Symbol": "TOSHI",
+            "Exchange": "CoinBase",
+            "Blockchain": "Base",
+            "Address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4",
+            "Decimals": 18
         },
         {
             "Symbol": "TRX",

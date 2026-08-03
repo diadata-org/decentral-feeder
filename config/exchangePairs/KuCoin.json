@@ -69,6 +69,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "COTI-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "CRV-USDT",
             "WatchDogDelay": 900
         },
@@ -163,6 +167,10 @@
         {
             "Pair": "LYX-USDT",
             "WatchDogDelay": 1800
+        },
+        {
+            "Pair": "METIS-USDT",
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "MILADYCULT-USDT",

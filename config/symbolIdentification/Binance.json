@@ -99,6 +99,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "COTI",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
+            "Decimals": 18
+        },
+        {
             "Symbol": "CRV",
             "Exchange": "Binance",
             "Blockchain": "Ethereum",
@@ -237,6 +244,13 @@
             "Blockchain": "Litecoin",
             "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 8
+        },
+        {
+            "Symbol": "METIS",
+            "Exchange": "Binance",
+            "Blockchain": "Ethereum",
+            "Address": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
+            "Decimals": 18
         },
         {
             "Symbol": "MKR",
