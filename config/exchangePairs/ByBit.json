@@ -385,6 +385,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "ZK-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "ZORA-USDT",
             "WatchDogDelay": 300
         },
