@@ -1,0 +1,10 @@
+{
+    "Pools": [
+        {
+            "ForeignName": "OETHb-WETH",
+            "Address": "0x302a94E3C28c290EAF2a4605FC52e11Eb915f378",
+            "Order": "10",
+            "WatchDogDelay": 3600
+        }
+    ]
+}
