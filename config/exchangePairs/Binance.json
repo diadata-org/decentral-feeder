@@ -361,6 +361,10 @@
             "WatchDogDelay": 600
         },
         {
+            "Pair": "ZK-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "ZRO-USDT",
             "WatchDogDelay": 300
         }
