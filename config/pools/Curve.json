@@ -347,6 +347,18 @@
             "Address": "0x4f52c3a81e33521e5a9a47fd9d3be475d2279c2e",
             "Order": "10",
             "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "OGN-OETH",
+            "Address": "0x56a344f1aa03943f536b94436de6a6e10116cf86",
+            "Order": "10",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "OETH-WETH",
+            "Address": "0xcc7d5785ad5755b6164e21495e07adb0ff11c2a8",
+            "Order": "01",
+            "WatchDogDelay": 3600
         }
     ]
 }
