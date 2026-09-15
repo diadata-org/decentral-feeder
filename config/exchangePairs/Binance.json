@@ -181,7 +181,19 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "PAXG-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PAXG-USDC",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "PAXG-BTC",
+            "WatchDogDelay": 900
+        },
+        {
+            "Pair": "PAXG-TRY",
             "WatchDogDelay": 900
         },
         {
