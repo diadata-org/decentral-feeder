@@ -316,6 +316,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "PAXG",
+            "Exchange": "Bitget",
+            "Blockchain": "Ethereum",
+            "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78",
+            "Decimals": 18
+        },
+        {
             "Symbol": "PEPE",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",

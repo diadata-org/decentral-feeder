@@ -213,6 +213,10 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "PAXG-USD",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "PLUME-USD",
             "WatchDogDelay": 300
         },
