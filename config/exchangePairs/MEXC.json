@@ -305,11 +305,11 @@
             "WatchDogDelay": 600
         },
         {
-            "Pair": "PAXG-USDT",
+            "Pair": "GOLD(PAXG)-USDT",
             "WatchDogDelay": 300
         },
         {
-            "Pair": "PAXG-USDC",
+            "Pair": "GOLD(PAXG)-USDC",
             "WatchDogDelay": 3600
         },
         {

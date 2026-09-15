@@ -221,14 +221,6 @@
             "WatchDogDelay": 900
         },
         {
-            "Pair": "PAXG-EUR",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "PAXG-BTC",
-            "WatchDogDelay": 900
-        },
-        {
             "Pair": "PENDLE-USD",
             "WatchDogDelay": 900
         },

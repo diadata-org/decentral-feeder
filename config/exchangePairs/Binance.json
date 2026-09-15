@@ -193,10 +193,6 @@
             "WatchDogDelay": 900
         },
         {
-            "Pair": "PAXG-TRY",
-            "WatchDogDelay": 900
-        },
-        {
             "Pair": "PENDLE-USDT",
             "WatchDogDelay": 300
         },
