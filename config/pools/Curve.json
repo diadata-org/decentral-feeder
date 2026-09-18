@@ -25,12 +25,6 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "sUSDS-USDT",
-            "Address": "0x00836fe54625be242bcfa286207795405ca4fd10",
-            "Order": "01",
-            "WatchDogDelay": 600
-        },
-        {
             "ForeignName": "DOLA-sUSDS",
             "Address": "0x8b83c4aa949254895507d09365229bc3a8c7f710",
             "Order": "10",

@@ -251,6 +251,24 @@
                     }
                 }
             ]
+        },
+        {
+            "ForeignName": "USDC-USDT",
+            "Address": "0x2b21c65d9a7dc6926ee330a1c6e5a8037fd81774f3dc066536f800128e39f634",
+            "Order": "2",
+            "WatchDogDelay": 3600,
+            "Assetvolumes": [
+                {
+                    "Asset": {
+                        "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+                    }
+                },
+                {
+                    "Asset": {
+                        "Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+                    }
+                }
+            ]
         }
     ]
 }
