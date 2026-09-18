@@ -67,6 +67,18 @@
             "WatchDogDelay": 3600
         },
         {
+            "ForeignName": "DAI-USDC",
+            "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
+            "Order": "01",
+            "WatchDogDelay": 3600
+        },
+        {
+            "ForeignName": "DAI-USDT",
+            "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
+            "Order": "02",
+            "WatchDogDelay": 3600
+        },
+        {
             "ForeignName": "USDC-USDT",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "12",
@@ -76,30 +88,6 @@
             "ForeignName": "USDC-USDT",
             "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
             "Order": "21",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "DAI-USDC",
-            "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
-            "Order": "10",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "DAI-USDC",
-            "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
-            "Order": "01",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "DAI-USDT",
-            "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
-            "Order": "20",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "DAI-USDT",
-            "Address": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
-            "Order": "02",
             "WatchDogDelay": 3600
         },
         {
@@ -267,18 +255,6 @@
         {
             "ForeignName": "WBTC-tBTC",
             "Address": "0xB7ECB2AA52AA64a717180E030241bC75Cd946726",
-            "Order": "10",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "USDC-USDT",
-            "Address": "0x4f493B7dE8aAC7d55F71853688b1F7C8F0243C85",
-            "Order": "01",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "USDC-USDT",
-            "Address": "0x4f493B7dE8aAC7d55F71853688b1F7C8F0243C85",
             "Order": "10",
             "WatchDogDelay": 3600
         },

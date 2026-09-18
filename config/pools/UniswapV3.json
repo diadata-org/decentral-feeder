@@ -99,7 +99,7 @@
         {
             "ForeignName": "DAI-USDC",
             "Address": "0x5777d92f208679DB4b9778590Fa3CAB3aC9e2168",
-            "Order": "2",
+            "Order": "0",
             "WatchDogDelay": 600
         },
         {
@@ -169,12 +169,6 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "DAI-USDC",
-            "Address": "0x6c6Bc977E13Df9b0de53b251522280BB72383700",
-            "Order": "2",
-            "WatchDogDelay": 3600
-        },
-        {
             "ForeignName": "WETH-USDT",
             "Address": "0xc7bBeC68d12a0d1830360F8Ec58fA599bA1b0e9b",
             "Order": "0",
@@ -195,7 +189,7 @@
         {
             "ForeignName": "DAI-USDT",
             "Address": "0x48DA0965ab2d2cbf1C17C09cFB5Cbe67Ad5B1406",
-            "Order": "2",
+            "Order": "0",
             "WatchDogDelay": 1200
         },
         {
