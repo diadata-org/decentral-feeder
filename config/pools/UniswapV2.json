@@ -127,12 +127,6 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "USDC-USDT",
-            "Address": "0x3041CbD36888bECc7bbCBc0045E3B1f144466f5f",
-            "Order": "2",
-            "WatchDogDelay": 3600
-        },
-        {
             "ForeignName": "LINK-WETH",
             "Address": "0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974",
             "Order": "0",
