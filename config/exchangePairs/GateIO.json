@@ -93,6 +93,10 @@
             "WatchDogDelay": 1800
         },
         {
+            "Pair": "COTI-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "CRCLON-USDT",
             "WatchDogDelay": 3600
         },
@@ -235,6 +239,10 @@
         {
             "Pair": "OP-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PAXG-USDT",
+            "WatchDogDelay": 3600
         },
         {
             "Pair": "PENDLE-USDT",

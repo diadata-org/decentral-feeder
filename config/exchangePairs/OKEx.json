@@ -165,6 +165,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "METIS-USDT",
+            "WatchDogDelay": 3600
+        },
+        {
             "Pair": "MON-USDT",
             "WatchDogDelay": 600
         },
@@ -186,6 +190,10 @@
         },
         {
             "Pair": "OP-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PAXG-USDT",
             "WatchDogDelay": 300
         },
         {

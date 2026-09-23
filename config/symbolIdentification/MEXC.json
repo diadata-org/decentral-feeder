@@ -155,6 +155,13 @@
             "Decimals": 8
         },
         {
+            "Symbol": "COTI",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0xDDB3422497E61e13543BeA06989C0789117555c5",
+            "Decimals": 18
+        },
+        {
             "Symbol": "CRCLON",
             "Exchange": "MEXC",
             "Blockchain": "Ethereum",
@@ -474,6 +481,13 @@
             "Exchange": "MEXC",
             "Blockchain": "Optimism",
             "Address": "0x4200000000000000000000000000000000000042",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "GOLD(PAXG)",
+            "Exchange": "MEXC",
+            "Blockchain": "Ethereum",
+            "Address": "0x45804880De22913dAFE09f4980848ECE6EcbAf78",
             "Decimals": 18
         },
         {
