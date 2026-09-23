@@ -1,5 +1,29 @@
 [
     {
+        "Symbol": "doginme/USD",
+        "Asset": {
+            "Blockchain": "Base",
+            "Address": "0x6921B130D297cc43754afba22e5EAc0FBf8Db75b"
+        },
+        "Filter": "VWAP",
+        "Metafilter": "Median",
+        "Markets": [
+            {
+                "Symbol": "DOGINME",
+                "ForeignName": "DOGINME-USD",
+                "Exchange": "CoinBase"
+            }
+        ],
+        "Pools": [
+            {
+                "Blockchain": {
+                    "Name": "Base"
+                },
+                "Address": "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df"
+            }
+        ]
+    },
+    {
         "Symbol": "DEX:WETH/USD",
         "Asset": {
             "Blockchain": "Ethereum",
