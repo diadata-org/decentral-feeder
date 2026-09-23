@@ -145,10 +145,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "DOGINME-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "DOT-USDC",
             "WatchDogDelay": 1800
         },
