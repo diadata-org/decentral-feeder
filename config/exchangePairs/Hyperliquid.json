@@ -1,19 +1,19 @@
 {
     "ExchangePairs": [
         {
-            "Pair": "BTC-USDC",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "ETH-USDC",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "HYPE-USDC",
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SOL-USDC",
+            "Pair": "UBTC-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UETH-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "USOL-USDC",
             "WatchDogDelay": 300
         }
     ]
