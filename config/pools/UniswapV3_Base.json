@@ -1,6 +1,12 @@
 {
     "Pools": [
         {
+            "ForeignName": "WETH-DOGINME",
+            "Address": "0xADE9BcD4b968EE26Bed102dd43A55f6A8c2416df",
+            "Order": "1",
+            "WatchDogDelay": 3600
+        },
+        {
             "ForeignName": "USDC-cbBTC",
             "Address": "0xfBB6Eed8e7aa03B138556eeDaF5D271A5E1e43ef",
             "Order": "1",
