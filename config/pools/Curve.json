@@ -6,16 +6,16 @@
             "Order": "01",
             "WatchDogDelay": 3600
         },
-         {
-            "ForeignName": "frxUSD-VUSD",
-            "Address": "0xdE0576968C898bbE7bf13d79862F252c58443F96",
-            "Order": "10",
-            "WatchDogDelay": 3600
-        },
         {
             "ForeignName": "frxUSD-crvUSD",
             "Address": "0x13e12BB0E6A2f1A3d6901a59a9d585e89A6243e1",
             "Order": "01",
+            "WatchDogDelay": 1200
+        },
+        {
+            "ForeignName": "frxUSD-USDT",
+            "Address": "0xD6937eA8D33B0C21348F36F7895FdE3054bA4927",
+            "Order": "10",
             "WatchDogDelay": 1200
         },
         {
@@ -31,21 +31,9 @@
             "WatchDogDelay": 600
         },
         {
-            "ForeignName": "frxUSD-sUSDS",
+            "ForeignName": "sUSDS-frxUSD",
             "Address": "0x81a2612f6dea269a6dd1f6deab45c5424ee2c4b7",
             "Order": "10",
-            "WatchDogDelay": 600
-        },
-        {
-            "ForeignName": "scrvUSD-sUSDS",
-            "Address": "0xfd1627e3f3469c8392c8c3a261d8f0677586e5e1",
-            "Order": "10",
-            "WatchDogDelay": 600
-        },
-        {
-            "ForeignName": "PYUSD-USDS",
-            "Address": "0xa632d59b9b804a956bfaa9b48af3a1b74808fc1f",
-            "Order": "01",
             "WatchDogDelay": 600
         },
         {
@@ -267,12 +255,6 @@
         {
             "ForeignName": "GUSD-3Crv",
             "Address": "0x4f062658EaAF2C1ccf8C8e36D6824CDf41167956",
-            "Order": "10",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "PYUSD-USDS",
-            "Address": "0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f",
             "Order": "10",
             "WatchDogDelay": 3600
         },
