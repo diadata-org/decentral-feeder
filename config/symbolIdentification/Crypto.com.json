@@ -162,6 +162,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "EUR",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Fiat",
+            "Address": "978",
+            "Decimals": 2
+        },
+        {
             "Symbol": "FET",
             "Exchange": "Crypto.com",
             "Blockchain": "Fetch",

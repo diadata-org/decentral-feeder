@@ -162,6 +162,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "EUR",
+            "Exchange": "Binance",
+            "Blockchain": "Fiat",
+            "Address": "978",
+            "Decimals": 2
+        },
+        {
             "Symbol": "FDUSD",
             "Exchange": "Binance",
             "Blockchain": "BinanceSmartChain",
