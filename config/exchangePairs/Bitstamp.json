@@ -3,6 +3,10 @@
         {
             "Pair": "USDT-USD",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "EUR-USD",
+            "WatchDogDelay": 600
         }
     ]
 }

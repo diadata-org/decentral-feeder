@@ -121,6 +121,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "EUR-USDC",
+            "WatchDogDelay": 600
+        },
+        {
+            "Pair": "EUR-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "FET-USDT",
             "WatchDogDelay": 300
         },
