@@ -211,6 +211,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "HYPE",
+            "Exchange": "Binance",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
             "Symbol": "ICP",
             "Exchange": "Binance",
             "Blockchain": "InternetComputer",
