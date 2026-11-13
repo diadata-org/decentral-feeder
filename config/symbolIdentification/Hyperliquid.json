@@ -1,0 +1,39 @@
+{
+    "Tokens": [
+        {
+            "Symbol": "HYPE",
+            "Exchange": "Hyperliquid",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "UBTC",
+            "Exchange": "Hyperliquid",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x8f254b963e8468305d409b33aa137c67",
+            "Decimals": 10
+        },
+        {
+            "Symbol": "UETH",
+            "Exchange": "Hyperliquid",
+            "Blockchain": "Hyperliquid",
+            "Address": "0xe1edd30daaf5caac3fe63569e24748da",
+            "Decimals": 9
+        },
+        {
+            "Symbol": "USOL",
+            "Exchange": "Hyperliquid",
+            "Blockchain": "Hyperliquid",
+            "Address": "0x49b67c39f5566535de22b29b0e51e685",
+            "Decimals": 8
+        },
+        {
+            "Symbol": "USDC",
+            "Exchange": "Hyperliquid",
+            "Blockchain": "Ethereum",
+            "Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "Decimals": 6
+        }
+    ]
+}
