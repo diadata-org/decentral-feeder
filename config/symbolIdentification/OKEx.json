@@ -115,8 +115,8 @@
         {
             "Symbol": "DEGEN",
             "Exchange": "OKEx",
-            "Blockchain": "Base",
-            "Address": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
+            "Blockchain": "Ethereum",
+            "Address": "0xfee293840D23B0B2De8C55e1Cf7A9F01C157767c",
             "Decimals": 18
         },
         {
@@ -239,6 +239,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "LINK",
+            "Exchange": "OKEx",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+            "Decimals": 18
+        },
+        {
             "Symbol": "LTC",
             "Exchange": "OKEx",
             "Blockchain": "Litecoin",
@@ -293,6 +300,13 @@
             "Blockchain": "Ethereum",
             "Address": "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",
             "Decimals": 9
+        },
+        {
+            "Symbol": "NIGHT",
+            "Exchange": "OKEx",
+            "Blockchain": "Cardano",
+            "Address": "asset1wd3llgkhsw6etxf2yca6cgk9ssrpva3wf0pq9a",
+            "Decimals": 6
         },
         {
             "Symbol": "OMG",
@@ -572,13 +586,6 @@
             "Exchange": "OKEx",
             "Blockchain": "Base",
             "Address": "0x1111111111166b7FE7bd91427724B487980aFc69",
-            "Decimals": 18
-        },
-        {
-            "Symbol": "ZRO",
-            "Exchange": "OKEx",
-            "Blockchain": "Ethereum",
-            "Address": "0x6985884C4392D348587B19cb9eAAf157F13271cd",
             "Decimals": 18
         },
         {

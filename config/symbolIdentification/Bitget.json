@@ -288,6 +288,13 @@
             "Decimals": 9
         },
         {
+            "Symbol": "NIGHT",
+            "Exchange": "Bitget",
+            "Blockchain": "Cardano",
+            "Address": "asset1wd3llgkhsw6etxf2yca6cgk9ssrpva3wf0pq9a",
+            "Decimals": 6
+        },
+        {
             "Symbol": "NPC",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",

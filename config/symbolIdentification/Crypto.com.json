@@ -52,8 +52,8 @@
         {
             "Symbol": "ASTR",
             "Exchange": "Crypto.com",
-            "Blockchain": "Ethereum",
-            "Address": "0xF27441230EADEaC85B764610325Cc9a0D7859689",
+            "Blockchain": "Astar",
+            "Address": "0x0000000000000000000000000000000000000000",
             "Decimals": 18
         },
         {
@@ -243,6 +243,13 @@
             "Exchange": "Crypto.com",
             "Blockchain": "Ethereum",
             "Address": "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32",
+            "Decimals": 18
+        },
+        {
+            "Symbol": "LINK",
+            "Exchange": "Crypto.com",
+            "Blockchain": "Ethereum",
+            "Address": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
             "Decimals": 18
         },
         {

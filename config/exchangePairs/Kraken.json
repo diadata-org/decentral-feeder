@@ -181,6 +181,10 @@
             "WatchDogDelay": 900
         },
         {
+            "Pair": "LINK-USD",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "MNT-USD",
             "WatchDogDelay": 2700
         },
@@ -203,6 +207,10 @@
         {
             "Pair": "NEIRO-USD",
             "WatchDogDelay": 3600
+        },
+        {
+            "Pair": "NIGHT-USD",
+            "WatchDogDelay": 600
         },
         {
             "Pair": "NOCK-USD",

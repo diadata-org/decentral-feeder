@@ -193,6 +193,10 @@
             "WatchDogDelay": 900
         },
         {
+            "Pair": "LINK-USD",
+            "WatchDogDelay": 600
+        },
+        {
             "Pair": "LDO-USDT",
             "WatchDogDelay": 1200
         },
