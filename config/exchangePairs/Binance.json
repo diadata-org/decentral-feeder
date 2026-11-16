@@ -169,6 +169,14 @@
             "WatchDogDelay": 900
         },
         {
+            "Pair": "LINK-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "LINK-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT",
             "WatchDogDelay": 300
         },
@@ -190,6 +198,10 @@
         },
         {
             "Pair": "NEIRO-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NIGHT-USDT",
             "WatchDogDelay": 300
         },
         {
@@ -297,7 +309,7 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "SYRUP-USDT",
+            "Pair": "SYRUP-USDC",
             "WatchDogDelay": 300
         },
         {

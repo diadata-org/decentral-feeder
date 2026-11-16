@@ -181,6 +181,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "LINK-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LDO-USDT",
             "WatchDogDelay": 300
         },
@@ -207,6 +211,10 @@
         {
             "Pair": "NEAR-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NIGHT-USDT",
+            "WatchDogDelay": 600
         },
         {
             "Pair": "NVDAX-USDT",

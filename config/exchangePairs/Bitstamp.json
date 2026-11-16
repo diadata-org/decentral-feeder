@@ -1,12 +1,15 @@
 {
     "ExchangePairs": [
         {
-            "Pair": "USDT-USD",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "EUR-USD",
             "WatchDogDelay": 600
+        },       {
+            "Pair": "LINK-USD",
+            "WatchDogDelay": 1200
+        },
+        {
+            "Pair": "USDT-USD",
+            "WatchDogDelay": 300
         }
     ]
 }

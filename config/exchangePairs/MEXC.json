@@ -109,10 +109,6 @@
             "WatchDogDelay": 1800
         },
         {
-            "Pair": "COINX-USDT",
-            "WatchDogDelay": 1800
-        },
-        {
             "Pair": "COTI-USDT",
             "WatchDogDelay": 1800
         },

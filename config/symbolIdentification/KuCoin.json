@@ -337,6 +337,13 @@
             "Decimals": 0
         },
         {
+            "Symbol": "NIGHT",
+            "Exchange": "KuCoin",
+            "Blockchain": "Cardano",
+            "Address": "asset1wd3llgkhsw6etxf2yca6cgk9ssrpva3wf0pq9a",
+            "Decimals": 6
+        },
+        {
             "Symbol": "NPC",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",

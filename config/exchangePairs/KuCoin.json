@@ -157,6 +157,10 @@
             "WatchDogDelay": 2700
         },
         {
+            "Pair": "LINK-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "LTC-USDC",
             "WatchDogDelay": 300
         },
@@ -186,6 +190,10 @@
         },
         {
             "Pair": "NEAR-USDT",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "NIGHT-USDT",
             "WatchDogDelay": 300
         },
         {
