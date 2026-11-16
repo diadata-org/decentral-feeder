@@ -3,7 +3,8 @@
         {
             "Pair": "EUR-USD",
             "WatchDogDelay": 600
-        },       {
+        },
+        {
             "Pair": "LINK-USD",
             "WatchDogDelay": 1200
         },
