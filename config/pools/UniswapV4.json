@@ -37,78 +37,6 @@
             ]
         },
         {
-            "ForeignName": "ETH-CHMPSTR",
-            "Address": "0xdaa6a16445812d9661eab80de42d8298417d5533b5a7cc4b9efc4a387413a4e1",
-            "Order": "1",
-            "WatchDogDelay": 3600,
-            "Assetvolumes": [
-                {
-                    "Asset": {
-                        "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-                    }
-                },
-                { 
-                    "Asset": { 
-                        "Address": "0x3ca20831EBea5C99AA6E574D83f0A7C733F7e4D0" 
-                    } 
-                }
-            ]
-        },
-        {
-            "ForeignName": "ETH-VIBESTR",
-            "Address": "0x56c8fc0c410ec0778484600246847e2e77c428f888a35a11351dc12bbff09c6d",
-            "Order": "1",
-            "WatchDogDelay": 3600,
-            "Assetvolumes": [
-                {
-                    "Asset": {
-                        "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-                    }
-                },
-                { 
-                    "Asset": { 
-                        "Address": "0xd0cC2b0eFb168bFe1f94a948D8df70FA10257196" 
-                    } 
-                }
-            ]
-        },
-        {
-            "ForeignName": "ETH-APESTR",
-            "Address": "0x5f875bfcaa76bfb9f38193dd406a4c084ad2f3a91689769e9ec95fd7a7d7e8a1",
-            "Order": "1",
-            "WatchDogDelay": 3600,
-            "Assetvolumes": [
-                {
-                    "Asset": {
-                        "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-                    }
-                },
-                { 
-                    "Asset": { 
-                        "Address": "0x9EbF91b8D6fF68aA05545301A3D0984EaEE54A03" 
-                    } 
-                }
-            ]
-        },
-        {
-            "ForeignName": "ETH-PUDGYSTR",
-            "Address": "0x4d40c47b13be30724b89019be0549ead71e363e50cef119a56bd64ead4e35016",
-            "Order": "1",
-            "WatchDogDelay": 3600,
-            "Assetvolumes": [
-                {
-                    "Asset": {
-                        "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-                    }
-                },
-                { 
-                    "Asset": { 
-                        "Address": "0xf26495904fDCf605DAdc432511c9dB00e781B0Aa" 
-                    } 
-                }
-            ]
-        },
-        {
             "ForeignName": "ETH-PNKSTR",
             "Address": "0xb32470df3478a67ccc3726297de1e95ecc407b5d0758c83190a04a6c5d6fd1f4",
             "Order": "1",
@@ -158,24 +86,6 @@
                 { 
                     "Asset": { 
                         "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" 
-                    } 
-                }
-            ]
-        },
-        {
-            "ForeignName": "ETH-BIRBSTR",
-            "Address": "0x29aceb9aea1d8f4f9ee40dfffb7e46285d69cd4e9b8999c08da265f27fd0f9a8",
-            "Order": "1",
-            "WatchDogDelay": 3600,
-            "Assetvolumes": [
-                {
-                    "Asset": {
-                        "Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-                    }
-                },
-                { 
-                    "Asset": { 
-                        "Address": "0x6BCba7Cd81a5F12c10Ca1BF9B36761CC382658E8" 
                     } 
                 }
             ]

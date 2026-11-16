@@ -211,13 +211,6 @@
             "Decimals": 18
         },
         {
-            "Symbol": "GIZA",
-            "Exchange": "KuCoin",
-            "Blockchain": "Ethereum",
-            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774",
-            "Decimals": 18
-        },
-        {
             "Symbol": "GRT",
             "Exchange": "KuCoin",
             "Blockchain": "Ethereum",
@@ -278,13 +271,6 @@
             "Exchange": "KuCoin",
             "Blockchain": "Lukso",
             "Address": "0x0000000000000000000000000000000000000000",
-            "Decimals": 18
-        },
-        {
-            "Symbol": "MAIGA",
-            "Exchange": "KuCoin",
-            "Blockchain": "BinanceSmartChain",
-            "Address": "0xcd1679f117E81DEfc4f0009311DDc23fC1AE4a5E",
             "Decimals": 18
         },
         {

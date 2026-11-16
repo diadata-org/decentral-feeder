@@ -157,10 +157,6 @@
             "WatchDogDelay": 600
         },
         {
-            "Pair": "GIZA-USDT",
-            "WatchDogDelay": 300
-        },
-        {
             "Pair": "GOOGLON-USDT",
             "WatchDogDelay": 1800
         },
@@ -203,10 +199,6 @@
         {
             "Pair": "LYX-USDT",
             "WatchDogDelay": 1800
-        },
-        {
-            "Pair": "MAIGA-USDT",
-            "WatchDogDelay": 3600
         },
         {
             "Pair": "MILADYCULT-USDT",
