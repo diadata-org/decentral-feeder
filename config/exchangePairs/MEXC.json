@@ -193,10 +193,6 @@
             "WatchDogDelay": 600
         },
         {
-            "Pair": "GIZA-USDT",
-            "WatchDogDelay": 600
-        },
-        {
             "Pair": "GOOGLON-USDT",
             "WatchDogDelay": 600
         },

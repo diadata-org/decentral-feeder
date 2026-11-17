@@ -246,13 +246,6 @@
             "Decimals": 9
         },
         {
-            "Symbol": "GIZA",
-            "Exchange": "BitMart",
-            "Blockchain": "Ethereum",
-            "Address": "0x590830dFDf9A3F68aFCDdE2694773dEBDF267774",
-            "Decimals": 18
-        },
-        {
             "Symbol": "GMT",
             "Exchange": "BitMart",
             "Blockchain": "Solana",
