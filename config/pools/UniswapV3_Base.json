@@ -55,12 +55,6 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "PEAS-USDC",
-            "Address": "0x8f8184bb6d3817910bc2ef91a393d2fe3ca8d774",
-            "Order": "0",
-            "WatchDogDelay": 3600
-        },
-        {
             "ForeignName": "CLANKER-WETH",
             "Address": "0xc1a6fbedae68e1472dbb91fe29b51f7a0bd44f97",
             "Order": "0",
