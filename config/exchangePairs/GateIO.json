@@ -145,6 +145,10 @@
             "WatchDogDelay": 3600
         },
         {
+            "Pair": "FARTCOIN-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "FET-USDT",
             "WatchDogDelay": 600
         },

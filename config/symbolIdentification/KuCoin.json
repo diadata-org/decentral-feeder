@@ -176,6 +176,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "FARTCOIN",
+            "Exchange": "KuCoin",
+            "Blockchain": "Solana",
+            "Address": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+            "Decimals": 6
+        },
+        {
             "Symbol": "FET",
             "Exchange": "KuCoin",
             "Blockchain": "Fetch",

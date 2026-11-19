@@ -224,6 +224,13 @@
             "Decimals": 6
         },
         {
+            "Symbol": "FARTCOIN",
+            "Exchange": "Kraken",
+            "Blockchain": "Solana",
+            "Address": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+            "Decimals": 6
+        },
+        {
             "Symbol": "FET",
             "Exchange": "Kraken",
             "Blockchain": "Fetch",

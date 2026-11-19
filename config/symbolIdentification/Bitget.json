@@ -169,6 +169,13 @@
             "Decimals": 2
         },
         {
+            "Symbol": "FARTCOIN",
+            "Exchange": "Bitget",
+            "Blockchain": "Solana",
+            "Address": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+            "Decimals": 6
+        },
+        {
             "Symbol": "FLOKI",
             "Exchange": "Bitget",
             "Blockchain": "Ethereum",
