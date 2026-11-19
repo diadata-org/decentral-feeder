@@ -253,6 +253,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "FARTCOIN",
+            "Exchange": "MEXC",
+            "Blockchain": "Solana",
+            "Address": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+            "Decimals": 6
+        },
+        {
             "Symbol": "FET",
             "Exchange": "MEXC",
             "Blockchain": "Fetch",

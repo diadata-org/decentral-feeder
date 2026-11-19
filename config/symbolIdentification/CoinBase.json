@@ -204,6 +204,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "FARTCOIN",
+            "Exchange": "CoinBase",
+            "Blockchain": "Solana",
+            "Address": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+            "Decimals": 6
+        },
+        {
             "Symbol": "FDUSD",
             "Exchange": "CoinBase",
             "Blockchain": "BinanceSmartChain",

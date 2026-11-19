@@ -81,6 +81,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "FARTCOIN-USDT",
+            "WatchDogDelay": 1200
+        },
+        {
             "Pair": "FLOKI-USDT",
             "WatchDogDelay": 3600
         },

@@ -253,6 +253,13 @@
             "Decimals": 18
         },
         {
+            "Symbol": "FARTCOIN",
+            "Exchange": "GateIO",
+            "Blockchain": "Solana",
+            "Address": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+            "Decimals": 6
+        },
+        {
             "Symbol": "FDUSD",
             "Exchange": "GateIO",
             "Blockchain": "BinanceSmartChain",
