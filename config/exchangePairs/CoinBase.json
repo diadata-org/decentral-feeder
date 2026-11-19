@@ -277,6 +277,10 @@
             "WatchDogDelay": 600
         },
         {
+            "Pair": "SPX-USD",
+            "WatchDogDelay": 1800
+        },
+        {
             "Pair": "STRK-USD",
             "WatchDogDelay": 600
         },
