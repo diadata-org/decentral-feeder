@@ -53,6 +53,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "BNB-USD",
+            "WatchDogDelay": 900
+        },
+        {
             "Pair": "BONK-USD",
             "WatchDogDelay": 900
         },
@@ -241,6 +245,10 @@
             "WatchDogDelay": 900
         },
         {
+            "Pair": "PEPE-USD",
+            "WatchDogDelay": 600
+        },
+        {
             "Pair": "PLUME-USD",
             "WatchDogDelay": 600
         },
@@ -286,6 +294,10 @@
         },
         {
             "Pair": "SOL-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "SOL-USDC",
             "WatchDogDelay": 300
         },
         {
