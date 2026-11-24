@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"strconv"
 	"strings"
@@ -186,6 +187,30 @@ func main() {
 		branchFeedConfig,
 		&wg,
 	)
+
+	// Optional: switch the RPC between Conduit mainnet and the Anvil backup based on the Liveness API.
+	livenessAPIURL := utils.Getenv("LIVENESS_API_URL", "")
+	anvilNode := utils.Getenv("ANVIL_NODE", "")
+	if livenessAPIURL != "" && anvilNode != "" {
+		switcher := onchain.NewRPCSwitcher(
+			livenessAPIURL,
+			blockchainNode,
+			backupNode,
+			anvilNode,
+			deployedContract,
+			chainID,
+			privateKey,
+			onchain.Endpoints{Conn: conn, ConnBackup: connBackup, Contract: contract, ContractBackup: contractBackup},
+		)
+		go switcher.Run(context.Background())
+
+		// This should be the final line of main (blocking call)
+		onchain.OracleUpdateExecutorSwitchable(auth, switcher, chainID, decimalPrecision, batchSizeOracleUpdate, filtersChannel)
+		return
+	}
+	if livenessAPIURL != "" || anvilNode != "" {
+		log.Warn("LIVENESS_API_URL and ANVIL_NODE must both be set to enable RPC switching; running without it.")
+	}
 
 	// This should be the final line of main (blocking call)
 	onchain.OracleUpdateExecutor(auth, contract, contractBackup, conn, connBackup, chainID, decimalPrecision, batchSizeOracleUpdate, filtersChannel)
