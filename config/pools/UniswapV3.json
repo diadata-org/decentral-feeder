@@ -109,12 +109,6 @@
             "WatchDogDelay": 43200
         },
         {
-            "ForeignName": "TRX-WETH",
-            "Address": "0x99950bAE3d0b79b8BeE86A8A208Ae1b087b9Dcb0",
-            "Order": "0",
-            "WatchDogDelay": 1800
-        },
-        {
             "ForeignName": "LINK-WETH",
             "Address": "0xa6Cc3C2531FdaA6Ae1A3CA84c2855806728693e8",
             "Order": "0",
@@ -173,12 +167,6 @@
             "Address": "0xc7bBeC68d12a0d1830360F8Ec58fA599bA1b0e9b",
             "Order": "0",
             "WatchDogDelay": 600
-        },
-        {
-            "ForeignName": "USDC-SEI",
-            "Address": "0xf8e349d1d827a6EdF17eE673664CFAd4ca78C533",
-            "Order": "1",
-            "WatchDogDelay": 3600
         },
         {
             "ForeignName": "USDC-WETH",
@@ -256,12 +244,6 @@
             "ForeignName": "DAI-WETH",
             "Address": "0xC2e9F25Be6257c210d7Adf0D4Cd6E3E881ba25f8",
             "Order": "1",
-            "WatchDogDelay": 3600
-        },
-        {
-            "ForeignName": "KERNEL-USDT",
-            "Address": "0x1542CD77E7A605cbf140823A9f21Fa7ddDE44078",
-            "Order": "0",
             "WatchDogDelay": 3600
         },
         {

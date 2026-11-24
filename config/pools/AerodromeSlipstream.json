@@ -49,12 +49,6 @@
             "WatchDogDelay": 3600
         },
         {
-            "ForeignName": "WSTETH-WETH",
-            "Address": "0x861a2922be165a5bd41b1e482b49216b465e1b5f",
-            "Order": "0",
-            "WatchDogDelay": 3600
-        },
-        {
             "ForeignName": "CBLTC-CBBTC",
             "Address": "0x6044c817e55a03dadc5f6b8b7045af1985ae90fa",
             "Order": "0",
