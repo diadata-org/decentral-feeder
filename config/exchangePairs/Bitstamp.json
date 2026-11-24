@@ -9,6 +9,18 @@
             "WatchDogDelay": 1200
         },
         {
+            "Pair": "PEPE-USD",
+            "WatchDogDelay": 900
+        },
+        {
+            "Pair": "SOL-USD",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UNI-USD",
+            "WatchDogDelay": 900
+        },
+        {
             "Pair": "USDT-USD",
             "WatchDogDelay": 300
         }

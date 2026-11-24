@@ -213,6 +213,10 @@
             "WatchDogDelay": 1800
         },
         {
+            "Pair": "PEPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "POL-USDC",
             "WatchDogDelay": 3600
         },

@@ -49,6 +49,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "BNB-USDC",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "BNB-USDT",
             "WatchDogDelay": 300
         },
@@ -103,6 +107,10 @@
         {
             "Pair": "ENA-FDUSD",
             "WatchDogDelay": 900
+        },
+        {
+            "Pair": "ENA-USDC",
+            "WatchDogDelay": 600
         },
         {
             "Pair": "ENA-USDT",
@@ -225,6 +233,14 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "PEPE-USDC",
+            "WatchDogDelay": 300
+        },
+        {
+            "Pair": "PEPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "PLUME-USDC",
             "WatchDogDelay": 600
         },
@@ -339,6 +355,10 @@
         {
             "Pair": "TURBO-USDT",
             "WatchDogDelay": 300
+        },
+        {
+            "Pair": "UNI-USDC",
+            "WatchDogDelay": 600
         },
         {
             "Pair": "UNI-USDT",

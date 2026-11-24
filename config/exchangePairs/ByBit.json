@@ -233,6 +233,10 @@
             "WatchDogDelay": 300
         },
         {
+            "Pair": "PEPE-USDT",
+            "WatchDogDelay": 300
+        },
+        {
             "Pair": "PLUME-USDT",
             "WatchDogDelay": 300
         },
