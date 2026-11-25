@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	diaOracleV3 "github.com/diadata-org/lumina-library/contracts/lumina/diaoraclev3"
@@ -14,6 +15,7 @@ import (
 	"github.com/diadata-org/lumina-library/onchain"
 	"github.com/diadata-org/lumina-library/processor"
 	utils "github.com/diadata-org/lumina-library/utils"
+	"github.com/ethereum/go-ethereum/ethclient"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -103,7 +105,7 @@ func main() {
 	metacontractPrecision, err := strconv.Atoi(utils.Getenv("METACONTRACT_PRECISION", "18"))
 	if err != nil {
 		log.Error("parse METACONTRACT_PRECISION: ", err)
-		metacontractPrecision = 8
+		metacontractPrecision = 18
 	}
 
 	decimalPrecision, err := strconv.Atoi(utils.Getenv("DECIMAL_PRECISION", "18"))
@@ -115,7 +117,7 @@ func main() {
 	batchSizeOracleUpdate, err := strconv.Atoi(utils.Getenv("BATCH_SIZE_ORACLE_UPDATE", "20"))
 	if err != nil {
 		log.Error("parse BATCH_SIZE_ORACLE_UPDATE: ", err)
-		decimalPrecision = 18
+		batchSizeOracleUpdate = 20
 	}
 
 	// Initialize env variables for metrics server.
@@ -127,8 +129,15 @@ func main() {
 	metricsPort := utils.Getenv("METRICS_PORT", "9090")
 	imageVersion := os.Getenv("IMAGE_TAG")
 	exchangePairString := models.MakeExchangePairString(exchangePairs)
-	metrics.StartMetrics(
-		conn,
+	// Metrics follow the active RPC once the switcher exists (set further below).
+	var activeSwitcher atomic.Pointer[onchain.RPCSwitcher]
+	metrics.StartMetricsWithClientProvider(
+		func() *ethclient.Client {
+			if sw := activeSwitcher.Load(); sw != nil {
+				return sw.Endpoints().Conn
+			}
+			return conn
+		},
 		privateKey,
 		deployedContract,
 		pushgatewayURL,
@@ -202,6 +211,7 @@ func main() {
 			privateKey,
 			onchain.Endpoints{Conn: conn, ConnBackup: connBackup, Contract: contract, ContractBackup: contractBackup},
 		)
+		activeSwitcher.Store(switcher)
 		go switcher.Run(context.Background())
 
 		// This should be the final line of main (blocking call)
