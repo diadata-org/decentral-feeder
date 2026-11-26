@@ -94,6 +94,34 @@ func main() {
 	blockchainNode := utils.Getenv("BLOCKCHAIN_NODE", "")
 	backupNode := utils.Getenv("BACKUP_NODE", "")
 	metacontractNode := utils.Getenv("METACONTRACT_NODE", "")
+
+	// Optional: switch the RPC between Conduit mainnet and the Anvil backup based on the Liveness API.
+	livenessAPIURL := utils.Getenv("LIVENESS_API_URL", "")
+	anvilNode := utils.Getenv("ANVIL_NODE", "")
+
+	// If Conduit is already down at startup, connect to Anvil right away. Connecting to Conduit would fail
+	// and the feeder would crash-loop without ever reaching the switcher. If the Liveness API cannot be
+	// reached, start on Conduit as usual.
+	mainnetNode, mainnetBackupNode := blockchainNode, backupNode
+	startOnAnvil := false
+	if livenessAPIURL != "" && anvilNode != "" {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		resp, livenessErr := onchain.FetchLiveness(ctx, livenessAPIURL)
+		cancel()
+		switch {
+		case livenessErr != nil:
+			log.Warnf("Startup liveness check failed, starting on the configured RPC: %v", livenessErr)
+		case !resp.Live:
+			log.Warnf("Conduit is down at startup (block %d, age %ds). Starting on the Anvil node.", resp.BlockNumber, resp.AgeSeconds)
+			startOnAnvil = true
+			blockchainNode, backupNode = anvilNode, anvilNode
+			// The metacontract lives on Conduit as well.
+			if metacontractNode == mainnetNode || metacontractNode == mainnetBackupNode {
+				metacontractNode = anvilNode
+			}
+		}
+	}
+
 	conn, connBackup, metacontractClient, privateKey, auth := utils.SetupOnchain(
 		blockchainNode,
 		backupNode,
@@ -101,7 +129,16 @@ func main() {
 		privateKeyHex,
 		chainID,
 	)
-	metacontractAddress := utils.Getenv("METACONTRACT_ADDRESS", "")
+	if startOnAnvil {
+		nodeChainID, err := conn.ChainID(context.Background())
+		if err != nil {
+			log.Fatalf("Failed to get chain ID of the Anvil node: %v", err)
+		}
+		if nodeChainID.Int64() != chainID {
+			log.Fatalf("Chain ID mismatch: Anvil node reports %s, feeder is configured for %d", nodeChainID, chainID)
+		}
+	}
+	metacontractAddress := utils.Getenv("METACONTRACT_ADDRESS", "0xBd82Fc0067CA5977b86c6EDB579f90DFcFb62D7d")
 	metacontractPrecision, err := strconv.Atoi(utils.Getenv("METACONTRACT_PRECISION", "18"))
 	if err != nil {
 		log.Error("parse METACONTRACT_PRECISION: ", err)
@@ -197,19 +234,16 @@ func main() {
 		&wg,
 	)
 
-	// Optional: switch the RPC between Conduit mainnet and the Anvil backup based on the Liveness API.
-	livenessAPIURL := utils.Getenv("LIVENESS_API_URL", "")
-	anvilNode := utils.Getenv("ANVIL_NODE", "")
 	if livenessAPIURL != "" && anvilNode != "" {
 		switcher := onchain.NewRPCSwitcher(
 			livenessAPIURL,
-			blockchainNode,
-			backupNode,
+			mainnetNode,
+			mainnetBackupNode,
 			anvilNode,
 			deployedContract,
 			chainID,
 			privateKey,
-			onchain.Endpoints{Conn: conn, ConnBackup: connBackup, Contract: contract, ContractBackup: contractBackup},
+			onchain.Endpoints{Conn: conn, ConnBackup: connBackup, Contract: contract, ContractBackup: contractBackup, UsingBackupNode: startOnAnvil},
 		)
 		activeSwitcher.Store(switcher)
 		go switcher.Run(context.Background())
