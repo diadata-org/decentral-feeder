@@ -117,14 +117,6 @@
             "WatchDogDelay": 300
         },
         {
-            "Pair": "EUR-USD",
-            "WatchDogDelay": 300
-        },
-        {
-            "Pair": "EUROP-EUR",
-            "WatchDogDelay": 3600
-        },
-        {
             "Pair": "EUROP-USD",
             "WatchDogDelay": 3600
         },
